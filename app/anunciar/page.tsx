@@ -1,0 +1,7 @@
+import Link from "next/link";
+import { Header } from "@/components/Header";
+
+export default function AnunciarPage(){
+ const steps=["Crie sua conta","Cadastre o caminhão","Envie fotos e descrição","Aguarde aprovação","Receba contatos pelo WhatsApp"];
+ return <><Header/><main className="page"><div className="container"><section className="glass" style={{padding:34}}><span className="eyebrow">Área do anunciante</span><h1 style={{fontSize:52}}>Anuncie seu caminhão para compradores interessados</h1><p className="lead">Cadastre fotos, dados técnicos, preço e contato. Seu anúncio passa por aprovação antes de aparecer publicamente.</p><div className="hero-actions"><Link className="btn primary" href="/cadastro">Criar conta e anunciar</Link><Link className="btn" href="/login">Já tenho conta</Link></div></section><section className="section"><div className="grid">{steps.map((s,i)=><div key={s} className="card"><div className="card-body"><span className="badge green">{i+1}</span><h3>{s}</h3><p className="muted">Processo claro para evitar anúncio incompleto, duplicado ou sem informação importante.</p></div></div>)}</div></section><section className="glass" style={{padding:26}}><h2>Regras básicas</h2><div className="chips"><span className="chip">Use fotos reais</span><span className="chip">Informe preço correto</span><span className="chip">Não publique duplicado</span><span className="chip">Anúncios incompletos podem ser reprovados</span></div></section></div></main></>
+}
