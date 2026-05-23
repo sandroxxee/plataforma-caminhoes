@@ -1,19 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { CSSProperties } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
 
 export const dynamic = "force-dynamic";
-
-function formatPrice(value: number | null) {
-  if (!value) return "Preço sob consulta";
-
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 export default async function PainelPage() {
   const supabase = await createClient();
@@ -28,69 +19,67 @@ export default async function PainelPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("nome")
+    .select("nome, email, role")
     .eq("id", user.id)
     .single();
 
-  const { data: anuncios } = await supabase
-    .from("trucks")
-    .select("id, titulo, preco, status, cidade, estado, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  const total = anuncios?.length || 0;
-  const aprovados = anuncios?.filter((item) => item.status === "aprovado").length || 0;
-  const pendentes = anuncios?.filter((item) => item.status === "pendente").length || 0;
-  const reprovados = anuncios?.filter((item) => item.status === "reprovado").length || 0;
+  const isAdmin = profile?.role === "admin";
 
   return (
     <PanelLayout
-      title={`Olá, ${profile?.nome || user.email}`}
-      subtitle="Gerencie seus anúncios, acompanhe aprovações e cadastre caminhões com organização."
-      actions={<Link href="/painel/anuncios/novo" style={styles.primaryButton}>Novo anúncio</Link>}
-    >
-      <section style={styles.statsGrid}>
-        <div style={styles.statCard}><span>Total</span><strong>{total}</strong></div>
-        <div style={styles.statCard}><span>Aprovados</span><strong>{aprovados}</strong></div>
-        <div style={styles.statCard}><span>Pendentes</span><strong>{pendentes}</strong></div>
-        <div style={styles.statCard}><span>Reprovados</span><strong>{reprovados}</strong></div>
-      </section>
-
-      <section style={styles.card}>
-        <div style={styles.cardHeader}>
-          <div>
-            <h2 style={styles.cardTitle}>Últimos anúncios</h2>
-            <p style={styles.muted}>Resumo dos caminhões cadastrados na sua conta.</p>
-          </div>
-          <Link href="/painel/anuncios" style={styles.secondaryButton}>Ver todos</Link>
-        </div>
-
-        {anuncios && anuncios.length > 0 ? (
-          <div style={styles.list}>
-            {anuncios.slice(0, 5).map((anuncio) => (
-              <div style={styles.row} key={anuncio.id}>
-                <div>
-                  <strong>{anuncio.titulo}</strong>
-                  <p style={styles.muted}>{anuncio.cidade}/{anuncio.estado}</p>
-                </div>
-                <span style={styles.status}>{anuncio.status}</span>
-                <strong>{formatPrice(anuncio.preco)}</strong>
-              </div>
-            ))}
-          </div>
+      title={isAdmin ? "Painel do administrador" : "Painel do anunciante"}
+      subtitle={
+        isAdmin
+          ? "Você está logado como admin. Use a área administrativa para aprovar, editar e excluir anúncios."
+          : "Gerencie seus anúncios e acompanhe o status de aprovação."
+      }
+      badge={isAdmin ? "Admin" : "Anunciante"}
+      actions={
+        isAdmin ? (
+          <Link href="/admin/pendentes" style={styles.adminButton}>
+            Ir para admin
+          </Link>
         ) : (
-          <div style={styles.empty}>
-            <h3>Nenhum anúncio cadastrado ainda</h3>
-            <p style={styles.muted}>Cadastre seu primeiro caminhão para enviar para aprovação.</p>
-            <Link href="/painel/anuncios/novo" style={styles.primaryButton}>Cadastrar caminhão</Link>
-          </div>
+          <Link href="/painel/anuncios/novo" style={styles.primaryButton}>
+            Novo anúncio
+          </Link>
+        )
+      }
+    >
+      <section style={styles.grid}>
+        <Link href="/painel/anuncios" style={styles.card}>
+          <span style={styles.icon}>🚛</span>
+          <strong>Meus anúncios</strong>
+          <p>Veja anúncios cadastrados, edite dados e acompanhe status.</p>
+        </Link>
+
+        <Link href="/painel/anuncios/novo" style={styles.card}>
+          <span style={styles.icon}>➕</span>
+          <strong>Novo anúncio</strong>
+          <p>Cadastre um caminhão com fotos para aprovação.</p>
+        </Link>
+
+        {isAdmin && (
+          <Link href="/admin/pendentes" style={styles.cardAdmin}>
+            <span style={styles.icon}>⚙️</span>
+            <strong>Admin pendentes</strong>
+            <p>Aprovar, reprovar, editar e excluir anúncios pendentes.</p>
+          </Link>
+        )}
+
+        {isAdmin && (
+          <Link href="/admin/anuncios" style={styles.cardAdmin}>
+            <span style={styles.icon}>📋</span>
+            <strong>Todos os anúncios</strong>
+            <p>Controle geral de todos os anúncios da plataforma.</p>
+          </Link>
         )}
       </section>
     </PanelLayout>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   primaryButton: {
     display: "inline-flex",
     alignItems: "center",
@@ -102,64 +91,41 @@ const styles: Record<string, React.CSSProperties> = {
     textDecoration: "none",
     fontWeight: 900,
   },
-  secondaryButton: {
+  adminButton: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "11px 14px",
+    padding: "12px 16px",
     borderRadius: 14,
-    border: "1px solid rgba(255,255,255,.15)",
-    background: "rgba(255,255,255,.06)",
-    color: "white",
+    background: "#eab308",
+    color: "#422006",
     textDecoration: "none",
-    fontWeight: 800,
+    fontWeight: 900,
   },
-  statsGrid: {
+  grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: 16,
-    marginBottom: 22,
-  },
-  statCard: {
-    padding: 22,
-    borderRadius: 22,
-    background: "rgba(255,255,255,.07)",
-    border: "1px solid rgba(255,255,255,.10)",
-    boxShadow: "0 18px 50px rgba(0,0,0,.22)",
+    gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+    gap: 18,
   },
   card: {
     padding: 24,
     borderRadius: 24,
-    background: "rgba(255,255,255,.07)",
+    background: "rgba(15,23,42,.72)",
     border: "1px solid rgba(255,255,255,.10)",
+    color: "white",
+    textDecoration: "none",
   },
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 14,
-    alignItems: "center",
-    marginBottom: 18,
+  cardAdmin: {
+    padding: 24,
+    borderRadius: 24,
+    background: "rgba(234,179,8,.10)",
+    border: "1px solid rgba(234,179,8,.25)",
+    color: "white",
+    textDecoration: "none",
   },
-  cardTitle: { margin: 0, fontSize: 24 },
-  muted: { color: "#a7b5c7", margin: "4px 0 0", lineHeight: 1.55 },
-  list: { display: "grid", gap: 10 },
-  row: {
-    display: "grid",
-    gridTemplateColumns: "1fr auto auto",
-    gap: 14,
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 16,
-    background: "rgba(255,255,255,.055)",
-    border: "1px solid rgba(255,255,255,.08)",
+  icon: {
+    display: "block",
+    fontSize: 34,
+    marginBottom: 12,
   },
-  status: {
-    padding: "7px 10px",
-    borderRadius: 999,
-    background: "rgba(245,158,11,.14)",
-    border: "1px solid rgba(245,158,11,.26)",
-    color: "#fcd34d",
-    fontWeight: 800,
-  },
-  empty: { padding: 10 },
 };

@@ -9,11 +9,28 @@ export async function login(formData: FormData) {
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "").trim();
 
-  if (!email || !password) redirect("/login?erro=campos");
+  if (!email || !password) {
+    redirect("/login?erro=campos");
+  }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-  if (error) redirect("/login?erro=login");
+  if (error || !data.user) {
+    redirect("/login?erro=login");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .single();
+
+  if (profile?.role === "admin") {
+    redirect("/admin/pendentes");
+  }
 
   redirect("/painel");
 }
