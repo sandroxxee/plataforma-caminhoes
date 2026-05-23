@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import type { CSSProperties } from "react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -30,21 +29,13 @@ type Truck = {
 
 function formatMoney(value: number | null) {
   if (!value) return "Sob consulta";
-
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
 function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
   const principal = images.find((img) => img.principal && img.image_url);
-  const first = [...images]
-    .filter((img) => img.image_url)
-    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
-
+  const first = [...images].filter((img) => img.image_url).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
   return principal?.image_url || first?.image_url || "";
 }
 
@@ -87,105 +78,78 @@ export default async function HomePage() {
   const trucks = (data || []) as Truck[];
 
   return (
-    <main style={styles.page}>
-      <header style={styles.header}>
-        <Link href="/" style={styles.logoBox}>
-          <span style={styles.logoIcon}>🚛</span>
+    <main className="public-page">
+      <header className="public-header">
+        <Link href="/" className="public-logo">
+          <span className="public-logo-icon">🚛</span>
           <span>
             <strong>CAMINHÕES EM OFERTA</strong>
-            <small style={styles.logoSmall}>Plataforma de anúncios de caminhões</small>
+            <small>Plataforma de anúncios de caminhões</small>
           </span>
         </Link>
 
-        <nav style={styles.nav}>
-          <Link href="/anuncios" style={styles.navLink}>Ver anúncios</Link>
-          <Link href="/login" style={styles.outlineButton}>Entrar</Link>
-          <Link href="/cadastro" style={styles.primaryButton}>Anunciar</Link>
+        <nav className="public-nav">
+          <Link href="/anuncios" className="public-nav-link">Ver anúncios</Link>
+          <Link href="/login" className="public-outline">Entrar</Link>
+          <Link href="/cadastro" className="public-primary">Anunciar</Link>
         </nav>
       </header>
 
-      <section style={styles.hero}>
-        <div style={styles.heroText}>
-          <span style={styles.badge}>COMPRA • VENDA • TROCA</span>
-          <h1 style={styles.heroTitle}>
-            Caminhões reais, aprovados e prontos para negociação.
-          </h1>
-          <p style={styles.heroSubtitle}>
-            Encontre caminhões com procedência, veja detalhes e fale direto no WhatsApp.
-          </p>
+      <section className="home-hero">
+        <div className="home-hero-text">
+          <span className="public-badge">COMPRA • VENDA • TROCA</span>
+          <h1>Caminhões reais, aprovados e prontos para negociação.</h1>
+          <p>Encontre caminhões com procedência, veja detalhes e fale direto no WhatsApp.</p>
 
-          <div style={styles.heroActions}>
-            <Link href="/anuncios" style={styles.bigButton}>Ver caminhões</Link>
-            <Link href="/cadastro" style={styles.bigOutline}>Quero anunciar</Link>
+          <div className="home-actions">
+            <Link href="/anuncios" className="home-main-button">Ver caminhões</Link>
+            <Link href="/cadastro" className="home-outline-button">Quero anunciar</Link>
           </div>
         </div>
 
-        <div style={styles.heroCard}>
-          <span style={styles.heroCardBadge}>Estoque aprovado</span>
-          <strong style={styles.heroNumber}>{trucks.length}</strong>
-          <p style={styles.heroCardText}>últimos anúncios reais carregados do Supabase</p>
+        <div className="home-card">
+          <span>Estoque aprovado</span>
+          <strong>{trucks.length}</strong>
+          <p>últimos anúncios reais carregados do Supabase</p>
         </div>
       </section>
 
-      {error && (
-        <div style={styles.errorBox}>
-          Erro ao carregar anúncios do Supabase: {error.message}
-        </div>
-      )}
+      {error && <div className="public-error">Erro ao carregar anúncios do Supabase: {error.message}</div>}
 
-      <section style={styles.section}>
-        <div style={styles.sectionHeader}>
+      <section className="home-section">
+        <div className="home-section-header">
           <div>
-            <span style={styles.badge}>DESTAQUES</span>
-            <h2 style={styles.sectionTitle}>Últimos caminhões aprovados</h2>
+            <span className="public-badge">DESTAQUES</span>
+            <h2>Últimos caminhões aprovados</h2>
           </div>
-
-          <Link href="/anuncios" style={styles.seeAll}>Ver todos</Link>
+          <Link href="/anuncios" className="home-see-all">Ver todos</Link>
         </div>
 
-        {trucks.length === 0 && (
-          <div style={styles.emptyBox}>
-            Nenhum anúncio aprovado no momento.
-          </div>
-        )}
+        {trucks.length === 0 && <div className="public-empty">Nenhum anúncio aprovado no momento.</div>}
 
-        <div style={styles.grid}>
+        <div className="truck-grid">
           {trucks.map((truck) => {
             const image = getMainImage(truck);
-
             return (
-              <article key={truck.id} style={styles.card}>
-                <div style={styles.imageWrap}>
-                  {truck.destaque && <span style={styles.tag}>destaque</span>}
-
-                  {image ? (
-                    <img src={image} alt={truck.titulo || "Caminhão"} style={styles.image} />
-                  ) : (
-                    <div style={styles.noImage}>Sem foto</div>
-                  )}
+              <article key={truck.id} className="truck-card">
+                <div className="truck-image-wrap">
+                  {truck.destaque && <span className="truck-tag">destaque</span>}
+                  {image ? <img src={image} alt={truck.titulo || "Caminhão"} className="truck-image" /> : <div className="truck-no-image">Sem foto</div>}
                 </div>
-
-                <div style={styles.cardBody}>
-                  <h3 style={styles.cardTitle}>{truck.titulo || `${truck.marca} ${truck.modelo}`}</h3>
-                  <strong style={styles.price}>{formatMoney(truck.preco)}</strong>
-
-                  <div style={styles.infoLine}>
+                <div className="truck-body">
+                  <h3 className="truck-title">{truck.titulo || `${truck.marca} ${truck.modelo}`}</h3>
+                  <strong className="truck-price">{formatMoney(truck.preco)}</strong>
+                  <div className="truck-info">
                     <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano não informado"}</span>
                     <span>{truck.cidade || "Cidade"}{truck.estado ? `/${truck.estado}` : ""}</span>
                   </div>
-
-                  <div style={styles.chips}>
+                  <div className="truck-chips">
                     {truck.carroceria && <span>{truck.carroceria}</span>}
                     {truck.tracao && <span>{truck.tracao}</span>}
                   </div>
-
-                  <div style={styles.cardActions}>
-                    <Link href={`/anuncios/${truck.id}`} style={styles.detailsButton}>Ver detalhes</Link>
-                    {truck.whatsapp && (
-                      <a href={getWhatsappLink(truck)} target="_blank" style={styles.whatsappButton}>
-                        WhatsApp
-                      </a>
-                    )}
+                  <div className="truck-actions">
+                    <Link href={`/anuncios/${truck.id}`} className="truck-details">Ver detalhes</Link>
+                    {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" className="truck-whatsapp">WhatsApp</a>}
                   </div>
                 </div>
               </article>
@@ -193,282 +157,341 @@ export default async function HomePage() {
           })}
         </div>
       </section>
+
+      <style>{`
+        .home-hero {
+          max-width: 1180px;
+          margin: 42px auto 26px;
+          display: grid;
+          grid-template-columns: 1.3fr .7fr;
+          gap: 24px;
+          align-items: stretch;
+          padding: 0 18px;
+        }
+        .home-hero-text {
+          padding: 38px;
+          border-radius: 30px;
+          background: rgba(255,255,255,.07);
+          border: 1px solid rgba(255,255,255,.10);
+        }
+        .home-hero-text h1 {
+          font-size: 52px;
+          line-height: 1.02;
+          margin: 20px 0 14px;
+          max-width: 780px;
+        }
+        .home-hero-text p {
+          color: #cbd5e1;
+          font-size: 19px;
+          line-height: 1.55;
+          margin: 0;
+        }
+        .home-actions {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: 26px;
+        }
+        .home-main-button,
+        .home-outline-button {
+          padding: 15px 20px;
+          border-radius: 16px;
+          text-decoration: none;
+          font-weight: 900;
+          text-align: center;
+        }
+        .home-main-button { background: #22c55e; color: #052e16; }
+        .home-outline-button { color: white; border: 1px solid rgba(255,255,255,.16); }
+        .home-card {
+          padding: 30px;
+          border-radius: 30px;
+          background: linear-gradient(145deg,rgba(34,197,94,.18),rgba(15,23,42,.76));
+          border: 1px solid rgba(34,197,94,.22);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .home-card span { color: #86efac; font-weight: 900; }
+        .home-card strong { font-size: 78px; line-height: 1; margin-top: 14px; }
+        .home-card p { color: #cbd5e1; line-height: 1.5; margin-bottom: 0; }
+        .home-section {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 0 18px;
+        }
+        .home-section-header {
+          display: flex;
+          justify-content: space-between;
+          gap: 18px;
+          align-items: end;
+          margin-bottom: 18px;
+        }
+        .home-section-header h2 {
+          font-size: 34px;
+          margin: 12px 0 0;
+        }
+        .home-see-all { color: #86efac; text-decoration: none; font-weight: 900; }
+        @media (max-width: 680px) {
+          .home-hero {
+            display: block;
+            margin: 16px auto 18px;
+            padding: 0 12px;
+          }
+          .home-hero-text {
+            padding: 20px;
+            border-radius: 22px;
+          }
+          .home-hero-text h1 {
+            font-size: 30px;
+            line-height: 1.08;
+          }
+          .home-hero-text p { font-size: 16px; }
+          .home-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+          .home-card { display: none; }
+          .home-section { padding: 0 12px; }
+          .home-section-header {
+            align-items: start;
+            margin-bottom: 14px;
+          }
+          .home-section-header h2 {
+            font-size: 28px;
+            line-height: 1.12;
+          }
+          .home-see-all { padding-top: 38px; }
+        }
+      `}</style>
+
+      <style>{`
+        .public-page {
+          min-height: 100vh;
+          background: linear-gradient(135deg,#020617 0%,#071f1b 55%,#020617 100%);
+          color: white;
+          padding-bottom: 54px;
+          overflow-x: hidden;
+        }
+        .public-header {
+          min-height: 82px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+          padding: 0 9vw;
+          border-bottom: 1px solid rgba(255,255,255,.10);
+          background: rgba(2,6,23,.86);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+          backdrop-filter: blur(14px);
+        }
+        .public-logo {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: white;
+          text-decoration: none;
+          min-width: 0;
+        }
+        .public-logo-icon {
+          width: 44px;
+          height: 44px;
+          flex: 0 0 44px;
+          display: grid;
+          place-items: center;
+          border-radius: 13px;
+          background: #22c55e;
+        }
+        .public-logo strong {
+          display: block;
+          line-height: 1.05;
+          letter-spacing: .2px;
+        }
+        .public-logo small {
+          display: block;
+          color: #94a3b8;
+          font-size: 12px;
+          margin-top: 3px;
+        }
+        .public-nav {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          flex-wrap: nowrap;
+        }
+        .public-nav a {
+          min-height: 46px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          white-space: nowrap;
+          text-decoration: none;
+          font-weight: 900;
+          border-radius: 14px;
+          padding: 12px 18px;
+        }
+        .public-nav-link { color: #cbd5e1; }
+        .public-outline { color: white; border: 1px solid rgba(255,255,255,.16); }
+        .public-primary { background: #22c55e; color: #052e16; }
+        .public-badge {
+          display: inline-flex;
+          padding: 8px 14px;
+          border-radius: 999px;
+          color: #86efac;
+          background: rgba(34,197,94,.12);
+          border: 1px solid rgba(34,197,94,.22);
+          font-weight: 900;
+          font-size: 12px;
+        }
+        .truck-grid {
+          display: grid;
+          grid-template-columns: repeat(3,minmax(0,1fr));
+          gap: 20px;
+        }
+        .truck-card {
+          overflow: hidden;
+          border-radius: 24px;
+          background: rgba(15,23,42,.76);
+          border: 1px solid rgba(255,255,255,.12);
+          min-width: 0;
+        }
+        .truck-image-wrap {
+          position: relative;
+          height: 220px;
+          background: rgba(2,6,23,.75);
+        }
+        .truck-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .truck-no-image {
+          height: 100%;
+          display: grid;
+          place-items: center;
+          color: #94a3b8;
+          font-weight: 900;
+        }
+        .truck-tag {
+          position: absolute;
+          top: 14px;
+          left: 14px;
+          z-index: 2;
+          padding: 7px 12px;
+          border-radius: 999px;
+          background: rgba(234,179,8,.20);
+          color: #fde68a;
+          border: 1px solid rgba(234,179,8,.35);
+          font-weight: 900;
+          font-size: 12px;
+        }
+        .truck-body { padding: 18px; }
+        .truck-title {
+          margin: 0;
+          font-size: 19px;
+          line-height: 1.25;
+          overflow-wrap: anywhere;
+        }
+        .truck-price {
+          display: block;
+          margin-top: 12px;
+          color: #86efac;
+          font-size: 25px;
+          line-height: 1.1;
+        }
+        .truck-info {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 12px;
+          color: #cbd5e1;
+        }
+        .truck-chips {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 10px;
+          margin-bottom: 14px;
+          color: #cbd5e1;
+        }
+        .truck-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-top: 16px;
+        }
+        .truck-details,
+        .truck-whatsapp {
+          padding: 12px;
+          border-radius: 13px;
+          text-align: center;
+          text-decoration: none;
+          font-weight: 900;
+        }
+        .truck-details { color: white; border: 1px solid rgba(255,255,255,.14); }
+        .truck-whatsapp { background: #22c55e; color: #052e16; }
+        .public-error,
+        .public-empty {
+          max-width: 1180px;
+          margin: 0 auto 20px;
+          padding: 16px;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,.10);
+          background: rgba(255,255,255,.07);
+        }
+        .public-error {
+          color: #fecaca;
+          background: rgba(239,68,68,.12);
+          border-color: rgba(239,68,68,.25);
+        }
+        @media (max-width: 980px) {
+          .public-header { padding: 12px 16px; align-items: flex-start; }
+          .truck-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+        }
+        @media (max-width: 680px) {
+          .public-header {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            min-height: auto;
+            padding: 10px 12px 12px;
+          }
+          .public-logo {
+            justify-content: center;
+            text-align: center;
+          }
+          .public-logo-icon {
+            width: 38px;
+            height: 38px;
+            flex-basis: 38px;
+          }
+          .public-logo strong { font-size: 14px; }
+          .public-logo small { display: none; }
+          .public-nav {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+          }
+          .public-nav a {
+            min-height: 42px;
+            padding: 9px 8px;
+            font-size: 13px;
+            border-radius: 12px;
+          }
+          .truck-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+          }
+          .truck-card { border-radius: 20px; }
+          .truck-image-wrap { height: 230px; }
+          .truck-body { padding: 16px; }
+          .truck-title { font-size: 20px; }
+          .truck-price { font-size: 24px; }
+          .truck-actions { grid-template-columns: 1fr; }
+        }
+      `}</style>
+
     </main>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg,#020617 0%,#071f1b 55%,#020617 100%)",
-    color: "white",
-    paddingBottom: 54,
-  },
-  header: {
-    minHeight: 82,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 9vw",
-    borderBottom: "1px solid rgba(255,255,255,.10)",
-    background: "rgba(2,6,23,.74)",
-    position: "sticky",
-    top: 0,
-    zIndex: 10,
-  },
-  logoBox: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-    color: "white",
-    textDecoration: "none",
-  },
-  logoSmall: {
-    display: "block",
-    color: "#94a3b8",
-    fontSize: 12,
-  },
-  logoIcon: {
-    width: 44,
-    height: 44,
-    display: "grid",
-    placeItems: "center",
-    borderRadius: 13,
-    background: "#22c55e",
-  },
-  nav: {
-    display: "flex",
-    gap: 16,
-    alignItems: "center",
-  },
-  navLink: {
-    color: "#cbd5e1",
-    textDecoration: "none",
-    fontWeight: 800,
-  },
-  primaryButton: {
-    background: "#22c55e",
-    color: "#052e16",
-    padding: "12px 18px",
-    borderRadius: 14,
-    textDecoration: "none",
-    fontWeight: 900,
-  },
-  outlineButton: {
-    border: "1px solid rgba(255,255,255,.16)",
-    color: "white",
-    padding: "12px 18px",
-    borderRadius: 14,
-    textDecoration: "none",
-    fontWeight: 900,
-  },
-  hero: {
-    maxWidth: 1180,
-    margin: "42px auto 26px",
-    display: "grid",
-    gridTemplateColumns: "1.3fr .7fr",
-    gap: 24,
-    alignItems: "stretch",
-  },
-  heroText: {
-    padding: 38,
-    borderRadius: 30,
-    background: "rgba(255,255,255,.07)",
-    border: "1px solid rgba(255,255,255,.10)",
-  },
-  badge: {
-    display: "inline-flex",
-    padding: "8px 14px",
-    borderRadius: 999,
-    color: "#86efac",
-    background: "rgba(34,197,94,.12)",
-    border: "1px solid rgba(34,197,94,.22)",
-    fontWeight: 900,
-    fontSize: 12,
-  },
-  heroTitle: {
-    fontSize: 52,
-    lineHeight: 1.02,
-    margin: "20px 0 14px",
-    maxWidth: 780,
-  },
-  heroSubtitle: {
-    color: "#cbd5e1",
-    fontSize: 19,
-    lineHeight: 1.55,
-    margin: 0,
-  },
-  heroActions: {
-    display: "flex",
-    gap: 12,
-    flexWrap: "wrap",
-    marginTop: 26,
-  },
-  bigButton: {
-    background: "#22c55e",
-    color: "#052e16",
-    padding: "15px 20px",
-    borderRadius: 16,
-    textDecoration: "none",
-    fontWeight: 900,
-  },
-  bigOutline: {
-    border: "1px solid rgba(255,255,255,.16)",
-    color: "white",
-    padding: "15px 20px",
-    borderRadius: 16,
-    textDecoration: "none",
-    fontWeight: 900,
-  },
-  heroCard: {
-    padding: 30,
-    borderRadius: 30,
-    background: "linear-gradient(145deg,rgba(34,197,94,.18),rgba(15,23,42,.76))",
-    border: "1px solid rgba(34,197,94,.22)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  heroCardBadge: {
-    color: "#86efac",
-    fontWeight: 900,
-  },
-  heroNumber: {
-    fontSize: 78,
-    lineHeight: 1,
-    marginTop: 14,
-  },
-  heroCardText: {
-    color: "#cbd5e1",
-    lineHeight: 1.5,
-    marginBottom: 0,
-  },
-  section: {
-    maxWidth: 1180,
-    margin: "0 auto",
-  },
-  sectionHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 18,
-    alignItems: "end",
-    marginBottom: 18,
-  },
-  sectionTitle: {
-    fontSize: 34,
-    margin: "12px 0 0",
-  },
-  seeAll: {
-    color: "#86efac",
-    textDecoration: "none",
-    fontWeight: 900,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3,minmax(0,1fr))",
-    gap: 20,
-  },
-  card: {
-    overflow: "hidden",
-    borderRadius: 24,
-    background: "rgba(15,23,42,.76)",
-    border: "1px solid rgba(255,255,255,.12)",
-  },
-  imageWrap: {
-    position: "relative",
-    height: 220,
-    background: "rgba(2,6,23,.75)",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-  noImage: {
-    height: "100%",
-    display: "grid",
-    placeItems: "center",
-    color: "#94a3b8",
-    fontWeight: 900,
-  },
-  tag: {
-    position: "absolute",
-    top: 14,
-    left: 14,
-    zIndex: 2,
-    padding: "7px 12px",
-    borderRadius: 999,
-    background: "rgba(234,179,8,.20)",
-    color: "#fde68a",
-    border: "1px solid rgba(234,179,8,.35)",
-    fontWeight: 900,
-    fontSize: 12,
-  },
-  cardBody: {
-    padding: 18,
-  },
-  cardTitle: {
-    margin: 0,
-    fontSize: 19,
-    lineHeight: 1.25,
-  },
-  price: {
-    display: "block",
-    marginTop: 12,
-    color: "#86efac",
-    fontSize: 25,
-  },
-  infoLine: {
-    display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
-    marginTop: 12,
-  },
-  chips: {
-    display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
-    marginTop: 10,
-    marginBottom: 14,
-  },
-  cardActions: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 10,
-    marginTop: 16,
-  },
-  detailsButton: {
-    padding: "12px",
-    borderRadius: 13,
-    color: "white",
-    textAlign: "center",
-    textDecoration: "none",
-    border: "1px solid rgba(255,255,255,.14)",
-    fontWeight: 900,
-  },
-  whatsappButton: {
-    padding: "12px",
-    borderRadius: 13,
-    background: "#22c55e",
-    color: "#052e16",
-    textAlign: "center",
-    textDecoration: "none",
-    fontWeight: 900,
-  },
-  emptyBox: {
-    padding: 30,
-    borderRadius: 24,
-    background: "rgba(255,255,255,.07)",
-    border: "1px solid rgba(255,255,255,.10)",
-  },
-  errorBox: {
-    maxWidth: 1180,
-    margin: "0 auto 20px",
-    padding: 16,
-    borderRadius: 16,
-    color: "#fecaca",
-    background: "rgba(239,68,68,.12)",
-    border: "1px solid rgba(239,68,68,.25)",
-  },
-};
