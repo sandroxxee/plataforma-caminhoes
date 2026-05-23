@@ -17,7 +17,7 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
           <span style={styles.brandIcon}>⚙️</span>
           <span>
             <strong>Admin Truck</strong>
-            <small>Controle da plataforma</small>
+            <small style={styles.brandSmall}>Controle da plataforma</small>
           </span>
         </Link>
 
@@ -65,12 +65,16 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: 24,
+    alignItems: "stretch",
   },
   brand: {
     display: "flex",
-    gap: 12,
+    flexDirection: "column",
+    gap: 10,
     alignItems: "center",
-    padding: 14,
+    justifyContent: "center",
+    textAlign: "center",
+    padding: 18,
     borderRadius: 18,
     background: "rgba(234,179,8,.10)",
     border: "1px solid rgba(234,179,8,.22)",
@@ -78,18 +82,25 @@ const styles: Record<string, CSSProperties> = {
     textDecoration: "none",
   },
   brandIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     display: "grid",
     placeItems: "center",
     background: "#eab308",
+  },
+  brandSmall: {
+    display: "block",
+    color: "#94a3b8",
+    fontSize: 12,
+    marginTop: 4,
   },
   menu: {
     display: "grid",
     gap: 12,
   },
   menuItem: {
+    minHeight: 48,
     padding: "13px 14px",
     borderRadius: 14,
     color: "white",
@@ -97,6 +108,10 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid rgba(255,255,255,.10)",
     textDecoration: "none",
     fontWeight: 800,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
   },
   bottom: {
     marginTop: "auto",
@@ -104,6 +119,7 @@ const styles: Record<string, CSSProperties> = {
     gap: 12,
   },
   publicButton: {
+    minHeight: 48,
     padding: "13px 14px",
     borderRadius: 14,
     color: "white",
@@ -112,8 +128,12 @@ const styles: Record<string, CSSProperties> = {
     textDecoration: "none",
     textAlign: "center",
     fontWeight: 900,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoutButton: {
+    minHeight: 48,
     padding: "13px 14px",
     borderRadius: 14,
     color: "#fecaca",
@@ -122,6 +142,9 @@ const styles: Record<string, CSSProperties> = {
     textDecoration: "none",
     textAlign: "center",
     fontWeight: 900,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   content: {
     padding: "34px 46px",
