@@ -3,38 +3,35 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function cadastrarUsuario(formData: FormData) {
+export async function cadastrar(formData: FormData) {
   const supabase = await createClient();
 
-  const nome = String(formData.get("nome") || "");
-  const whatsapp = String(formData.get("whatsapp") || "");
-  const email = String(formData.get("email") || "");
-  const senha = String(formData.get("senha") || "");
-  const tipoConta = String(formData.get("tipo_conta") || "particular");
-  const cidade = String(formData.get("cidade") || "");
-  const estado = String(formData.get("estado") || "");
+  const nome = String(formData.get("nome") || "").trim();
+  const whatsapp = String(formData.get("whatsapp") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const password = String(formData.get("password") || "").trim();
+  const cidade = String(formData.get("cidade") || "").trim();
+  const estado = String(formData.get("estado") || "SC").trim();
 
-  if (!nome || !whatsapp || !email || !senha) {
-    redirect("/cadastro?erro=preencha-os-campos");
-  }
+  if (!nome || !email || !password) redirect("/cadastro?erro=campos");
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
-    password: senha,
-    options: {
-      data: {
-        nome,
-        whatsapp,
-        tipo_conta: tipoConta,
-        cidade,
-        estado,
-      },
-    },
+    password,
+    options: { data: { nome, whatsapp, cidade, estado } },
   });
 
-  if (error) {
-    redirect(`/cadastro?erro=${encodeURIComponent(error.message)}`);
-  }
+  if (error || !data.user) redirect("/cadastro?erro=cadastro");
+
+  await supabase.from("profiles").upsert({
+    id: data.user.id,
+    email,
+    nome,
+    whatsapp,
+    cidade,
+    estado,
+    role: "anunciante",
+  });
 
   redirect("/painel");
 }
