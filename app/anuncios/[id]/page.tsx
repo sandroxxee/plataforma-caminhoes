@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { PublicHeader } from "@/components/PublicHeader";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TruckGallery } from "@/components/TruckGallery";
 import { ShareAdButton } from "@/components/ShareAdButton";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -94,12 +96,9 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
   return (
     <main className="detail-page">
-      <header className="detail-header">
-        <Link href="/anuncios" className="detail-back">← Voltar ao estoque</Link>
-        <Link href="/cadastro" className="detail-primary">Anunciar caminhão</Link>
-      </header>
+      <PublicHeader />
 
-      <section className="detail-container">
+<section className="detail-container">
         <TruckGallery title={title} images={truck.truck_images || []} />
 
         <aside className="detail-info-card">
@@ -158,6 +157,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           <Link href="/anuncios">Ver outros caminhões</Link>
         )}
       </section>
+
+      <SiteFooter />
 
       <style>{`
         .detail-page {

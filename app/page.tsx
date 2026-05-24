@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -90,21 +92,9 @@ export default async function HomePage() {
 
   return (
     <main className="home-page">
-      <header className="site-header">
-        <div className="nav-inner">
-          <Link href="/" className="brand" aria-label="Caminhões em Oferta">
-            <Image src="/logo-horizontal.png" alt="Caminhões em Oferta" width={190} height={55} priority />
-          </Link>
+      <PublicHeader />
 
-          <nav className="nav-actions" aria-label="Menu principal">
-            <Link href="/anuncios" className="nav-link">Estoque</Link>
-            <Link href="/login" className="btn ghost">Entrar</Link>
-            <Link href="/cadastro" className="btn primary">＋ Anunciar</Link>
-          </nav>
-        </div>
-      </header>
-
-      <section className="hero">
+<section className="hero">
         <div className="hero-copy">
           <span className="eyebrow">COMPRA • VENDA • TROCA</span>
           <h1>O jeito mais simples de negociar caminhões.</h1>
@@ -114,7 +104,7 @@ export default async function HomePage() {
 
           <div className="hero-actions">
             <Link href="/anuncios" className="btn big primary">Ver estoque</Link>
-            <Link href="/cadastro" className="btn big ghost">Anunciar caminhão</Link>
+            <Link href="/anunciar" className="btn big ghost">Anunciar caminhão</Link>
           </div>
 
           <div className="trust-row">
@@ -229,7 +219,7 @@ export default async function HomePage() {
           <h2>Tem um caminhão para vender?</h2>
           <p>Cadastre o anúncio, envie as fotos e aguarde aprovação para aparecer no estoque.</p>
         </div>
-        <Link href="/cadastro" className="btn primary big">Anunciar caminhão</Link>
+        <Link href="/anunciar" className="btn primary big">Anunciar caminhão</Link>
       </section>
 
       <footer className="footer">
@@ -241,6 +231,8 @@ export default async function HomePage() {
           <Link href="/login">Entrar</Link>
         </div>
       </footer>
+
+      <SiteFooter />
 
       <style>{`
         .home-page {

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -134,19 +136,9 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   return (
     <main className="page">
-      <header className="topbar">
-        <Link href="/" className="brand" aria-label="Caminhões em Oferta">
-          <Image src="/logo-horizontal.png" alt="Caminhões em Oferta" width={190} height={55} priority />
-        </Link>
+      <PublicHeader />
 
-        <nav>
-          <Link href="/">Início</Link>
-          <Link href="/login">Entrar</Link>
-          <Link href="/cadastro" className="announce">＋ Anunciar</Link>
-        </nav>
-      </header>
-
-      <section className="hero">
+<section className="hero">
         <span className="eyebrow">Estoque</span>
         <h1>Caminhões disponíveis</h1>
         <p>Filtre por marca, modelo, tração ou busca livre e fale direto pelo WhatsApp.</p>
@@ -207,6 +199,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
               <article className="card" key={truck.id}>
                 <Link href={`/anuncios/${truck.id}`} className="photo">
                   {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
+                  <em>Disponível</em>
                 </Link>
 
                 <div className="content">
@@ -246,6 +239,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           </div>
         )}
       </section>
+
+      <SiteFooter />
 
       <style>{`
         .page {
@@ -428,6 +423,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           background: rgba(15,23,42,.92);
           overflow: hidden;
           text-decoration: none;
+          position: relative;
           color: #94a3b8;
         }
 
@@ -436,6 +432,20 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           height: 100%;
           object-fit: cover;
           display: block;
+        }
+
+        .photo em {
+          position: absolute;
+          left: 10px;
+          top: 10px;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: #22c55e;
+          color: #052e16;
+          font-style: normal;
+          font-size: 11px;
+          font-weight: 950;
+          text-transform: uppercase;
         }
 
         .photo span {
