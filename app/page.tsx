@@ -109,12 +109,18 @@ export default async function HomePage() {
           <span className="eyebrow">COMPRA • VENDA • TROCA</span>
           <h1>O jeito mais simples de negociar caminhões.</h1>
           <p>
-            Veja caminhões reais, confira preço e fale direto com o anunciante pelo WhatsApp.
+            Caminhões reais, ofertas atualizadas e contato direto com quem anuncia.
           </p>
 
           <div className="hero-actions">
             <Link href="/anuncios" className="btn big primary">Ver estoque</Link>
-            <Link href="/cadastro" className="btn big ghost">Quero anunciar</Link>
+            <Link href="/cadastro" className="btn big ghost">Anunciar caminhão</Link>
+          </div>
+
+          <div className="trust-row">
+            <span>✓ Anúncios revisados</span>
+            <span>✓ Fotos e dados claros</span>
+            <span>✓ Negociação direta</span>
           </div>
         </div>
 
@@ -158,10 +164,25 @@ export default async function HomePage() {
         <button type="submit">Buscar</button>
       </form>
 
+      <section className="confidence-strip">
+        <div>
+          <strong>Plataforma focada em caminhões</strong>
+          <span>Anúncios organizados para comprador comparar rápido e chamar direto.</span>
+        </div>
+        <div>
+          <strong>Sem enrolação</strong>
+          <span>Foto, modelo, ano, configuração, cidade, preço e contato.</span>
+        </div>
+        <div>
+          <strong>Mais confiança</strong>
+          <span>Somente anúncios aprovados aparecem publicamente.</span>
+        </div>
+      </section>
+
       <section className="section-head">
         <div>
           <span className="eyebrow small">Adicionados recentemente</span>
-          <h2>Últimos caminhões aprovados</h2>
+          <h2>Caminhões prontos para negociar</h2>
         </div>
         <Link href="/anuncios">Ver todos</Link>
       </section>
@@ -176,6 +197,7 @@ export default async function HomePage() {
               <article className="truck-card" key={truck.id}>
                 <Link href={`/anuncios/${truck.id}`} className="photo">
                   {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
+                  <em>Disponível</em>
                 </Link>
 
                 <div className="card-content">
@@ -189,6 +211,7 @@ export default async function HomePage() {
                     <span>{truck.carroceria || "Carroceria"}</span>
                   </div>
 
+                  <small className="price-label">Valor anunciado</small>
                   <strong className="price">{formatMoney(truck.preco)}</strong>
 
                   <small className="city">
@@ -199,7 +222,7 @@ export default async function HomePage() {
                     <Link href={`/anuncios/${truck.id}`} className="details">Detalhes</Link>
                     {truck.whatsapp && (
                       <a href={getWhatsappLink(truck)} target="_blank" className="whats">
-                        WhatsApp
+                        Chamar
                       </a>
                     )}
                   </div>
@@ -219,9 +242,9 @@ export default async function HomePage() {
         <div>
           <span className="eyebrow small">Para vendedores</span>
           <h2>Tem um caminhão para vender?</h2>
-          <p>Anuncie em poucos minutos e receba contatos direto pelo WhatsApp.</p>
+          <p>Cadastre o anúncio, envie as fotos e aguarde aprovação para aparecer no estoque.</p>
         </div>
-        <Link href="/cadastro" className="btn primary big">Começar anúncio</Link>
+        <Link href="/cadastro" className="btn primary big">Anunciar caminhão</Link>
       </section>
 
       <footer className="footer">
@@ -379,6 +402,26 @@ export default async function HomePage() {
           margin-top: 28px;
         }
 
+        .trust-row {
+          margin-top: 22px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .trust-row span {
+          display: inline-flex;
+          min-height: 34px;
+          align-items: center;
+          padding: 0 12px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.07);
+          border: 1px solid rgba(255,255,255,.10);
+          color: #cbd5e1;
+          font-size: 13px;
+          font-weight: 850;
+        }
+
         .hero-card {
           min-height: 350px;
           border-radius: 34px;
@@ -443,7 +486,7 @@ export default async function HomePage() {
 
         .quick-filter {
           width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 40px;
+          margin: 0 auto 24px;
           padding: 12px;
           border-radius: 22px;
           background: rgba(255,255,255,.08);
@@ -478,6 +521,36 @@ export default async function HomePage() {
           border-color: transparent;
           cursor: pointer;
           padding: 0 24px;
+        }
+
+        .confidence-strip {
+          width: min(1240px, calc(100vw - 32px));
+          margin: 0 auto 40px;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .confidence-strip div {
+          min-height: 98px;
+          padding: 18px;
+          border-radius: 22px;
+          background: rgba(255,255,255,.06);
+          border: 1px solid rgba(255,255,255,.10);
+          display: grid;
+          align-content: center;
+          gap: 6px;
+        }
+
+        .confidence-strip strong {
+          color: white;
+          font-size: 16px;
+        }
+
+        .confidence-strip span {
+          color: #94a3b8;
+          font-size: 14px;
+          line-height: 1.4;
         }
 
         .section-head {
@@ -518,6 +591,12 @@ export default async function HomePage() {
           border: 1px solid rgba(255,255,255,.10);
           overflow: hidden;
           min-width: 0;
+          transition: transform .2s ease, border-color .2s ease;
+        }
+
+        .truck-card:hover {
+          transform: translateY(-3px);
+          border-color: rgba(34,197,94,.28);
         }
 
         .photo {
@@ -527,6 +606,7 @@ export default async function HomePage() {
           overflow: hidden;
           text-decoration: none;
           color: #94a3b8;
+          position: relative;
         }
 
         .photo img {
@@ -546,6 +626,20 @@ export default async function HomePage() {
           display: grid;
           place-items: center;
           font-weight: 900;
+        }
+
+        .photo em {
+          position: absolute;
+          left: 10px;
+          top: 10px;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: rgba(34,197,94,.94);
+          color: #052e16;
+          font-style: normal;
+          font-size: 11px;
+          font-weight: 950;
+          text-transform: uppercase;
         }
 
         .card-content {
@@ -579,10 +673,18 @@ export default async function HomePage() {
           font-weight: 850;
         }
 
+        .price-label {
+          display: block;
+          color: #94a3b8;
+          font-size: 12px;
+          font-weight: 800;
+          margin-bottom: 4px;
+        }
+
         .price {
           display: block;
           color: #86efac;
-          font-size: 22px;
+          font-size: 23px;
           line-height: 1.1;
           margin-bottom: 6px;
         }
@@ -694,6 +796,10 @@ export default async function HomePage() {
           .truck-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
           }
+
+          .confidence-strip {
+            grid-template-columns: 1fr;
+          }
         }
 
         @media (max-width: 900px) {
@@ -779,6 +885,11 @@ export default async function HomePage() {
             width: 100%;
           }
 
+          .trust-row {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
           .hero-card {
             min-height: 245px;
             border-radius: 26px;
@@ -796,9 +907,18 @@ export default async function HomePage() {
           .quick-filter {
             width: calc(100vw - 24px);
             grid-template-columns: 1fr;
-            margin-bottom: 30px;
+            margin-bottom: 18px;
             padding: 12px;
             border-radius: 20px;
+          }
+
+          .confidence-strip {
+            width: calc(100vw - 24px);
+            margin-bottom: 30px;
+          }
+
+          .confidence-strip div {
+            min-height: auto;
           }
 
           .section-head {
@@ -826,7 +946,7 @@ export default async function HomePage() {
           }
 
           .price {
-            font-size: 26px;
+            font-size: 27px;
           }
 
           .card-actions {
