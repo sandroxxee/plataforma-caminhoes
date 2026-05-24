@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
@@ -94,7 +93,7 @@ export default async function HomePage() {
     <main className="home-page">
       <PublicHeader />
 
-<section className="hero">
+      <section className="hero">
         <div className="hero-copy">
           <span className="eyebrow">COMPRA • VENDA • TROCA</span>
           <h1>O jeito mais simples de negociar caminhões.</h1>
@@ -222,16 +221,6 @@ export default async function HomePage() {
         <Link href="/anunciar" className="btn primary big">Anunciar caminhão</Link>
       </section>
 
-      <footer className="footer">
-        <strong>Caminhões em Oferta</strong>
-        <span>Plataforma de anúncios de caminhões. Negociações direto com o anunciante.</span>
-        <div>
-          <Link href="/anuncios">Estoque</Link>
-          <Link href="/cadastro">Anunciar</Link>
-          <Link href="/login">Entrar</Link>
-        </div>
-      </footer>
-
       <SiteFooter />
 
       <style>{`
@@ -243,53 +232,6 @@ export default async function HomePage() {
             linear-gradient(135deg, #020617 0%, #061512 58%, #020617 100%);
           color: white;
           overflow-x: hidden;
-        }
-
-        .site-header {
-          position: sticky;
-          top: 0;
-          z-index: 50;
-          background: rgba(2,6,23,.82);
-          backdrop-filter: blur(18px);
-          border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-
-        .nav-inner {
-          width: min(1240px, calc(100vw - 32px));
-          height: 76px;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-        }
-
-        .brand {
-          display: inline-flex;
-          align-items: center;
-          color: white;
-          text-decoration: none;
-          min-width: 0;
-        }
-
-        .brand img {
-          width: 190px;
-          height: auto;
-          object-fit: contain;
-          display: block;
-        }
-
-        .nav-actions {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .nav-link {
-          color: #cbd5e1;
-          text-decoration: none;
-          font-weight: 850;
-          padding: 10px 8px;
         }
 
         .btn {
@@ -711,34 +653,6 @@ export default async function HomePage() {
           font-size: 18px;
         }
 
-        .footer {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto;
-          padding: 24px 0 36px;
-          border-top: 1px solid rgba(255,255,255,.10);
-          color: #94a3b8;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        .footer strong {
-          color: white;
-        }
-
-        .footer div {
-          display: flex;
-          gap: 14px;
-        }
-
-        .footer a {
-          color: #cbd5e1;
-          text-decoration: none;
-          font-weight: 800;
-        }
-
         @media (max-width: 1100px) {
           .truck-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -780,32 +694,6 @@ export default async function HomePage() {
         }
 
         @media (max-width: 640px) {
-          .nav-inner {
-            width: calc(100vw - 24px);
-            height: auto;
-            min-height: 66px;
-            padding: 8px 0;
-          }
-
-          .brand img {
-            width: 142px;
-          }
-
-          .nav-link {
-            display: none;
-          }
-
-          .nav-actions {
-            gap: 7px;
-          }
-
-          .nav-actions .btn {
-            min-height: 39px;
-            padding: 0 11px;
-            border-radius: 13px;
-            font-size: 12px;
-          }
-
           .hero {
             width: calc(100vw - 24px);
           }
@@ -902,12 +790,6 @@ export default async function HomePage() {
 
           .sell-box .btn {
             width: 100%;
-          }
-
-          .footer {
-            width: calc(100vw - 24px);
-            display: grid;
-            gap: 12px;
           }
         }
       `}</style>
