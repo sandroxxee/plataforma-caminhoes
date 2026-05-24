@@ -164,21 +164,6 @@ export default async function HomePage() {
         <button type="submit">Buscar</button>
       </form>
 
-      <section className="confidence-strip">
-        <div>
-          <strong>Plataforma focada em caminhões</strong>
-          <span>Anúncios organizados para comprador comparar rápido e chamar direto.</span>
-        </div>
-        <div>
-          <strong>Sem enrolação</strong>
-          <span>Foto, modelo, ano, configuração, cidade, preço e contato.</span>
-        </div>
-        <div>
-          <strong>Mais confiança</strong>
-          <span>Somente anúncios aprovados aparecem publicamente.</span>
-        </div>
-      </section>
-
       <section className="section-head">
         <div>
           <span className="eyebrow small">Adicionados recentemente</span>
@@ -261,10 +246,10 @@ export default async function HomePage() {
         .home-page {
           min-height: 100vh;
           background:
-            radial-gradient(circle at 16% 4%, rgba(34,197,94,.13), transparent 28%),
-            radial-gradient(circle at 85% 12%, rgba(15,23,42,.08), transparent 30%),
-            linear-gradient(180deg, #ffffff 0%, #f6f8fb 56%, #eef3f1 100%);
-          color: #08111f;
+            radial-gradient(circle at 18% 6%, rgba(34,197,94,.16), transparent 28%),
+            radial-gradient(circle at 82% 18%, rgba(34,197,94,.10), transparent 28%),
+            linear-gradient(135deg, #020617 0%, #061512 58%, #020617 100%);
+          color: white;
           overflow-x: hidden;
         }
 
@@ -272,9 +257,9 @@ export default async function HomePage() {
           position: sticky;
           top: 0;
           z-index: 50;
-          background: rgba(255,255,255,.88);
+          background: rgba(2,6,23,.82);
           backdrop-filter: blur(18px);
-          border-bottom: 1px solid rgba(15,23,42,.08);
+          border-bottom: 1px solid rgba(255,255,255,.08);
         }
 
         .nav-inner {
@@ -290,12 +275,9 @@ export default async function HomePage() {
         .brand {
           display: inline-flex;
           align-items: center;
-          color: #08111f;
+          color: white;
           text-decoration: none;
           min-width: 0;
-          padding: 5px 10px;
-          border-radius: 16px;
-          background: #061512;
         }
 
         .brand img {
@@ -312,9 +294,9 @@ export default async function HomePage() {
         }
 
         .nav-link {
-          color: #334155;
+          color: #cbd5e1;
           text-decoration: none;
-          font-weight: 900;
+          font-weight: 850;
           padding: 10px 8px;
         }
 
@@ -326,21 +308,20 @@ export default async function HomePage() {
           align-items: center;
           justify-content: center;
           text-decoration: none;
-          font-weight: 950;
-          border: 1px solid rgba(15,23,42,.10);
+          font-weight: 900;
+          border: 1px solid rgba(255,255,255,.12);
           white-space: nowrap;
         }
 
         .btn.primary {
-          background: #16a34a;
-          color: white;
+          background: #22c55e;
+          color: #052e16;
           border-color: transparent;
-          box-shadow: 0 12px 28px rgba(22,163,74,.22);
         }
 
         .btn.ghost {
-          background: #ffffff;
-          color: #08111f;
+          background: rgba(255,255,255,.06);
+          color: white;
         }
 
         .btn.big {
@@ -369,9 +350,9 @@ export default async function HomePage() {
           min-height: 32px;
           padding: 0 13px;
           border-radius: 999px;
-          color: #166534;
-          background: #dcfce7;
-          border: 1px solid #bbf7d0;
+          color: #86efac;
+          background: rgba(34,197,94,.12);
+          border: 1px solid rgba(34,197,94,.22);
           font-size: 12px;
           font-weight: 950;
           letter-spacing: .08em;
@@ -389,13 +370,12 @@ export default async function HomePage() {
           font-size: clamp(46px, 5vw, 72px);
           line-height: .96;
           letter-spacing: -.07em;
-          color: #061512;
         }
 
         .hero p {
           max-width: 590px;
           margin: 0;
-          color: #334155;
+          color: #dbeafe;
           font-size: 19px;
           line-height: 1.55;
         }
@@ -420,24 +400,24 @@ export default async function HomePage() {
           align-items: center;
           padding: 0 12px;
           border-radius: 999px;
-          background: #ffffff;
-          border: 1px solid rgba(15,23,42,.10);
-          color: #334155;
+          background: rgba(255,255,255,.07);
+          border: 1px solid rgba(255,255,255,.10);
+          color: #cbd5e1;
           font-size: 13px;
-          font-weight: 900;
+          font-weight: 850;
         }
 
         .hero-card {
           min-height: 350px;
           border-radius: 34px;
-          background: #ffffff;
-          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.12);
           position: relative;
           overflow: hidden;
           display: block;
           text-decoration: none;
           color: white;
-          box-shadow: 0 30px 90px rgba(15,23,42,.16);
+          box-shadow: 0 30px 90px rgba(0,0,0,.30);
         }
 
         .hero-card img {
@@ -452,17 +432,17 @@ export default async function HomePage() {
           content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 35%, rgba(2,6,23,.78));
+          background: linear-gradient(180deg, transparent 35%, rgba(2,6,23,.82));
         }
 
         .hero-empty {
           min-height: 350px;
           display: grid;
           place-items: center;
-          color: #166534;
+          color: #86efac;
           font-size: 34px;
           font-weight: 950;
-          background: #dcfce7;
+          background: rgba(34,197,94,.08);
         }
 
         .hero-card-info {
@@ -491,15 +471,14 @@ export default async function HomePage() {
 
         .quick-filter {
           width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 24px;
+          margin: 0 auto 38px;
           padding: 12px;
           border-radius: 22px;
-          background: #ffffff;
-          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.11);
           display: grid;
           grid-template-columns: 1fr 1fr 1fr auto;
           gap: 10px;
-          box-shadow: 0 18px 50px rgba(15,23,42,.08);
         }
 
         .quick-filter select,
@@ -507,57 +486,26 @@ export default async function HomePage() {
         .quick-filter button {
           min-height: 50px;
           border-radius: 15px;
-          border: 1px solid rgba(15,23,42,.12);
-          background: #f8fafc;
-          color: #08111f;
+          border: 1px solid rgba(255,255,255,.12);
+          background: rgba(2,6,23,.66);
+          color: white;
           padding: 0 14px;
           font-size: 15px;
-          font-weight: 900;
+          font-weight: 800;
           outline: none;
           min-width: 0;
         }
 
         .quick-filter input::placeholder {
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .quick-filter button {
-          background: #16a34a;
-          color: white;
+          background: #22c55e;
+          color: #052e16;
           border-color: transparent;
           cursor: pointer;
           padding: 0 24px;
-        }
-
-        .confidence-strip {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 40px;
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 12px;
-        }
-
-        .confidence-strip div {
-          min-height: 98px;
-          padding: 18px;
-          border-radius: 22px;
-          background: #ffffff;
-          border: 1px solid rgba(15,23,42,.10);
-          display: grid;
-          align-content: center;
-          gap: 6px;
-          box-shadow: 0 12px 35px rgba(15,23,42,.06);
-        }
-
-        .confidence-strip strong {
-          color: #08111f;
-          font-size: 16px;
-        }
-
-        .confidence-strip span {
-          color: #475569;
-          font-size: 14px;
-          line-height: 1.4;
         }
 
         .section-head {
@@ -575,11 +523,10 @@ export default async function HomePage() {
           font-size: clamp(30px, 4vw, 46px);
           line-height: 1.05;
           letter-spacing: -.04em;
-          color: #061512;
         }
 
         .section-head a {
-          color: #15803d;
+          color: #86efac;
           text-decoration: none;
           font-weight: 950;
           white-space: nowrap;
@@ -595,26 +542,25 @@ export default async function HomePage() {
 
         .truck-card {
           border-radius: 24px;
-          background: #ffffff;
-          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.10);
           overflow: hidden;
           min-width: 0;
           transition: transform .2s ease, border-color .2s ease;
-          box-shadow: 0 12px 40px rgba(15,23,42,.08);
         }
 
         .truck-card:hover {
           transform: translateY(-3px);
-          border-color: rgba(22,163,74,.30);
+          border-color: rgba(34,197,94,.28);
         }
 
         .photo {
           height: 190px;
           display: block;
-          background: #e2e8f0;
+          background: rgba(15,23,42,.92);
           overflow: hidden;
           text-decoration: none;
-          color: #64748b;
+          color: #94a3b8;
           position: relative;
         }
 
@@ -643,8 +589,8 @@ export default async function HomePage() {
           top: 10px;
           padding: 6px 10px;
           border-radius: 999px;
-          background: #16a34a;
-          color: white;
+          background: rgba(34,197,94,.94);
+          color: #052e16;
           font-style: normal;
           font-size: 11px;
           font-weight: 950;
@@ -658,7 +604,7 @@ export default async function HomePage() {
         .truck-title {
           min-height: 46px;
           display: block;
-          color: #08111f;
+          color: white;
           text-decoration: none;
           font-size: 17px;
           line-height: 1.22;
@@ -676,23 +622,23 @@ export default async function HomePage() {
         .tags span {
           padding: 6px 8px;
           border-radius: 999px;
-          background: #f1f5f9;
-          color: #334155;
+          background: rgba(255,255,255,.08);
+          color: #cbd5e1;
           font-size: 12px;
-          font-weight: 900;
+          font-weight: 850;
         }
 
         .price-label {
           display: block;
-          color: #64748b;
+          color: #94a3b8;
           font-size: 12px;
-          font-weight: 900;
+          font-weight: 800;
           margin-bottom: 4px;
         }
 
         .price {
           display: block;
-          color: #15803d;
+          color: #86efac;
           font-size: 23px;
           line-height: 1.1;
           margin-bottom: 6px;
@@ -700,7 +646,7 @@ export default async function HomePage() {
 
         .city {
           display: block;
-          color: #64748b;
+          color: #94a3b8;
           font-size: 13px;
           margin-bottom: 13px;
         }
@@ -726,22 +672,22 @@ export default async function HomePage() {
         }
 
         .details {
-          color: #08111f;
-          background: #f8fafc;
-          border: 1px solid rgba(15,23,42,.10);
+          color: white;
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.12);
         }
 
         .whats {
-          color: white;
-          background: #16a34a;
+          color: #052e16;
+          background: #22c55e;
         }
 
         .empty {
           grid-column: 1 / -1;
           padding: 34px;
           border-radius: 26px;
-          background: #ffffff;
-          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.10);
         }
 
         .empty h3 {
@@ -751,7 +697,7 @@ export default async function HomePage() {
 
         .empty p {
           margin: 0;
-          color: #475569;
+          color: #cbd5e1;
         }
 
         .sell-box {
@@ -759,8 +705,8 @@ export default async function HomePage() {
           margin: 0 auto 34px;
           padding: 30px;
           border-radius: 32px;
-          background: #dcfce7;
-          border: 1px solid #bbf7d0;
+          background: rgba(34,197,94,.10);
+          border: 1px solid rgba(34,197,94,.22);
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -769,7 +715,7 @@ export default async function HomePage() {
 
         .sell-box p {
           margin: 10px 0 0;
-          color: #334155;
+          color: #cbd5e1;
           font-size: 18px;
         }
 
@@ -777,8 +723,8 @@ export default async function HomePage() {
           width: min(1240px, calc(100vw - 32px));
           margin: 0 auto;
           padding: 24px 0 36px;
-          border-top: 1px solid rgba(15,23,42,.10);
-          color: #64748b;
+          border-top: 1px solid rgba(255,255,255,.10);
+          color: #94a3b8;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -787,7 +733,7 @@ export default async function HomePage() {
         }
 
         .footer strong {
-          color: #08111f;
+          color: white;
         }
 
         .footer div {
@@ -796,18 +742,14 @@ export default async function HomePage() {
         }
 
         .footer a {
-          color: #334155;
+          color: #cbd5e1;
           text-decoration: none;
-          font-weight: 900;
+          font-weight: 800;
         }
 
         @media (max-width: 1100px) {
           .truck-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
-
-          .confidence-strip {
-            grid-template-columns: 1fr;
           }
         }
 
@@ -916,18 +858,9 @@ export default async function HomePage() {
           .quick-filter {
             width: calc(100vw - 24px);
             grid-template-columns: 1fr;
-            margin-bottom: 18px;
+            margin-bottom: 30px;
             padding: 12px;
             border-radius: 20px;
-          }
-
-          .confidence-strip {
-            width: calc(100vw - 24px);
-            margin-bottom: 30px;
-          }
-
-          .confidence-strip div {
-            min-height: auto;
           }
 
           .section-head {
