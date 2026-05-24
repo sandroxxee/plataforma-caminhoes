@@ -26,14 +26,14 @@ export async function entrar(formData: FormData) {
     erroLogin("E-mail ou senha inválidos.");
   }
 
-  let userId: string | null = data.user?.id ?? null;
+  let userId = data.user?.id;
 
   if (!userId) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    userId = user?.id ?? null;
+    userId = user?.id;
   }
 
   if (!userId) {
