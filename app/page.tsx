@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -92,11 +93,7 @@ export default async function HomePage() {
       <header className="site-header">
         <div className="nav-inner">
           <Link href="/" className="brand" aria-label="Caminhões em Oferta">
-            <span className="brand-mark">🚛</span>
-            <span>
-              <strong>CAMINHÕES</strong>
-              <small>EM OFERTA</small>
-            </span>
+            <Image src="/logo-horizontal.png" alt="Caminhões em Oferta" width={190} height={55} priority />
           </Link>
 
           <nav className="nav-actions" aria-label="Menu principal">
@@ -125,13 +122,7 @@ export default async function HomePage() {
           {featuredImage ? (
             <img src={featuredImage} alt={featured ? getTitle(featured) : "Caminhão em destaque"} />
           ) : (
-            <div className="truck-illustration">
-              <div className="truck-body" />
-              <div className="truck-cabin" />
-              <span className="wheel one" />
-              <span className="wheel two" />
-              <span className="wheel three" />
-            </div>
+            <div className="hero-empty">Caminhões em Oferta</div>
           )}
 
           <div className="hero-card-info">
@@ -265,7 +256,7 @@ export default async function HomePage() {
 
         .nav-inner {
           width: min(1240px, calc(100vw - 32px));
-          height: 74px;
+          height: 76px;
           margin: 0 auto;
           display: flex;
           align-items: center;
@@ -276,40 +267,16 @@ export default async function HomePage() {
         .brand {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
           color: white;
           text-decoration: none;
-          letter-spacing: -.02em;
           min-width: 0;
         }
 
-        .brand-mark {
-          width: 42px;
-          height: 42px;
-          border-radius: 15px;
-          display: grid;
-          place-items: center;
-          background: #22c55e;
-          box-shadow: 0 14px 35px rgba(34,197,94,.28);
-          flex: 0 0 auto;
-        }
-
-        .brand strong,
-        .brand small {
+        .brand img {
+          width: 190px;
+          height: auto;
+          object-fit: contain;
           display: block;
-          line-height: 1;
-        }
-
-        .brand strong {
-          font-size: 15px;
-          font-weight: 950;
-        }
-
-        .brand small {
-          margin-top: 4px;
-          color: #86efac;
-          font-size: 12px;
-          font-weight: 900;
         }
 
         .nav-actions {
@@ -440,6 +407,16 @@ export default async function HomePage() {
           background: linear-gradient(180deg, transparent 35%, rgba(2,6,23,.82));
         }
 
+        .hero-empty {
+          min-height: 350px;
+          display: grid;
+          place-items: center;
+          color: #86efac;
+          font-size: 34px;
+          font-weight: 950;
+          background: rgba(34,197,94,.08);
+        }
+
         .hero-card-info {
           position: absolute;
           left: 20px;
@@ -463,49 +440,6 @@ export default async function HomePage() {
           line-height: 1.15;
           overflow-wrap: anywhere;
         }
-
-        .truck-illustration {
-          position: absolute;
-          inset: 0;
-          background:
-            radial-gradient(circle at 30% 20%, rgba(34,197,94,.22), transparent 35%),
-            linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
-        }
-
-        .truck-body,
-        .truck-cabin {
-          position: absolute;
-          bottom: 120px;
-          background: linear-gradient(180deg, #f8fafc, #94a3b8);
-        }
-
-        .truck-body {
-          left: 11%;
-          width: 58%;
-          height: 105px;
-          border-radius: 18px;
-        }
-
-        .truck-cabin {
-          right: 12%;
-          width: 26%;
-          height: 95px;
-          border-radius: 20px 24px 12px 10px;
-        }
-
-        .wheel {
-          position: absolute;
-          bottom: 88px;
-          width: 48px;
-          height: 48px;
-          border-radius: 999px;
-          background: radial-gradient(circle, #94a3b8 0 22%, #020617 24% 100%);
-          border: 5px solid #111827;
-        }
-
-        .wheel.one { left: 20%; }
-        .wheel.two { left: 54%; }
-        .wheel.three { right: 17%; }
 
         .quick-filter {
           width: min(1240px, calc(100vw - 32px));
@@ -778,7 +712,8 @@ export default async function HomePage() {
             min-height: 300px;
           }
 
-          .hero-card img {
+          .hero-card img,
+          .hero-empty {
             min-height: 300px;
           }
 
@@ -803,22 +738,8 @@ export default async function HomePage() {
             padding: 8px 0;
           }
 
-          .brand {
-            gap: 8px;
-          }
-
-          .brand-mark {
-            width: 38px;
-            height: 38px;
-            border-radius: 13px;
-          }
-
-          .brand strong {
-            font-size: 12px;
-          }
-
-          .brand small {
-            font-size: 11px;
+          .brand img {
+            width: 142px;
           }
 
           .nav-link {
@@ -863,7 +784,8 @@ export default async function HomePage() {
             border-radius: 26px;
           }
 
-          .hero-card img {
+          .hero-card img,
+          .hero-empty {
             min-height: 245px;
           }
 
