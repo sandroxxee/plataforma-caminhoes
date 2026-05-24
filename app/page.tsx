@@ -23,32 +23,38 @@ type Truck = {
   carroceria: string | null;
   tracao: string | null;
   whatsapp: string | null;
-  destaque: boolean | null;
   truck_images?: TruckImage[];
 };
 
 function formatMoney(value: number | null) {
   if (!value) return "Sob consulta";
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  });
 }
 
-function getMainImage(truck: Truck) {
-  const images = truck.truck_images || [];
-  const principal = images.find((img) => img.principal && img.image_url);
-  const first = [...images].filter((img) => img.image_url).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
-  return principal?.image_url || first?.image_url || "";
+function getImage(truck: Truck) {
+  const images = [...(truck.truck_images || [])].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+  return images.find((img) => img.principal && img.image_url)?.image_url || images[0]?.image_url || "";
+}
+
+function getTitle(truck: Truck) {
+  return truck.titulo || `${truck.marca || ""} ${truck.modelo || ""}`.trim() || "Caminhão anunciado";
 }
 
 function getWhatsappLink(truck: Truck) {
   const phone = (truck.whatsapp || "").replace(/\D/g, "");
-  const text = encodeURIComponent(`Olá, tenho interesse no caminhão ${truck.titulo || ""}.`);
-  return `https://wa.me/${phone}?text=${text}`;
+  const text = encodeURIComponent(`Olá, tenho interesse no caminhão ${getTitle(truck)}.`);
+  return phone ? `https://wa.me/${phone}?text=${text}` : `/anuncios/${truck.id}`;
 }
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("trucks")
     .select(`
       id,
@@ -63,7 +69,6 @@ export default async function HomePage() {
       carroceria,
       tracao,
       whatsapp,
-      destaque,
       truck_images (
         image_url,
         principal,
@@ -71,427 +76,808 @@ export default async function HomePage() {
       )
     `)
     .eq("status", "aprovado")
-    .eq("vendido", false)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(5);
 
   const trucks = (data || []) as Truck[];
 
   return (
-    <main className="public-page">
-      <header className="public-header">
-        <Link href="/" className="public-logo">
-          <span className="public-logo-icon">🚛</span>
+    <main className="home-page">
+      <header className="topbar">
+        <Link href="/" className="brand" aria-label="Caminhões em Oferta">
+          <span className="brand-mark">🚛</span>
           <span>
-            <strong>CAMINHÕES EM OFERTA</strong>
-            <small>Plataforma de anúncios de caminhões</small>
+            <strong>CAMINHÕES</strong>
+            <small>EM OFERTA</small>
           </span>
         </Link>
 
-        <nav className="public-nav">
-          <Link href="/anuncios" className="public-nav-link">Ver anúncios</Link>
-          <Link href="/login" className="public-outline">Entrar</Link>
-          <Link href="/cadastro" className="public-primary">Anunciar</Link>
+        <nav className="top-actions" aria-label="Menu principal">
+          <Link href="/login" className="btn ghost">Entrar</Link>
+          <Link href="/cadastro" className="btn primary">＋ Anunciar</Link>
         </nav>
       </header>
 
-      <section className="home-hero">
-        <div className="home-hero-text">
-          <span className="public-badge">COMPRA • VENDA • TROCA</span>
-          <h1>Caminhões reais, aprovados e prontos para negociação.</h1>
-          <p>Encontre caminhões com procedência, veja detalhes e fale direto no WhatsApp.</p>
+      <section className="hero">
+        <div className="hero-copy">
+          <span className="eyebrow">COMPRA • VENDA • TROCA</span>
+          <h1>O jeito mais simples de negociar caminhões.</h1>
+          <p>
+            Encontre ofertas reais ou anuncie seu caminhão hoje. Direto ao ponto,
+            direto no WhatsApp.
+          </p>
 
-          <div className="home-actions">
-            <Link href="/anuncios" className="home-main-button">Ver caminhões</Link>
-            <Link href="/cadastro" className="home-outline-button">Quero anunciar</Link>
+          <div className="hero-actions">
+            <Link href="/anuncios" className="btn big primary">🔍 Ver estoque</Link>
+            <Link href="/cadastro" className="btn big ghost">＋ Quero anunciar</Link>
           </div>
         </div>
 
-        <div className="home-card">
-          <span>Estoque aprovado</span>
-          <strong>{trucks.length}</strong>
-          <p>últimos anúncios reais carregados do Supabase</p>
+        <div className="hero-visual" aria-label="Caminhão em destaque">
+          <div className="truck-shape">
+            <div className="truck-cabin" />
+            <div className="truck-body" />
+            <span className="wheel wheel-a" />
+            <span className="wheel wheel-b" />
+            <span className="wheel wheel-c" />
+          </div>
+          <div className="road" />
         </div>
       </section>
 
-      {error && <div className="public-error">Erro ao carregar anúncios do Supabase: {error.message}</div>}
+      <form className="quick-filter" action="/anuncios">
+        <select name="marca" aria-label="Marca">
+          <option value="">Marca</option>
+          <option>Mercedes-Benz</option>
+          <option>Volkswagen</option>
+          <option>Volvo</option>
+          <option>Scania</option>
+          <option>Ford</option>
+          <option>Iveco</option>
+          <option>DAF</option>
+        </select>
 
-      <section className="home-section">
-        <div className="home-section-header">
-          <div>
-            <span className="public-badge">DESTAQUES</span>
-            <h2>Últimos caminhões aprovados</h2>
-          </div>
-          <Link href="/anuncios" className="home-see-all">Ver todos</Link>
+        <input name="modelo" placeholder="Modelo" aria-label="Modelo" />
+
+        <select name="tracao" aria-label="Tração">
+          <option value="">Tração</option>
+          <option>4x2</option>
+          <option>6x2</option>
+          <option>6x4</option>
+          <option>8x2</option>
+          <option>8x4</option>
+        </select>
+
+        <button type="submit">🔍 Buscar</button>
+      </form>
+
+      <section className="section-head">
+        <div>
+          <span className="eyebrow small">Adicionados recentemente</span>
+          <h2>Últimos caminhões aprovados</h2>
         </div>
+        <Link href="/anuncios">Ver todos</Link>
+      </section>
 
-        {trucks.length === 0 && <div className="public-empty">Nenhum anúncio aprovado no momento.</div>}
+      <section className="truck-grid">
+        {trucks.length > 0 ? (
+          trucks.map((truck) => {
+            const image = getImage(truck);
+            const title = getTitle(truck);
 
-        <div className="truck-grid">
-          {trucks.map((truck) => {
-            const image = getMainImage(truck);
             return (
-              <article key={truck.id} className="truck-card">
-                <div className="truck-image-wrap">
-                  {truck.destaque && <span className="truck-tag">destaque</span>}
-                  {image ? <img src={image} alt={truck.titulo || "Caminhão"} className="truck-image" /> : <div className="truck-no-image">Sem foto</div>}
-                </div>
-                <div className="truck-body">
-                  <h3 className="truck-title">{truck.titulo || `${truck.marca} ${truck.modelo}`}</h3>
-                  <strong className="truck-price">{formatMoney(truck.preco)}</strong>
-                  <div className="truck-info">
-                    <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano não informado"}</span>
-                    <span>{truck.cidade || "Cidade"}{truck.estado ? `/${truck.estado}` : ""}</span>
+              <article className="truck-card" key={truck.id}>
+                <Link href={`/anuncios/${truck.id}`} className="photo">
+                  {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
+                </Link>
+
+                <div className="card-content">
+                  <Link href={`/anuncios/${truck.id}`} className="truck-title">
+                    {title}
+                  </Link>
+
+                  <div className="tags">
+                    <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
+                    <span>{truck.tracao || "Tração"}</span>
+                    <span>{truck.carroceria || "Carroceria"}</span>
                   </div>
-                  <div className="truck-chips">
-                    {truck.carroceria && <span>{truck.carroceria}</span>}
-                    {truck.tracao && <span>{truck.tracao}</span>}
-                  </div>
-                  <div className="truck-actions">
-                    <Link href={`/anuncios/${truck.id}`} className="truck-details">Ver detalhes</Link>
-                    {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" className="truck-whatsapp">WhatsApp</a>}
-                  </div>
+
+                  <strong className="price">{formatMoney(truck.preco)}</strong>
+
+                  <small className="city">
+                    {truck.cidade || "Cidade"}{truck.estado ? `/${truck.estado}` : ""}
+                  </small>
+
+                  {truck.whatsapp ? (
+                    <a href={getWhatsappLink(truck)} target="_blank" className="whats">
+                      Chamar no WhatsApp 💬
+                    </a>
+                  ) : (
+                    <Link href={`/anuncios/${truck.id}`} className="whats secondary">
+                      Ver detalhes
+                    </Link>
+                  )}
                 </div>
               </article>
             );
-          })}
-        </div>
+          })
+        ) : (
+          <div className="empty">
+            <h3>Nenhum caminhão aprovado ainda.</h3>
+            <p>Assim que os anúncios forem aprovados, eles aparecem aqui automaticamente.</p>
+          </div>
+        )}
       </section>
 
-      <style>{`
-        .home-hero {
-          max-width: 1180px;
-          margin: 42px auto 26px;
-          display: grid;
-          grid-template-columns: 1.3fr .7fr;
-          gap: 24px;
-          align-items: stretch;
-          padding: 0 18px;
-        }
-        .home-hero-text {
-          padding: 38px;
-          border-radius: 30px;
-          background: rgba(255,255,255,.07);
-          border: 1px solid rgba(255,255,255,.10);
-        }
-        .home-hero-text h1 {
-          font-size: 52px;
-          line-height: 1.02;
-          margin: 20px 0 14px;
-          max-width: 780px;
-        }
-        .home-hero-text p {
-          color: #cbd5e1;
-          font-size: 19px;
-          line-height: 1.55;
-          margin: 0;
-        }
-        .home-actions {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-          margin-top: 26px;
-        }
-        .home-main-button,
-        .home-outline-button {
-          padding: 15px 20px;
-          border-radius: 16px;
-          text-decoration: none;
-          font-weight: 900;
-          text-align: center;
-        }
-        .home-main-button { background: #22c55e; color: #052e16; }
-        .home-outline-button { color: white; border: 1px solid rgba(255,255,255,.16); }
-        .home-card {
-          padding: 30px;
-          border-radius: 30px;
-          background: linear-gradient(145deg,rgba(34,197,94,.18),rgba(15,23,42,.76));
-          border: 1px solid rgba(34,197,94,.22);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-        .home-card span { color: #86efac; font-weight: 900; }
-        .home-card strong { font-size: 78px; line-height: 1; margin-top: 14px; }
-        .home-card p { color: #cbd5e1; line-height: 1.5; margin-bottom: 0; }
-        .home-section {
-          max-width: 1180px;
-          margin: 0 auto;
-          padding: 0 18px;
-        }
-        .home-section-header {
-          display: flex;
-          justify-content: space-between;
-          gap: 18px;
-          align-items: end;
-          margin-bottom: 18px;
-        }
-        .home-section-header h2 {
-          font-size: 34px;
-          margin: 12px 0 0;
-        }
-        .home-see-all { color: #86efac; text-decoration: none; font-weight: 900; }
-        @media (max-width: 680px) {
-          .home-hero {
-            display: block;
-            margin: 16px auto 18px;
-            padding: 0 12px;
-          }
-          .home-hero-text {
-            padding: 20px;
-            border-radius: 22px;
-          }
-          .home-hero-text h1 {
-            font-size: 30px;
-            line-height: 1.08;
-          }
-          .home-hero-text p { font-size: 16px; }
-          .home-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
-          .home-card { display: none; }
-          .home-section { padding: 0 12px; }
-          .home-section-header {
-            align-items: start;
-            margin-bottom: 14px;
-          }
-          .home-section-header h2 {
-            font-size: 28px;
-            line-height: 1.12;
-          }
-          .home-see-all { padding-top: 38px; }
-        }
-      `}</style>
+      <section className="sell-box">
+        <div>
+          <span className="eyebrow small">Para vendedores</span>
+          <h2>Tem um caminhão para vender?</h2>
+          <p>Anuncie em poucos minutos e receba contatos direto pelo WhatsApp.</p>
+        </div>
+        <Link href="/cadastro" className="btn primary big">＋ Começar anúncio</Link>
+      </section>
+
+      <footer className="footer">
+        <strong>Caminhões em Oferta</strong>
+        <span>Plataforma de anúncios de caminhões. Negociações direto com o anunciante.</span>
+        <div>
+          <Link href="/anuncios">Estoque</Link>
+          <Link href="/cadastro">Anunciar</Link>
+          <Link href="/login">Entrar</Link>
+        </div>
+      </footer>
 
       <style>{`
-        .public-page {
+        .home-page {
           min-height: 100vh;
-          background: linear-gradient(135deg,#020617 0%,#071f1b 55%,#020617 100%);
+          background:
+            radial-gradient(circle at 18% 8%, rgba(34,197,94,.18), transparent 30%),
+            radial-gradient(circle at 80% 28%, rgba(34,197,94,.10), transparent 28%),
+            linear-gradient(135deg, #020617 0%, #061512 58%, #020617 100%);
           color: white;
-          padding-bottom: 54px;
           overflow-x: hidden;
         }
-        .public-header {
-          min-height: 82px;
+
+        .topbar {
+          width: min(1180px, calc(100vw - 32px));
+          height: 82px;
+          margin: 0 auto;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 18px;
-          padding: 0 9vw;
-          border-bottom: 1px solid rgba(255,255,255,.10);
-          background: rgba(2,6,23,.86);
+          gap: 16px;
           position: sticky;
           top: 0;
           z-index: 50;
-          backdrop-filter: blur(14px);
+          background: rgba(2,6,23,.74);
+          backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .public-logo {
-          display: flex;
+
+        .brand {
+          display: inline-flex;
           align-items: center;
           gap: 12px;
           color: white;
           text-decoration: none;
+          letter-spacing: -.02em;
           min-width: 0;
         }
-        .public-logo-icon {
+
+        .brand-mark {
           width: 44px;
           height: 44px;
-          flex: 0 0 44px;
+          border-radius: 16px;
           display: grid;
           place-items: center;
-          border-radius: 13px;
           background: #22c55e;
+          box-shadow: 0 14px 35px rgba(34,197,94,.28);
+          flex: 0 0 auto;
         }
-        .public-logo strong {
+
+        .brand strong,
+        .brand small {
           display: block;
-          line-height: 1.05;
-          letter-spacing: .2px;
+          line-height: 1;
         }
-        .public-logo small {
-          display: block;
-          color: #94a3b8;
-          font-size: 12px;
-          margin-top: 3px;
+
+        .brand strong {
+          font-size: 15px;
+          font-weight: 950;
         }
-        .public-nav {
+
+        .brand small {
+          margin-top: 4px;
+          color: #86efac;
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .top-actions {
           display: flex;
-          gap: 12px;
           align-items: center;
-          flex-wrap: nowrap;
+          gap: 12px;
         }
-        .public-nav a {
+
+        .btn {
           min-height: 46px;
+          padding: 0 18px;
+          border-radius: 16px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          text-align: center;
-          white-space: nowrap;
           text-decoration: none;
           font-weight: 900;
-          border-radius: 14px;
-          padding: 12px 18px;
+          border: 1px solid rgba(255,255,255,.12);
+          white-space: nowrap;
         }
-        .public-nav-link { color: #cbd5e1; }
-        .public-outline { color: white; border: 1px solid rgba(255,255,255,.16); }
-        .public-primary { background: #22c55e; color: #052e16; }
-        .public-badge {
+
+        .btn.primary {
+          background: #22c55e;
+          color: #052e16;
+          border-color: transparent;
+        }
+
+        .btn.ghost {
+          background: rgba(255,255,255,.06);
+          color: white;
+        }
+
+        .btn.big {
+          min-height: 54px;
+          padding: 0 22px;
+          border-radius: 18px;
+        }
+
+        .hero {
+          width: min(1180px, calc(100vw - 32px));
+          min-height: 520px;
+          margin: 34px auto 22px;
+          display: grid;
+          grid-template-columns: 1.05fr .95fr;
+          gap: 34px;
+          align-items: center;
+        }
+
+        .hero-copy {
+          padding: 34px 0;
+        }
+
+        .eyebrow {
           display: inline-flex;
-          padding: 8px 14px;
+          align-items: center;
+          min-height: 34px;
+          padding: 0 13px;
           border-radius: 999px;
           color: #86efac;
           background: rgba(34,197,94,.12);
           border: 1px solid rgba(34,197,94,.22);
-          font-weight: 900;
           font-size: 12px;
+          font-weight: 950;
+          letter-spacing: .08em;
+          text-transform: uppercase;
         }
-        .truck-grid {
-          display: grid;
-          grid-template-columns: repeat(3,minmax(0,1fr));
-          gap: 20px;
+
+        .eyebrow.small {
+          min-height: 30px;
+          font-size: 11px;
         }
-        .truck-card {
-          overflow: hidden;
-          border-radius: 24px;
-          background: rgba(15,23,42,.76);
+
+        h1 {
+          max-width: 760px;
+          margin: 18px 0 14px;
+          font-size: clamp(42px, 6vw, 76px);
+          line-height: .96;
+          letter-spacing: -.07em;
+        }
+
+        .hero p {
+          max-width: 620px;
+          margin: 0;
+          color: #cbd5e1;
+          font-size: 20px;
+          line-height: 1.55;
+        }
+
+        .hero-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: 28px;
+        }
+
+        .hero-visual {
+          min-height: 410px;
+          border-radius: 42px;
+          background:
+            linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04)),
+            radial-gradient(circle at 30% 20%, rgba(34,197,94,.25), transparent 35%);
           border: 1px solid rgba(255,255,255,.12);
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 30px 90px rgba(0,0,0,.35);
+        }
+
+        .truck-shape {
+          width: 86%;
+          height: 190px;
+          position: absolute;
+          left: 7%;
+          bottom: 98px;
+        }
+
+        .truck-cabin,
+        .truck-body {
+          position: absolute;
+          bottom: 38px;
+          background: linear-gradient(180deg, #f8fafc, #94a3b8);
+          border: 2px solid rgba(255,255,255,.45);
+        }
+
+        .truck-cabin {
+          right: 0;
+          width: 34%;
+          height: 120px;
+          border-radius: 26px 28px 12px 10px;
+          transform: skewX(-5deg);
+        }
+
+        .truck-body {
+          left: 0;
+          width: 68%;
+          height: 132px;
+          border-radius: 18px 12px 10px 18px;
+        }
+
+        .truck-body:after {
+          content: "";
+          position: absolute;
+          inset: 18px;
+          border-radius: 12px;
+          background: rgba(15,23,42,.35);
+          border: 1px solid rgba(255,255,255,.22);
+        }
+
+        .wheel {
+          position: absolute;
+          bottom: 0;
+          width: 58px;
+          height: 58px;
+          border-radius: 999px;
+          background: radial-gradient(circle, #94a3b8 0 22%, #020617 24% 100%);
+          border: 6px solid #111827;
+        }
+
+        .wheel-a { left: 12%; }
+        .wheel-b { left: 50%; }
+        .wheel-c { right: 9%; }
+
+        .road {
+          position: absolute;
+          left: -10%;
+          right: -10%;
+          bottom: 68px;
+          height: 44px;
+          background: linear-gradient(90deg, transparent, rgba(34,197,94,.58), transparent);
+          transform: rotate(-2deg);
+          filter: blur(.2px);
+        }
+
+        .quick-filter {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto 46px;
+          padding: 14px;
+          border-radius: 24px;
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.11);
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr auto;
+          gap: 10px;
+        }
+
+        .quick-filter select,
+        .quick-filter input,
+        .quick-filter button {
+          min-height: 52px;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,.12);
+          background: rgba(2,6,23,.66);
+          color: white;
+          padding: 0 14px;
+          font-size: 15px;
+          font-weight: 800;
+          outline: none;
           min-width: 0;
         }
-        .truck-image-wrap {
-          position: relative;
-          height: 220px;
-          background: rgba(2,6,23,.75);
+
+        .quick-filter input::placeholder {
+          color: #94a3b8;
         }
-        .truck-image {
+
+        .quick-filter button {
+          background: #22c55e;
+          color: #052e16;
+          border-color: transparent;
+          cursor: pointer;
+          padding: 0 22px;
+        }
+
+        .section-head {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto 18px;
+          display: flex;
+          align-items: end;
+          justify-content: space-between;
+          gap: 18px;
+        }
+
+        .section-head h2,
+        .sell-box h2 {
+          margin: 12px 0 0;
+          font-size: clamp(28px, 4vw, 46px);
+          line-height: 1.05;
+          letter-spacing: -.04em;
+        }
+
+        .section-head a {
+          color: #86efac;
+          text-decoration: none;
+          font-weight: 950;
+          white-space: nowrap;
+        }
+
+        .truck-grid {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto 34px;
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .truck-card {
+          border-radius: 26px;
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.10);
+          overflow: hidden;
+          min-width: 0;
+        }
+
+        .photo {
+          height: 210px;
+          display: block;
+          background: rgba(15,23,42,.92);
+          overflow: hidden;
+          text-decoration: none;
+          color: #94a3b8;
+        }
+
+        .photo img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           display: block;
+          transition: transform .25s ease;
         }
-        .truck-no-image {
+
+        .truck-card:hover .photo img {
+          transform: scale(1.04);
+        }
+
+        .photo span {
           height: 100%;
           display: grid;
           place-items: center;
-          color: #94a3b8;
           font-weight: 900;
         }
-        .truck-tag {
-          position: absolute;
-          top: 14px;
-          left: 14px;
-          z-index: 2;
-          padding: 7px 12px;
-          border-radius: 999px;
-          background: rgba(234,179,8,.20);
-          color: #fde68a;
-          border: 1px solid rgba(234,179,8,.35);
-          font-weight: 900;
-          font-size: 12px;
+
+        .card-content {
+          padding: 16px;
         }
-        .truck-body { padding: 18px; }
+
         .truck-title {
-          margin: 0;
-          font-size: 19px;
+          min-height: 48px;
+          display: block;
+          color: white;
+          text-decoration: none;
+          font-size: 18px;
           line-height: 1.25;
+          font-weight: 950;
           overflow-wrap: anywhere;
         }
-        .truck-price {
+
+        .tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin: 12px 0;
+        }
+
+        .tags span {
+          padding: 6px 8px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.08);
+          color: #cbd5e1;
+          font-size: 12px;
+          font-weight: 850;
+        }
+
+        .price {
           display: block;
-          margin-top: 12px;
           color: #86efac;
-          font-size: 25px;
+          font-size: 22px;
           line-height: 1.1;
+          margin-bottom: 6px;
         }
-        .truck-info {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-top: 12px;
-          color: #cbd5e1;
-        }
-        .truck-chips {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-top: 10px;
+
+        .city {
+          display: block;
+          color: #94a3b8;
+          font-size: 13px;
           margin-bottom: 14px;
+        }
+
+        .whats {
+          min-height: 46px;
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          color: #052e16;
+          background: #22c55e;
+          text-decoration: none;
+          font-weight: 950;
+          padding: 0 12px;
+        }
+
+        .whats.secondary {
+          color: white;
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.12);
+        }
+
+        .empty {
+          grid-column: 1 / -1;
+          padding: 34px;
+          border-radius: 26px;
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.10);
+        }
+
+        .empty h3 {
+          margin: 0 0 8px;
+          font-size: 26px;
+        }
+
+        .empty p {
+          margin: 0;
           color: #cbd5e1;
         }
-        .truck-actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          margin-top: 16px;
+
+        .sell-box {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto 34px;
+          padding: 30px;
+          border-radius: 34px;
+          background: rgba(34,197,94,.10);
+          border: 1px solid rgba(34,197,94,.22);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
         }
-        .truck-details,
-        .truck-whatsapp {
-          padding: 12px;
-          border-radius: 13px;
-          text-align: center;
+
+        .sell-box p {
+          margin: 10px 0 0;
+          color: #cbd5e1;
+          font-size: 18px;
+        }
+
+        .footer {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto;
+          padding: 24px 0 36px;
+          border-top: 1px solid rgba(255,255,255,.10);
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+
+        .footer strong {
+          color: white;
+        }
+
+        .footer div {
+          display: flex;
+          gap: 14px;
+        }
+
+        .footer a {
+          color: #cbd5e1;
           text-decoration: none;
-          font-weight: 900;
+          font-weight: 800;
         }
-        .truck-details { color: white; border: 1px solid rgba(255,255,255,.14); }
-        .truck-whatsapp { background: #22c55e; color: #052e16; }
-        .public-error,
-        .public-empty {
-          max-width: 1180px;
-          margin: 0 auto 20px;
-          padding: 16px;
-          border-radius: 16px;
-          border: 1px solid rgba(255,255,255,.10);
-          background: rgba(255,255,255,.07);
-        }
-        .public-error {
-          color: #fecaca;
-          background: rgba(239,68,68,.12);
-          border-color: rgba(239,68,68,.25);
-        }
+
         @media (max-width: 980px) {
-          .public-header { padding: 12px 16px; align-items: flex-start; }
-          .truck-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-        }
-        @media (max-width: 680px) {
-          .public-header {
-            display: grid;
+          .hero {
             grid-template-columns: 1fr;
-            gap: 10px;
             min-height: auto;
-            padding: 10px 12px 12px;
+            gap: 18px;
           }
-          .public-logo {
-            justify-content: center;
-            text-align: center;
+
+          .hero-copy {
+            padding: 22px 0 0;
           }
-          .public-logo-icon {
-            width: 38px;
-            height: 38px;
-            flex-basis: 38px;
+
+          .hero-visual {
+            min-height: 320px;
+            border-radius: 30px;
           }
-          .public-logo strong { font-size: 14px; }
-          .public-logo small { display: none; }
-          .public-nav {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+
+          .quick-filter {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .quick-filter button {
+            grid-column: 1 / -1;
+          }
+
+          .truck-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 640px) {
+          .topbar {
+            width: calc(100vw - 24px);
+            height: auto;
+            padding: 10px 0;
+            align-items: stretch;
+          }
+
+          .brand {
             gap: 8px;
           }
-          .public-nav a {
-            min-height: 42px;
-            padding: 9px 8px;
-            font-size: 13px;
-            border-radius: 12px;
+
+          .brand-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 13px;
           }
+
+          .brand strong {
+            font-size: 13px;
+          }
+
+          .brand small {
+            font-size: 12px;
+          }
+
+          .top-actions {
+            gap: 8px;
+          }
+
+          .top-actions .btn {
+            min-height: 40px;
+            padding: 0 12px;
+            border-radius: 13px;
+            font-size: 13px;
+          }
+
+          .hero {
+            width: calc(100vw - 24px);
+            margin-top: 18px;
+          }
+
+          h1 {
+            font-size: 42px;
+            letter-spacing: -.06em;
+          }
+
+          .hero p {
+            font-size: 16px;
+          }
+
+          .hero-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .hero-actions .btn {
+            width: 100%;
+          }
+
+          .hero-visual {
+            min-height: 250px;
+          }
+
+          .truck-shape {
+            width: 94%;
+            left: 3%;
+            height: 150px;
+            bottom: 70px;
+          }
+
+          .truck-cabin {
+            height: 92px;
+          }
+
+          .truck-body {
+            height: 100px;
+          }
+
+          .wheel {
+            width: 42px;
+            height: 42px;
+            border-width: 5px;
+          }
+
+          .road {
+            bottom: 48px;
+          }
+
+          .quick-filter {
+            width: calc(100vw - 24px);
+            grid-template-columns: 1fr;
+            margin-bottom: 34px;
+            padding: 12px;
+            border-radius: 20px;
+          }
+
+          .section-head {
+            width: calc(100vw - 24px);
+            align-items: start;
+          }
+
+          .section-head h2 {
+            font-size: 32px;
+          }
+
           .truck-grid {
+            width: calc(100vw - 24px);
             grid-template-columns: 1fr;
             gap: 14px;
           }
-          .truck-card { border-radius: 20px; }
-          .truck-image-wrap { height: 230px; }
-          .truck-body { padding: 16px; }
-          .truck-title { font-size: 20px; }
-          .truck-price { font-size: 24px; }
-          .truck-actions { grid-template-columns: 1fr; }
+
+          .photo {
+            height: 255px;
+          }
+
+          .truck-title {
+            min-height: auto;
+            font-size: 21px;
+          }
+
+          .price {
+            font-size: 26px;
+          }
+
+          .whats {
+            min-height: 52px;
+          }
+
+          .sell-box {
+            width: calc(100vw - 24px);
+            padding: 22px;
+            border-radius: 26px;
+            display: grid;
+          }
+
+          .sell-box .btn {
+            width: 100%;
+          }
+
+          .footer {
+            width: calc(100vw - 24px);
+            display: grid;
+            gap: 12px;
+          }
         }
       `}</style>
-
     </main>
   );
 }
