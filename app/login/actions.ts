@@ -26,21 +26,18 @@ export async function entrar(formData: FormData) {
     erroLogin("E-mail ou senha inválidos.");
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const result = await supabase.auth.getUser();
+  const userId = result.data.user?.id;
 
-  if (!user) {
+  if (!userId) {
     erroLogin("Não foi possível manter a sessão. Tente novamente.");
   }
-
-  const userId = user!.id;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
   if (profile?.role === "admin") {
     redirect("/admin/pendentes");
