@@ -3,29 +3,43 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function login(formData: FormData) {
+function erroLogin(mensagem: string) {
+  redirect(`/login?erro=${encodeURIComponent(mensagem)}`);
+}
+
+export async function entrar(formData: FormData) {
+  const email = String(formData.get("email") || "").trim().toLowerCase();
+  const senha = String(formData.get("senha") || "");
+
+  if (!email || !senha) {
+    erroLogin("Informe e-mail e senha.");
+  }
+
   const supabase = await createClient();
 
-  const email = String(formData.get("email") || "").trim();
-  const password = String(formData.get("password") || "").trim();
-
-  if (!email || !password) {
-    redirect("/login?erro=campos");
-  }
-
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
-    password,
+    password: senha,
   });
 
-  if (error || !data.user) {
-    redirect("/login?erro=login");
+  if (error) {
+    erroLogin("E-mail ou senha inválidos.");
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    erroLogin("Não foi possível manter a sessão. Tente novamente.");
+  }
+
+  const userId = user!.id;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
-    .eq("id", data.user.id)
+    .eq("id", userId)
     .single();
 
   if (profile?.role === "admin") {
@@ -34,3 +48,6 @@ export async function login(formData: FormData) {
 
   redirect("/painel");
 }
+
+export const login = entrar;
+export const entrarUsuario = entrar;

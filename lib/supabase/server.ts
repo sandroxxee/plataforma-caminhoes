@@ -32,16 +32,9 @@ export async function createClient() {
         return cookieStore.getAll();
       },
       setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        } catch {
-          /*
-            Pode cair aqui quando o client for usado em Server Component.
-            A sessão continua sendo atualizada pelo proxy.ts/middleware.
-          */
-        }
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookieStore.set(name, value, options);
+        });
       },
     },
   });

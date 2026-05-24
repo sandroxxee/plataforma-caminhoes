@@ -1,65 +1,192 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { login } from "./actions";
+import { PublicHeader } from "@/components/PublicHeader";
+import { entrar } from "./actions";
 
-type PageProps = { searchParams?: Promise<{ erro?: string }> };
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+type PageProps = {
+  searchParams?: Promise<{
+    erro?: string;
+  }>;
+};
 
 export default async function LoginPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const erro = params?.erro;
+  const params = (await searchParams) || {};
+  const erro = params.erro ? decodeURIComponent(params.erro) : "";
 
   return (
-    <main style={styles.page}>
-      <section style={styles.card}>
-        <Link href="/" style={styles.logo}>
-          <span style={styles.logoIcon}>🚛</span>
-          <span><strong>CAMINHÕES EM OFERTA</strong><small style={styles.small}>Painel seguro</small></span>
-        </Link>
+    <main className="page">
+      <PublicHeader />
 
-        <span style={styles.badge}>Acesso</span>
-        <h1 style={styles.title}>Entrar na conta</h1>
-        <p style={styles.subtitle}>Acesse para criar anúncios, acompanhar pendentes ou administrar a plataforma.</p>
-
-        {erro && <div style={styles.error}>{erro === "login" ? "E-mail ou senha incorretos." : "Preencha e-mail e senha."}</div>}
-
-        <form action={login} style={styles.form}>
-          <label style={styles.field}>
-            <span style={styles.label}>E-mail</span>
-            <input style={styles.input} name="email" type="email" placeholder="seuemail@exemplo.com" required />
-          </label>
-
-          <label style={styles.field}>
-            <span style={styles.label}>Senha</span>
-            <input style={styles.input} name="password" type="password" placeholder="Digite sua senha" required />
-          </label>
-
-          <button style={styles.button} type="submit">Entrar</button>
-        </form>
-
-        <div style={styles.footer}>
-          <span>Não tem conta?</span>
-          <Link href="/cadastro" style={styles.link}>Criar cadastro</Link>
+      <section className="wrap">
+        <div className="copy">
+          <span>Entrar</span>
+          <h1>Acesse sua conta.</h1>
+          <p>Entre com e-mail e senha para acessar seu painel, criar anúncios ou administrar a plataforma.</p>
         </div>
+
+        <form action={entrar} className="card">
+          <h2>Login</h2>
+
+          {erro && <div className="error">{erro}</div>}
+
+          <label>
+            E-mail
+            <input name="email" type="email" placeholder="seuemail@exemplo.com" required autoComplete="email" />
+          </label>
+
+          <label>
+            Senha
+            <input name="senha" type="password" placeholder="Sua senha" required autoComplete="current-password" />
+          </label>
+
+          <button type="submit">Entrar</button>
+
+          <p className="login-text">
+            Ainda não tem conta? <Link href="/cadastro">Criar cadastro</Link>
+          </p>
+        </form>
       </section>
+
+      <style>{`
+        .page {
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at 18% 6%, rgba(34,197,94,.16), transparent 28%),
+            linear-gradient(135deg, #020617 0%, #061512 58%, #020617 100%);
+          color: white;
+          padding-bottom: 46px;
+        }
+
+        .wrap {
+          width: min(1080px, calc(100vw - 32px));
+          margin: 0 auto;
+          padding-top: 52px;
+          display: grid;
+          grid-template-columns: 1fr 430px;
+          gap: 34px;
+          align-items: start;
+        }
+
+        .copy span {
+          display: inline-flex;
+          min-height: 32px;
+          align-items: center;
+          padding: 0 13px;
+          border-radius: 999px;
+          color: #86efac;
+          background: rgba(34,197,94,.12);
+          border: 1px solid rgba(34,197,94,.22);
+          font-size: 12px;
+          font-weight: 950;
+          text-transform: uppercase;
+          letter-spacing: .06em;
+        }
+
+        .copy h1 {
+          margin: 18px 0 14px;
+          font-size: clamp(40px, 6vw, 64px);
+          line-height: .96;
+          letter-spacing: -.06em;
+        }
+
+        .copy p {
+          margin: 0;
+          color: #cbd5e1;
+          font-size: 18px;
+          line-height: 1.6;
+        }
+
+        .card {
+          padding: 26px;
+          border-radius: 28px;
+          background: rgba(255,255,255,.08);
+          border: 1px solid rgba(255,255,255,.11);
+          box-shadow: 0 24px 80px rgba(0,0,0,.24);
+        }
+
+        .card h2 {
+          margin: 0 0 18px;
+          font-size: 28px;
+        }
+
+        .error {
+          padding: 13px 14px;
+          border-radius: 16px;
+          color: #fecaca;
+          background: rgba(239,68,68,.12);
+          border: 1px solid rgba(239,68,68,.24);
+          margin-bottom: 14px;
+          font-weight: 850;
+        }
+
+        label {
+          display: grid;
+          gap: 7px;
+          color: #dbeafe;
+          font-size: 14px;
+          font-weight: 850;
+          margin-bottom: 13px;
+        }
+
+        input {
+          width: 100%;
+          min-height: 50px;
+          border-radius: 15px;
+          border: 1px solid rgba(255,255,255,.12);
+          background: rgba(2,6,23,.66);
+          color: white;
+          padding: 0 14px;
+          font-size: 15px;
+          outline: none;
+          box-sizing: border-box;
+        }
+
+        input:focus {
+          border-color: rgba(34,197,94,.65);
+          box-shadow: 0 0 0 4px rgba(34,197,94,.12);
+        }
+
+        button {
+          width: 100%;
+          min-height: 54px;
+          border: 0;
+          border-radius: 16px;
+          background: #22c55e;
+          color: #052e16;
+          font-size: 16px;
+          font-weight: 950;
+          cursor: pointer;
+          margin-top: 4px;
+        }
+
+        .login-text {
+          margin: 16px 0 0;
+          color: #cbd5e1;
+          text-align: center;
+          font-size: 15px;
+        }
+
+        .login-text a {
+          color: #86efac;
+          font-weight: 950;
+          text-decoration: none;
+        }
+
+        @media (max-width: 850px) {
+          .wrap {
+            width: calc(100vw - 24px);
+            grid-template-columns: 1fr;
+            padding-top: 28px;
+          }
+
+          .card {
+            padding: 20px;
+            border-radius: 22px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  page: { minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, background: "radial-gradient(circle at top,#0f3b2f 0%,#020617 48%,#020617 100%)", color: "white" },
-  card: { width: "100%", maxWidth: 460, padding: 30, borderRadius: 28, background: "rgba(15,23,42,.84)", border: "1px solid rgba(255,255,255,.12)", boxShadow: "0 28px 90px rgba(0,0,0,.45)" },
-  logo: { display: "flex", alignItems: "center", gap: 12, color: "white", textDecoration: "none", marginBottom: 26 },
-  logoIcon: { width: 44, height: 44, borderRadius: 14, display: "grid", placeItems: "center", background: "#22c55e" },
-  small: { display: "block", color: "#94a3b8", fontSize: 12 },
-  badge: { display: "inline-flex", padding: "7px 12px", borderRadius: 999, color: "#86efac", background: "rgba(34,197,94,.12)", border: "1px solid rgba(34,197,94,.22)", fontWeight: 900, fontSize: 12 },
-  title: { fontSize: 34, margin: "14px 0 8px" },
-  subtitle: { margin: "0 0 20px", color: "#cbd5e1", lineHeight: 1.55 },
-  error: { padding: 13, borderRadius: 14, marginBottom: 16, color: "#fecaca", background: "rgba(239,68,68,.12)", border: "1px solid rgba(239,68,68,.25)", fontWeight: 800 },
-  form: { display: "grid", gap: 14 },
-  field: { display: "grid", gap: 8 },
-  label: { color: "#cbd5e1", fontWeight: 900, fontSize: 13 },
-  input: { width: "100%", padding: "14px 15px", borderRadius: 15, border: "1px solid rgba(255,255,255,.15)", background: "rgba(2,6,23,.72)", color: "white", outline: "none" },
-  button: { marginTop: 6, border: 0, padding: "15px", borderRadius: 16, background: "#22c55e", color: "#052e16", fontWeight: 950, cursor: "pointer", fontSize: 16 },
-  footer: { marginTop: 20, display: "flex", justifyContent: "center", gap: 8, color: "#cbd5e1" },
-  link: { color: "#86efac", fontWeight: 900, textDecoration: "none" },
-};

@@ -24,7 +24,7 @@ function getSupabaseKey() {
 }
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  let response = NextResponse.next({
     request,
   });
 
@@ -38,23 +38,18 @@ export async function updateSession(request: NextRequest) {
           request.cookies.set(name, value);
         });
 
-        supabaseResponse = NextResponse.next({
+        response = NextResponse.next({
           request,
         });
 
         cookiesToSet.forEach(({ name, value, options }) => {
-          supabaseResponse.cookies.set(name, value, options);
+          response.cookies.set(name, value, options);
         });
       },
     },
   });
 
-  /*
-    Nunca remova esta chamada.
-    Ela força o Supabase a ler/atualizar os cookies da sessão.
-    Sem isso, o usuário entra, muda de página e parece deslogar.
-  */
   await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return response;
 }

@@ -68,13 +68,6 @@ export async function criarConta(formData: FormData) {
     erroCadastro(signupError.message);
   }
 
-  /*
-    Importante:
-    Em alguns projetos, depois do signUp o Supabase cria o usuário,
-    mas não mantém sessão ativa dependendo da configuração de confirmação de e-mail/cookies.
-    Por isso fazemos login com e-mail e senha logo após criar a conta.
-    Assim o usuário não cai de volta no /login quando clica em qualquer botão.
-  */
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
     email,
     password: senha,
