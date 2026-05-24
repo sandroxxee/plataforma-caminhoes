@@ -3,35 +3,73 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function cadastrar(formData: FormData) {
-  const supabase = await createClient();
+function validarEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
+}
 
+function limparTelefone(telefone: string) {
+  return telefone.replace(/\D/g, "");
+}
+
+export async function criarConta(formData: FormData) {
   const nome = String(formData.get("nome") || "").trim();
-  const whatsapp = String(formData.get("whatsapp") || "").trim();
-  const email = String(formData.get("email") || "").trim();
-  const password = String(formData.get("password") || "").trim();
-  const cidade = String(formData.get("cidade") || "").trim();
-  const estado = String(formData.get("estado") || "SC").trim();
+  const email = String(formData.get("email") || "").trim().toLowerCase();
+  const telefone = String(formData.get("telefone") || "").trim();
+  const senha = String(formData.get("senha") || "");
 
-  if (!nome || !email || !password) redirect("/cadastro?erro=campos");
+  if (!nome || nome.length < 3) {
+    redirect("/cadastro?erro=Informe seu nome.");
+  }
+
+  if (!email || !validarEmail(email)) {
+    redirect("/cadastro?erro=Informe um e-mail válido.");
+  }
+
+  const telefoneLimpo = limparTelefone(telefone);
+
+  if (!telefoneLimpo || telefoneLimpo.length < 10) {
+    redirect("/cadastro?erro=Informe um telefone ou WhatsApp válido com DDD.");
+  }
+
+  if (!senha || senha.length < 6) {
+    redirect("/cadastro?erro=A senha precisa ter no mínimo 6 caracteres.");
+  }
+
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signUp({
     email,
-    password,
-    options: { data: { nome, whatsapp, cidade, estado } },
+    password: senha,
+    options: {
+      data: {
+        full_name: nome,
+        name: nome,
+        telefone: telefoneLimpo,
+      },
+    },
   });
 
-  if (error || !data.user) redirect("/cadastro?erro=cadastro");
+  if (error) {
+    const msg = error.message.toLowerCase();
 
-  await supabase.from("profiles").upsert({
-    id: data.user.id,
-    email,
-    nome,
-    whatsapp,
-    cidade,
-    estado,
-    role: "anunciante",
-  });
+    if (msg.includes("already") || msg.includes("registered") || msg.includes("exists") || msg.includes("user already")) {
+      redirect("/cadastro?erro=Este e-mail já está cadastrado. Entre na sua conta.");
+    }
+
+    redirect(`/cadastro?erro=${encodeURIComponent(error.message)}`);
+  }
+
+  const userId = data.user?.id;
+
+  if (userId) {
+    await supabase.from("profiles").upsert({
+      id: userId,
+      email,
+      nome,
+      telefone: telefoneLimpo,
+      role: "anunciante",
+    });
+  }
 
   redirect("/painel");
 }
