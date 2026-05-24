@@ -1,5 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
 
 const siteUrl = "https://plataforma-caminhoes.vercel.app";
 
@@ -81,13 +95,9 @@ export const viewport: Viewport = {
   themeColor: "#020617",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`}>
       <body>{children}</body>
     </html>
   );
