@@ -32,9 +32,16 @@ export async function createClient() {
         return cookieStore.getAll();
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          cookieStore.set(name, value, options);
-        });
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          /*
+            Em Server Components o Next pode bloquear escrita de cookies.
+            A atualização real da sessão fica no proxy/middleware.
+          */
+        }
       },
     },
   });

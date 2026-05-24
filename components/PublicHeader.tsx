@@ -2,22 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-function getDisplayName(user: { email?: string | null; user_metadata?: Record<string, unknown> } | null) {
-  if (!user) return "";
-
-  const metadataName =
-    typeof user.user_metadata?.full_name === "string"
-      ? user.user_metadata.full_name
-      : typeof user.user_metadata?.name === "string"
-        ? user.user_metadata.name
-        : "";
-
-  if (metadataName.trim()) return metadataName.trim();
-
-  const email = user.email || "";
-  return email ? email.split("@")[0] : "Minha conta";
-}
-
 export async function PublicHeader() {
   const supabase = await createClient();
 
@@ -39,7 +23,6 @@ export async function PublicHeader() {
 
   const isLogged = Boolean(user);
   const isAdmin = role === "admin";
-  const displayName = getDisplayName(user);
 
   return (
     <header className="public-header">
@@ -59,17 +42,15 @@ export async function PublicHeader() {
             </>
           )}
 
-          {isLogged && (
+          {isLogged && !isAdmin && (
             <>
-              {!isAdmin && <Link href="/painel" className="public-announce">Meu painel</Link>}
-
-              <Link href="/conta" className="account-chip" title={user?.email || "Conta logada"}>
-                <span className="account-dot" />
-                <span className="account-name">{displayName}</span>
-              </Link>
-
-              <Link href="/logout" className="public-logout">Sair</Link>
+              <Link href="/painel" className="public-announce">Meu painel</Link>
+              <Link href="/logout">Sair</Link>
             </>
+          )}
+
+          {isLogged && isAdmin && (
+            <Link href="/logout" className="public-logout">Sair</Link>
           )}
         </nav>
       </div>
@@ -142,30 +123,7 @@ export async function PublicHeader() {
           border-color: rgba(239,68,68,.22);
         }
 
-        .public-nav .account-chip {
-          background: rgba(34,197,94,.10);
-          color: #bbf7d0;
-          border-color: rgba(34,197,94,.25);
-          gap: 8px;
-          max-width: 210px;
-        }
-
-        .account-dot {
-          width: 9px;
-          height: 9px;
-          border-radius: 999px;
-          background: #22c55e;
-          box-shadow: 0 0 0 4px rgba(34,197,94,.14);
-          flex: 0 0 auto;
-        }
-
-        .account-name {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        @media (max-width: 860px) {
+        @media (max-width: 720px) {
           .public-header-inner {
             width: calc(100vw - 24px);
             min-height: auto;
@@ -190,10 +148,6 @@ export async function PublicHeader() {
 
           .public-nav a:nth-child(2) {
             display: none;
-          }
-
-          .public-nav .account-chip {
-            max-width: 135px;
           }
         }
       `}</style>

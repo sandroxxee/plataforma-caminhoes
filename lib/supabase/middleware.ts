@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 function getSupabaseUrl() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -24,7 +24,7 @@ function getSupabaseKey() {
 }
 
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({
+  let supabaseResponse = NextResponse.next({
     request,
   });
 
@@ -38,18 +38,22 @@ export async function updateSession(request: NextRequest) {
           request.cookies.set(name, value);
         });
 
-        response = NextResponse.next({
+        supabaseResponse = NextResponse.next({
           request,
         });
 
         cookiesToSet.forEach(({ name, value, options }) => {
-          response.cookies.set(name, value, options);
+          supabaseResponse.cookies.set(name, value, options);
         });
       },
     },
   });
 
+  /*
+    Chamada obrigatória para renovar/validar sessão.
+    Não coloque código entre createServerClient e getUser.
+  */
   await supabase.auth.getUser();
 
-  return response;
+  return supabaseResponse;
 }
