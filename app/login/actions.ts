@@ -26,11 +26,15 @@ export async function entrar(formData: FormData) {
     erroLogin("E-mail ou senha inválidos.");
   }
 
-  let userId = data.user?.id;
+  let userId = data.user?.id ?? null;
 
   if (!userId) {
-    const result = await supabase.auth.getUser();
-let userId = data.user?.id ?? null;  }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    userId = user?.id ?? null;
+  }
 
   if (!userId) {
     erroLogin("Não foi possível manter a sessão. Tente novamente.");
