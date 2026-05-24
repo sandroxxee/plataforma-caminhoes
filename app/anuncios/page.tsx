@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -134,9 +135,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   return (
     <main className="page">
       <header className="topbar">
-        <Link href="/" className="brand">
-          <span>🚛</span>
-          <strong>Caminhões em Oferta</strong>
+        <Link href="/" className="brand" aria-label="Caminhões em Oferta">
+          <Image src="/logo-horizontal.png" alt="Caminhões em Oferta" width={190} height={55} priority />
         </Link>
 
         <nav>
@@ -272,19 +272,16 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         .brand {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
           color: white;
           text-decoration: none;
-          font-weight: 950;
+          min-width: 0;
         }
 
-        .brand span {
-          width: 42px;
-          height: 42px;
-          border-radius: 14px;
-          display: grid;
-          place-items: center;
-          background: #22c55e;
+        .brand img {
+          width: 190px;
+          height: auto;
+          object-fit: contain;
+          display: block;
         }
 
         nav {
@@ -570,11 +567,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             grid-template-columns: 1fr 1fr;
           }
 
-          .filters button,
-          .filters .clear {
-            grid-column: auto;
-          }
-
           .grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
@@ -585,17 +577,11 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             width: calc(100vw - 24px);
             min-height: auto;
             padding: 10px 0;
-            align-items: flex-start;
+            align-items: center;
           }
 
-          .brand strong {
-            font-size: 14px;
-          }
-
-          .brand span {
-            width: 38px;
-            height: 38px;
-            border-radius: 13px;
+          .brand img {
+            width: 142px;
           }
 
           nav {
