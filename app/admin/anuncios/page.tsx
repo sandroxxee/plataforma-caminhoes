@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/AdminLayout";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -109,7 +110,7 @@ export default async function AdminAnunciosPage() {
 
                 <form action={excluirAnuncioAdmin}>
                   <input type="hidden" name="id" value={truck.id} />
-                  <button style={styles.delete}>Excluir</button>
+                  <ConfirmDeleteButton message={`Confirma remover o anúncio ${truck.titulo || "selecionado"}?`} />
                 </form>
               </div>
             </div>
@@ -176,7 +177,6 @@ const styles: Record<string, CSSProperties> = {
   approve: { border: 0, padding: "10px 12px", borderRadius: 12, background: "#22c55e", color: "#052e16", fontWeight: 900 },
   reject: { border: 0, padding: "10px 12px", borderRadius: 12, background: "#f97316", color: "#431407", fontWeight: 900 },
   edit: { padding: "10px 12px", borderRadius: 12, background: "rgba(255,255,255,.08)", border: "1px solid rgba(255,255,255,.12)", color: "white", textDecoration: "none", fontWeight: 900 },
-  delete: { border: 0, padding: "10px 12px", borderRadius: 12, background: "rgba(239,68,68,.16)", color: "#fecaca", fontWeight: 900 },
   empty: {
     padding: 24,
     borderRadius: 20,
