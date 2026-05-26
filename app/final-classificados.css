@@ -1,0 +1,368 @@
+html,
+body {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+body {
+  background: #f3f4f6 !important;
+}
+
+/* CABEÇALHO PÚBLICO */
+.public-header {
+  top: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #d1d5db !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, .08) !important;
+}
+
+.public-header-shell {
+  width: min(1480px, calc(100vw - 48px)) !important;
+  min-height: 86px !important;
+  margin: 0 auto !important;
+  padding: 10px 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  grid-template-columns: auto 1fr auto !important;
+}
+
+.public-brand,
+.public-brand-text strong,
+.public-nav a,
+.public-fav {
+  color: #111827 !important;
+}
+
+.public-brand-logo {
+  width: 78px !important;
+  height: 58px !important;
+  flex-basis: 78px !important;
+  border-radius: 0 !important;
+  border: 1px solid #d1d5db !important;
+  background: #f9fafb !important;
+  box-shadow: none !important;
+}
+
+.public-brand-logo img {
+  transform: none !important;
+  object-fit: cover !important;
+}
+
+.public-brand-text small {
+  color: #b91c1c !important;
+}
+
+.public-nav a::after {
+  background: #b91c1c !important;
+  box-shadow: none !important;
+}
+
+.public-nav a:hover {
+  color: #b91c1c !important;
+}
+
+.public-whatsapp {
+  border-radius: 0 !important;
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* HOME */
+.home-page {
+  --green: #16a34a !important;
+  --text: #111827 !important;
+  --muted: #4b5563 !important;
+  color: #111827 !important;
+  background: #f3f4f6 !important;
+}
+
+.home-page::before {
+  display: none !important;
+}
+
+.home-page .wrap {
+  width: min(1480px, calc(100vw - 48px)) !important;
+}
+
+.home-page .hero {
+  margin-top: 0 !important;
+  min-height: auto !important;
+  padding: 42px 0 28px !important;
+  align-items: center !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+.home-page .hero::after {
+  display: none !important;
+}
+
+.home-page .hero-content {
+  width: min(1480px, calc(100vw - 48px)) !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+}
+
+.home-page .kicker {
+  border-radius: 0 !important;
+  background: #fef3c7 !important;
+  border: 1px solid #f59e0b !important;
+  color: #7c2d12 !important;
+}
+
+.home-page h1 {
+  max-width: 920px !important;
+  color: #111827 !important;
+  font-size: clamp(38px, 4.7vw, 72px) !important;
+  letter-spacing: -0.055em !important;
+}
+
+.home-page h1 span {
+  color: #b91c1c !important;
+}
+
+.home-page .hero p {
+  max-width: 720px !important;
+  color: #374151 !important;
+  font-size: 18px !important;
+}
+
+.home-page .btn {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.home-page .btn-primary {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.home-page .btn-ghost {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.home-page .filter-panel {
+  margin: 0 auto 26px !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .08) !important;
+  backdrop-filter: none !important;
+}
+
+.home-page .filter-field {
+  color: #111827 !important;
+  border-right: 1px solid #e5e7eb !important;
+}
+
+.home-page .filter-field label {
+  color: #6b7280 !important;
+}
+
+.home-page .filter-field select,
+.home-page .search-box input {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+
+.home-page .search-box input {
+  border-radius: 0 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.home-page .search-box button {
+  border-radius: 0 !important;
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.home-page .section-title {
+  color: #111827 !important;
+  margin-top: 22px !important;
+}
+
+.home-page .section-title h2 span,
+.home-page .trust-icon {
+  color: #b91c1c !important;
+}
+
+.home-page .pill {
+  border-radius: 0 !important;
+  background: #e7f8ee !important;
+  border-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+.home-page .view-all {
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+.home-page .truck-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+.home-page .truck-card {
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
+}
+
+.home-page .truck-card:hover {
+  transform: none !important;
+  border-color: #9ca3af !important;
+}
+
+.home-page .truck-photo {
+  aspect-ratio: 1.45 / 1 !important;
+  background: #e5e7eb !important;
+  color: #6b7280 !important;
+}
+
+.home-page .truck-photo img {
+  filter: none !important;
+}
+
+.home-page .badge {
+  border-radius: 0 !important;
+  background: #facc15 !important;
+  color: #111827 !important;
+}
+
+.home-page .heart {
+  border-radius: 0 !important;
+  background: rgba(255,255,255,.9) !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+.home-page .truck-title,
+.home-page .trust-item strong,
+.home-page .sell-section h2,
+.home-page .about-section h2,
+.home-page .contact-section h2 {
+  color: #111827 !important;
+}
+
+.home-page .meta,
+.home-page .payment,
+.home-page .trust-item small,
+.home-page .sell-section p,
+.home-page .about-section p,
+.home-page .contact-section p {
+  color: #4b5563 !important;
+}
+
+.home-page .price {
+  color: #15803d !important;
+}
+
+.home-page .details {
+  border-radius: 0 !important;
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+.home-page .whats {
+  border-radius: 0 !important;
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.home-page .trust-bar,
+.home-page .sell-section,
+.home-page .about-section,
+.home-page .contact-section,
+.home-page .empty-state {
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .06) !important;
+}
+
+.home-page .trust-item {
+  border-right: 1px solid #e5e7eb !important;
+}
+
+.home-page .step {
+  border-radius: 0 !important;
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+}
+
+.home-page .step b {
+  border-radius: 0 !important;
+  background: #b91c1c !important;
+  color: #ffffff !important;
+}
+
+/* RODAPÉ */
+.site-footer {
+  width: min(1480px, calc(100vw - 48px)) !important;
+  color: #4b5563 !important;
+  border-top: 1px solid #d1d5db !important;
+}
+
+.site-footer strong,
+.site-footer nav a {
+  color: #111827 !important;
+}
+
+.site-footer p,
+.security-note span {
+  color: #4b5563 !important;
+}
+
+.site-footer nav a,
+.security-note {
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  border-color: #d1d5db !important;
+}
+
+.security-note strong {
+  color: #b91c1c !important;
+}
+
+@media (max-width: 1200px) {
+  .home-page .truck-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .public-header-shell,
+  .home-page .wrap,
+  .home-page .hero-content,
+  .site-footer {
+    width: calc(100vw - 24px) !important;
+  }
+
+  .home-page .hero {
+    padding: 26px 0 18px !important;
+  }
+
+  .home-page .truck-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-page h1 {
+    font-size: 36px !important;
+  }
+}
