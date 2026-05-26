@@ -95,21 +95,21 @@ export default async function HomePage() {
 
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">COMPRA • VENDA • TROCA</span>
-          <h1>O jeito mais simples de negociar caminhões.</h1>
+          <span className="eyebrow">CAMINHÕES USADOS</span>
+          <h1>Compre, venda ou troque caminhões com mais segurança.</h1>
           <p>
-            Caminhões reais, ofertas atualizadas e contato direto com quem anuncia.
+            Uma plataforma direta para encontrar caminhões reais, divulgar veículos e falar pelo WhatsApp com quem quer negociar.
           </p>
 
           <div className="hero-actions">
-            <Link href="/anuncios" className="btn big primary">Ver estoque</Link>
-            <Link href="/anunciar" className="btn big ghost">Anunciar caminhão</Link>
+            <Link href="/anuncios" className="btn big primary">Comprar caminhão</Link>
+            <Link href="/anunciar" className="btn big ghost">Vender ou trocar</Link>
           </div>
 
-          <div className="trust-row">
-            <span>✓ Anúncios revisados</span>
-            <span>✓ Fotos e dados claros</span>
-            <span>✓ Negociação direta</span>
+          <div className="audience-row" aria-label="Opções da plataforma">
+            <Link href="/anuncios">Para comprar</Link>
+            <Link href="/anunciar">Para vender ou trocar</Link>
+            <Link href="/como-funciona">Para lojistas</Link>
           </div>
         </div>
 
@@ -117,12 +117,13 @@ export default async function HomePage() {
           {featuredImage ? (
             <img src={featuredImage} alt={featured ? getTitle(featured) : "Caminhão em destaque"} />
           ) : (
-            <div className="hero-empty">Caminhões em Oferta</div>
+            <div className="hero-empty">Caminhões à Venda</div>
           )}
 
           <div className="hero-card-info">
-            <span>Último anúncio aprovado</span>
-            <strong>{featured ? getTitle(featured) : "Confira o estoque"}</strong>
+            <span>Anúncio em destaque</span>
+            <strong>{featured ? getTitle(featured) : "Confira os caminhões disponíveis"}</strong>
+            {featured && <em>{formatMoney(featured.preco)}</em>}
           </div>
         </Link>
       </section>
@@ -153,10 +154,25 @@ export default async function HomePage() {
         <button type="submit">Buscar</button>
       </form>
 
+      <section className="trust-panel">
+        <article>
+          <strong>Compra</strong>
+          <p>Veja anúncios aprovados, fotos, valor, cidade e detalhes antes de chamar no WhatsApp.</p>
+        </article>
+        <article>
+          <strong>Venda ou troca</strong>
+          <p>Envie seu caminhão para avaliação e aprovação antes de aparecer publicamente.</p>
+        </article>
+        <article>
+          <strong>Estoque de lojistas</strong>
+          <p>Divulgue veículos para um público que já procura caminhões e implementos.</p>
+        </article>
+      </section>
+
       <section className="section-head">
         <div>
-          <span className="eyebrow small">Adicionados recentemente</span>
-          <h2>Caminhões prontos para negociar</h2>
+          <span className="eyebrow small">Estoque atualizado</span>
+          <h2>Caminhões disponíveis para negociação</h2>
         </div>
         <Link href="/anuncios">Ver todos</Link>
       </section>
@@ -193,10 +209,10 @@ export default async function HomePage() {
                   </small>
 
                   <div className="card-actions">
-                    <Link href={`/anuncios/${truck.id}`} className="details">Detalhes</Link>
+                    <Link href={`/anuncios/${truck.id}`} className="details">Ver detalhes</Link>
                     {truck.whatsapp && (
                       <a href={getWhatsappLink(truck)} target="_blank" className="whats">
-                        Chamar
+                        WhatsApp
                       </a>
                     )}
                   </div>
@@ -214,11 +230,11 @@ export default async function HomePage() {
 
       <section className="sell-box">
         <div>
-          <span className="eyebrow small">Para vendedores</span>
-          <h2>Tem um caminhão para vender?</h2>
-          <p>Cadastre o anúncio, envie as fotos e aguarde aprovação para aparecer no estoque.</p>
+          <span className="eyebrow small">Anuncie com foco em venda</span>
+          <h2>Tem caminhão, troca ou estoque para divulgar?</h2>
+          <p>Cadastre o veículo, envie as fotos e receba contatos de compradores interessados pelo WhatsApp.</p>
         </div>
-        <Link href="/anunciar" className="btn primary big">Anunciar caminhão</Link>
+        <Link href="/anunciar" className="btn primary big">Começar anúncio</Link>
       </section>
 
       <SiteFooter />
@@ -227,9 +243,9 @@ export default async function HomePage() {
         .home-page {
           min-height: 100vh;
           background:
-            radial-gradient(circle at 18% 6%, rgba(34,197,94,.16), transparent 28%),
-            radial-gradient(circle at 82% 18%, rgba(34,197,94,.10), transparent 28%),
-            linear-gradient(135deg, #020617 0%, #061512 58%, #020617 100%);
+            radial-gradient(circle at 18% 6%, rgba(34,197,94,.13), transparent 28%),
+            radial-gradient(circle at 82% 18%, rgba(148,163,184,.13), transparent 28%),
+            linear-gradient(135deg, #020617 0%, #08111f 50%, #020617 100%);
           color: white;
           overflow-x: hidden;
         }
@@ -269,7 +285,7 @@ export default async function HomePage() {
           min-height: 500px;
           margin: 0 auto 20px;
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: minmax(0, 1.02fr) minmax(360px, .98fr);
           gap: 48px;
           align-items: center;
         }
@@ -299,18 +315,18 @@ export default async function HomePage() {
         }
 
         h1 {
-          max-width: 720px;
+          max-width: 760px;
           margin: 18px 0 14px;
-          font-size: clamp(46px, 5vw, 72px);
+          font-size: clamp(42px, 5vw, 70px);
           line-height: .96;
           letter-spacing: -.07em;
         }
 
         .hero p {
-          max-width: 590px;
+          max-width: 620px;
           margin: 0;
           color: #dbeafe;
-          font-size: 19px;
+          font-size: 18px;
           line-height: 1.55;
         }
 
@@ -321,28 +337,34 @@ export default async function HomePage() {
           margin-top: 28px;
         }
 
-        .trust-row {
+        .audience-row {
           margin-top: 22px;
           display: flex;
           flex-wrap: wrap;
           gap: 10px;
         }
 
-        .trust-row span {
-          display: inline-flex;
-          min-height: 34px;
-          align-items: center;
-          padding: 0 12px;
+        .audience-row a {
+          min-height: 38px;
+          padding: 0 13px;
           border-radius: 999px;
+          display: inline-flex;
+          align-items: center;
+          color: #cbd5e1;
           background: rgba(255,255,255,.07);
           border: 1px solid rgba(255,255,255,.10);
-          color: #cbd5e1;
+          text-decoration: none;
           font-size: 13px;
-          font-weight: 850;
+          font-weight: 900;
+        }
+
+        .audience-row a:hover {
+          color: white;
+          border-color: rgba(34,197,94,.30);
         }
 
         .hero-card {
-          min-height: 350px;
+          min-height: 360px;
           border-radius: 34px;
           background: rgba(255,255,255,.08);
           border: 1px solid rgba(255,255,255,.12);
@@ -357,7 +379,7 @@ export default async function HomePage() {
         .hero-card img {
           width: 100%;
           height: 100%;
-          min-height: 350px;
+          min-height: 360px;
           object-fit: cover;
           display: block;
         }
@@ -366,11 +388,11 @@ export default async function HomePage() {
           content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 35%, rgba(2,6,23,.82));
+          background: linear-gradient(180deg, transparent 30%, rgba(2,6,23,.86));
         }
 
         .hero-empty {
-          min-height: 350px;
+          min-height: 360px;
           display: grid;
           place-items: center;
           color: #86efac;
@@ -403,9 +425,16 @@ export default async function HomePage() {
           overflow-wrap: anywhere;
         }
 
+        .hero-card-info em {
+          color: #bbf7d0;
+          font-style: normal;
+          font-size: 22px;
+          font-weight: 950;
+        }
+
         .quick-filter {
           width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 38px;
+          margin: 0 auto 18px;
           padding: 12px;
           border-radius: 22px;
           background: rgba(255,255,255,.08);
@@ -440,6 +469,35 @@ export default async function HomePage() {
           border-color: transparent;
           cursor: pointer;
           padding: 0 24px;
+        }
+
+        .trust-panel {
+          width: min(1240px, calc(100vw - 32px));
+          margin: 0 auto 38px;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .trust-panel article {
+          padding: 18px;
+          border-radius: 22px;
+          background: rgba(255,255,255,.06);
+          border: 1px solid rgba(255,255,255,.10);
+        }
+
+        .trust-panel strong {
+          display: block;
+          margin-bottom: 7px;
+          color: #f8fafc;
+          font-size: 18px;
+        }
+
+        .trust-panel p {
+          margin: 0;
+          color: #cbd5e1;
+          line-height: 1.45;
+          font-size: 14px;
         }
 
         .section-head {
@@ -587,7 +645,7 @@ export default async function HomePage() {
 
         .card-actions {
           display: grid;
-          grid-template-columns: .78fr 1fr;
+          grid-template-columns: .95fr 1.05fr;
           gap: 8px;
         }
 
@@ -688,6 +746,10 @@ export default async function HomePage() {
             grid-column: 1 / -1;
           }
 
+          .trust-panel {
+            grid-template-columns: 1fr;
+          }
+
           .truck-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
@@ -699,7 +761,7 @@ export default async function HomePage() {
           }
 
           h1 {
-            font-size: 39px;
+            font-size: 36px;
             letter-spacing: -.06em;
           }
 
@@ -716,9 +778,13 @@ export default async function HomePage() {
             width: 100%;
           }
 
-          .trust-row {
+          .audience-row {
             display: grid;
             grid-template-columns: 1fr;
+          }
+
+          .audience-row a {
+            justify-content: center;
           }
 
           .hero-card {
@@ -735,10 +801,14 @@ export default async function HomePage() {
             font-size: 20px;
           }
 
-          .quick-filter {
+          .quick-filter,
+          .trust-panel {
             width: calc(100vw - 24px);
+          }
+
+          .quick-filter {
             grid-template-columns: 1fr;
-            margin-bottom: 30px;
+            margin-bottom: 18px;
             padding: 12px;
             border-radius: 20px;
           }
