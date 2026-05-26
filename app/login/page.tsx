@@ -4,7 +4,16 @@ import { LoginForm } from "./LoginForm";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    erro?: string;
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = (await searchParams) || {};
+  const erro = params.erro ? decodeURIComponent(params.erro) : "";
+
   return (
     <main className="page">
       <header className="topbar">
@@ -22,7 +31,7 @@ export default function LoginPage() {
           <p>Entre com e-mail e senha para acessar o painel.</p>
         </div>
 
-        <LoginForm />
+        <LoginForm erro={erro} />
       </section>
 
       <style>{`
