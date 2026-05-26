@@ -83,98 +83,62 @@ export default async function HomePage() {
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(6);
 
   const trucks = (data || []) as Truck[];
-  const featured = trucks[0];
-  const featuredImage = featured ? getImage(featured) : "";
 
   return (
     <main className="home-page">
       <PublicHeader />
 
       <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow">CAMINHÕES USADOS</span>
-          <h1>Compre, venda ou troque caminhões com mais segurança.</h1>
-          <p>
-            Uma plataforma direta para encontrar caminhões reais, divulgar veículos e falar pelo WhatsApp com quem quer negociar.
-          </p>
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <h1>Caminhões usados à venda</h1>
+            <p>Compra e venda de caminhões com contato direto pelo WhatsApp.</p>
 
-          <div className="hero-actions">
-            <Link href="/anuncios" className="btn big primary">Comprar caminhão</Link>
-            <Link href="/anunciar" className="btn big ghost">Vender ou trocar</Link>
+            <form className="search-box" action="/anuncios">
+              <input name="modelo" placeholder="Buscar caminhão, marca ou modelo" aria-label="Buscar caminhão" />
+              <button type="submit">Buscar</button>
+            </form>
           </div>
 
-          <div className="audience-row" aria-label="Opções da plataforma">
-            <Link href="/anuncios">Para comprar</Link>
-            <Link href="/anunciar">Para vender ou trocar</Link>
-            <Link href="/como-funciona">Para lojistas</Link>
+          <div className="hero-side">
+            <strong>Atendimento direto</strong>
+            <span>Veja anúncios disponíveis, confira os dados principais e chame pelo WhatsApp.</span>
           </div>
         </div>
-
-        <Link href={featured ? `/anuncios/${featured.id}` : "/anuncios"} className="hero-card">
-          {featuredImage ? (
-            <img src={featuredImage} alt={featured ? getTitle(featured) : "Caminhão em destaque"} />
-          ) : (
-            <div className="hero-empty">Caminhões à Venda</div>
-          )}
-
-          <div className="hero-card-info">
-            <span>Anúncio em destaque</span>
-            <strong>{featured ? getTitle(featured) : "Confira os caminhões disponíveis"}</strong>
-            {featured && <em>{formatMoney(featured.preco)}</em>}
-          </div>
-        </Link>
       </section>
 
-      <form className="quick-filter" action="/anuncios">
-        <select name="marca" aria-label="Marca">
-          <option value="">Marca</option>
-          <option>Mercedes-Benz</option>
-          <option>Volkswagen</option>
-          <option>Volvo</option>
-          <option>Scania</option>
-          <option>Ford</option>
-          <option>Iveco</option>
-          <option>DAF</option>
-        </select>
+      <section className="choice-section">
+        <div className="choice-inner">
+          <div className="choice-head">
+            <h2>Comprar ou vender caminhão</h2>
+            <p>Escolha uma opção e avance direto para os anúncios ou atendimento.</p>
+          </div>
 
-        <input name="modelo" placeholder="Modelo" aria-label="Modelo" />
+          <div className="choice-grid">
+            <Link href="/anuncios" className="choice-card">
+              <span>Comprar</span>
+              <strong>Ver caminhões anunciados</strong>
+              <em>Ver anúncios →</em>
+            </Link>
 
-        <select name="tracao" aria-label="Tração">
-          <option value="">Tração</option>
-          <option>4x2</option>
-          <option>6x2</option>
-          <option>6x4</option>
-          <option>8x2</option>
-          <option>8x4</option>
-        </select>
-
-        <button type="submit">Buscar</button>
-      </form>
-
-      <section className="trust-panel">
-        <article>
-          <strong>Compra</strong>
-          <p>Veja anúncios aprovados, fotos, valor, cidade e detalhes antes de chamar no WhatsApp.</p>
-        </article>
-        <article>
-          <strong>Venda ou troca</strong>
-          <p>Envie seu caminhão para avaliação e aprovação antes de aparecer publicamente.</p>
-        </article>
-        <article>
-          <strong>Estoque de lojistas</strong>
-          <p>Divulgue veículos para um público que já procura caminhões e implementos.</p>
-        </article>
+            <Link href="/anunciar" className="choice-card sell">
+              <span>Vender</span>
+              <strong>Anunciar meu caminhão</strong>
+              <em>Anunciar agora →</em>
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section className="section-head">
         <div>
-          <span className="eyebrow small">Estoque atualizado</span>
-          <h2>Caminhões disponíveis para negociação</h2>
+          <h2>Anúncios em destaque</h2>
+          <p>Caminhões disponíveis com foto, valor, cidade e contato direto.</p>
         </div>
-        <Link href="/anuncios">Ver todos</Link>
+        <Link href="/anuncios">Ver todos os anúncios</Link>
       </section>
 
       <section className="truck-grid">
@@ -198,10 +162,9 @@ export default async function HomePage() {
                   <div className="tags">
                     <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
                     <span>{truck.tracao || "Tração"}</span>
-                    <span>{truck.carroceria || "Carroceria"}</span>
+                    <span>{truck.carroceria || "Tipo"}</span>
                   </div>
 
-                  <small className="price-label">Valor anunciado</small>
                   <strong className="price">{formatMoney(truck.preco)}</strong>
 
                   <small className="city">
@@ -209,9 +172,9 @@ export default async function HomePage() {
                   </small>
 
                   <div className="card-actions">
-                    <Link href={`/anuncios/${truck.id}`} className="details">Ver detalhes</Link>
+                    <Link href={`/anuncios/${truck.id}`} className="details">Detalhes</Link>
                     {truck.whatsapp && (
-                      <a href={getWhatsappLink(truck)} target="_blank" className="whats">
+                      <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" className="whats">
                         WhatsApp
                       </a>
                     )}
@@ -230,11 +193,10 @@ export default async function HomePage() {
 
       <section className="sell-box">
         <div>
-          <span className="eyebrow small">Anuncie com foco em venda</span>
-          <h2>Tem caminhão, troca ou estoque para divulgar?</h2>
-          <p>Cadastre o veículo, envie as fotos e receba contatos de compradores interessados pelo WhatsApp.</p>
+          <h2>Quer anunciar seu caminhão?</h2>
+          <p>Envie marca, modelo, ano, valor, cidade, fotos e informe se aceita troca.</p>
         </div>
-        <Link href="/anunciar" className="btn primary big">Começar anúncio</Link>
+        <Link href="/anunciar" className="btn-primary">Anunciar pelo WhatsApp</Link>
       </section>
 
       <SiteFooter />
@@ -242,318 +204,256 @@ export default async function HomePage() {
       <style>{`
         .home-page {
           min-height: 100vh;
-          background:
-            radial-gradient(circle at 18% 6%, rgba(34,197,94,.13), transparent 28%),
-            radial-gradient(circle at 82% 18%, rgba(148,163,184,.13), transparent 28%),
-            linear-gradient(135deg, #020617 0%, #08111f 50%, #020617 100%);
-          color: white;
+          background: #f4f5f7;
+          color: #151515;
           overflow-x: hidden;
         }
 
-        .btn {
-          min-height: 44px;
-          padding: 0 17px;
-          border-radius: 15px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          font-weight: 900;
-          border: 1px solid rgba(255,255,255,.12);
-          white-space: nowrap;
-        }
-
-        .btn.primary {
-          background: #22c55e;
-          color: #052e16;
-          border-color: transparent;
-        }
-
-        .btn.ghost {
-          background: rgba(255,255,255,.06);
-          color: white;
-        }
-
-        .btn.big {
-          min-height: 52px;
-          padding: 0 22px;
-          border-radius: 17px;
-        }
-
         .hero {
-          width: min(1240px, calc(100vw - 32px));
-          min-height: 500px;
-          margin: 0 auto 20px;
+          background: #ffffff;
+          border-bottom: 1px solid #e2e6ec;
+        }
+
+        .hero-inner {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto;
+          padding: 46px 0 34px;
           display: grid;
-          grid-template-columns: minmax(0, 1.02fr) minmax(360px, .98fr);
-          gap: 48px;
+          grid-template-columns: minmax(0, 1fr) 320px;
+          gap: 28px;
           align-items: center;
         }
 
-        .hero-copy {
-          padding: 38px 0 20px;
-        }
-
-        .eyebrow {
-          display: inline-flex;
-          align-items: center;
-          min-height: 32px;
-          padding: 0 13px;
-          border-radius: 999px;
-          color: #86efac;
-          background: rgba(34,197,94,.12);
-          border: 1px solid rgba(34,197,94,.22);
-          font-size: 12px;
-          font-weight: 950;
-          letter-spacing: .08em;
-          text-transform: uppercase;
-        }
-
-        .eyebrow.small {
-          min-height: 29px;
-          font-size: 11px;
-        }
-
-        h1 {
-          max-width: 760px;
-          margin: 18px 0 14px;
-          font-size: clamp(42px, 5vw, 70px);
-          line-height: .96;
-          letter-spacing: -.07em;
-        }
-
-        .hero p {
-          max-width: 620px;
+        .hero-copy h1 {
           margin: 0;
-          color: #dbeafe;
+          max-width: 680px;
+          font-size: clamp(34px, 4vw, 54px);
+          line-height: 1.04;
+          letter-spacing: -.045em;
+          color: #151515;
+        }
+
+        .hero-copy p {
+          max-width: 620px;
+          margin: 12px 0 0;
+          color: #69717d;
           font-size: 18px;
           line-height: 1.55;
         }
 
-        .hero-actions {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 12px;
-          margin-top: 28px;
+        .search-box {
+          max-width: 720px;
+          margin-top: 24px;
+          padding: 8px;
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 8px;
+          background: #f4f5f7;
+          border: 1px solid #e2e6ec;
+          border-radius: 18px;
         }
 
-        .audience-row {
-          margin-top: 22px;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
+        .search-box input {
+          width: 100%;
+          min-height: 50px;
+          border: 0;
+          outline: 0;
+          background: white;
+          color: #20252c;
+          border-radius: 13px;
+          padding: 0 15px;
+          font-size: 15px;
         }
 
-        .audience-row a {
-          min-height: 38px;
-          padding: 0 13px;
-          border-radius: 999px;
+        .search-box button,
+        .btn-primary {
+          min-height: 50px;
+          padding: 0 20px;
+          border: 0;
+          border-radius: 13px;
+          background: #20252c;
+          color: white;
+          font-weight: 900;
+          cursor: pointer;
+          text-decoration: none;
           display: inline-flex;
           align-items: center;
-          color: #cbd5e1;
-          background: rgba(255,255,255,.07);
-          border: 1px solid rgba(255,255,255,.10);
+          justify-content: center;
+          white-space: nowrap;
+        }
+
+        .hero-side {
+          padding: 24px;
+          min-height: 150px;
+          border-radius: 24px;
+          background: linear-gradient(135deg, #20252c, #333b46);
+          color: white;
+          box-shadow: 0 16px 34px rgba(32,37,44,.16);
+        }
+
+        .hero-side strong {
+          display: block;
+          font-size: 22px;
+          letter-spacing: -.04em;
+          margin-bottom: 8px;
+        }
+
+        .hero-side span {
+          display: block;
+          color: rgba(255,255,255,.76);
+          font-size: 15px;
+          line-height: 1.5;
+        }
+
+        .choice-section {
+          padding: 26px 0;
+        }
+
+        .choice-inner {
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto;
+          background: white;
+          border: 1px solid #e2e6ec;
+          border-radius: 24px;
+          padding: 22px;
+          box-shadow: 0 12px 28px rgba(16,24,40,.05);
+        }
+
+        .choice-head {
+          display: flex;
+          justify-content: space-between;
+          gap: 18px;
+          align-items: end;
+          margin-bottom: 16px;
+        }
+
+        .choice-head h2 {
+          margin: 0;
+          color: #151515;
+          font-size: clamp(24px, 3vw, 34px);
+          letter-spacing: -.04em;
+        }
+
+        .choice-head p {
+          margin: 0;
+          color: #69717d;
+          max-width: 440px;
+        }
+
+        .choice-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+        }
+
+        .choice-card {
+          min-height: 155px;
+          padding: 22px;
+          border-radius: 20px;
+          background: #f8fafc;
+          border: 1px solid #e2e6ec;
           text-decoration: none;
+          color: #20252c;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          transition: .2s ease;
+        }
+
+        .choice-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 16px 32px rgba(16,24,40,.08);
+        }
+
+        .choice-card span {
+          width: max-content;
+          min-height: 32px;
+          padding: 0 12px;
+          border-radius: 999px;
+          background: #20252c;
+          color: white;
+          display: inline-flex;
+          align-items: center;
           font-size: 13px;
           font-weight: 900;
         }
 
-        .audience-row a:hover {
-          color: white;
-          border-color: rgba(34,197,94,.30);
+        .choice-card.sell span {
+          background: #1faa59;
         }
 
-        .hero-card {
-          min-height: 360px;
-          border-radius: 34px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.12);
-          position: relative;
-          overflow: hidden;
+        .choice-card strong {
           display: block;
-          text-decoration: none;
-          color: white;
-          box-shadow: 0 30px 90px rgba(0,0,0,.30);
-        }
-
-        .hero-card img {
-          width: 100%;
-          height: 100%;
-          min-height: 360px;
-          object-fit: cover;
-          display: block;
-        }
-
-        .hero-card:after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, transparent 30%, rgba(2,6,23,.86));
-        }
-
-        .hero-empty {
-          min-height: 360px;
-          display: grid;
-          place-items: center;
-          color: #86efac;
-          font-size: 34px;
-          font-weight: 950;
-          background: rgba(34,197,94,.08);
-        }
-
-        .hero-card-info {
-          position: absolute;
-          left: 20px;
-          right: 20px;
-          bottom: 20px;
-          z-index: 2;
-          display: grid;
-          gap: 6px;
-        }
-
-        .hero-card-info span {
-          color: #86efac;
-          font-size: 12px;
-          font-weight: 950;
-          text-transform: uppercase;
-          letter-spacing: .06em;
-        }
-
-        .hero-card-info strong {
+          margin-top: 16px;
           font-size: 24px;
-          line-height: 1.15;
-          overflow-wrap: anywhere;
+          letter-spacing: -.04em;
         }
 
-        .hero-card-info em {
-          color: #bbf7d0;
+        .choice-card em {
+          color: #69717d;
           font-style: normal;
-          font-size: 22px;
-          font-weight: 950;
-        }
-
-        .quick-filter {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 18px;
-          padding: 12px;
-          border-radius: 22px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.11);
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr auto;
-          gap: 10px;
-        }
-
-        .quick-filter select,
-        .quick-filter input,
-        .quick-filter button {
-          min-height: 50px;
-          border-radius: 15px;
-          border: 1px solid rgba(255,255,255,.12);
-          background: rgba(2,6,23,.66);
-          color: white;
-          padding: 0 14px;
-          font-size: 15px;
-          font-weight: 800;
-          outline: none;
-          min-width: 0;
-        }
-
-        .quick-filter input::placeholder {
-          color: #94a3b8;
-        }
-
-        .quick-filter button {
-          background: #22c55e;
-          color: #052e16;
-          border-color: transparent;
-          cursor: pointer;
-          padding: 0 24px;
-        }
-
-        .trust-panel {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 38px;
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 12px;
-        }
-
-        .trust-panel article {
-          padding: 18px;
-          border-radius: 22px;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.10);
-        }
-
-        .trust-panel strong {
-          display: block;
-          margin-bottom: 7px;
-          color: #f8fafc;
-          font-size: 18px;
-        }
-
-        .trust-panel p {
-          margin: 0;
-          color: #cbd5e1;
-          line-height: 1.45;
-          font-size: 14px;
+          font-weight: 900;
         }
 
         .section-head {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 18px;
+          width: min(1180px, calc(100vw - 32px));
+          margin: 20px auto 18px;
           display: flex;
           align-items: end;
           justify-content: space-between;
           gap: 18px;
         }
 
-        .section-head h2,
-        .sell-box h2 {
-          margin: 12px 0 0;
-          font-size: clamp(30px, 4vw, 46px);
-          line-height: 1.05;
-          letter-spacing: -.04em;
+        .section-head h2 {
+          margin: 0;
+          color: #151515;
+          font-size: clamp(28px, 4vw, 42px);
+          letter-spacing: -.05em;
+        }
+
+        .section-head p {
+          margin: 6px 0 0;
+          color: #69717d;
         }
 
         .section-head a {
-          color: #86efac;
+          min-height: 42px;
+          padding: 0 15px;
+          border-radius: 999px;
+          color: #20252c;
+          background: white;
+          border: 1px solid #e2e6ec;
           text-decoration: none;
-          font-weight: 950;
+          font-weight: 900;
+          display: inline-flex;
+          align-items: center;
           white-space: nowrap;
         }
 
         .truck-grid {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 34px;
+          width: min(1180px, calc(100vw - 32px));
+          margin: 0 auto;
           display: grid;
-          grid-template-columns: repeat(5, minmax(0, 1fr));
-          gap: 16px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 18px;
         }
 
         .truck-card {
-          border-radius: 24px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.10);
+          background: white;
+          border: 1px solid #e2e6ec;
+          border-radius: 22px;
           overflow: hidden;
-          min-width: 0;
-          transition: transform .2s ease, border-color .2s ease;
-        }
-
-        .truck-card:hover {
-          transform: translateY(-3px);
-          border-color: rgba(34,197,94,.28);
+          box-shadow: 0 12px 28px rgba(16,24,40,.06);
         }
 
         .photo {
-          height: 190px;
-          display: block;
-          background: rgba(15,23,42,.92);
-          overflow: hidden;
-          text-decoration: none;
-          color: #94a3b8;
           position: relative;
+          display: block;
+          aspect-ratio: 1 / 1;
+          background: #eef1f5;
+          overflow: hidden;
+          color: #69717d;
+          text-decoration: none;
         }
 
         .photo img {
@@ -561,14 +461,9 @@ export default async function HomePage() {
           height: 100%;
           object-fit: cover;
           display: block;
-          transition: transform .25s ease;
         }
 
-        .truck-card:hover .photo img {
-          transform: scale(1.04);
-        }
-
-        .photo span {
+        .photo > span {
           height: 100%;
           display: grid;
           place-items: center;
@@ -577,177 +472,153 @@ export default async function HomePage() {
 
         .photo em {
           position: absolute;
-          left: 10px;
-          top: 10px;
-          padding: 6px 10px;
+          left: 12px;
+          top: 12px;
+          padding: 7px 10px;
           border-radius: 999px;
-          background: rgba(34,197,94,.94);
-          color: #052e16;
+          background: rgba(255,255,255,.94);
+          color: #20252c;
           font-style: normal;
-          font-size: 11px;
-          font-weight: 950;
-          text-transform: uppercase;
+          font-size: 12px;
+          font-weight: 900;
+          box-shadow: 0 8px 18px rgba(0,0,0,.12);
         }
 
         .card-content {
-          padding: 14px;
+          padding: 16px;
         }
 
         .truck-title {
-          min-height: 46px;
-          display: block;
-          color: white;
+          color: #151515;
           text-decoration: none;
-          font-size: 17px;
-          line-height: 1.22;
+          font-size: 21px;
+          line-height: 1.15;
+          letter-spacing: -.04em;
           font-weight: 950;
-          overflow-wrap: anywhere;
+          display: block;
         }
 
         .tags {
+          margin: 10px 0 12px;
           display: flex;
           flex-wrap: wrap;
-          gap: 6px;
-          margin: 11px 0;
+          gap: 7px;
         }
 
         .tags span {
-          padding: 6px 8px;
+          min-height: 29px;
+          padding: 0 9px;
           border-radius: 999px;
-          background: rgba(255,255,255,.08);
-          color: #cbd5e1;
-          font-size: 12px;
-          font-weight: 850;
-        }
-
-        .price-label {
-          display: block;
-          color: #94a3b8;
+          background: #f1f3f6;
+          color: #485260;
+          display: inline-flex;
+          align-items: center;
           font-size: 12px;
           font-weight: 800;
-          margin-bottom: 4px;
         }
 
         .price {
+          color: #20252c;
+          font-size: 20px;
           display: block;
-          color: #86efac;
-          font-size: 23px;
-          line-height: 1.1;
-          margin-bottom: 6px;
+          margin-bottom: 2px;
         }
 
         .city {
-          display: block;
-          color: #94a3b8;
+          color: #69717d;
           font-size: 13px;
-          margin-bottom: 13px;
+          font-weight: 800;
         }
 
         .card-actions {
           display: grid;
-          grid-template-columns: .95fr 1.05fr;
+          grid-template-columns: 1fr 1fr;
           gap: 8px;
+          border-top: 1px solid #e2e6ec;
+          margin-top: 14px;
+          padding-top: 14px;
         }
 
         .details,
         .whats {
-          min-height: 44px;
-          border-radius: 14px;
-          display: flex;
+          min-height: 40px;
+          border-radius: 999px;
+          display: inline-flex;
           align-items: center;
           justify-content: center;
-          text-align: center;
           text-decoration: none;
-          font-weight: 950;
-          padding: 0 10px;
+          font-weight: 900;
           font-size: 13px;
         }
 
         .details {
-          color: white;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.12);
+          color: #20252c;
+          background: #f4f5f7;
+          border: 1px solid #e2e6ec;
         }
 
         .whats {
-          color: #052e16;
-          background: #22c55e;
+          color: white;
+          background: #1faa59;
         }
 
         .empty {
           grid-column: 1 / -1;
-          padding: 34px;
-          border-radius: 26px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.10);
+          background: white;
+          border: 1px solid #e2e6ec;
+          border-radius: 22px;
+          padding: 28px;
+          color: #20252c;
         }
 
         .empty h3 {
-          margin: 0 0 8px;
-          font-size: 26px;
+          margin: 0 0 6px;
         }
 
         .empty p {
           margin: 0;
-          color: #cbd5e1;
+          color: #69717d;
         }
 
         .sell-box {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 34px;
+          width: min(1180px, calc(100vw - 32px));
+          margin: 28px auto 42px;
           padding: 30px;
-          border-radius: 32px;
-          background: rgba(34,197,94,.10);
-          border: 1px solid rgba(34,197,94,.22);
+          border-radius: 26px;
+          background: #20252c;
+          color: white;
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
           gap: 20px;
+          box-shadow: 0 18px 38px rgba(32,37,44,.16);
+        }
+
+        .sell-box h2 {
+          margin: 0;
+          font-size: clamp(26px, 4vw, 38px);
+          letter-spacing: -.05em;
         }
 
         .sell-box p {
-          margin: 10px 0 0;
-          color: #cbd5e1;
-          font-size: 18px;
+          max-width: 680px;
+          margin: 8px 0 0;
+          color: rgba(255,255,255,.74);
+          font-size: 16px;
+          line-height: 1.5;
         }
 
-        @media (max-width: 1100px) {
-          .truck-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
+        .sell-box .btn-primary {
+          background: #1faa59;
         }
 
         @media (max-width: 900px) {
-          .hero {
+          .hero-inner {
             grid-template-columns: 1fr;
+          }
+
+          .hero-side {
             min-height: auto;
-            gap: 18px;
-            margin-top: 18px;
-          }
-
-          .hero-copy {
-            padding: 22px 0 0;
-          }
-
-          .hero-card {
-            min-height: 300px;
-          }
-
-          .hero-card img,
-          .hero-empty {
-            min-height: 300px;
-          }
-
-          .quick-filter {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .quick-filter button {
-            grid-column: 1 / -1;
-          }
-
-          .trust-panel {
-            grid-template-columns: 1fr;
           }
 
           .truck-grid {
@@ -756,110 +627,44 @@ export default async function HomePage() {
         }
 
         @media (max-width: 640px) {
-          .hero {
-            width: calc(100vw - 24px);
+          .hero-inner,
+          .choice-inner,
+          .section-head,
+          .truck-grid,
+          .sell-box {
+            width: calc(100vw - 22px);
           }
 
-          h1 {
-            font-size: 36px;
-            letter-spacing: -.06em;
+          .hero-inner {
+            padding: 30px 0 24px;
           }
 
-          .hero p {
+          .hero-copy h1 {
+            font-size: 34px;
+          }
+
+          .hero-copy p {
             font-size: 16px;
           }
 
-          .hero-actions {
-            display: grid;
+          .search-box {
             grid-template-columns: 1fr;
           }
 
-          .hero-actions .btn {
-            width: 100%;
-          }
-
-          .audience-row {
-            display: grid;
-            grid-template-columns: 1fr;
-          }
-
-          .audience-row a {
-            justify-content: center;
-          }
-
-          .hero-card {
-            min-height: 245px;
-            border-radius: 26px;
-          }
-
-          .hero-card img,
-          .hero-empty {
-            min-height: 245px;
-          }
-
-          .hero-card-info strong {
-            font-size: 20px;
-          }
-
-          .quick-filter,
-          .trust-panel {
-            width: calc(100vw - 24px);
-          }
-
-          .quick-filter {
-            grid-template-columns: 1fr;
-            margin-bottom: 18px;
-            padding: 12px;
-            border-radius: 20px;
-          }
-
-          .section-head {
-            width: calc(100vw - 24px);
-            align-items: start;
-          }
-
-          .section-head h2 {
-            font-size: 31px;
-          }
-
-          .truck-grid {
-            width: calc(100vw - 24px);
-            grid-template-columns: 1fr;
-            gap: 14px;
-          }
-
-          .photo {
-            height: 255px;
-          }
-
-          .truck-title {
-            min-height: auto;
-            font-size: 21px;
-          }
-
-          .price {
-            font-size: 27px;
-          }
-
-          .card-actions {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .details,
-          .whats {
-            min-height: 50px;
-            font-size: 14px;
-          }
-
+          .choice-head,
+          .section-head,
           .sell-box {
-            width: calc(100vw - 24px);
-            padding: 22px;
-            border-radius: 26px;
-            display: grid;
+            display: block;
           }
 
-          .sell-box .btn {
-            width: 100%;
+          .choice-grid,
+          .truck-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .section-head a,
+          .sell-box .btn-primary {
+            margin-top: 14px;
           }
         }
       `}</style>
