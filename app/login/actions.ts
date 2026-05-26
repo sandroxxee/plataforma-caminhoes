@@ -26,7 +26,7 @@ export async function entrar(formData: FormData) {
     erroLogin("E-mail ou senha inválidos.");
   }
 
-  let userId = data.user?.id;
+  let userId: string | undefined = data.user?.id;
 
   if (!userId) {
     const {
