@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
@@ -7,11 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type TruckImage = {
-  image_url: string | null;
-  principal: boolean | null;
-  ordem: number | null;
-};
+type TruckImage = { image_url: string | null; principal: boolean | null; ordem: number | null };
 
 type Truck = {
   id: string;
@@ -30,12 +25,7 @@ type Truck = {
 };
 
 type PageProps = {
-  searchParams?: Promise<{
-    marca?: string;
-    modelo?: string;
-    tracao?: string;
-    busca?: string;
-  }>;
+  searchParams?: Promise<{ marca?: string; modelo?: string; tracao?: string; busca?: string }>;
 };
 
 function clean(value?: string) {
@@ -44,12 +34,7 @@ function clean(value?: string) {
 
 function formatMoney(value: number | null) {
   if (!value) return "Sob consulta";
-
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
 function getImage(truck: Truck) {
@@ -72,7 +57,6 @@ function getWhatsappLink(truck: Truck) {
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
   const params = (await searchParams) || {};
-
   const marca = clean(params.marca);
   const modelo = clean(params.modelo);
   const tracao = clean(params.tracao);
@@ -102,559 +86,72 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       )
     `)
     .eq("status", "aprovado")
+    .eq("vendido", false)
     .order("created_at", { ascending: false });
 
-  if (marca) {
-    query = query.ilike("marca", `%${marca}%`);
-  }
-
-  if (modelo) {
-    query = query.or(`modelo.ilike.%${modelo}%,titulo.ilike.%${modelo}%`);
-  }
-
-  if (tracao) {
-    query = query.ilike("tracao", `%${tracao}%`);
-  }
-
-  if (busca) {
-    query = query.or(
-      [
-        `titulo.ilike.%${busca}%`,
-        `marca.ilike.%${busca}%`,
-        `modelo.ilike.%${busca}%`,
-        `carroceria.ilike.%${busca}%`,
-        `tracao.ilike.%${busca}%`,
-        `cidade.ilike.%${busca}%`,
-      ].join(",")
-    );
-  }
+  if (marca) query = query.ilike("marca", `%${marca}%`);
+  if (modelo) query = query.or(`modelo.ilike.%${modelo}%,titulo.ilike.%${modelo}%`);
+  if (tracao) query = query.ilike("tracao", `%${tracao}%`);
+  if (busca) query = query.ilike("titulo", `%${busca}%`);
 
   const { data } = await query;
   const trucks = (data || []) as Truck[];
-
   const temFiltro = Boolean(marca || modelo || tracao || busca);
 
   return (
     <main className="page">
       <PublicHeader />
 
-<section className="hero">
-        <span className="eyebrow">Estoque</span>
-        <h1>Caminhões disponíveis</h1>
-        <p>Filtre por marca, modelo, tração ou busca livre e fale direto pelo WhatsApp.</p>
-      </section>
-
-      <form className="filters" action="/anuncios">
-        <select name="marca" defaultValue={marca} aria-label="Marca">
-          <option value="">Todas as marcas</option>
-          <option value="Mercedes-Benz">Mercedes-Benz</option>
-          <option value="Volkswagen">Volkswagen</option>
-          <option value="Volvo">Volvo</option>
-          <option value="Scania">Scania</option>
-          <option value="Ford">Ford</option>
-          <option value="Iveco">Iveco</option>
-          <option value="DAF">DAF</option>
-        </select>
-
-        <input name="modelo" defaultValue={modelo} placeholder="Modelo" aria-label="Modelo" />
-
-        <select name="tracao" defaultValue={tracao} aria-label="Tração">
-          <option value="">Todas as trações</option>
-          <option value="4x2">4x2</option>
-          <option value="6x2">6x2</option>
-          <option value="6x4">6x4</option>
-          <option value="8x2">8x2</option>
-          <option value="8x4">8x4</option>
-        </select>
-
-        <input name="busca" defaultValue={busca} placeholder="Buscar por cidade, carroceria..." aria-label="Busca" />
-
-        <button type="submit">Buscar</button>
-
-        {temFiltro && (
-          <Link href="/anuncios" className="clear">
-            Limpar
-          </Link>
-        )}
-      </form>
-
-      <section className="result-head">
-        <div>
-          <span>{temFiltro ? "Resultado da pesquisa" : "Todos os anúncios"}</span>
-          <h2>
-            {trucks.length === 1
-              ? "1 caminhão encontrado"
-              : `${trucks.length} caminhões encontrados`}
-          </h2>
+      <section className="hero">
+        <div className="wrap heroContent">
+          <span className="kicker">▣ Estoque</span>
+          <h1>Caminhões disponíveis para <span>negociação.</span></h1>
+          <p>Filtre por marca, modelo ou tração e fale direto pelo WhatsApp.</p>
         </div>
       </section>
 
-      <section className="grid">
-        {trucks.length > 0 ? (
-          trucks.map((truck) => {
-            const title = getTitle(truck);
-            const image = getImage(truck);
+      <form className="wrap filters" action="/anuncios">
+        <div className="field"><label>Marca</label><select name="marca" defaultValue={marca}><option value="">Todas as marcas</option><option>Mercedes-Benz</option><option>Volkswagen</option><option>Volvo</option><option>Scania</option><option>Ford</option><option>Iveco</option><option>DAF</option></select></div>
+        <div className="field"><label>Modelo</label><input name="modelo" defaultValue={modelo} placeholder="Modelo" /></div>
+        <div className="field"><label>Tração</label><select name="tracao" defaultValue={tracao}><option value="">Todas as trações</option><option>4x2</option><option>6x2</option><option>6x4</option><option>8x2</option><option>8x4</option></select></div>
+        <div className="search"><input name="busca" defaultValue={busca} placeholder="Buscar no estoque..." /><button type="submit">⌕</button></div>
+        {temFiltro && <Link href="/anuncios" className="clear">Limpar</Link>}
+      </form>
 
-            return (
-              <article className="card" key={truck.id}>
-                <Link href={`/anuncios/${truck.id}`} className="photo">
-                  {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
-                  <em>Disponível</em>
-                </Link>
+      <section className="wrap titleRow">
+        <h2><span>▱</span> {temFiltro ? "Resultado da pesquisa" : "Todos os anúncios"} <small>{trucks.length} encontrados</small></h2>
+      </section>
 
-                <div className="content">
-                  <Link href={`/anuncios/${truck.id}`} className="title">
-                    {title}
-                  </Link>
+      <section className="wrap grid">
+        {trucks.length > 0 ? trucks.map((truck) => {
+          const title = getTitle(truck);
+          const image = getImage(truck);
 
-                  <div className="tags">
-                    <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
-                    <span>{truck.tracao || "Tração"}</span>
-                    <span>{truck.carroceria || "Carroceria"}</span>
-                  </div>
-
-                  <strong className="price">{formatMoney(truck.preco)}</strong>
-
-                  <small className="city">
-                    {truck.cidade || "Cidade"}{truck.estado ? `/${truck.estado}` : ""}
-                  </small>
-
-                  <div className="actions">
-                    <Link href={`/anuncios/${truck.id}`} className="details">Ver detalhes</Link>
-                    {truck.whatsapp && (
-                      <a href={getWhatsappLink(truck)} target="_blank" className="whats">
-                        WhatsApp
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </article>
-            );
-          })
-        ) : (
-          <div className="empty">
-            <h3>Nenhum anúncio encontrado.</h3>
-            <p>Limpe os filtros ou tente pesquisar por outra marca, modelo ou tração.</p>
-            <Link href="/anuncios">Ver todos os anúncios</Link>
-          </div>
+          return (
+            <article className="card" key={truck.id}>
+              <Link href={`/anuncios/${truck.id}`} className="photo">
+                <em>{truck.carroceria || "Caminhão"}</em>
+                <b>♡</b>
+                {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
+              </Link>
+              <div className="body">
+                <Link href={`/anuncios/${truck.id}`} className="truckTitle">{title}</Link>
+                <div className="meta"><span>▣ {truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span><span>⚙ {truck.tracao || "Tração"}</span><span>⌖ {truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span></div>
+                <strong>{formatMoney(truck.preco)}</strong>
+                <small>À vista / negociação direta</small>
+                <div className="actions"><Link href={`/anuncios/${truck.id}`}>◉ Ver detalhes</Link>{truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer">☘</a>}</div>
+              </div>
+            </article>
+          );
+        }) : (
+          <div className="empty"><h3>Nenhum anúncio encontrado.</h3><p>Limpe os filtros ou tente outra busca.</p><Link href="/anuncios">Ver todos os anúncios</Link></div>
         )}
       </section>
 
       <SiteFooter />
 
       <style>{`
-        .page {
-          min-height: 100vh;
-          background:
-            radial-gradient(circle at 18% 8%, rgba(34,197,94,.14), transparent 30%),
-            linear-gradient(135deg, #020617 0%, #071f1b 55%, #020617 100%);
-          color: white;
-          overflow-x: hidden;
-          padding-bottom: 46px;
-        }
-
-        .topbar {
-          width: min(1240px, calc(100vw - 32px));
-          min-height: 76px;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-
-        .brand {
-          display: inline-flex;
-          align-items: center;
-          color: white;
-          text-decoration: none;
-          min-width: 0;
-        }
-
-        .brand img {
-          width: 190px;
-          height: auto;
-          object-fit: contain;
-          display: block;
-        }
-
-        nav {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        nav a {
-          min-height: 42px;
-          padding: 0 14px;
-          border-radius: 14px;
-          color: white;
-          text-decoration: none;
-          font-weight: 850;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.10);
-          white-space: nowrap;
-        }
-
-        nav .announce {
-          background: #22c55e;
-          color: #052e16;
-          border-color: transparent;
-        }
-
-        .hero {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 34px auto 22px;
-        }
-
-        .eyebrow,
-        .result-head span {
-          display: inline-flex;
-          min-height: 30px;
-          align-items: center;
-          padding: 0 12px;
-          border-radius: 999px;
-          background: rgba(34,197,94,.12);
-          color: #86efac;
-          border: 1px solid rgba(34,197,94,.22);
-          font-size: 12px;
-          font-weight: 950;
-          text-transform: uppercase;
-          letter-spacing: .06em;
-        }
-
-        .hero h1 {
-          margin: 16px 0 8px;
-          font-size: clamp(38px, 5vw, 64px);
-          line-height: .98;
-          letter-spacing: -.06em;
-        }
-
-        .hero p {
-          max-width: 760px;
-          margin: 0;
-          color: #cbd5e1;
-          font-size: 18px;
-          line-height: 1.55;
-        }
-
-        .filters {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 28px;
-          padding: 12px;
-          border-radius: 22px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.11);
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr 1.3fr auto auto;
-          gap: 10px;
-        }
-
-        .filters select,
-        .filters input,
-        .filters button,
-        .filters .clear {
-          min-height: 50px;
-          border-radius: 15px;
-          border: 1px solid rgba(255,255,255,.12);
-          background: rgba(2,6,23,.66);
-          color: white;
-          padding: 0 14px;
-          font-size: 15px;
-          font-weight: 800;
-          outline: none;
-          min-width: 0;
-          box-sizing: border-box;
-        }
-
-        .filters button {
-          background: #22c55e;
-          color: #052e16;
-          border-color: transparent;
-          cursor: pointer;
-          padding: 0 22px;
-        }
-
-        .filters .clear {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          background: rgba(239,68,68,.10);
-          color: #fecaca;
-          border-color: rgba(239,68,68,.20);
-        }
-
-        .result-head {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 18px;
-        }
-
-        .result-head h2 {
-          margin: 12px 0 0;
-          font-size: clamp(28px, 4vw, 44px);
-          line-height: 1.05;
-          letter-spacing: -.04em;
-        }
-
-        .grid {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 16px;
-        }
-
-        .card {
-          border-radius: 24px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.10);
-          overflow: hidden;
-          min-width: 0;
-        }
-
-        .photo {
-          height: 220px;
-          display: block;
-          background: rgba(15,23,42,.92);
-          overflow: hidden;
-          text-decoration: none;
-          position: relative;
-          color: #94a3b8;
-        }
-
-        .photo img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-
-        .photo em {
-          position: absolute;
-          left: 10px;
-          top: 10px;
-          padding: 6px 10px;
-          border-radius: 999px;
-          background: #22c55e;
-          color: #052e16;
-          font-style: normal;
-          font-size: 11px;
-          font-weight: 950;
-          text-transform: uppercase;
-        }
-
-        .photo span {
-          height: 100%;
-          display: grid;
-          place-items: center;
-          font-weight: 900;
-        }
-
-        .content {
-          padding: 16px;
-        }
-
-        .title {
-          min-height: 48px;
-          display: block;
-          color: white;
-          text-decoration: none;
-          font-size: 19px;
-          line-height: 1.22;
-          font-weight: 950;
-          overflow-wrap: anywhere;
-        }
-
-        .tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin: 12px 0;
-        }
-
-        .tags span {
-          padding: 6px 8px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.08);
-          color: #cbd5e1;
-          font-size: 12px;
-          font-weight: 850;
-        }
-
-        .price {
-          display: block;
-          color: #86efac;
-          font-size: 24px;
-          line-height: 1.1;
-          margin-bottom: 6px;
-        }
-
-        .city {
-          display: block;
-          color: #94a3b8;
-          font-size: 13px;
-          margin-bottom: 14px;
-        }
-
-        .actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-        }
-
-        .details,
-        .whats {
-          min-height: 48px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          text-decoration: none;
-          font-weight: 950;
-          padding: 0 10px;
-        }
-
-        .details {
-          color: white;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.12);
-        }
-
-        .whats {
-          color: #052e16;
-          background: #22c55e;
-        }
-
-        .empty {
-          grid-column: 1 / -1;
-          padding: 34px;
-          border-radius: 26px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.10);
-        }
-
-        .empty h3 {
-          margin: 0 0 8px;
-          font-size: 26px;
-        }
-
-        .empty p {
-          margin: 0 0 18px;
-          color: #cbd5e1;
-        }
-
-        .empty a {
-          display: inline-flex;
-          min-height: 48px;
-          align-items: center;
-          justify-content: center;
-          padding: 0 18px;
-          border-radius: 14px;
-          background: #22c55e;
-          color: #052e16;
-          text-decoration: none;
-          font-weight: 950;
-        }
-
-        @media (max-width: 1100px) {
-          .filters {
-            grid-template-columns: 1fr 1fr 1fr;
-          }
-
-          .grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 820px) {
-          .filters {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 620px) {
-          .topbar {
-            width: calc(100vw - 24px);
-            min-height: auto;
-            padding: 10px 0;
-            align-items: center;
-          }
-
-          .brand img {
-            width: 142px;
-          }
-
-          nav {
-            gap: 7px;
-          }
-
-          nav a {
-            min-height: 38px;
-            padding: 0 10px;
-            font-size: 12px;
-          }
-
-          nav a:first-child {
-            display: none;
-          }
-
-          .hero,
-          .filters,
-          .result-head,
-          .grid {
-            width: calc(100vw - 24px);
-          }
-
-          .hero {
-            margin-top: 22px;
-          }
-
-          .hero h1 {
-            font-size: 38px;
-          }
-
-          .hero p {
-            font-size: 16px;
-          }
-
-          .filters {
-            grid-template-columns: 1fr;
-            border-radius: 20px;
-          }
-
-          .filters button,
-          .filters .clear {
-            width: 100%;
-          }
-
-          .grid {
-            grid-template-columns: 1fr;
-            gap: 14px;
-          }
-
-          .photo {
-            height: 255px;
-          }
-
-          .title {
-            min-height: auto;
-            font-size: 21px;
-          }
-
-          .price {
-            font-size: 27px;
-          }
-        }
+        .page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero{margin-top:-90px;min-height:360px;display:flex;align-items:end;background:linear-gradient(90deg,rgba(2,6,8,.96),rgba(2,6,8,.72) 45%,rgba(2,6,8,.25));border-bottom:1px solid rgba(255,255,255,.08)}.heroContent{padding:150px 0 62px}.kicker{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.32);color:#bbf7d0;font-size:12px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}h1{margin:18px 0 12px;font-size:clamp(38px,5vw,64px);line-height:1.02;letter-spacing:-.055em;max-width:760px}h1 span,.titleRow h2 span{color:var(--green)}.hero p{margin:0;max-width:620px;color:#d7dee8;font-size:17px;line-height:1.55}.filters{position:relative;z-index:5;margin:-38px auto 34px;padding:14px;border-radius:16px;display:grid;grid-template-columns:1fr 1fr 1fr minmax(220px,1.3fr) auto;background:linear-gradient(180deg,rgba(14,20,22,.92),rgba(9,14,16,.86));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);backdrop-filter:blur(16px);overflow:hidden}.field{min-height:68px;display:grid;align-content:center;gap:6px;padding:0 18px;border-right:1px solid rgba(255,255,255,.09)}.field label{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.field select,.field input,.search input{width:100%;border:0;outline:0;background:transparent;color:#f8fafc;font-size:14px;font-weight:850}.field option{background:#0b1114;color:white}.search{display:grid;grid-template-columns:1fr 58px;align-items:center;padding-left:18px}.search input{min-height:54px;padding:0 16px;border-radius:8px 0 0 8px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);border-right:0}.search button{min-height:54px;border:0;border-radius:0 8px 8px 0;background:var(--green);color:#042913;font-size:22px;cursor:pointer}.clear{min-height:54px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;color:#fecaca;text-decoration:none;font-weight:950}.titleRow{margin:22px auto 18px}.titleRow h2{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:clamp(26px,3vw,36px);letter-spacing:-.035em}.titleRow small{min-height:28px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.28);color:#86efac;font-size:12px;display:inline-flex;align-items:center}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px}.card{overflow:hidden;border-radius:10px;background:linear-gradient(180deg,rgba(16,23,26,.94),rgba(8,13,15,.94));border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 45px rgba(0,0,0,.22)}.photo{position:relative;aspect-ratio:1.55/1;overflow:hidden;background:#111827;display:block;color:#94a3b8;text-decoration:none}.photo img{width:100%;height:100%;object-fit:cover;display:block}.photo i{height:100%;display:grid;place-items:center;font-style:normal;font-weight:900}.photo em{position:absolute;left:10px;top:10px;z-index:2;min-height:24px;padding:0 9px;border-radius:5px;background:rgba(34,197,94,.92);color:#052e16;font-size:10px;font-weight:950;text-transform:uppercase;font-style:normal}.photo b{position:absolute;right:10px;top:10px;z-index:2;width:31px;height:31px;border-radius:999px;display:grid;place-items:center;background:rgba(2,6,8,.42);border:1px solid rgba(255,255,255,.14);color:white}.body{padding:14px}.truckTitle{display:block;min-height:42px;color:white;text-decoration:none;font-size:17px;line-height:1.18;font-weight:950}.meta{display:flex;flex-wrap:wrap;gap:9px 12px;margin:10px 0 12px;color:#cbd5e1;font-size:12px;font-weight:800}.body strong{display:block;margin-bottom:4px;color:var(--green);font-size:22px}.body small{color:#aeb7c3;font-size:12px;font-weight:800}.actions{display:grid;grid-template-columns:1fr 44px;gap:10px;margin-top:13px}.actions a{min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-size:12px;font-weight:950;text-transform:uppercase;text-decoration:none}.actions a:first-child{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:white}.actions a:last-child{background:var(--green);color:#042913}.empty{grid-column:1/-1;padding:28px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);color:#dbeafe}.empty a{color:#86efac;font-weight:950}@media(max-width:1120px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.search{grid-column:1/-1;padding:10px 0 0}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:440px}.heroContent{padding:235px 0 44px}h1{font-size:38px}.filters{margin-top:-22px;grid-template-columns:1fr}.field{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.search{grid-template-columns:1fr 54px}.grid{grid-template-columns:1fr}}
       `}</style>
     </main>
   );
