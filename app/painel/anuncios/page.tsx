@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { CSSProperties } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { excluirMeuAnuncio } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -87,7 +88,7 @@ export default async function MeusAnunciosPage() {
                 <Link href={`/painel/anuncios/${truck.id}/editar`} style={styles.edit}>Editar</Link>
                 <form action={excluirMeuAnuncio}>
                   <input type="hidden" name="id" value={truck.id} />
-                  <button style={styles.delete}>Excluir</button>
+                  <ConfirmDeleteButton message={`Tem certeza que deseja excluir o anúncio ${truck.titulo || "selecionado"}?`} />
                 </form>
               </div>
             </article>
@@ -159,15 +160,6 @@ const styles: Record<string, CSSProperties> = {
     color: "white",
     textDecoration: "none",
     fontWeight: 900,
-  },
-  delete: {
-    border: 0,
-    padding: "10px 12px",
-    borderRadius: 12,
-    background: "rgba(239,68,68,.16)",
-    color: "#fecaca",
-    fontWeight: 900,
-    cursor: "pointer",
   },
   empty: {
     padding: 24,
