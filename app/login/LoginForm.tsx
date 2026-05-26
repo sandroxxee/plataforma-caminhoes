@@ -1,13 +1,65 @@
+"use client";
+
 import Link from "next/link";
-import { entrar } from "./actions";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-type LoginFormProps = {
-  erro?: string;
-};
+export function LoginForm() {
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
-export function LoginForm({ erro }: LoginFormProps) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setErro("");
+    setCarregando(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") || "").trim().toLowerCase();
+    const senha = String(formData.get("senha") || "");
+
+    if (!email || !senha) {
+      setErro("Informe e-mail e senha.");
+      setCarregando(false);
+      return;
+    }
+
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
+
+    if (error) {
+      setErro("E-mail ou senha inválidos.");
+      setCarregando(false);
+      return;
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setErro("Não foi possível manter a sessão. Tente novamente.");
+      setCarregando(false);
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const destino = profile?.role === "admin" ? "/admin/pendentes" : "/painel";
+
+    window.location.href = destino;
+  }
+
   return (
-    <form action={entrar} className="card">
+    <form onSubmit={handleSubmit} className="card">
       <h2>Login</h2>
 
       {erro && <div className="error">{erro}</div>}
@@ -22,7 +74,9 @@ export function LoginForm({ erro }: LoginFormProps) {
         <input name="senha" type="password" placeholder="Sua senha" required autoComplete="current-password" />
       </label>
 
-      <button type="submit">Entrar</button>
+      <button type="submit" disabled={carregando}>
+        {carregando ? "Entrando..." : "Entrar"}
+      </button>
 
       <p className="login-text">
         Ainda não tem conta? <Link href="/cadastro">Criar cadastro</Link>
@@ -90,6 +144,11 @@ export function LoginForm({ erro }: LoginFormProps) {
           font-weight: 950;
           cursor: pointer;
           margin-top: 4px;
+        }
+
+        button:disabled {
+          opacity: .72;
+          cursor: not-allowed;
         }
 
         .login-text {
