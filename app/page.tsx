@@ -83,590 +83,254 @@ export default async function HomePage() {
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(8);
 
   const trucks = (data || []) as Truck[];
+  const heroImage = trucks[0] ? getImage(trucks[0]) : "";
 
   return (
-    <main className="home-page">
+    <main className="home-page" id="topo">
       <PublicHeader />
 
-      <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-copy">
-            <h1>Caminhões usados à venda</h1>
-            <p>Compra e venda de caminhões com contato direto pelo WhatsApp.</p>
-
-            <form className="search-box" action="/anuncios">
-              <input name="modelo" placeholder="Buscar caminhão, marca ou modelo" aria-label="Buscar caminhão" />
-              <button type="submit">Buscar</button>
-            </form>
-          </div>
-
-          <div className="hero-side">
-            <strong>Atendimento direto</strong>
-            <span>Veja anúncios disponíveis, confira os dados principais e chame pelo WhatsApp.</span>
+      <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)), linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95)), url(${heroImage})` } : undefined}>
+        <div className="wrap hero-content">
+          <span className="kicker">▣ Estoque atualizado</span>
+          <h1>Caminhões selecionados para o <span>seu negócio.</span></h1>
+          <p>Cavalos mecânicos, trucks, tocos e implementos. Encontre caminhões anunciados com dados claros e contato direto pelo WhatsApp.</p>
+          <div className="hero-actions">
+            <Link className="btn btn-primary" href="/anuncios">🔎 Ver estoque</Link>
+            <Link className="btn btn-ghost" href="/#contato">Falar com atendimento</Link>
           </div>
         </div>
       </section>
 
-      <section className="choice-section">
-        <div className="choice-inner">
-          <div className="choice-head">
-            <h2>Comprar ou vender caminhão</h2>
-            <p>Escolha uma opção e avance direto para os anúncios ou atendimento.</p>
-          </div>
-
-          <div className="choice-grid">
-            <Link href="/anuncios" className="choice-card">
-              <span>Comprar</span>
-              <strong>Ver caminhões anunciados</strong>
-              <em>Ver anúncios →</em>
-            </Link>
-
-            <Link href="/anunciar" className="choice-card sell">
-              <span>Vender</span>
-              <strong>Anunciar meu caminhão</strong>
-              <em>Anunciar agora →</em>
-            </Link>
-          </div>
+      <form className="wrap filter-panel" action="/anuncios" aria-label="Filtros do estoque">
+        <div className="filter-field">
+          <label>Marca</label>
+          <select name="marca" defaultValue="">
+            <option value="">Todas as marcas</option>
+            <option>Mercedes-Benz</option>
+            <option>Scania</option>
+            <option>Volvo</option>
+            <option>Volkswagen</option>
+            <option>Ford</option>
+            <option>Iveco</option>
+            <option>DAF</option>
+          </select>
         </div>
+
+        <div className="filter-field">
+          <label>Tipo</label>
+          <select name="carroceria" defaultValue="">
+            <option value="">Todos os tipos</option>
+            <option>Cavalo mecânico</option>
+            <option>Truck</option>
+            <option>Toco</option>
+            <option>Implemento</option>
+          </select>
+        </div>
+
+        <div className="filter-field">
+          <label>Tração</label>
+          <select name="tracao" defaultValue="">
+            <option value="">Todas as trações</option>
+            <option>4x2</option>
+            <option>6x2</option>
+            <option>6x4</option>
+            <option>8x4</option>
+          </select>
+        </div>
+
+        <div className="filter-field">
+          <label>Localização</label>
+          <select name="estado" defaultValue="">
+            <option value="">Todas as regiões</option>
+            <option value="SC">Santa Catarina</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="PR">Paraná</option>
+          </select>
+        </div>
+
+        <div className="search-box">
+          <input name="busca" placeholder="Buscar modelo, marca..." />
+          <button type="submit" aria-label="Buscar">⌕</button>
+        </div>
+      </form>
+
+      <section className="wrap section-title" id="estoque">
+        <h2><span>▱</span> Caminhões disponíveis <small className="pill">{trucks.length} anúncios</small></h2>
+        <Link href="/anuncios" className="view-all">Ver todos</Link>
       </section>
 
-      <section className="section-head">
-        <div>
-          <h2>Anúncios em destaque</h2>
-          <p>Caminhões disponíveis com foto, valor, cidade e contato direto.</p>
-        </div>
-        <Link href="/anuncios">Ver todos os anúncios</Link>
-      </section>
-
-      <section className="truck-grid">
+      <section className="wrap truck-grid">
         {trucks.length > 0 ? (
           trucks.map((truck) => {
-            const image = getImage(truck);
             const title = getTitle(truck);
+            const image = getImage(truck);
 
             return (
               <article className="truck-card" key={truck.id}>
-                <Link href={`/anuncios/${truck.id}`} className="photo">
-                  {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
-                  <em>Disponível</em>
+                <Link href={`/anuncios/${truck.id}`} className="truck-photo">
+                  <span className="badge">{truck.carroceria || "Caminhão"}</span>
+                  <span className="heart">♡</span>
+                  {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
                 </Link>
-
-                <div className="card-content">
-                  <Link href={`/anuncios/${truck.id}`} className="truck-title">
-                    {title}
-                  </Link>
-
-                  <div className="tags">
-                    <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
-                    <span>{truck.tracao || "Tração"}</span>
-                    <span>{truck.carroceria || "Tipo"}</span>
+                <div className="card-body">
+                  <Link className="truck-title" href={`/anuncios/${truck.id}`}>{title}</Link>
+                  <div className="meta">
+                    <span>▣ {truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
+                    <span>⚙ {truck.tracao || "Tração"}</span>
+                    <span>⌖ {truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span>
                   </div>
-
                   <strong className="price">{formatMoney(truck.preco)}</strong>
-
-                  <small className="city">
-                    {truck.cidade || "Cidade"}{truck.estado ? `/${truck.estado}` : ""}
-                  </small>
-
+                  <small className="payment">À vista / negociação direta</small>
                   <div className="card-actions">
-                    <Link href={`/anuncios/${truck.id}`} className="details">Detalhes</Link>
-                    {truck.whatsapp && (
-                      <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" className="whats">
-                        WhatsApp
-                      </a>
-                    )}
+                    <Link className="details" href={`/anuncios/${truck.id}`}>◉ Ver detalhes</Link>
+                    {truck.whatsapp && <a className="whats" href={getWhatsappLink(truck)} target="_blank" rel="noreferrer">☘</a>}
                   </div>
                 </div>
               </article>
             );
           })
         ) : (
-          <div className="empty">
+          <div className="empty-state">
             <h3>Nenhum caminhão aprovado ainda.</h3>
             <p>Assim que os anúncios forem aprovados, eles aparecem aqui automaticamente.</p>
           </div>
         )}
       </section>
 
-      <section className="sell-box">
+      <section className="wrap trust-bar" aria-label="Diferenciais">
+        <div className="trust-item"><span className="trust-icon">▱</span><span><strong>Negociação direta</strong><small>Contato pelo WhatsApp</small></span></div>
+        <div className="trust-item"><span className="trust-icon">▤</span><span><strong>Dados organizados</strong><small>Foto, valor, cidade e detalhes</small></span></div>
+        <div className="trust-item"><span className="trust-icon">▰</span><span><strong>Estoque atualizado</strong><small>Anúncios aprovados</small></span></div>
+        <div className="trust-item"><span className="trust-icon">☘</span><span><strong>Atendimento rápido</strong><small>Compra e venda sem complicar</small></span></div>
+      </section>
+
+      <section className="wrap sell-section" id="anunciar">
         <div>
-          <h2>Quer anunciar seu caminhão?</h2>
-          <p>Envie marca, modelo, ano, valor, cidade, fotos e informe se aceita troca.</p>
+          <span className="kicker">Para vendedores</span>
+          <h2>Anuncie seu caminhão com aparência profissional.</h2>
+          <p>Envie dados, fotos e localização. A troca entra como uma opção marcada dentro do anúncio, não como uma aba separada.</p>
+          <div className="hero-actions"><Link className="btn btn-primary" href="/anunciar">Começar anúncio</Link></div>
         </div>
-        <Link href="/anunciar" className="btn-primary">Anunciar pelo WhatsApp</Link>
+        <div className="steps"><div className="step"><b>1</b> Dados e fotos</div><div className="step"><b>2</b> Revisão do anúncio</div><div className="step"><b>3</b> Publicação e contatos</div></div>
+      </section>
+
+      <section className="wrap about-section" id="sobre">
+        <div>
+          <span className="kicker">Sobre</span>
+          <h2>Uma vitrine direta para caminhões reais.</h2>
+          <p>Visual focado em confiança, leitura rápida, preço claro e contato simples. Sem excesso de informação e sem aparência artificial.</p>
+        </div>
+        <div className="steps"><div className="step"><b>✓</b> Cards organizados</div><div className="step"><b>✓</b> WhatsApp em destaque</div><div className="step"><b>✓</b> Layout responsivo</div></div>
+      </section>
+
+      <section className="wrap contact-section" id="contato">
+        <div>
+          <span className="kicker">Contato</span>
+          <h2>Quer comprar ou vender?</h2>
+          <p>Use o WhatsApp para consultar caminhões disponíveis, enviar proposta ou solicitar anúncio.</p>
+        </div>
+        <div className="hero-actions"><a className="btn btn-primary" href="https://wa.me/5549999999999" target="_blank" rel="noreferrer">Fale no WhatsApp</a></div>
       </section>
 
       <SiteFooter />
 
       <style>{`
+        :global(html) { scroll-behavior: smooth; }
         .home-page {
+          --green: #22c55e;
+          --text: #f8fafc;
+          --muted: #cbd5e1;
           min-height: 100vh;
-          background: #f4f5f7;
-          color: #151515;
+          color: var(--text);
+          background:
+            radial-gradient(circle at 8% 5%, rgba(34,197,94,.17), transparent 28%),
+            radial-gradient(circle at 82% 12%, rgba(34,197,94,.10), transparent 24%),
+            linear-gradient(135deg, #020506 0%, #06110e 48%, #030608 100%);
           overflow-x: hidden;
         }
-
+        .home-page::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          opacity: .16;
+          background-image: linear-gradient(rgba(34,197,94,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,.10) 1px, transparent 1px);
+          background-size: 78px 78px;
+          mask-image: linear-gradient(to bottom, black, transparent 74%);
+        }
+        .wrap { width: min(1240px, calc(100vw - 32px)); margin: 0 auto; }
         .hero {
-          background: #ffffff;
-          border-bottom: 1px solid #e2e6ec;
-        }
-
-        .hero-inner {
-          width: min(1180px, calc(100vw - 32px));
-          margin: 0 auto;
-          padding: 46px 0 34px;
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) 320px;
-          gap: 28px;
-          align-items: center;
-        }
-
-        .hero-copy h1 {
-          margin: 0;
-          max-width: 680px;
-          font-size: clamp(34px, 4vw, 54px);
-          line-height: 1.04;
-          letter-spacing: -.045em;
-          color: #151515;
-        }
-
-        .hero-copy p {
-          max-width: 620px;
-          margin: 12px 0 0;
-          color: #69717d;
-          font-size: 18px;
-          line-height: 1.55;
-        }
-
-        .search-box {
-          max-width: 720px;
-          margin-top: 24px;
-          padding: 8px;
-          display: grid;
-          grid-template-columns: 1fr auto;
-          gap: 8px;
-          background: #f4f5f7;
-          border: 1px solid #e2e6ec;
-          border-radius: 18px;
-        }
-
-        .search-box input {
-          width: 100%;
-          min-height: 50px;
-          border: 0;
-          outline: 0;
-          background: white;
-          color: #20252c;
-          border-radius: 13px;
-          padding: 0 15px;
-          font-size: 15px;
-        }
-
-        .search-box button,
-        .btn-primary {
-          min-height: 50px;
-          padding: 0 20px;
-          border: 0;
-          border-radius: 13px;
-          background: #20252c;
-          color: white;
-          font-weight: 900;
-          cursor: pointer;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          white-space: nowrap;
-        }
-
-        .hero-side {
-          padding: 24px;
-          min-height: 150px;
-          border-radius: 24px;
-          background: linear-gradient(135deg, #20252c, #333b46);
-          color: white;
-          box-shadow: 0 16px 34px rgba(32,37,44,.16);
-        }
-
-        .hero-side strong {
-          display: block;
-          font-size: 22px;
-          letter-spacing: -.04em;
-          margin-bottom: 8px;
-        }
-
-        .hero-side span {
-          display: block;
-          color: rgba(255,255,255,.76);
-          font-size: 15px;
-          line-height: 1.5;
-        }
-
-        .choice-section {
-          padding: 26px 0;
-        }
-
-        .choice-inner {
-          width: min(1180px, calc(100vw - 32px));
-          margin: 0 auto;
-          background: white;
-          border: 1px solid #e2e6ec;
-          border-radius: 24px;
-          padding: 22px;
-          box-shadow: 0 12px 28px rgba(16,24,40,.05);
-        }
-
-        .choice-head {
-          display: flex;
-          justify-content: space-between;
-          gap: 18px;
-          align-items: end;
-          margin-bottom: 16px;
-        }
-
-        .choice-head h2 {
-          margin: 0;
-          color: #151515;
-          font-size: clamp(24px, 3vw, 34px);
-          letter-spacing: -.04em;
-        }
-
-        .choice-head p {
-          margin: 0;
-          color: #69717d;
-          max-width: 440px;
-        }
-
-        .choice-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 14px;
-        }
-
-        .choice-card {
-          min-height: 155px;
-          padding: 22px;
-          border-radius: 20px;
-          background: #f8fafc;
-          border: 1px solid #e2e6ec;
-          text-decoration: none;
-          color: #20252c;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          transition: .2s ease;
-        }
-
-        .choice-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 16px 32px rgba(16,24,40,.08);
-        }
-
-        .choice-card span {
-          width: max-content;
-          min-height: 32px;
-          padding: 0 12px;
-          border-radius: 999px;
-          background: #20252c;
-          color: white;
-          display: inline-flex;
-          align-items: center;
-          font-size: 13px;
-          font-weight: 900;
-        }
-
-        .choice-card.sell span {
-          background: #1faa59;
-        }
-
-        .choice-card strong {
-          display: block;
-          margin-top: 16px;
-          font-size: 24px;
-          letter-spacing: -.04em;
-        }
-
-        .choice-card em {
-          color: #69717d;
-          font-style: normal;
-          font-weight: 900;
-        }
-
-        .section-head {
-          width: min(1180px, calc(100vw - 32px));
-          margin: 20px auto 18px;
-          display: flex;
-          align-items: end;
-          justify-content: space-between;
-          gap: 18px;
-        }
-
-        .section-head h2 {
-          margin: 0;
-          color: #151515;
-          font-size: clamp(28px, 4vw, 42px);
-          letter-spacing: -.05em;
-        }
-
-        .section-head p {
-          margin: 6px 0 0;
-          color: #69717d;
-        }
-
-        .section-head a {
-          min-height: 42px;
-          padding: 0 15px;
-          border-radius: 999px;
-          color: #20252c;
-          background: white;
-          border: 1px solid #e2e6ec;
-          text-decoration: none;
-          font-weight: 900;
-          display: inline-flex;
-          align-items: center;
-          white-space: nowrap;
-        }
-
-        .truck-grid {
-          width: min(1180px, calc(100vw - 32px));
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 18px;
-        }
-
-        .truck-card {
-          background: white;
-          border: 1px solid #e2e6ec;
-          border-radius: 22px;
-          overflow: hidden;
-          box-shadow: 0 12px 28px rgba(16,24,40,.06);
-        }
-
-        .photo {
           position: relative;
-          display: block;
-          aspect-ratio: 1 / 1;
-          background: #eef1f5;
+          margin-top: -90px;
+          min-height: 500px;
+          display: flex;
+          align-items: end;
           overflow: hidden;
-          color: #69717d;
-          text-decoration: none;
+          background:
+            linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)),
+            linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95));
+          background-size: cover;
+          background-position: center top;
+          border-bottom: 1px solid rgba(255,255,255,.08);
         }
-
-        .photo img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-
-        .photo > span {
-          height: 100%;
-          display: grid;
-          place-items: center;
-          font-weight: 900;
-        }
-
-        .photo em {
-          position: absolute;
-          left: 12px;
-          top: 12px;
-          padding: 7px 10px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.94);
-          color: #20252c;
-          font-style: normal;
-          font-size: 12px;
-          font-weight: 900;
-          box-shadow: 0 8px 18px rgba(0,0,0,.12);
-        }
-
-        .card-content {
-          padding: 16px;
-        }
-
-        .truck-title {
-          color: #151515;
-          text-decoration: none;
-          font-size: 21px;
-          line-height: 1.15;
-          letter-spacing: -.04em;
-          font-weight: 950;
-          display: block;
-        }
-
-        .tags {
-          margin: 10px 0 12px;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 7px;
-        }
-
-        .tags span {
-          min-height: 29px;
-          padding: 0 9px;
-          border-radius: 999px;
-          background: #f1f3f6;
-          color: #485260;
-          display: inline-flex;
-          align-items: center;
-          font-size: 12px;
-          font-weight: 800;
-        }
-
-        .price {
-          color: #20252c;
-          font-size: 20px;
-          display: block;
-          margin-bottom: 2px;
-        }
-
-        .city {
-          color: #69717d;
-          font-size: 13px;
-          font-weight: 800;
-        }
-
-        .card-actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-          border-top: 1px solid #e2e6ec;
-          margin-top: 14px;
-          padding-top: 14px;
-        }
-
-        .details,
-        .whats {
-          min-height: 40px;
-          border-radius: 999px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          font-weight: 900;
-          font-size: 13px;
-        }
-
-        .details {
-          color: #20252c;
-          background: #f4f5f7;
-          border: 1px solid #e2e6ec;
-        }
-
-        .whats {
-          color: white;
-          background: #1faa59;
-        }
-
-        .empty {
-          grid-column: 1 / -1;
-          background: white;
-          border: 1px solid #e2e6ec;
-          border-radius: 22px;
-          padding: 28px;
-          color: #20252c;
-        }
-
-        .empty h3 {
-          margin: 0 0 6px;
-        }
-
-        .empty p {
-          margin: 0;
-          color: #69717d;
-        }
-
-        .sell-box {
-          width: min(1180px, calc(100vw - 32px));
-          margin: 28px auto 42px;
-          padding: 30px;
-          border-radius: 26px;
-          background: #20252c;
-          color: white;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 20px;
-          box-shadow: 0 18px 38px rgba(32,37,44,.16);
-        }
-
-        .sell-box h2 {
-          margin: 0;
-          font-size: clamp(26px, 4vw, 38px);
-          letter-spacing: -.05em;
-        }
-
-        .sell-box p {
-          max-width: 680px;
-          margin: 8px 0 0;
-          color: rgba(255,255,255,.74);
-          font-size: 16px;
-          line-height: 1.5;
-        }
-
-        .sell-box .btn-primary {
-          background: #1faa59;
-        }
-
-        @media (max-width: 900px) {
-          .hero-inner {
-            grid-template-columns: 1fr;
-          }
-
-          .hero-side {
-            min-height: auto;
-          }
-
-          .truck-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 640px) {
-          .hero-inner,
-          .choice-inner,
-          .section-head,
-          .truck-grid,
-          .sell-box {
-            width: calc(100vw - 22px);
-          }
-
-          .hero-inner {
-            padding: 30px 0 24px;
-          }
-
-          .hero-copy h1 {
-            font-size: 34px;
-          }
-
-          .hero-copy p {
-            font-size: 16px;
-          }
-
-          .search-box {
-            grid-template-columns: 1fr;
-          }
-
-          .choice-head,
-          .section-head,
-          .sell-box {
-            display: block;
-          }
-
-          .choice-grid,
-          .truck-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .section-head a,
-          .sell-box .btn-primary {
-            margin-top: 14px;
-          }
-        }
+        .hero::after { content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(circle at 15% 30%, rgba(34,197,94,.12), transparent 26%), linear-gradient(90deg, rgba(2,6,8,.68), transparent 60%); }
+        .hero-content { position:relative; z-index:2; padding:160px 0 84px; width:min(670px,100%); }
+        .kicker { display:inline-flex; align-items:center; gap:9px; min-height:34px; padding:0 13px; border-radius:999px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.32); color:#bbf7d0; font-size:12px; font-weight:950; letter-spacing:.07em; text-transform:uppercase; }
+        h1 { margin:18px 0 16px; font-size:clamp(38px,5.4vw,68px); line-height:1.02; letter-spacing:-.055em; max-width:640px; }
+        h1 span { color:var(--green); }
+        .hero p { margin:0; max-width:520px; color:#d7dee8; font-size:17px; line-height:1.55; }
+        .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:27px; }
+        .btn { min-height:52px; display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:0 22px; border-radius:8px; border:1px solid rgba(255,255,255,.15); font-size:13px; font-weight:950; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
+        .btn-primary { background:var(--green); color:#03220f; border-color:transparent; }
+        .btn-ghost { background:rgba(3,7,10,.58); color:#f8fafc; }
+        .filter-panel { position:relative; z-index:5; margin:-38px auto 34px; padding:14px; border-radius:16px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr minmax(220px,1.3fr); gap:0; background:linear-gradient(180deg, rgba(14,20,22,.92), rgba(9,14,16,.86)); border:1px solid rgba(255,255,255,.12); box-shadow:0 22px 54px rgba(0,0,0,.30); backdrop-filter:blur(16px); overflow:hidden; }
+        .filter-field { min-height:68px; display:grid; align-content:center; gap:6px; padding:0 18px; border-right:1px solid rgba(255,255,255,.09); color:#f8fafc; }
+        .filter-field label { color:#9ca3af; font-size:11px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
+        .filter-field select, .search-box input { width:100%; border:0; outline:0; background:transparent; color:#f8fafc; font-size:14px; font-weight:850; font-family:inherit; }
+        .filter-field select option { background:#0b1114; color:white; }
+        .search-box { display:grid; grid-template-columns:1fr 58px; align-items:center; gap:0; padding-left:18px; }
+        .search-box input { min-height:54px; padding:0 16px; border-radius:8px 0 0 8px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.11); border-right:0; }
+        .search-box button { min-height:54px; border:0; border-radius:0 8px 8px 0; background:var(--green); color:#042913; font-size:22px; cursor:pointer; }
+        .section-title { display:flex; align-items:center; justify-content:space-between; gap:18px; margin:22px auto 18px; }
+        .section-title h2 { margin:0; display:flex; align-items:center; gap:12px; font-size:clamp(26px,3vw,36px); letter-spacing:-.035em; }
+        .section-title h2 span { color:var(--green); }
+        .pill { display:inline-flex; align-items:center; justify-content:center; min-height:28px; padding:0 13px; border-radius:999px; background:rgba(34,197,94,.13); border:1px solid rgba(34,197,94,.28); color:#86efac; font-size:12px; font-weight:950; }
+        .view-all { min-height:44px; border-radius:8px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.055); color:white; padding:0 14px; display:inline-flex; align-items:center; text-decoration:none; font-weight:900; }
+        .truck-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin-bottom:28px; }
+        .truck-card { min-width:0; overflow:hidden; border-radius:10px; background:linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94)); border:1px solid rgba(255,255,255,.12); box-shadow:0 18px 45px rgba(0,0,0,.22); transition:transform .18s ease,border-color .18s ease; }
+        .truck-card:hover { transform:translateY(-4px); border-color:rgba(34,197,94,.34); }
+        .truck-photo { position:relative; aspect-ratio:1.55/1; overflow:hidden; background:#111827; display:block; color:#94a3b8; text-decoration:none; }
+        .truck-photo img { width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.96) contrast(1.04); }
+        .truck-photo i { height:100%; display:grid; place-items:center; font-style:normal; font-weight:900; }
+        .badge { position:absolute; left:10px; top:10px; z-index:2; min-height:24px; padding:0 9px; border-radius:5px; background:rgba(34,197,94,.92); color:#052e16; font-size:10px; font-weight:950; text-transform:uppercase; }
+        .heart { position:absolute; right:10px; top:10px; z-index:2; width:31px; height:31px; border-radius:999px; display:grid; place-items:center; background:rgba(2,6,8,.42); border:1px solid rgba(255,255,255,.14); color:white; }
+        .card-body { padding:14px; }
+        .truck-title { display:block; min-height:42px; color:white; text-decoration:none; font-size:17px; line-height:1.18; font-weight:950; letter-spacing:-.02em; }
+        .meta { display:flex; flex-wrap:wrap; gap:9px 12px; margin:10px 0 12px; color:#cbd5e1; font-size:12px; font-weight:800; }
+        .price { display:block; margin-bottom:4px; color:var(--green); font-size:22px; font-weight:950; letter-spacing:-.02em; }
+        .payment { color:#aeb7c3; font-size:12px; font-weight:800; }
+        .card-actions { display:grid; grid-template-columns:1fr 44px; gap:10px; margin-top:13px; }
+        .details,.whats { min-height:42px; display:inline-flex; align-items:center; justify-content:center; border-radius:7px; font-size:12px; font-weight:950; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
+        .details { background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.12); color:white; }
+        .whats { background:var(--green); color:#042913; }
+        .trust-bar { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; margin:10px auto 38px; border-radius:12px; overflow:hidden; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.10); }
+        .trust-item { min-height:86px; display:flex; align-items:center; gap:14px; padding:16px 24px; border-right:1px solid rgba(255,255,255,.08); }
+        .trust-item:last-child { border-right:0; }
+        .trust-icon { color:var(--green); font-size:27px; }
+        .trust-item strong { display:block; font-size:16px; margin-bottom:4px; }
+        .trust-item small { color:#cbd5e1; font-weight:750; }
+        .sell-section,.about-section,.contact-section { margin-bottom:34px; padding:clamp(22px,3.2vw,36px); border-radius:16px; background:linear-gradient(135deg, rgba(34,197,94,.12), rgba(255,255,255,.045)); border:1px solid rgba(34,197,94,.20); display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; }
+        .sell-section h2,.about-section h2,.contact-section h2 { margin:8px 0 10px; font-size:clamp(28px,4vw,46px); line-height:1.02; letter-spacing:-.045em; }
+        .sell-section p,.about-section p,.contact-section p { margin:0; color:#d6dee8; line-height:1.56; font-size:17px; }
+        .steps { display:grid; gap:10px; }
+        .step { min-height:55px; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; background:rgba(2,6,8,.44); border:1px solid rgba(255,255,255,.10); color:#dbeafe; font-weight:850; }
+        .step b { width:31px; height:31px; border-radius:999px; background:var(--green); color:#042913; display:grid; place-items:center; flex:0 0 auto; }
+        .empty-state { grid-column:1/-1; padding:28px; border-radius:16px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.10); }
+        @media (max-width:1120px){ .filter-panel{grid-template-columns:repeat(2,minmax(0,1fr));} .filter-field:nth-child(2n){border-right:0;} .search-box{grid-column:1/-1;padding:10px 0 0;} .truck-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-bar{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-item:nth-child(2n){border-right:0;} .sell-section,.about-section,.contact-section{grid-template-columns:1fr;} }
+        @media (max-width:640px){ .wrap{width:calc(100vw - 22px);} .hero{margin-top:-152px;min-height:570px;background-position:center top;} .hero-content{padding:245px 0 44px;} h1{font-size:38px;} .hero p{font-size:15px;} .hero-actions{display:grid;grid-template-columns:1fr;} .btn{width:100%;} .filter-panel{margin-top:-22px;grid-template-columns:1fr;} .filter-field{min-height:58px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .search-box{grid-template-columns:1fr 54px;} .section-title{align-items:flex-start;flex-direction:column;} .truck-grid{grid-template-columns:1fr;} .truck-photo{aspect-ratio:1.35/1;} .trust-bar{grid-template-columns:1fr;} .trust-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .trust-item:last-child{border-bottom:0;} }
       `}</style>
     </main>
   );
