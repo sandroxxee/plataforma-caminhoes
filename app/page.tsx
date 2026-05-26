@@ -83,7 +83,7 @@ export default async function HomePage() {
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(6);
 
   const trucks = (data || []) as Truck[];
   const featured = trucks[0];
@@ -94,69 +94,73 @@ export default async function HomePage() {
       <PublicHeader />
 
       <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow">COMPRA • VENDA • TROCA</span>
-          <h1>O jeito mais simples de negociar caminhões.</h1>
+        <div className="hero-bg">
+          {featuredImage && <img src={featuredImage} alt={featured ? getTitle(featured) : "Caminhão em destaque"} />}
+        </div>
+
+        <div className="hero-content">
+          <span className="stock-pill">Estoque atualizado</span>
+          <h1>
+            Caminhões selecionados para o <span>seu negócio.</span>
+          </h1>
           <p>
-            Caminhões reais, ofertas atualizadas e contato direto com quem anuncia.
+            Cavalos mecânicos, trucks, tocos e muito mais. Encontre o caminhão ideal com negociação direta.
           </p>
 
           <div className="hero-actions">
-            <Link href="/anuncios" className="btn big primary">Ver estoque</Link>
-            <Link href="/anunciar" className="btn big ghost">Anunciar caminhão</Link>
-          </div>
-
-          <div className="trust-row">
-            <span>✓ Anúncios revisados</span>
-            <span>✓ Fotos e dados claros</span>
-            <span>✓ Negociação direta</span>
+            <Link href="/anuncios" className="btn primary">Ver estoque</Link>
+            <Link href="/anunciar" className="btn ghost">Anunciar caminhão</Link>
           </div>
         </div>
-
-        <Link href={featured ? `/anuncios/${featured.id}` : "/anuncios"} className="hero-card">
-          {featuredImage ? (
-            <img src={featuredImage} alt={featured ? getTitle(featured) : "Caminhão em destaque"} />
-          ) : (
-            <div className="hero-empty">Caminhões em Oferta</div>
-          )}
-
-          <div className="hero-card-info">
-            <span>Último anúncio aprovado</span>
-            <strong>{featured ? getTitle(featured) : "Confira o estoque"}</strong>
-          </div>
-        </Link>
       </section>
 
       <form className="quick-filter" action="/anuncios">
-        <select name="marca" aria-label="Marca">
-          <option value="">Marca</option>
-          <option>Mercedes-Benz</option>
-          <option>Volkswagen</option>
-          <option>Volvo</option>
-          <option>Scania</option>
-          <option>Ford</option>
-          <option>Iveco</option>
-          <option>DAF</option>
-        </select>
+        <label>
+          <small>Marca</small>
+          <select name="marca" aria-label="Marca">
+            <option value="">Todas as marcas</option>
+            <option>Mercedes-Benz</option>
+            <option>Volkswagen</option>
+            <option>Volvo</option>
+            <option>Scania</option>
+            <option>Ford</option>
+            <option>Iveco</option>
+            <option>DAF</option>
+          </select>
+        </label>
 
-        <input name="modelo" placeholder="Modelo" aria-label="Modelo" />
+        <label>
+          <small>Tipo</small>
+          <select name="carroceria" aria-label="Tipo">
+            <option value="">Todos os tipos</option>
+            <option>Cavalo mecânico</option>
+            <option>Truck</option>
+            <option>Toco</option>
+            <option>Prancha</option>
+            <option>Caçamba</option>
+          </select>
+        </label>
 
-        <select name="tracao" aria-label="Tração">
-          <option value="">Tração</option>
-          <option>4x2</option>
-          <option>6x2</option>
-          <option>6x4</option>
-          <option>8x2</option>
-          <option>8x4</option>
-        </select>
+        <label>
+          <small>Tração</small>
+          <select name="tracao" aria-label="Tração">
+            <option value="">Todas as trações</option>
+            <option>4x2</option>
+            <option>6x2</option>
+            <option>6x4</option>
+            <option>8x2</option>
+            <option>8x4</option>
+          </select>
+        </label>
 
+        <input name="modelo" placeholder="Buscar modelo, marca..." aria-label="Buscar" />
         <button type="submit">Buscar</button>
       </form>
 
       <section className="section-head">
         <div>
-          <span className="eyebrow small">Adicionados recentemente</span>
-          <h2>Caminhões prontos para negociar</h2>
+          <span className="section-icon">▱</span>
+          <h2>Caminhões disponíveis</h2>
         </div>
         <Link href="/anuncios">Ver todos</Link>
       </section>
@@ -171,34 +175,24 @@ export default async function HomePage() {
               <article className="truck-card" key={truck.id}>
                 <Link href={`/anuncios/${truck.id}`} className="photo">
                   {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
-                  <em>Disponível</em>
+                  <em>{truck.carroceria || "Caminhão"}</em>
                 </Link>
 
                 <div className="card-content">
-                  <Link href={`/anuncios/${truck.id}`} className="truck-title">
-                    {title}
-                  </Link>
+                  <Link href={`/anuncios/${truck.id}`} className="truck-title">{title}</Link>
 
-                  <div className="tags">
+                  <div className="meta-row">
                     <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
                     <span>{truck.tracao || "Tração"}</span>
-                    <span>{truck.carroceria || "Carroceria"}</span>
+                    <span>{truck.cidade || "Cidade"}</span>
                   </div>
 
-                  <small className="price-label">Valor anunciado</small>
                   <strong className="price">{formatMoney(truck.preco)}</strong>
-
-                  <small className="city">
-                    {truck.cidade || "Cidade"}{truck.estado ? `/${truck.estado}` : ""}
-                  </small>
+                  <small className="pay-info">À vista</small>
 
                   <div className="card-actions">
-                    <Link href={`/anuncios/${truck.id}`} className="details">Detalhes</Link>
-                    {truck.whatsapp && (
-                      <a href={getWhatsappLink(truck)} target="_blank" className="whats">
-                        Chamar
-                      </a>
-                    )}
+                    <Link href={`/anuncios/${truck.id}`} className="details">Ver detalhes</Link>
+                    {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" className="whats">WhatsApp</a>}
                   </div>
                 </div>
               </article>
@@ -212,13 +206,11 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="sell-box">
-        <div>
-          <span className="eyebrow small">Para vendedores</span>
-          <h2>Tem um caminhão para vender?</h2>
-          <p>Cadastre o anúncio, envie as fotos e aguarde aprovação para aparecer no estoque.</p>
-        </div>
-        <Link href="/anunciar" className="btn primary big">Anunciar caminhão</Link>
+      <section className="trust-band">
+        <div><strong>Negociação segura</strong><span>Contato direto com o vendedor</span></div>
+        <div><strong>Documentação verificada</strong><span>Mais segurança para o seu negócio</span></div>
+        <div><strong>Estoque atualizado</strong><span>Novos caminhões todos os dias</span></div>
+        <div><strong>Fale no WhatsApp</strong><span>Atendimento rápido e direto</span></div>
       </section>
 
       <SiteFooter />
@@ -227,91 +219,87 @@ export default async function HomePage() {
         .home-page {
           min-height: 100vh;
           background:
-            radial-gradient(circle at 18% 6%, rgba(34,197,94,.16), transparent 28%),
-            radial-gradient(circle at 82% 18%, rgba(34,197,94,.10), transparent 28%),
-            linear-gradient(135deg, #020617 0%, #061512 58%, #020617 100%);
+            radial-gradient(circle at 12% 4%, rgba(34,197,94,.15), transparent 30%),
+            linear-gradient(135deg, #020617 0%, #07110f 55%, #020617 100%);
           color: white;
           overflow-x: hidden;
         }
 
-        .btn {
-          min-height: 44px;
-          padding: 0 17px;
-          border-radius: 15px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          font-weight: 900;
-          border: 1px solid rgba(255,255,255,.12);
-          white-space: nowrap;
-        }
-
-        .btn.primary {
-          background: #22c55e;
-          color: #052e16;
-          border-color: transparent;
-        }
-
-        .btn.ghost {
-          background: rgba(255,255,255,.06);
-          color: white;
-        }
-
-        .btn.big {
-          min-height: 52px;
-          padding: 0 22px;
-          border-radius: 17px;
-        }
-
         .hero {
-          width: min(1240px, calc(100vw - 32px));
-          min-height: 500px;
-          margin: 0 auto 20px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 48px;
+          position: relative;
+          min-height: 470px;
+          margin-top: -1px;
+          display: flex;
           align-items: center;
+          overflow: hidden;
+          border-bottom: 1px solid rgba(255,255,255,.08);
         }
 
-        .hero-copy {
-          padding: 38px 0 20px;
+        .hero::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(90deg, rgba(2,6,23,.96) 0%, rgba(2,6,23,.76) 42%, rgba(2,6,23,.24) 100%),
+            radial-gradient(circle at 10% 40%, rgba(34,197,94,.14), transparent 34%);
+          z-index: 1;
         }
 
-        .eyebrow {
+        .hero-bg {
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(135deg, #111827, #020617),
+            radial-gradient(circle at 70% 40%, rgba(34,197,94,.12), transparent 30%);
+        }
+
+        .hero-bg img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: .58;
+          filter: contrast(1.08) saturate(1.02);
+        }
+
+        .hero-content {
+          width: min(1240px, calc(100vw - 32px));
+          margin: 0 auto;
+          position: relative;
+          z-index: 2;
+          padding: 70px 0 44px;
+        }
+
+        .stock-pill {
+          min-height: 32px;
           display: inline-flex;
           align-items: center;
-          min-height: 32px;
-          padding: 0 13px;
+          padding: 0 14px;
           border-radius: 999px;
-          color: #86efac;
-          background: rgba(34,197,94,.12);
-          border: 1px solid rgba(34,197,94,.22);
+          color: #bbf7d0;
+          background: rgba(34,197,94,.13);
+          border: 1px solid rgba(34,197,94,.28);
           font-size: 12px;
           font-weight: 950;
-          letter-spacing: .08em;
+          letter-spacing: .07em;
           text-transform: uppercase;
         }
 
-        .eyebrow.small {
-          min-height: 29px;
-          font-size: 11px;
+        h1 {
+          max-width: 650px;
+          margin: 18px 0 14px;
+          font-size: clamp(42px, 5vw, 68px);
+          line-height: 1.04;
+          letter-spacing: -.055em;
         }
 
-        h1 {
-          max-width: 720px;
-          margin: 18px 0 14px;
-          font-size: clamp(46px, 5vw, 72px);
-          line-height: .96;
-          letter-spacing: -.07em;
-        }
+        h1 span { color: #22c55e; }
 
         .hero p {
-          max-width: 590px;
+          max-width: 560px;
           margin: 0;
-          color: #dbeafe;
-          font-size: 19px;
-          line-height: 1.55;
+          color: #d1d5db;
+          font-size: 18px;
+          line-height: 1.5;
         }
 
         .hero-actions {
@@ -321,476 +309,135 @@ export default async function HomePage() {
           margin-top: 28px;
         }
 
-        .trust-row {
-          margin-top: 22px;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .trust-row span {
+        .btn {
+          min-height: 52px;
+          padding: 0 22px;
+          border-radius: 8px;
           display: inline-flex;
-          min-height: 34px;
           align-items: center;
-          padding: 0 12px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.07);
-          border: 1px solid rgba(255,255,255,.10);
-          color: #cbd5e1;
-          font-size: 13px;
-          font-weight: 850;
-        }
-
-        .hero-card {
-          min-height: 350px;
-          border-radius: 34px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.12);
-          position: relative;
-          overflow: hidden;
-          display: block;
+          justify-content: center;
           text-decoration: none;
-          color: white;
-          box-shadow: 0 30px 90px rgba(0,0,0,.30);
-        }
-
-        .hero-card img {
-          width: 100%;
-          height: 100%;
-          min-height: 350px;
-          object-fit: cover;
-          display: block;
-        }
-
-        .hero-card:after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, transparent 35%, rgba(2,6,23,.82));
-        }
-
-        .hero-empty {
-          min-height: 350px;
-          display: grid;
-          place-items: center;
-          color: #86efac;
-          font-size: 34px;
-          font-weight: 950;
-          background: rgba(34,197,94,.08);
-        }
-
-        .hero-card-info {
-          position: absolute;
-          left: 20px;
-          right: 20px;
-          bottom: 20px;
-          z-index: 2;
-          display: grid;
-          gap: 6px;
-        }
-
-        .hero-card-info span {
-          color: #86efac;
-          font-size: 12px;
           font-weight: 950;
           text-transform: uppercase;
-          letter-spacing: .06em;
+          letter-spacing: .04em;
+          font-size: 13px;
         }
 
-        .hero-card-info strong {
-          font-size: 24px;
-          line-height: 1.15;
-          overflow-wrap: anywhere;
-        }
+        .btn.primary { background: #22c55e; color: #052e16; }
+        .btn.ghost { border: 1px solid rgba(255,255,255,.24); color: white; background: rgba(255,255,255,.05); }
 
         .quick-filter {
           width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 38px;
-          padding: 12px;
-          border-radius: 22px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.11);
+          margin: -36px auto 30px;
+          position: relative;
+          z-index: 4;
+          padding: 14px;
+          border-radius: 16px;
+          background: rgba(15,23,42,.86);
+          border: 1px solid rgba(255,255,255,.10);
+          box-shadow: 0 22px 60px rgba(0,0,0,.30);
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr auto;
-          gap: 10px;
+          grid-template-columns: 1fr 1fr 1fr 1.25fr auto;
+          gap: 12px;
+          align-items: end;
         }
+
+        .quick-filter label { display: grid; gap: 6px; }
+        .quick-filter small { color: #94a3b8; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
 
         .quick-filter select,
         .quick-filter input,
         .quick-filter button {
-          min-height: 50px;
-          border-radius: 15px;
+          min-height: 48px;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,.12);
-          background: rgba(2,6,23,.66);
+          background: rgba(2,6,23,.70);
           color: white;
-          padding: 0 14px;
-          font-size: 15px;
-          font-weight: 800;
+          padding: 0 13px;
           outline: none;
-          min-width: 0;
+          font-weight: 850;
         }
 
-        .quick-filter input::placeholder {
-          color: #94a3b8;
-        }
-
-        .quick-filter button {
-          background: #22c55e;
-          color: #052e16;
-          border-color: transparent;
-          cursor: pointer;
-          padding: 0 24px;
-        }
+        .quick-filter button { background: #22c55e; color: #052e16; border-color: transparent; cursor: pointer; font-weight: 950; }
 
         .section-head {
           width: min(1240px, calc(100vw - 32px));
           margin: 0 auto 18px;
           display: flex;
-          align-items: end;
+          align-items: center;
           justify-content: space-between;
           gap: 18px;
         }
 
-        .section-head h2,
-        .sell-box h2 {
-          margin: 12px 0 0;
-          font-size: clamp(30px, 4vw, 46px);
-          line-height: 1.05;
-          letter-spacing: -.04em;
-        }
-
-        .section-head a {
-          color: #86efac;
-          text-decoration: none;
-          font-weight: 950;
-          white-space: nowrap;
-        }
+        .section-head div { display: flex; align-items: center; gap: 12px; }
+        .section-icon { color: #22c55e; font-size: 28px; }
+        .section-head h2 { margin: 0; font-size: clamp(26px, 3vw, 34px); letter-spacing: -.035em; }
+        .section-head a { color: #86efac; font-weight: 950; text-decoration: none; }
 
         .truck-grid {
           width: min(1240px, calc(100vw - 32px));
-          margin: 0 auto 34px;
+          margin: 0 auto 24px;
           display: grid;
-          grid-template-columns: repeat(5, minmax(0, 1fr));
-          gap: 16px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 18px;
         }
 
         .truck-card {
-          border-radius: 24px;
-          background: rgba(255,255,255,.08);
+          border-radius: 16px;
+          background: rgba(255,255,255,.065);
           border: 1px solid rgba(255,255,255,.10);
           overflow: hidden;
           min-width: 0;
-          transition: transform .2s ease, border-color .2s ease;
         }
 
-        .truck-card:hover {
-          transform: translateY(-3px);
-          border-color: rgba(34,197,94,.28);
-        }
+        .photo { height: 230px; display: block; position: relative; overflow: hidden; background: #111827; color: #94a3b8; }
+        .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .photo em { position: absolute; left: 12px; top: 12px; padding: 6px 10px; border-radius: 5px; background: rgba(34,197,94,.88); color: #052e16; font-style: normal; font-size: 11px; font-weight: 950; text-transform: uppercase; }
+        .photo span { height: 100%; display: grid; place-items: center; font-weight: 900; }
 
-        .photo {
-          height: 190px;
-          display: block;
-          background: rgba(15,23,42,.92);
-          overflow: hidden;
-          text-decoration: none;
-          color: #94a3b8;
-          position: relative;
-        }
+        .card-content { padding: 15px; }
+        .truck-title { display: block; color: white; text-decoration: none; font-size: 19px; line-height: 1.18; font-weight: 950; margin-bottom: 12px; }
+        .meta-row { display: flex; flex-wrap: wrap; gap: 12px; color: #cbd5e1; font-size: 12px; font-weight: 850; margin-bottom: 13px; }
+        .price { display: block; color: #22c55e; font-size: 26px; line-height: 1; margin-bottom: 4px; }
+        .pay-info { display: block; color: #94a3b8; font-size: 13px; margin-bottom: 14px; }
+        .card-actions { display: grid; grid-template-columns: 1fr 48px; gap: 10px; }
+        .details, .whats { min-height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 950; text-transform: uppercase; font-size: 12px; }
+        .details { color: white; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+        .whats { color: #052e16; background: #22c55e; font-size: 0; }
+        .whats::before { content: "☎"; font-size: 18px; }
 
-        .photo img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-          transition: transform .25s ease;
-        }
+        .empty { grid-column: 1 / -1; padding: 34px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); }
 
-        .truck-card:hover .photo img {
-          transform: scale(1.04);
-        }
-
-        .photo span {
-          height: 100%;
-          display: grid;
-          place-items: center;
-          font-weight: 900;
-        }
-
-        .photo em {
-          position: absolute;
-          left: 10px;
-          top: 10px;
-          padding: 6px 10px;
-          border-radius: 999px;
-          background: rgba(34,197,94,.94);
-          color: #052e16;
-          font-style: normal;
-          font-size: 11px;
-          font-weight: 950;
-          text-transform: uppercase;
-        }
-
-        .card-content {
-          padding: 14px;
-        }
-
-        .truck-title {
-          min-height: 46px;
-          display: block;
-          color: white;
-          text-decoration: none;
-          font-size: 17px;
-          line-height: 1.22;
-          font-weight: 950;
-          overflow-wrap: anywhere;
-        }
-
-        .tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin: 11px 0;
-        }
-
-        .tags span {
-          padding: 6px 8px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.08);
-          color: #cbd5e1;
-          font-size: 12px;
-          font-weight: 850;
-        }
-
-        .price-label {
-          display: block;
-          color: #94a3b8;
-          font-size: 12px;
-          font-weight: 800;
-          margin-bottom: 4px;
-        }
-
-        .price {
-          display: block;
-          color: #86efac;
-          font-size: 23px;
-          line-height: 1.1;
-          margin-bottom: 6px;
-        }
-
-        .city {
-          display: block;
-          color: #94a3b8;
-          font-size: 13px;
-          margin-bottom: 13px;
-        }
-
-        .card-actions {
-          display: grid;
-          grid-template-columns: .78fr 1fr;
-          gap: 8px;
-        }
-
-        .details,
-        .whats {
-          min-height: 44px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          text-decoration: none;
-          font-weight: 950;
-          padding: 0 10px;
-          font-size: 13px;
-        }
-
-        .details {
-          color: white;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.12);
-        }
-
-        .whats {
-          color: #052e16;
-          background: #22c55e;
-        }
-
-        .empty {
-          grid-column: 1 / -1;
-          padding: 34px;
-          border-radius: 26px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.10);
-        }
-
-        .empty h3 {
-          margin: 0 0 8px;
-          font-size: 26px;
-        }
-
-        .empty p {
-          margin: 0;
-          color: #cbd5e1;
-        }
-
-        .sell-box {
+        .trust-band {
           width: min(1240px, calc(100vw - 32px));
           margin: 0 auto 34px;
-          padding: 30px;
-          border-radius: 32px;
-          background: rgba(34,197,94,.10);
-          border: 1px solid rgba(34,197,94,.22);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
+          padding: 18px 22px;
+          border-radius: 16px;
+          background: rgba(255,255,255,.055);
+          border: 1px solid rgba(255,255,255,.10);
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
         }
 
-        .sell-box p {
-          margin: 10px 0 0;
-          color: #cbd5e1;
-          font-size: 18px;
-        }
+        .trust-band div { display: grid; gap: 4px; }
+        .trust-band strong { color: white; font-size: 15px; }
+        .trust-band span { color: #cbd5e1; font-size: 13px; }
 
-        @media (max-width: 1100px) {
-          .truck-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
-        }
-
-        @media (max-width: 900px) {
-          .hero {
-            grid-template-columns: 1fr;
-            min-height: auto;
-            gap: 18px;
-            margin-top: 18px;
-          }
-
-          .hero-copy {
-            padding: 22px 0 0;
-          }
-
-          .hero-card {
-            min-height: 300px;
-          }
-
-          .hero-card img,
-          .hero-empty {
-            min-height: 300px;
-          }
-
-          .quick-filter {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .quick-filter button {
-            grid-column: 1 / -1;
-          }
-
-          .truck-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
+        @media (max-width: 1000px) {
+          .quick-filter { grid-template-columns: 1fr 1fr; }
+          .quick-filter button { grid-column: 1 / -1; }
+          .truck-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .trust-band { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 640px) {
-          .hero {
-            width: calc(100vw - 24px);
-          }
-
-          h1 {
-            font-size: 39px;
-            letter-spacing: -.06em;
-          }
-
-          .hero p {
-            font-size: 16px;
-          }
-
-          .hero-actions {
-            display: grid;
-            grid-template-columns: 1fr;
-          }
-
-          .hero-actions .btn {
-            width: 100%;
-          }
-
-          .trust-row {
-            display: grid;
-            grid-template-columns: 1fr;
-          }
-
-          .hero-card {
-            min-height: 245px;
-            border-radius: 26px;
-          }
-
-          .hero-card img,
-          .hero-empty {
-            min-height: 245px;
-          }
-
-          .hero-card-info strong {
-            font-size: 20px;
-          }
-
-          .quick-filter {
-            width: calc(100vw - 24px);
-            grid-template-columns: 1fr;
-            margin-bottom: 30px;
-            padding: 12px;
-            border-radius: 20px;
-          }
-
-          .section-head {
-            width: calc(100vw - 24px);
-            align-items: start;
-          }
-
-          .section-head h2 {
-            font-size: 31px;
-          }
-
-          .truck-grid {
-            width: calc(100vw - 24px);
-            grid-template-columns: 1fr;
-            gap: 14px;
-          }
-
-          .photo {
-            height: 255px;
-          }
-
-          .truck-title {
-            min-height: auto;
-            font-size: 21px;
-          }
-
-          .price {
-            font-size: 27px;
-          }
-
-          .card-actions {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .details,
-          .whats {
-            min-height: 50px;
-            font-size: 14px;
-          }
-
-          .sell-box {
-            width: calc(100vw - 24px);
-            padding: 22px;
-            border-radius: 26px;
-            display: grid;
-          }
-
-          .sell-box .btn {
-            width: 100%;
-          }
+          .hero { min-height: 520px; }
+          .hero-content, .quick-filter, .section-head, .truck-grid, .trust-band { width: calc(100vw - 24px); }
+          h1 { font-size: 39px; }
+          .hero-actions, .quick-filter, .truck-grid, .trust-band { grid-template-columns: 1fr; display: grid; }
+          .btn, .quick-filter button { width: 100%; }
+          .section-head { align-items: flex-start; }
         }
       `}</style>
     </main>
