@@ -5,33 +5,32 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div>
-          <strong>Caminhões em Oferta</strong>
-          <p>Plataforma de anúncios de caminhões. Compra, venda e troca com contato direto pelo WhatsApp.</p>
+          <strong>Caminhões à Venda</strong>
+          <p>Classificados de caminhões usados para compra e venda com contato direto pelo WhatsApp.</p>
         </div>
 
         <nav aria-label="Links do rodapé">
-          <Link href="/anuncios">Estoque</Link>
-          <Link href="/como-funciona">Como funciona</Link>
-          <Link href="/anunciar">Anunciar</Link>
+          <Link href="/anuncios">Comprar</Link>
+          <Link href="/anunciar">Vender</Link>
+          <Link href="/anuncios">Anúncios</Link>
           <Link href="/login">Entrar</Link>
         </nav>
 
         <div className="security-note">
-          <strong>Aviso de segurança</strong>
+          <strong>Aviso</strong>
           <span>
             Confira documentos, procedência, estado do caminhão e dados do vendedor antes de fechar negócio.
-            A negociação é feita diretamente entre comprador e anunciante.
           </span>
         </div>
       </div>
 
       <style>{`
         .site-footer {
-          width: min(1240px, calc(100vw - 32px));
+          width: min(1180px, calc(100vw - 32px));
           margin: 36px auto 0;
           padding: 28px 0 42px;
-          border-top: 1px solid rgba(255,255,255,.10);
-          color: #94a3b8;
+          border-top: 1px solid #e2e6ec;
+          color: #69717d;
         }
 
         .footer-inner {
@@ -42,7 +41,7 @@ export function SiteFooter() {
         }
 
         .site-footer strong {
-          color: white;
+          color: #20252c;
           display: block;
           margin-bottom: 8px;
           font-size: 16px;
@@ -51,7 +50,7 @@ export function SiteFooter() {
         .site-footer p,
         .security-note span {
           margin: 0;
-          color: #94a3b8;
+          color: #69717d;
           font-size: 14px;
           line-height: 1.55;
         }
@@ -63,24 +62,20 @@ export function SiteFooter() {
         }
 
         .site-footer nav a {
-          color: #cbd5e1;
+          color: #20252c;
           text-decoration: none;
           font-weight: 900;
           padding: 8px 10px;
           border-radius: 999px;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.08);
+          background: #ffffff;
+          border: 1px solid #e2e6ec;
         }
 
         .security-note {
           padding: 16px;
           border-radius: 20px;
-          background: rgba(34,197,94,.08);
-          border: 1px solid rgba(34,197,94,.20);
-        }
-
-        .security-note strong {
-          color: #86efac;
+          background: #ffffff;
+          border: 1px solid #e2e6ec;
         }
 
         @media (max-width: 800px) {
