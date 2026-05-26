@@ -33,13 +33,14 @@ export async function PublicHeader() {
           </span>
           <span className="brand-text">
             <strong>Caminhões à Venda</strong>
-            <small>Caminhões reais para negociar</small>
+            <small>Compra • venda • troca</small>
           </span>
         </Link>
 
         <nav className="public-nav" aria-label="Menu principal">
           <Link href="/" className="nav-link"><span aria-hidden="true">⌂</span>Início</Link>
-          <Link href="/anuncios" className="nav-link"><span aria-hidden="true">▦</span>Estoque</Link>
+          <Link href="/anuncios" className="nav-link"><span aria-hidden="true">▦</span>Comprar</Link>
+          <Link href="/anunciar" className="nav-link"><span aria-hidden="true">↔</span>Vender/Trocar</Link>
           <Link href="/como-funciona" className="nav-link"><span aria-hidden="true">?</span>Como funciona</Link>
           {isLogged && !isAdmin && <Link href="/painel" className="nav-link"><span aria-hidden="true">□</span>Painel</Link>}
           {isLogged && isAdmin && <Link href="/admin/pendentes" className="nav-link"><span aria-hidden="true">⚙</span>Admin</Link>}
@@ -58,7 +59,7 @@ export async function PublicHeader() {
           top: 0;
           z-index: 60;
           padding: 10px 0;
-          background: rgba(9, 12, 18, .86);
+          background: rgba(7, 10, 16, .88);
           backdrop-filter: blur(18px);
           border-bottom: 1px solid rgba(255, 255, 255, .08);
         }
@@ -69,11 +70,11 @@ export async function PublicHeader() {
           margin: 0 auto;
           padding: 10px 12px;
           display: grid;
-          grid-template-columns: minmax(230px, auto) 1fr auto;
+          grid-template-columns: minmax(240px, auto) 1fr auto;
           align-items: center;
           gap: 14px;
           border-radius: 20px;
-          background: linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.045));
+          background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
           border: 1px solid rgba(255,255,255,.12);
           box-shadow: 0 18px 50px rgba(0,0,0,.24);
         }
@@ -126,7 +127,7 @@ export async function PublicHeader() {
           color: #cbd5e1;
           font-size: 11px;
           font-weight: 900;
-          letter-spacing: .06em;
+          letter-spacing: .08em;
           text-transform: uppercase;
           white-space: nowrap;
         }
@@ -147,7 +148,7 @@ export async function PublicHeader() {
           align-items: center;
           justify-content: center;
           gap: 7px;
-          color: rgba(248,250,252,.86);
+          color: rgba(248,250,252,.88);
           text-decoration: none;
           font-size: 13px;
           font-weight: 900;
@@ -196,9 +197,9 @@ export async function PublicHeader() {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          color: #111827;
-          background: #f8fafc;
-          border: 1px solid rgba(255,255,255,.28);
+          color: #052e16;
+          background: #22c55e;
+          border: 1px solid rgba(34,197,94,.45);
           text-decoration: none;
           font-size: 14px;
           font-weight: 950;
@@ -207,12 +208,12 @@ export async function PublicHeader() {
         }
 
         .header-cta span {
-          color: #111827;
-          background: rgba(17,24,39,.07);
-          border-color: rgba(17,24,39,.08);
+          color: #052e16;
+          background: rgba(5,46,22,.08);
+          border-color: rgba(5,46,22,.10);
         }
 
-        @media (max-width: 1060px) {
+        @media (max-width: 1120px) {
           .public-header-inner {
             grid-template-columns: 1fr auto;
           }
