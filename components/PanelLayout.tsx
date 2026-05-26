@@ -11,12 +11,27 @@ type Props = {
   children: ReactNode;
 };
 
+function PanelBrandIcon() {
+  return (
+    <span className="panel-brand-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" role="img">
+        <path className="truck-body" d="M7 18.5c0-2 1.6-3.5 3.5-3.5h18c1.9 0 3.5 1.5 3.5 3.5V30H7V18.5Z" />
+        <path className="truck-cabin" d="M32 21h5.2c1.1 0 2.1.5 2.8 1.4l3 4V30H32v-9Z" />
+        <path className="truck-line" d="M11 20h15M36 24h2.8l1.5 2" />
+        <path className="truck-road" d="M5 34h38" />
+        <circle className="truck-wheel" cx="15" cy="32" r="3.5" />
+        <circle className="truck-wheel" cx="35" cy="32" r="3.5" />
+      </svg>
+    </span>
+  );
+}
+
 export function PanelLayout({ title, subtitle, badge, actions, children }: Props) {
   return (
     <main className="panel-page">
       <aside className="panel-sidebar">
         <Link href="/painel" className="panel-brand" prefetch={false}>
-          <span className="panel-brand-icon">🚛</span>
+          <PanelBrandIcon />
           <span>
             <strong>Caminhões à Venda</strong>
             <small>Painel do anunciante</small>
@@ -92,10 +107,39 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
           border-radius: 16px;
           display: grid;
           place-items: center;
-          background: #22c55e;
+          background:
+            radial-gradient(circle at 30% 22%, rgba(255,255,255,.34), transparent 24%),
+            linear-gradient(135deg, #22c55e, #15803d);
           color: #052e16;
-          box-shadow: 0 14px 34px rgba(34,197,94,.18);
+          box-shadow: 0 14px 34px rgba(34,197,94,.18), inset 0 1px 0 rgba(255,255,255,.32);
           flex: 0 0 auto;
+          overflow: hidden;
+        }
+
+        .panel-brand-icon svg {
+          width: 34px;
+          height: 34px;
+          display: block;
+        }
+
+        .truck-body,
+        .truck-cabin {
+          fill: rgba(5, 46, 22, .92);
+        }
+
+        .truck-line,
+        .truck-road {
+          fill: none;
+          stroke: rgba(236, 253, 245, .92);
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        .truck-wheel {
+          fill: #020506;
+          stroke: rgba(236, 253, 245, .9);
+          stroke-width: 1.5;
         }
 
         .panel-brand strong {
@@ -269,7 +313,8 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
           .panel-page { display: block; }
           .panel-sidebar { position: sticky; top: 0; z-index: 20; height: auto; padding: 12px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.10); gap: 10px; background: rgba(2,6,8,.96); }
           .panel-brand { padding: 10px; }
-          .panel-brand-icon { width: 40px; height: 40px; }
+          .panel-brand-icon { width: 40px; height: 40px; border-radius: 14px; }
+          .panel-brand-icon svg { width: 29px; height: 29px; }
           .panel-menu { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
           .panel-menu-link { min-height: 56px; justify-content: center; text-align: center; padding: 9px; }
           .panel-menu-icon, .panel-menu-link small { display: none; }
