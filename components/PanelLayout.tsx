@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { sair } from "@/app/logout/actions";
+import { PanelMenu } from "@/components/PanelMenu";
 
 type Props = {
   title: string;
@@ -9,12 +10,6 @@ type Props = {
   actions?: ReactNode;
   children: ReactNode;
 };
-
-const menuItems = [
-  { href: "/painel", icon: "▣", label: "Resumo", helper: "Visão geral" },
-  { href: "/painel/anuncios", icon: "▤", label: "Meus anúncios", helper: "Editar e acompanhar" },
-  { href: "/painel/anuncios/novo", icon: "+", label: "Novo anúncio", helper: "Cadastrar caminhão" },
-];
 
 export function PanelLayout({ title, subtitle, badge, actions, children }: Props) {
   return (
@@ -28,17 +23,7 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
           </span>
         </Link>
 
-        <nav className="panel-menu" aria-label="Menu do painel">
-          {menuItems.map((item) => (
-            <a key={item.href} href={item.href} className="panel-menu-link">
-              <span className="panel-menu-icon">{item.icon}</span>
-              <span>
-                <strong>{item.label}</strong>
-                <small>{item.helper}</small>
-              </span>
-            </a>
-          ))}
-        </nav>
+        <PanelMenu />
 
         <div className="panel-bottom">
           <a href="/anuncios" className="panel-public">Ver site público</a>
@@ -161,6 +146,17 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
           border-color: rgba(34,197,94,.28);
         }
 
+        .panel-menu-link.active {
+          background: linear-gradient(135deg, rgba(34,197,94,.22), rgba(34,197,94,.09));
+          border-color: rgba(34,197,94,.48);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 14px 30px rgba(34,197,94,.10);
+        }
+
+        .panel-menu-link.active .panel-menu-icon {
+          background: #22c55e;
+          color: #052e16;
+        }
+
         .panel-menu-icon {
           width: 38px;
           height: 38px;
@@ -185,6 +181,10 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
           color: #94a3b8;
           font-size: 12px;
           font-weight: 800;
+        }
+
+        .panel-menu-link.active small {
+          color: #bbf7d0;
         }
 
         .panel-bottom {
@@ -266,128 +266,31 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
         }
 
         @media (max-width: 980px) {
-          .panel-page {
-            display: block;
-          }
-
-          .panel-sidebar {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            height: auto;
-            padding: 12px;
-            border-right: 0;
-            border-bottom: 1px solid rgba(255,255,255,.10);
-            gap: 10px;
-            background: rgba(2,6,8,.96);
-          }
-
-          .panel-brand {
-            padding: 10px;
-          }
-
-          .panel-brand-icon {
-            width: 40px;
-            height: 40px;
-          }
-
-          .panel-menu {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
-          }
-
-          .panel-menu-link {
-            min-height: 56px;
-            justify-content: center;
-            text-align: center;
-            padding: 9px;
-          }
-
-          .panel-menu-icon,
-          .panel-menu-link small {
-            display: none;
-          }
-
-          .panel-bottom {
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 0;
-          }
-
-          .panel-public,
-          .panel-logout {
-            min-height: 42px;
-            padding: 10px 12px;
-            font-size: 14px;
-          }
-
-          .panel-content {
-            padding: 16px 12px 28px;
-          }
-
-          .panel-header {
-            min-height: auto;
-            padding: 18px;
-            border-radius: 22px;
-            display: grid;
-            gap: 14px;
-            margin-bottom: 16px;
-          }
-
-          .panel-actions,
-          .panel-actions a,
-          .panel-actions button {
-            width: 100%;
-          }
-
-          .panel-body section,
-          .panel-body form,
-          .panel-body article {
-            max-width: 100%;
-          }
-
-          .panel-body table {
-            min-width: 720px;
-          }
-
-          .panel-body {
-            overflow-x: auto;
-          }
+          .panel-page { display: block; }
+          .panel-sidebar { position: sticky; top: 0; z-index: 20; height: auto; padding: 12px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.10); gap: 10px; background: rgba(2,6,8,.96); }
+          .panel-brand { padding: 10px; }
+          .panel-brand-icon { width: 40px; height: 40px; }
+          .panel-menu { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+          .panel-menu-link { min-height: 56px; justify-content: center; text-align: center; padding: 9px; }
+          .panel-menu-icon, .panel-menu-link small { display: none; }
+          .panel-bottom { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0; }
+          .panel-public, .panel-logout { min-height: 42px; padding: 10px 12px; font-size: 14px; }
+          .panel-content { padding: 16px 12px 28px; }
+          .panel-header { min-height: auto; padding: 18px; border-radius: 22px; display: grid; gap: 14px; margin-bottom: 16px; }
+          .panel-actions, .panel-actions a, .panel-actions button { width: 100%; }
+          .panel-body section, .panel-body form, .panel-body article { max-width: 100%; }
+          .panel-body table { min-width: 720px; }
+          .panel-body { overflow-x: auto; }
         }
 
         @media (max-width: 520px) {
-          .panel-sidebar {
-            padding: 10px;
-          }
-
-          .panel-brand strong {
-            font-size: 14px;
-          }
-
-          .panel-brand small {
-            display: none;
-          }
-
-          .panel-menu {
-            grid-template-columns: 1fr;
-          }
-
-          .panel-menu-link {
-            justify-content: flex-start;
-            text-align: left;
-            min-height: 46px;
-          }
-
-          .panel-menu-icon {
-            display: grid;
-            width: 32px;
-            height: 32px;
-          }
-
-          .panel-header h1 {
-            font-size: 25px;
-          }
+          .panel-sidebar { padding: 10px; }
+          .panel-brand strong { font-size: 14px; }
+          .panel-brand small { display: none; }
+          .panel-menu { grid-template-columns: 1fr; }
+          .panel-menu-link { justify-content: flex-start; text-align: left; min-height: 46px; }
+          .panel-menu-icon { display: grid; width: 32px; height: 32px; }
+          .panel-header h1 { font-size: 25px; }
         }
       `}</style>
     </main>
