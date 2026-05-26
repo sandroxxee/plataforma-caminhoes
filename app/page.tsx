@@ -83,74 +83,32 @@ export default async function HomePage() {
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(8);
 
   const trucks = (data || []) as Truck[];
-  const featuredTruck = trucks[0];
-  const featuredTitle = featuredTruck ? getTitle(featuredTruck) : "Caminhão em destaque";
-  const featuredImage = featuredTruck ? getImage(featuredTruck) : "";
+  const heroImage = trucks[0] ? getImage(trucks[0]) : "";
 
   return (
-    <main className="home-v2" id="inicio">
+    <main className="home-page" id="topo">
       <PublicHeader />
 
-      <section className="hero-v2">
-        <div className="wrap hero-layout">
-          <div className="hero-copy">
-            <span className="label">Caminhões à venda</span>
-            <h1>Compre, venda ou troque caminhões com atendimento direto.</h1>
-            <p>
-              Uma vitrine organizada para caminhões, implementos e veículos comerciais, com foco em oportunidade real e contato rápido pelo WhatsApp.
-            </p>
-
-            <div className="hero-actions">
-              <Link className="btn btn-main" href="/anuncios">Ver caminhões disponíveis</Link>
-              <Link className="btn btn-soft" href="/anunciar">Quero anunciar</Link>
-            </div>
-
-            <div className="mini-stats" aria-label="Diferenciais">
-              <div><strong>Compra</strong><span>Filtros simples</span></div>
-              <div><strong>Venda</strong><span>Anúncio organizado</span></div>
-              <div><strong>Troca</strong><span>Contato direto</span></div>
-            </div>
+      <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)), linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95)), url(${heroImage})` } : undefined}>
+        <div className="wrap hero-content">
+          <span className="kicker">▣ Estoque atualizado</span>
+          <h1>Caminhões selecionados para o <span>seu negócio.</span></h1>
+          <p>Cavalos mecânicos, trucks, tocos e implementos. Encontre caminhões anunciados com dados claros e contato direto pelo WhatsApp.</p>
+          <div className="hero-actions">
+            <Link className="btn btn-primary" href="/anuncios">🔎 Ver estoque</Link>
+            <Link className="btn btn-ghost" href="/#contato">Falar com atendimento</Link>
           </div>
-
-          <aside className="showcase-card">
-            <div className="showcase-photo">
-              {featuredImage ? <img src={featuredImage} alt={featuredTitle} /> : <span>Foto do caminhão</span>}
-            </div>
-            <div className="showcase-info">
-              <span className="status-pill">Destaque do estoque</span>
-              <h2>{featuredTitle}</h2>
-              <div className="showcase-row">
-                <strong>{featuredTruck ? formatMoney(featuredTruck.preco) : "Sob consulta"}</strong>
-                <Link href={featuredTruck ? `/anuncios/${featuredTruck.id}` : "/anuncios"}>Ver detalhes</Link>
-              </div>
-            </div>
-          </aside>
         </div>
       </section>
 
-      <section className="wrap action-strip">
-        <Link href="/anuncios"><b>Comprar caminhão</b><span>Consultar estoque</span></Link>
-        <Link href="/anunciar"><b>Vender ou trocar</b><span>Enviar dados do veículo</span></Link>
-        <a href="#contato"><b>WhatsApp</b><span>Atendimento direto</span></a>
-      </section>
-
-      <section className="wrap stock-area" id="comprar">
-        <div className="section-title">
-          <div>
-            <span className="label small">Estoque atualizado</span>
-            <h2>Caminhões disponíveis</h2>
-            <p>Fotos, valor, cidade e informações principais para decidir rápido.</p>
-          </div>
-          <Link href="/anuncios" className="all-link">Ver todos</Link>
-        </div>
-
-        <form className="filters-v2" action="/anuncios" aria-label="Filtros de estoque">
-          <input name="busca" placeholder="Buscar por modelo, marca ou cidade" />
+      <form className="wrap filter-panel" action="/anuncios" aria-label="Filtros do estoque">
+        <div className="filter-field">
+          <label>Marca</label>
           <select name="marca" defaultValue="">
-            <option value="">Marca</option>
+            <option value="">Todas as marcas</option>
             <option>Mercedes-Benz</option>
             <option>Scania</option>
             <option>Volvo</option>
@@ -159,244 +117,220 @@ export default async function HomePage() {
             <option>Iveco</option>
             <option>DAF</option>
           </select>
+        </div>
+
+        <div className="filter-field">
+          <label>Tipo</label>
           <select name="carroceria" defaultValue="">
-            <option value="">Tipo</option>
+            <option value="">Todos os tipos</option>
             <option>Cavalo mecânico</option>
             <option>Truck</option>
             <option>Toco</option>
-            <option>Caçamba</option>
-            <option>Plataforma</option>
             <option>Implemento</option>
           </select>
+        </div>
+
+        <div className="filter-field">
+          <label>Tração</label>
           <select name="tracao" defaultValue="">
-            <option value="">Tração</option>
+            <option value="">Todas as trações</option>
             <option>4x2</option>
             <option>6x2</option>
             <option>6x4</option>
             <option>8x4</option>
           </select>
-          <button type="submit">Buscar</button>
-        </form>
+        </div>
 
-        <div className="truck-grid-v2">
-          {trucks.length > 0 ? (
-            trucks.map((truck) => {
-              const title = getTitle(truck);
-              const image = getImage(truck);
+        <div className="filter-field">
+          <label>Localização</label>
+          <select name="estado" defaultValue="">
+            <option value="">Todas as regiões</option>
+            <option value="SC">Santa Catarina</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="PR">Paraná</option>
+          </select>
+        </div>
 
-              return (
-                <article className="ad-v2" key={truck.id}>
-                  <Link href={`/anuncios/${truck.id}`} className="ad-photo-v2">
-                    {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
-                    <span>{truck.carroceria || "Caminhão"}</span>
-                  </Link>
+        <div className="search-box">
+          <input name="busca" placeholder="Buscar modelo, marca..." />
+          <button type="submit" aria-label="Buscar">⌕</button>
+        </div>
+      </form>
 
-                  <div className="ad-content-v2">
-                    <Link className="ad-title-v2" href={`/anuncios/${truck.id}`}>{title}</Link>
-                    <div className="ad-tags-v2">
-                      <small>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</small>
-                      <small>{truck.tracao || "Tração"}</small>
-                      <small>{truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</small>
-                    </div>
-                    <div className="ad-bottom-v2">
-                      <strong>{formatMoney(truck.preco)}</strong>
-                      <div>
-                        <Link href={`/anuncios/${truck.id}`}>Detalhes</Link>
-                        {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer">WhatsApp</a>}
-                      </div>
-                    </div>
+      <section className="wrap section-title" id="estoque">
+        <h2><span>▱</span> Caminhões disponíveis <small className="pill">{trucks.length} anúncios</small></h2>
+        <Link href="/anuncios" className="view-all">Ver todos</Link>
+      </section>
+
+      <section className="wrap truck-grid">
+        {trucks.length > 0 ? (
+          trucks.map((truck) => {
+            const title = getTitle(truck);
+            const image = getImage(truck);
+
+            return (
+              <article className="truck-card" key={truck.id}>
+                <Link href={`/anuncios/${truck.id}`} className="truck-photo">
+                  <span className="badge">{truck.carroceria || "Caminhão"}</span>
+                  <span className="heart">♡</span>
+                  {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
+                </Link>
+                <div className="card-body">
+                  <Link className="truck-title" href={`/anuncios/${truck.id}`}>{title}</Link>
+                  <div className="meta">
+                    <span>▣ {truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
+                    <span>⚙ {truck.tracao || "Tração"}</span>
+                    <span>⌖ {truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span>
                   </div>
-                </article>
-              );
-            })
-          ) : (
-            <div className="empty-box">
-              <h3>Nenhum caminhão aprovado ainda.</h3>
-              <p>Quando houver anúncios aprovados, eles aparecem automaticamente nesta área.</p>
-            </div>
-          )}
-        </div>
+                  <strong className="price">{formatMoney(truck.preco)}</strong>
+                  <small className="payment">À vista / negociação direta</small>
+                  <div className="card-actions">
+                    <Link className="details" href={`/anuncios/${truck.id}`}>◉ Ver detalhes</Link>
+                    {truck.whatsapp && <a className="whats" href={getWhatsappLink(truck)} target="_blank" rel="noreferrer">☘</a>}
+                  </div>
+                </div>
+              </article>
+            );
+          })
+        ) : (
+          <div className="empty-state">
+            <h3>Nenhum caminhão aprovado ainda.</h3>
+            <p>Assim que os anúncios forem aprovados, eles aparecem aqui automaticamente.</p>
+          </div>
+        )}
       </section>
 
-      <section className="wrap sell-v2" id="vender">
+      <section className="wrap trust-bar" aria-label="Diferenciais">
+        <div className="trust-item"><span className="trust-icon">▱</span><span><strong>Negociação direta</strong><small>Contato pelo WhatsApp</small></span></div>
+        <div className="trust-item"><span className="trust-icon">▤</span><span><strong>Dados organizados</strong><small>Foto, valor, cidade e detalhes</small></span></div>
+        <div className="trust-item"><span className="trust-icon">▰</span><span><strong>Estoque atualizado</strong><small>Anúncios aprovados</small></span></div>
+        <div className="trust-item"><span className="trust-icon">☘</span><span><strong>Atendimento rápido</strong><small>Compra e venda sem complicar</small></span></div>
+      </section>
+
+      <section className="wrap sell-section" id="anunciar">
         <div>
-          <span className="label small">Venda com organização</span>
-          <h2>Quer vender seu caminhão?</h2>
-          <p>Envie dados, fotos, valor, localização e condições. A ideia é apresentar seu caminhão de forma clara para comprador interessado.</p>
+          <span className="kicker">Para vendedores</span>
+          <h2>Anuncie seu caminhão com aparência profissional.</h2>
+          <p>Envie dados, fotos e localização. A troca entra como uma opção marcada dentro do anúncio, não como uma aba separada.</p>
+          <div className="hero-actions"><Link className="btn btn-primary" href="/anunciar">Começar anúncio</Link></div>
         </div>
-        <Link className="btn btn-whats" href="/anunciar">Anunciar caminhão</Link>
+        <div className="steps"><div className="step"><b>1</b> Dados e fotos</div><div className="step"><b>2</b> Revisão do anúncio</div><div className="step"><b>3</b> Publicação e contatos</div></div>
       </section>
 
-      <section className="wrap how-v2" id="como-funciona">
-        <div className="step-v2"><b>01</b><h3>Compra simples</h3><p>O comprador encontra o caminhão, vê os dados e chama direto.</p></div>
-        <div className="step-v2"><b>02</b><h3>Venda organizada</h3><p>O anúncio fica com foto, valor, cidade e informações comerciais.</p></div>
-        <div className="step-v2"><b>03</b><h3>Contato direto</h3><p>WhatsApp em destaque para negociação rápida e objetiva.</p></div>
-      </section>
-
-      <section className="wrap contact-v2" id="contato">
+      <section className="wrap about-section" id="sobre">
         <div>
-          <h2>Atendimento pelo WhatsApp</h2>
-          <p>Consulte caminhões disponíveis, envie proposta ou solicite a divulgação do seu caminhão.</p>
+          <span className="kicker">Sobre</span>
+          <h2>Uma vitrine direta para caminhões reais.</h2>
+          <p>Visual focado em confiança, leitura rápida, preço claro e contato simples. Sem excesso de informação e sem aparência artificial.</p>
         </div>
-        <a className="btn btn-whats" href="https://wa.me/5549999999999" target="_blank" rel="noreferrer">Chamar agora</a>
+        <div className="steps"><div className="step"><b>✓</b> Cards organizados</div><div className="step"><b>✓</b> WhatsApp em destaque</div><div className="step"><b>✓</b> Layout responsivo</div></div>
+      </section>
+
+      <section className="wrap contact-section" id="contato">
+        <div>
+          <span className="kicker">Contato</span>
+          <h2>Quer comprar ou vender?</h2>
+          <p>Use o WhatsApp para consultar caminhões disponíveis, enviar proposta ou solicitar anúncio.</p>
+        </div>
+        <div className="hero-actions"><a className="btn btn-primary" href="https://wa.me/5549999999999" target="_blank" rel="noreferrer">Fale no WhatsApp</a></div>
       </section>
 
       <SiteFooter />
 
       <style>{`
         :global(html) { scroll-behavior: smooth; }
-        .home-v2 {
-          --dark: #17212b;
-          --text: #1f2933;
-          --muted: #677381;
-          --line: #e7e9ee;
-          --soft: #f5f6f8;
-          --white: #ffffff;
-          --green: #17a25b;
-          --yellow: #f4b325;
-          background: #fff;
+        .home-page {
+          --green: #22c55e;
+          --text: #f8fafc;
+          --muted: #cbd5e1;
+          min-height: 100vh;
           color: var(--text);
+          background:
+            radial-gradient(circle at 8% 5%, rgba(34,197,94,.17), transparent 28%),
+            radial-gradient(circle at 82% 12%, rgba(34,197,94,.10), transparent 24%),
+            linear-gradient(135deg, #020506 0%, #06110e 48%, #030608 100%);
           overflow-x: hidden;
         }
-        .home-v2 a { text-decoration: none; }
-        .wrap { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; }
-
-        .hero-v2 {
-          padding: 54px 0 30px;
+        .home-page::before {
+          content: "";
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          opacity: .16;
+          background-image: linear-gradient(rgba(34,197,94,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,.10) 1px, transparent 1px);
+          background-size: 78px 78px;
+          mask-image: linear-gradient(to bottom, black, transparent 74%);
+        }
+        .wrap { width: min(1240px, calc(100vw - 32px)); margin: 0 auto; }
+        .hero {
+          position: relative;
+          margin-top: -90px;
+          min-height: 500px;
+          display: flex;
+          align-items: end;
+          overflow: hidden;
           background:
-            linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
-          border-bottom: 1px solid var(--line);
+            linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)),
+            linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95));
+          background-size: cover;
+          background-position: center top;
+          border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .hero-layout {
-          display: grid;
-          grid-template-columns: 1.04fr .96fr;
-          gap: 34px;
-          align-items: center;
-        }
-        .label {
-          display: inline-flex;
-          width: fit-content;
-          align-items: center;
-          border-radius: 999px;
-          padding: 8px 12px;
-          background: #fff4d8;
-          border: 1px solid #ffe2a0;
-          color: #805200;
-          font-size: 13px;
-          font-weight: 900;
-          margin-bottom: 16px;
-        }
-        .label.small { margin-bottom: 12px; font-size: 12px; }
-        .hero-copy h1 {
-          max-width: 760px;
-          color: var(--dark);
-          font-size: clamp(38px, 5.5vw, 66px);
-          line-height: .99;
-          letter-spacing: -2.3px;
-        }
-        .hero-copy p {
-          max-width: 650px;
-          margin-top: 18px;
-          color: var(--muted);
-          font-size: 19px;
-        }
-        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-        .btn {
-          min-height: 48px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 999px;
-          padding: 0 18px;
-          font-weight: 900;
-          border: 1px solid transparent;
-          color: inherit;
-        }
-        .btn-main { color: #fff; background: var(--dark); box-shadow: 0 14px 30px rgba(23,33,43,.18); }
-        .btn-soft { color: var(--dark); background: #fff; border-color: #d7dce3; }
-        .btn-whats { color: #fff; background: var(--green); box-shadow: 0 14px 30px rgba(23,162,91,.18); }
-        .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; max-width: 650px; }
-        .mini-stats div { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; box-shadow: 0 8px 20px rgba(15,23,42,.04); }
-        .mini-stats strong { display: block; color: var(--dark); font-size: 15px; }
-        .mini-stats span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
-
-        .showcase-card { background: #fff; border: 1px solid var(--line); border-radius: 28px; overflow: hidden; box-shadow: 0 20px 45px rgba(15,23,42,.10); }
-        .showcase-photo { aspect-ratio: 4 / 3; background: var(--soft); display: grid; place-items: center; color: var(--muted); font-weight: 800; overflow: hidden; }
-        .showcase-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .showcase-info { padding: 20px; }
-        .status-pill { display: inline-flex; background: #ecfdf3; color: #087a3b; border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 900; margin-bottom: 10px; }
-        .showcase-info h2 { color: var(--dark); font-size: 26px; line-height: 1.12; letter-spacing: -.7px; }
-        .showcase-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
-        .showcase-row strong { color: var(--dark); font-size: 23px; }
-        .showcase-row a { color: var(--green); font-weight: 900; }
-
-        .action-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 20px 0; }
-        .action-strip a { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 86px; border-radius: 18px; border: 1px solid var(--line); background: #fff; padding: 18px; box-shadow: 0 10px 25px rgba(15,23,42,.05); }
-        .action-strip b { display: block; color: var(--dark); font-size: 17px; }
-        .action-strip span { display: block; color: var(--muted); font-size: 13px; margin-top: 3px; }
-
-        .stock-area { padding: 36px 0 52px; }
-        .section-title { display: flex; align-items: end; justify-content: space-between; gap: 22px; margin-bottom: 20px; }
-        .section-title h2, .sell-v2 h2, .contact-v2 h2 { color: var(--dark); font-size: clamp(30px, 4vw, 42px); line-height: 1.05; letter-spacing: -1.2px; }
-        .section-title p, .sell-v2 p, .contact-v2 p { color: var(--muted); margin-top: 7px; max-width: 610px; }
-        .all-link { color: var(--dark); background: #fff; border: 1px solid #d7dce3; border-radius: 999px; padding: 10px 15px; font-weight: 900; }
-
-        .filters-v2 { display: grid; grid-template-columns: 1.7fr repeat(3, 1fr) auto; gap: 10px; margin-bottom: 22px; padding: 12px; border-radius: 18px; border: 1px solid var(--line); background: var(--soft); }
-        .filters-v2 input, .filters-v2 select, .filters-v2 button { height: 46px; border-radius: 13px; border: 1px solid #d8dde5; background: #fff; color: var(--dark); padding: 0 12px; font-size: 14px; outline: none; }
-        .filters-v2 button { background: var(--dark); color: #fff; font-weight: 900; border-color: var(--dark); padding: 0 18px; cursor: pointer; }
-
-        .truck-grid-v2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-        .ad-v2 { border: 1px solid var(--line); border-radius: 22px; background: #fff; overflow: hidden; box-shadow: 0 14px 30px rgba(15,23,42,.06); transition: .2s ease; }
-        .ad-v2:hover { transform: translateY(-3px); box-shadow: 0 22px 42px rgba(15,23,42,.10); }
-        .ad-photo-v2 { position: relative; display: grid; place-items: center; aspect-ratio: 1 / 1; overflow: hidden; background: var(--soft); color: var(--muted); }
-        .ad-photo-v2 img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .ad-photo-v2 i { font-style: normal; font-weight: 800; }
-        .ad-photo-v2 span { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,.94); color: var(--dark); border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 900; box-shadow: 0 8px 18px rgba(0,0,0,.12); }
-        .ad-content-v2 { padding: 16px; }
-        .ad-title-v2 { display: block; color: var(--dark); font-size: 20px; font-weight: 950; letter-spacing: -.5px; margin-bottom: 10px; }
-        .ad-tags-v2 { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
-        .ad-tags-v2 small { background: var(--soft); color: var(--muted); border-radius: 999px; padding: 6px 8px; font-size: 13px; font-weight: 750; }
-        .ad-bottom-v2 { display: flex; justify-content: space-between; gap: 12px; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
-        .ad-bottom-v2 strong { color: var(--dark); font-size: 18px; }
-        .ad-bottom-v2 div { display: flex; gap: 8px; align-items: center; }
-        .ad-bottom-v2 a { color: var(--dark); background: var(--soft); border-radius: 999px; padding: 8px 10px; font-size: 12px; font-weight: 900; }
-        .ad-bottom-v2 a:last-child { color: #fff; background: var(--green); }
-        .empty-box { grid-column: 1 / -1; background: var(--soft); border: 1px solid var(--line); border-radius: 18px; padding: 28px; color: var(--dark); }
-        .empty-box p { color: var(--muted); margin-top: 6px; }
-
-        .sell-v2 { margin: 4px auto 28px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 22px; border-radius: 28px; padding: 34px; background: linear-gradient(135deg, #17212b, #233140); color: #fff; box-shadow: 0 24px 50px rgba(23,33,43,.18); }
-        .sell-v2 .label { background: rgba(244,179,37,.18); color: #ffe2a0; border-color: rgba(244,179,37,.30); }
-        .sell-v2 h2 { color: #fff; }
-        .sell-v2 p { color: rgba(255,255,255,.78); }
-
-        .how-v2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 24px 0 52px; }
-        .step-v2 { border: 1px solid var(--line); border-radius: 20px; background: #fff; padding: 22px; }
-        .step-v2 b { display: inline-grid; place-items: center; height: 42px; min-width: 42px; border-radius: 999px; background: #fff4d8; color: #805200; margin-bottom: 14px; }
-        .step-v2 h3 { color: var(--dark); font-size: 20px; margin-bottom: 8px; }
-        .step-v2 p { color: var(--muted); font-size: 15px; }
-
-        .contact-v2 { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin-bottom: 52px; border: 1px solid var(--line); border-radius: 24px; background: var(--soft); padding: 28px; }
-
-        @media (max-width: 930px) {
-          .hero-layout, .sell-v2 { grid-template-columns: 1fr; }
-          .action-strip, .how-v2 { grid-template-columns: 1fr; }
-          .filters-v2 { grid-template-columns: 1fr 1fr; }
-          .filters-v2 button { grid-column: 1 / -1; }
-          .truck-grid-v2 { grid-template-columns: repeat(2, 1fr); }
-          .contact-v2 { align-items: flex-start; flex-direction: column; }
-        }
-        @media (max-width: 620px) {
-          .wrap { width: min(100vw - 22px, 1180px); }
-          .hero-v2 { padding: 34px 0 20px; }
-          .hero-copy h1 { letter-spacing: -1.4px; }
-          .hero-copy p { font-size: 16px; }
-          .hero-actions { display: grid; grid-template-columns: 1fr; }
-          .mini-stats, .filters-v2, .truck-grid-v2 { grid-template-columns: 1fr; }
-          .section-title { display: block; }
-          .all-link { display: inline-flex; margin-top: 14px; }
-          .sell-v2, .contact-v2 { padding: 24px; }
-          .ad-bottom-v2 { align-items: flex-start; flex-direction: column; }
-        }
+        .hero::after { content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(circle at 15% 30%, rgba(34,197,94,.12), transparent 26%), linear-gradient(90deg, rgba(2,6,8,.68), transparent 60%); }
+        .hero-content { position:relative; z-index:2; padding:160px 0 84px; width:min(670px,100%); }
+        .kicker { display:inline-flex; align-items:center; gap:9px; min-height:34px; padding:0 13px; border-radius:999px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.32); color:#bbf7d0; font-size:12px; font-weight:950; letter-spacing:.07em; text-transform:uppercase; }
+        h1 { margin:18px 0 16px; font-size:clamp(38px,5.4vw,68px); line-height:1.02; letter-spacing:-.055em; max-width:640px; }
+        h1 span { color:var(--green); }
+        .hero p { margin:0; max-width:520px; color:#d7dee8; font-size:17px; line-height:1.55; }
+        .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:27px; }
+        .btn { min-height:52px; display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:0 22px; border-radius:8px; border:1px solid rgba(255,255,255,.15); font-size:13px; font-weight:950; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
+        .btn-primary { background:var(--green); color:#03220f; border-color:transparent; }
+        .btn-ghost { background:rgba(3,7,10,.58); color:#f8fafc; }
+        .filter-panel { position:relative; z-index:5; margin:-38px auto 34px; padding:14px; border-radius:16px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr minmax(220px,1.3fr); gap:0; background:linear-gradient(180deg, rgba(14,20,22,.92), rgba(9,14,16,.86)); border:1px solid rgba(255,255,255,.12); box-shadow:0 22px 54px rgba(0,0,0,.30); backdrop-filter:blur(16px); overflow:hidden; }
+        .filter-field { min-height:68px; display:grid; align-content:center; gap:6px; padding:0 18px; border-right:1px solid rgba(255,255,255,.09); color:#f8fafc; }
+        .filter-field label { color:#9ca3af; font-size:11px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
+        .filter-field select, .search-box input { width:100%; border:0; outline:0; background:transparent; color:#f8fafc; font-size:14px; font-weight:850; font-family:inherit; }
+        .filter-field select option { background:#0b1114; color:white; }
+        .search-box { display:grid; grid-template-columns:1fr 58px; align-items:center; gap:0; padding-left:18px; }
+        .search-box input { min-height:54px; padding:0 16px; border-radius:8px 0 0 8px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.11); border-right:0; }
+        .search-box button { min-height:54px; border:0; border-radius:0 8px 8px 0; background:var(--green); color:#042913; font-size:22px; cursor:pointer; }
+        .section-title { display:flex; align-items:center; justify-content:space-between; gap:18px; margin:22px auto 18px; }
+        .section-title h2 { margin:0; display:flex; align-items:center; gap:12px; font-size:clamp(26px,3vw,36px); letter-spacing:-.035em; }
+        .section-title h2 span { color:var(--green); }
+        .pill { display:inline-flex; align-items:center; justify-content:center; min-height:28px; padding:0 13px; border-radius:999px; background:rgba(34,197,94,.13); border:1px solid rgba(34,197,94,.28); color:#86efac; font-size:12px; font-weight:950; }
+        .view-all { min-height:44px; border-radius:8px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.055); color:white; padding:0 14px; display:inline-flex; align-items:center; text-decoration:none; font-weight:900; }
+        .truck-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin-bottom:28px; }
+        .truck-card { min-width:0; overflow:hidden; border-radius:10px; background:linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94)); border:1px solid rgba(255,255,255,.12); box-shadow:0 18px 45px rgba(0,0,0,.22); transition:transform .18s ease,border-color .18s ease; }
+        .truck-card:hover { transform:translateY(-4px); border-color:rgba(34,197,94,.34); }
+        .truck-photo { position:relative; aspect-ratio:1.55/1; overflow:hidden; background:#111827; display:block; color:#94a3b8; text-decoration:none; }
+        .truck-photo img { width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.96) contrast(1.04); }
+        .truck-photo i { height:100%; display:grid; place-items:center; font-style:normal; font-weight:900; }
+        .badge { position:absolute; left:10px; top:10px; z-index:2; min-height:24px; padding:0 9px; border-radius:5px; background:rgba(34,197,94,.92); color:#052e16; font-size:10px; font-weight:950; text-transform:uppercase; }
+        .heart { position:absolute; right:10px; top:10px; z-index:2; width:31px; height:31px; border-radius:999px; display:grid; place-items:center; background:rgba(2,6,8,.42); border:1px solid rgba(255,255,255,.14); color:white; }
+        .card-body { padding:14px; }
+        .truck-title { display:block; min-height:42px; color:white; text-decoration:none; font-size:17px; line-height:1.18; font-weight:950; letter-spacing:-.02em; }
+        .meta { display:flex; flex-wrap:wrap; gap:9px 12px; margin:10px 0 12px; color:#cbd5e1; font-size:12px; font-weight:800; }
+        .price { display:block; margin-bottom:4px; color:var(--green); font-size:22px; font-weight:950; letter-spacing:-.02em; }
+        .payment { color:#aeb7c3; font-size:12px; font-weight:800; }
+        .card-actions { display:grid; grid-template-columns:1fr 44px; gap:10px; margin-top:13px; }
+        .details,.whats { min-height:42px; display:inline-flex; align-items:center; justify-content:center; border-radius:7px; font-size:12px; font-weight:950; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
+        .details { background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.12); color:white; }
+        .whats { background:var(--green); color:#042913; }
+        .trust-bar { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; margin:10px auto 38px; border-radius:12px; overflow:hidden; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.10); }
+        .trust-item { min-height:86px; display:flex; align-items:center; gap:14px; padding:16px 24px; border-right:1px solid rgba(255,255,255,.08); }
+        .trust-item:last-child { border-right:0; }
+        .trust-icon { color:var(--green); font-size:27px; }
+        .trust-item strong { display:block; font-size:16px; margin-bottom:4px; }
+        .trust-item small { color:#cbd5e1; font-weight:750; }
+        .sell-section,.about-section,.contact-section { margin-bottom:34px; padding:clamp(22px,3.2vw,36px); border-radius:16px; background:linear-gradient(135deg, rgba(34,197,94,.12), rgba(255,255,255,.045)); border:1px solid rgba(34,197,94,.20); display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; }
+        .sell-section h2,.about-section h2,.contact-section h2 { margin:8px 0 10px; font-size:clamp(28px,4vw,46px); line-height:1.02; letter-spacing:-.045em; }
+        .sell-section p,.about-section p,.contact-section p { margin:0; color:#d6dee8; line-height:1.56; font-size:17px; }
+        .steps { display:grid; gap:10px; }
+        .step { min-height:55px; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; background:rgba(2,6,8,.44); border:1px solid rgba(255,255,255,.10); color:#dbeafe; font-weight:850; }
+        .step b { width:31px; height:31px; border-radius:999px; background:var(--green); color:#042913; display:grid; place-items:center; flex:0 0 auto; }
+        .empty-state { grid-column:1/-1; padding:28px; border-radius:16px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.10); }
+        @media (max-width:1120px){ .filter-panel{grid-template-columns:repeat(2,minmax(0,1fr));} .filter-field:nth-child(2n){border-right:0;} .search-box{grid-column:1/-1;padding:10px 0 0;} .truck-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-bar{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-item:nth-child(2n){border-right:0;} .sell-section,.about-section,.contact-section{grid-template-columns:1fr;} }
+        @media (max-width:640px){ .wrap{width:calc(100vw - 22px);} .hero{margin-top:-152px;min-height:570px;background-position:center top;} .hero-content{padding:245px 0 44px;} h1{font-size:38px;} .hero p{font-size:15px;} .hero-actions{display:grid;grid-template-columns:1fr;} .btn{width:100%;} .filter-panel{margin-top:-22px;grid-template-columns:1fr;} .filter-field{min-height:58px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .search-box{grid-template-columns:1fr 54px;} .section-title{align-items:flex-start;flex-direction:column;} .truck-grid{grid-template-columns:1fr;} .truck-photo{aspect-ratio:1.35/1;} .trust-bar{grid-template-columns:1fr;} .trust-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .trust-item:last-child{border-bottom:0;} }
       `}</style>
     </main>
   );
