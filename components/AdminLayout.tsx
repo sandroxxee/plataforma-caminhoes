@@ -11,12 +11,24 @@ type Props = {
   children: ReactNode;
 };
 
+function AdminBrandIcon() {
+  return (
+    <span className="admin-brand-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" role="img">
+        <path className="shield" d="M24 6 38 11v11c0 8.5-5.5 15.8-14 20-8.5-4.2-14-11.5-14-20V11l14-5Z" />
+        <path className="check" d="m17 24 5 5 10-12" />
+        <path className="spark" d="M36 8v5M33.5 10.5h5" />
+      </svg>
+    </span>
+  );
+}
+
 export function AdminLayout({ title, subtitle, badge, actions, children }: Props) {
   return (
     <main className="admin-page">
       <aside className="admin-sidebar">
         <Link href="/admin/pendentes" className="admin-brand" prefetch={false}>
-          <span className="admin-brand-icon">⚙️</span>
+          <AdminBrandIcon />
           <span>
             <strong>Admin Truck</strong>
             <small>Controle da plataforma</small>
@@ -50,7 +62,11 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
         .admin-page { min-height: 100vh; display: grid; grid-template-columns: 270px 1fr; background: linear-gradient(135deg,#020617 0%,#111827 55%,#020617 100%); color: white; }
         .admin-sidebar { padding: 24px; border-right: 1px solid rgba(255,255,255,.10); background: rgba(2,6,23,.78); display: flex; flex-direction: column; gap: 24px; }
         .admin-brand { display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center; text-align: center; padding: 18px; border-radius: 18px; background: rgba(234,179,8,.10); border: 1px solid rgba(234,179,8,.22); color: white; text-decoration: none; }
-        .admin-brand-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: #eab308; }
+        .admin-brand-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: radial-gradient(circle at 30% 22%, rgba(255,255,255,.36), transparent 24%), linear-gradient(135deg, #facc15, #ca8a04); box-shadow: 0 14px 34px rgba(234,179,8,.18), inset 0 1px 0 rgba(255,255,255,.34); overflow: hidden; }
+        .admin-brand-icon svg { width: 34px; height: 34px; display: block; }
+        .shield { fill: rgba(66, 32, 6, .92); }
+        .check, .spark { fill: none; stroke: rgba(255, 251, 235, .95); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+        .spark { stroke-width: 2; }
         .admin-brand small { display: block; color: #94a3b8; font-size: 12px; margin-top: 4px; }
         .admin-menu { display: grid; gap: 12px; }
         .admin-menu a, .admin-public, .admin-logout { width: 100%; min-height: 48px; padding: 13px 14px; border-radius: 14px; color: white; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.10); text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; font-family: inherit; cursor: pointer; }
@@ -72,6 +88,7 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
           .admin-sidebar { position: sticky; top: 0; z-index: 20; padding: 12px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.10); gap: 12px; background: rgba(2,6,23,.96); backdrop-filter: blur(14px); }
           .admin-brand { padding: 12px; flex-direction: row; }
           .admin-brand-icon { width: 38px; height: 38px; }
+          .admin-brand-icon svg { width: 28px; height: 28px; }
           .admin-brand small { display: none; }
           .admin-menu { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
           .admin-menu a { min-width: max-content; min-height: 42px; padding: 10px 13px; font-size: 14px; }
