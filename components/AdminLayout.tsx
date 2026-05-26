@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { sair } from "@/app/logout/actions";
 
 type Props = {
   title: string;
@@ -13,7 +14,7 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
   return (
     <main className="admin-page">
       <aside className="admin-sidebar">
-        <Link href="/admin/pendentes" className="admin-brand">
+        <Link href="/admin/pendentes" className="admin-brand" prefetch={false}>
           <span className="admin-brand-icon">⚙️</span>
           <span>
             <strong>Admin Truck</strong>
@@ -21,16 +22,18 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
           </span>
         </Link>
 
-        <nav className="admin-menu">
-          <Link href="/admin/pendentes">Pendentes</Link>
-          <Link href="/admin/anuncios">Todos anúncios</Link>
-          <Link href="/painel/anuncios/novo">Criar anúncio</Link>
-          <Link href="/painel/anuncios">Painel anunciante</Link>
+        <nav className="admin-menu" aria-label="Menu administrativo">
+          <a href="/admin/pendentes">Pendentes</a>
+          <a href="/admin/anuncios">Todos anúncios</a>
+          <a href="/painel/anuncios/novo">Criar anúncio</a>
+          <a href="/painel/anuncios">Painel anunciante</a>
         </nav>
 
         <div className="admin-bottom">
-          <Link href="/anuncios" className="admin-public">Ver site público</Link>
-          <Link href="/logout" className="admin-logout">Sair</Link>
+          <a href="/anuncios" className="admin-public">Ver site público</a>
+          <form action={sair}>
+            <button type="submit" className="admin-logout">Sair</button>
+          </form>
         </div>
       </aside>
 
@@ -104,6 +107,7 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
         .admin-menu a,
         .admin-public,
         .admin-logout {
+          width: 100%;
           min-height: 48px;
           padding: 13px 14px;
           border-radius: 14px;
@@ -117,12 +121,18 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
           justify-content: center;
           text-align: center;
           white-space: nowrap;
+          font-family: inherit;
+          cursor: pointer;
         }
 
         .admin-bottom {
           margin-top: auto;
           display: grid;
           gap: 12px;
+        }
+
+        .admin-bottom form {
+          margin: 0;
         }
 
         .admin-public {
