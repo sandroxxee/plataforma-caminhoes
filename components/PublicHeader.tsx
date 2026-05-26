@@ -1,13 +1,36 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ChevronRight, Info, Menu, MessageCircle, Phone, Search, Truck, X } from "lucide-react";
+import { useState } from "react";
 
 const whatsappLink = "https://wa.me/5549999999999?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Caminh%C3%B5es%20%C3%A0%20Venda.";
 
+const navItems = [
+  { href: "/anuncios", label: "Estoque", helper: "Ver caminhões", icon: Truck },
+  { href: "/anunciar", label: "Anunciar", helper: "Cadastrar veículo", icon: Search },
+  { href: "/#sobre", label: "Sobre", helper: "Como funciona", icon: Info },
+  { href: "/#contato", label: "Contato", helper: "Atendimento", icon: Phone },
+];
+
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  if (href.startsWith("/#")) return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function PublicHeader() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  const closeMenu = () => setOpen(false);
+
   return (
     <header className="public-header">
       <div className="public-header-shell">
-        <Link href="/" className="public-brand" aria-label="Caminhões à Venda">
+        <Link href="/" className="public-brand" aria-label="Caminhões à Venda" onClick={closeMenu}>
           <span className="public-brand-logo">
             <Image src="/logo-horizontal.png" alt="Caminhões à Venda" width={190} height={55} priority />
           </span>
@@ -18,19 +41,77 @@ export function PublicHeader() {
         </Link>
 
         <nav className="public-nav" aria-label="Menu principal">
-          <Link href="/anuncios">Estoque</Link>
-          <Link href="/anunciar">Anunciar</Link>
-          <Link href="/#sobre">Sobre</Link>
-          <Link href="/#contato">Contato</Link>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(pathname, item.href);
+
+            return (
+              <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={active ? "active" : ""}>
+                <Icon size={16} aria-hidden="true" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="public-actions">
-          <Link href="/anuncios" className="public-fav">♡ Favoritos</Link>
+          <Link href="/anuncios" className="public-search">
+            <Search size={16} aria-hidden="true" />
+            Buscar caminhão
+          </Link>
           <a href={whatsappLink} target="_blank" rel="noreferrer" className="public-whatsapp">
-            Fale no WhatsApp
+            <MessageCircle size={17} aria-hidden="true" />
+            WhatsApp
+          </a>
+          <button
+            type="button"
+            className="menu-toggle"
+            aria-label={open ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+          </button>
+        </div>
+      </div>
+
+      <div className={`mobile-menu ${open ? "open" : ""}`} aria-hidden={!open}>
+        <div className="mobile-menu-head">
+          <span>Menu rápido</span>
+          <small>Escolha uma ação</small>
+        </div>
+
+        <div className="mobile-menu-list">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(pathname, item.href);
+
+            return (
+              <Link key={item.href} href={item.href} onClick={closeMenu} className={active ? "active" : ""}>
+                <span className="mobile-icon"><Icon size={18} aria-hidden="true" /></span>
+                <span>
+                  <strong>{item.label}</strong>
+                  <small>{item.helper}</small>
+                </span>
+                <ChevronRight size={17} aria-hidden="true" />
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mobile-cta-row">
+          <Link href="/anunciar" onClick={closeMenu}>
+            <Truck size={17} aria-hidden="true" />
+            Quero anunciar
+          </Link>
+          <a href={whatsappLink} target="_blank" rel="noreferrer" onClick={closeMenu}>
+            <MessageCircle size={17} aria-hidden="true" />
+            Atendimento
           </a>
         </div>
       </div>
+
+      {open && <button type="button" className="menu-backdrop" aria-label="Fechar menu" onClick={closeMenu} />}
 
       <style>{`
         .public-header {
@@ -43,17 +124,19 @@ export function PublicHeader() {
         }
 
         .public-header-shell {
-          min-height: 76px;
+          min-height: 78px;
           display: grid;
-          grid-template-columns: auto 1fr auto;
+          grid-template-columns: auto minmax(360px, 1fr) auto;
           align-items: center;
-          gap: 22px;
-          padding: 10px 18px;
-          border-radius: 18px;
-          background: linear-gradient(180deg, rgba(13,18,20,.90), rgba(7,12,13,.80));
-          border: 1px solid rgba(255,255,255,.12);
-          box-shadow: 0 18px 58px rgba(0,0,0,.34);
-          backdrop-filter: blur(16px);
+          gap: 18px;
+          padding: 10px 14px 10px 18px;
+          border-radius: 22px;
+          background:
+            linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.035)),
+            linear-gradient(180deg, rgba(13,18,20,.92), rgba(7,12,13,.84));
+          border: 1px solid rgba(255,255,255,.14);
+          box-shadow: 0 18px 58px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08);
+          backdrop-filter: blur(18px);
         }
 
         .public-brand {
@@ -66,12 +149,12 @@ export function PublicHeader() {
         }
 
         .public-brand-logo {
-          width: 72px;
-          height: 72px;
-          flex: 0 0 72px;
+          width: 68px;
+          height: 68px;
+          flex: 0 0 68px;
           display: grid;
           place-items: center;
-          border-radius: 999px;
+          border-radius: 20px;
           overflow: hidden;
           background: rgba(255,255,255,.06);
           border: 1px solid rgba(250,204,21,.42);
@@ -92,129 +175,279 @@ export function PublicHeader() {
         }
 
         .public-brand-text strong {
-          font-size: 18px;
+          font-size: 17px;
           font-weight: 950;
           letter-spacing: .02em;
           text-transform: uppercase;
         }
 
         .public-brand-text small {
-          margin-top: 5px;
-          color: #22c55e;
-          font-size: 12px;
+          margin-top: 6px;
+          color: #86efac;
+          font-size: 11px;
           font-weight: 950;
-          letter-spacing: .08em;
+          letter-spacing: .09em;
           text-transform: uppercase;
         }
 
         .public-nav {
+          min-height: 52px;
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: clamp(12px, 2.4vw, 42px);
+          gap: 6px;
           min-width: 0;
+          padding: 5px;
+          border-radius: 16px;
+          background: rgba(2,6,8,.30);
+          border: 1px solid rgba(255,255,255,.075);
         }
 
         .public-nav a {
           position: relative;
+          min-height: 42px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-height: 42px;
+          gap: 8px;
+          padding: 0 14px;
+          border-radius: 12px;
           color: rgba(248,250,252,.78);
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 950;
-          letter-spacing: .09em;
+          letter-spacing: .06em;
           text-transform: uppercase;
           white-space: nowrap;
           text-decoration: none;
-          transition: color .18s ease;
+          transition: color .18s ease, background .18s ease, transform .18s ease;
         }
 
-        .public-nav a::after {
-          content: "";
-          position: absolute;
-          left: 50%;
-          bottom: -2px;
-          width: 0;
-          height: 2px;
-          border-radius: 999px;
+        .public-nav a:hover,
+        .public-nav a.active {
+          color: #052e16;
           background: #22c55e;
-          transform: translateX(-50%);
-          transition: width .2s ease;
-          box-shadow: 0 0 16px rgba(34,197,94,.64);
-        }
-
-        .public-nav a:hover {
-          color: #22c55e;
-        }
-
-        .public-nav a:hover::after {
-          width: 24px;
+          transform: translateY(-1px);
+          box-shadow: 0 12px 28px rgba(34,197,94,.22);
         }
 
         .public-actions {
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          gap: 12px;
+          gap: 10px;
           white-space: nowrap;
         }
 
-        .public-fav {
-          min-height: 42px;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          color: rgba(248,250,252,.88);
-          font-weight: 850;
-          font-size: 14px;
-          text-decoration: none;
-        }
-
-        .public-whatsapp {
-          min-height: 44px;
+        .public-search,
+        .public-whatsapp,
+        .menu-toggle {
+          min-height: 46px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          padding: 0 19px;
-          border-radius: 7px;
-          background: rgba(34,197,94,.08);
-          border: 1px solid rgba(34,197,94,.72);
-          color: #f8fafc;
+          gap: 9px;
+          border-radius: 14px;
           font-size: 12px;
           font-weight: 950;
-          letter-spacing: .06em;
+          letter-spacing: .05em;
           text-transform: uppercase;
           text-decoration: none;
           transition: .18s ease;
         }
 
-        .public-whatsapp:hover {
-          background: rgba(34,197,94,.18);
+        .public-search {
+          padding: 0 15px;
+          background: rgba(255,255,255,.07);
+          border: 1px solid rgba(255,255,255,.12);
+          color: #f8fafc;
+        }
+
+        .public-search:hover {
+          background: rgba(255,255,255,.12);
           transform: translateY(-1px);
+        }
+
+        .public-whatsapp {
+          padding: 0 17px;
+          background: #22c55e;
+          border: 1px solid rgba(34,197,94,.72);
+          color: #042913;
+          box-shadow: 0 14px 34px rgba(34,197,94,.18);
+        }
+
+        .public-whatsapp:hover {
+          transform: translateY(-1px);
+          filter: brightness(1.05);
+        }
+
+        .menu-toggle {
+          width: 46px;
+          border: 1px solid rgba(255,255,255,.14);
+          background: rgba(255,255,255,.07);
+          color: #f8fafc;
+          cursor: pointer;
+          display: none;
+        }
+
+        .mobile-menu,
+        .menu-backdrop {
+          display: none;
         }
 
         @media (max-width: 1120px) {
           .public-header-shell {
-            grid-template-columns: 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr auto;
           }
 
           .public-brand {
             min-width: 0;
           }
 
-          .public-nav {
-            justify-content: flex-start;
-            overflow-x: auto;
-            padding: 2px 0 8px;
+          .public-nav,
+          .public-search {
+            display: none;
           }
 
-          .public-actions {
-            justify-content: flex-start;
-            width: 100%;
+          .menu-toggle {
+            display: inline-flex;
+          }
+
+          .mobile-menu {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% - 6px);
+            display: grid;
+            gap: 14px;
+            padding: 16px;
+            border-radius: 20px;
+            background:
+              radial-gradient(circle at 18% 0%, rgba(34,197,94,.18), transparent 36%),
+              linear-gradient(180deg, rgba(12,18,20,.98), rgba(5,10,12,.96));
+            border: 1px solid rgba(255,255,255,.14);
+            box-shadow: 0 24px 72px rgba(0,0,0,.44);
+            backdrop-filter: blur(18px);
+            opacity: 0;
+            transform: translateY(-8px) scale(.98);
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease;
+          }
+
+          .mobile-menu.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+          }
+
+          .mobile-menu-head {
+            display: grid;
+            gap: 3px;
+            color: #f8fafc;
+          }
+
+          .mobile-menu-head span {
+            font-size: 18px;
+            font-weight: 950;
+            letter-spacing: -.02em;
+          }
+
+          .mobile-menu-head small {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+          }
+
+          .mobile-menu-list {
+            display: grid;
+            gap: 8px;
+          }
+
+          .mobile-menu-list a {
+            min-height: 64px;
+            display: grid;
+            grid-template-columns: 42px 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 15px;
+            color: #f8fafc;
+            text-decoration: none;
+            background: rgba(255,255,255,.055);
+            border: 1px solid rgba(255,255,255,.09);
+          }
+
+          .mobile-menu-list a.active {
+            border-color: rgba(34,197,94,.52);
+            background: rgba(34,197,94,.11);
+          }
+
+          .mobile-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: rgba(34,197,94,.14);
+            color: #86efac;
+          }
+
+          .mobile-menu-list strong,
+          .mobile-menu-list small {
+            display: block;
+          }
+
+          .mobile-menu-list strong {
+            font-size: 15px;
+            font-weight: 950;
+          }
+
+          .mobile-menu-list small {
+            margin-top: 3px;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 800;
+          }
+
+          .mobile-cta-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+          }
+
+          .mobile-cta-row a {
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 950;
+            text-transform: uppercase;
+          }
+
+          .mobile-cta-row a:first-child {
+            background: rgba(255,255,255,.08);
+            color: #f8fafc;
+            border: 1px solid rgba(255,255,255,.12);
+          }
+
+          .mobile-cta-row a:last-child {
+            background: #22c55e;
+            color: #042913;
+          }
+
+          .menu-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            display: block;
+            border: 0;
+            background: rgba(2,6,8,.34);
+            cursor: pointer;
           }
         }
 
@@ -226,39 +459,38 @@ export function PublicHeader() {
           }
 
           .public-header-shell {
-            padding: 10px;
-            border-radius: 14px;
+            min-height: 66px;
+            padding: 8px;
+            border-radius: 18px;
           }
 
           .public-brand-logo {
-            width: 54px;
-            height: 54px;
-            flex-basis: 54px;
+            width: 52px;
+            height: 52px;
+            flex-basis: 52px;
+            border-radius: 16px;
           }
 
           .public-brand-text strong {
-            font-size: 15px;
+            font-size: 14px;
           }
 
           .public-brand-text small {
-            font-size: 11px;
-          }
-
-          .public-nav {
-            gap: 18px;
-          }
-
-          .public-nav a {
-            font-size: 12px;
-            min-height: 34px;
-          }
-
-          .public-fav {
-            display: none;
+            font-size: 10px;
+            letter-spacing: .06em;
           }
 
           .public-whatsapp {
-            width: 100%;
+            display: none;
+          }
+
+          .mobile-menu {
+            padding: 12px;
+            border-radius: 18px;
+          }
+
+          .mobile-cta-row {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
