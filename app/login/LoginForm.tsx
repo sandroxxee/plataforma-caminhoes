@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
+  const router = useRouter();
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
 
@@ -55,12 +57,19 @@ export function LoginForm() {
 
     const destino = profile?.role === "admin" ? "/admin/pendentes" : "/painel";
 
-    window.location.href = destino;
+    router.replace(destino);
+    router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="card">
-      <h2>Login</h2>
+      <div className="form-head">
+        <span className="form-icon">🔐</span>
+        <div>
+          <h2>Entrar no painel</h2>
+          <p>Acesse sua conta para gerenciar anúncios.</p>
+        </div>
+      </div>
 
       {erro && <div className="error">{erro}</div>}
 
@@ -75,7 +84,7 @@ export function LoginForm() {
       </label>
 
       <button type="submit" disabled={carregando}>
-        {carregando ? "Entrando..." : "Entrar"}
+        {carregando ? "Entrando..." : "Entrar no painel"}
       </button>
 
       <p className="login-text">
@@ -86,14 +95,42 @@ export function LoginForm() {
         .card {
           padding: 26px;
           border-radius: 28px;
-          background: rgba(255,255,255,.08);
-          border: 1px solid rgba(255,255,255,.11);
-          box-shadow: 0 24px 80px rgba(0,0,0,.24);
+          background:
+            radial-gradient(circle at 0 0, rgba(34,197,94,.16), transparent 36%),
+            linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94));
+          border: 1px solid rgba(255,255,255,.12);
+          box-shadow: 0 24px 80px rgba(0,0,0,.28);
+        }
+
+        .form-head {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 20px;
+        }
+
+        .form-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+          display: grid;
+          place-items: center;
+          background: #22c55e;
+          color: #052e16;
+          box-shadow: 0 14px 34px rgba(34,197,94,.18);
         }
 
         .card h2 {
-          margin: 0 0 18px;
+          margin: 0 0 4px;
           font-size: 28px;
+          letter-spacing: -.035em;
+        }
+
+        .form-head p {
+          margin: 0;
+          color: #94a3b8;
+          font-size: 14px;
+          line-height: 1.4;
         }
 
         .error {
@@ -117,7 +154,7 @@ export function LoginForm() {
 
         input {
           width: 100%;
-          min-height: 50px;
+          min-height: 52px;
           border-radius: 15px;
           border: 1px solid rgba(255,255,255,.12);
           background: rgba(2,6,23,.66);
