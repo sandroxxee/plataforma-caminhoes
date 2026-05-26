@@ -91,84 +91,64 @@ export default async function HomePage() {
   const featuredImage = featuredTruck ? getImage(featuredTruck) : "";
 
   return (
-    <main className="home-page" id="inicio">
+    <main className="home-v2" id="inicio">
       <PublicHeader />
 
-      <section className="hero-white">
-        <div className="wrap hero-grid">
+      <section className="hero-v2">
+        <div className="wrap hero-layout">
           <div className="hero-copy">
-            <span className="eyebrow">Compra · venda · troca · atendimento direto</span>
-            <h1>Caminhões selecionados para compra, venda e troca</h1>
+            <span className="label">Caminhões à venda</span>
+            <h1>Compre, venda ou troque caminhões com atendimento direto.</h1>
             <p>
-              Anúncios organizados, atendimento direto e oportunidades reais para quem vive do transporte.
+              Uma vitrine organizada para caminhões, implementos e veículos comerciais, com foco em oportunidade real e contato rápido pelo WhatsApp.
             </p>
 
             <div className="hero-actions">
-              <Link className="btn btn-dark" href="/anuncios">Ver caminhões</Link>
-              <Link className="btn btn-light" href="/anunciar">Anunciar caminhão</Link>
+              <Link className="btn btn-main" href="/anuncios">Ver caminhões disponíveis</Link>
+              <Link className="btn btn-soft" href="/anunciar">Quero anunciar</Link>
+            </div>
+
+            <div className="mini-stats" aria-label="Diferenciais">
+              <div><strong>Compra</strong><span>Filtros simples</span></div>
+              <div><strong>Venda</strong><span>Anúncio organizado</span></div>
+              <div><strong>Troca</strong><span>Contato direto</span></div>
             </div>
           </div>
 
-          <aside className="featured-card" aria-label="Caminhão em destaque">
-            <Link href={featuredTruck ? `/anuncios/${featuredTruck.id}` : "/anuncios"} className="featured-photo">
-              {featuredImage ? <img src={featuredImage} alt={featuredTitle} /> : <span>Imagem do caminhão</span>}
-            </Link>
-            <div className="featured-body">
-              <div className="featured-topline">
-                <span>Destaque</span>
-                <strong>{featuredTruck ? formatMoney(featuredTruck.preco) : "Sob consulta"}</strong>
-              </div>
+          <aside className="showcase-card">
+            <div className="showcase-photo">
+              {featuredImage ? <img src={featuredImage} alt={featuredTitle} /> : <span>Foto do caminhão</span>}
+            </div>
+            <div className="showcase-info">
+              <span className="status-pill">Destaque do estoque</span>
               <h2>{featuredTitle}</h2>
-              <div className="featured-specs">
-                <small>{featuredTruck?.ano_modelo || featuredTruck?.ano_fabricacao || "Ano"}</small>
-                <small>{featuredTruck?.tracao || "Tração"}</small>
-                <small>{featuredTruck?.cidade || "Cidade"}{featuredTruck?.estado ? ` - ${featuredTruck.estado}` : ""}</small>
+              <div className="showcase-row">
+                <strong>{featuredTruck ? formatMoney(featuredTruck.preco) : "Sob consulta"}</strong>
+                <Link href={featuredTruck ? `/anuncios/${featuredTruck.id}` : "/anuncios"}>Ver detalhes</Link>
               </div>
             </div>
           </aside>
         </div>
       </section>
 
-      <section className="quick-section">
-        <div className="wrap quick-grid">
-          <Link className="quick-card dark" href="/anuncios">
-            <div>
-              <h3>Comprar caminhão</h3>
-              <p>Veja opções disponíveis com dados claros e contato direto.</p>
-            </div>
-            <span>→</span>
-          </Link>
-
-          <Link className="quick-card light" href="/anunciar">
-            <div>
-              <h3>Vender ou trocar</h3>
-              <p>Envie as informações para organizar o anúncio do caminhão.</p>
-            </div>
-            <span>→</span>
-          </Link>
-
-          <a className="quick-card green" href="#contato">
-            <div>
-              <h3>Atendimento WhatsApp</h3>
-              <p>Fale sobre compra, venda, troca ou oportunidade disponível.</p>
-            </div>
-            <span>→</span>
-          </a>
-        </div>
+      <section className="wrap action-strip">
+        <Link href="/anuncios"><b>Comprar caminhão</b><span>Consultar estoque</span></Link>
+        <Link href="/anunciar"><b>Vender ou trocar</b><span>Enviar dados do veículo</span></Link>
+        <a href="#contato"><b>WhatsApp</b><span>Atendimento direto</span></a>
       </section>
 
-      <section className="wrap stock-section" id="comprar">
-        <div className="section-head">
+      <section className="wrap stock-area" id="comprar">
+        <div className="section-title">
           <div>
-            <span className="section-label">Estoque</span>
+            <span className="label small">Estoque atualizado</span>
             <h2>Caminhões disponíveis</h2>
-            <p>Use filtros simples para encontrar caminhões por marca, carroceria, tração ou região.</p>
+            <p>Fotos, valor, cidade e informações principais para decidir rápido.</p>
           </div>
-          <Link className="view-all" href="/anuncios">Ver todos</Link>
+          <Link href="/anuncios" className="all-link">Ver todos</Link>
         </div>
 
-        <form className="filter-panel" action="/anuncios" aria-label="Filtros de caminhões">
-          <input name="busca" placeholder="Buscar caminhão, marca ou cidade" />
+        <form className="filters-v2" action="/anuncios" aria-label="Filtros de estoque">
+          <input name="busca" placeholder="Buscar por modelo, marca ou cidade" />
           <select name="marca" defaultValue="">
             <option value="">Marca</option>
             <option>Mercedes-Benz</option>
@@ -180,7 +160,7 @@ export default async function HomePage() {
             <option>DAF</option>
           </select>
           <select name="carroceria" defaultValue="">
-            <option value="">Carroceria</option>
+            <option value="">Tipo</option>
             <option>Cavalo mecânico</option>
             <option>Truck</option>
             <option>Toco</option>
@@ -195,359 +175,227 @@ export default async function HomePage() {
             <option>6x4</option>
             <option>8x4</option>
           </select>
-          <select name="estado" defaultValue="">
-            <option value="">Cidade/UF</option>
-            <option value="SC">Santa Catarina</option>
-            <option value="PR">Paraná</option>
-            <option value="RS">Rio Grande do Sul</option>
-          </select>
+          <button type="submit">Buscar</button>
         </form>
 
-        <div className="truck-grid">
+        <div className="truck-grid-v2">
           {trucks.length > 0 ? (
             trucks.map((truck) => {
               const title = getTitle(truck);
               const image = getImage(truck);
 
               return (
-                <article className="truck-card" key={truck.id}>
-                  <Link href={`/anuncios/${truck.id}`} className="truck-photo">
-                    <span className="badge">{truck.carroceria || "Caminhão"}</span>
+                <article className="ad-v2" key={truck.id}>
+                  <Link href={`/anuncios/${truck.id}`} className="ad-photo-v2">
                     {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
+                    <span>{truck.carroceria || "Caminhão"}</span>
                   </Link>
-                  <div className="card-body">
-                    <Link className="truck-title" href={`/anuncios/${truck.id}`}>{title}</Link>
-                    <div className="meta">
-                      <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
-                      <span>{truck.tracao || "Tração"}</span>
-                      <span>{truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span>
+
+                  <div className="ad-content-v2">
+                    <Link className="ad-title-v2" href={`/anuncios/${truck.id}`}>{title}</Link>
+                    <div className="ad-tags-v2">
+                      <small>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</small>
+                      <small>{truck.tracao || "Tração"}</small>
+                      <small>{truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</small>
                     </div>
-                    <div className="card-footer">
+                    <div className="ad-bottom-v2">
                       <strong>{formatMoney(truck.preco)}</strong>
-                      {truck.whatsapp ? (
-                        <a className="whats-btn" href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" aria-label="Chamar no WhatsApp">W</a>
-                      ) : (
-                        <Link className="details-btn" href={`/anuncios/${truck.id}`}>Ver</Link>
-                      )}
+                      <div>
+                        <Link href={`/anuncios/${truck.id}`}>Detalhes</Link>
+                        {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer">WhatsApp</a>}
+                      </div>
                     </div>
                   </div>
                 </article>
               );
             })
           ) : (
-            <div className="empty-state">
+            <div className="empty-box">
               <h3>Nenhum caminhão aprovado ainda.</h3>
-              <p>Assim que os anúncios forem aprovados, eles aparecem aqui automaticamente.</p>
+              <p>Quando houver anúncios aprovados, eles aparecem automaticamente nesta área.</p>
             </div>
           )}
         </div>
       </section>
 
-      <section className="wrap sell-box" id="vender">
+      <section className="wrap sell-v2" id="vender">
         <div>
-          <span className="section-label">Para vendedores</span>
+          <span className="label small">Venda com organização</span>
           <h2>Quer vender seu caminhão?</h2>
-          <p>Envie os dados, fotos, cidade, valor e condições. O anúncio fica mais claro para compradores interessados.</p>
+          <p>Envie dados, fotos, valor, localização e condições. A ideia é apresentar seu caminhão de forma clara para comprador interessado.</p>
         </div>
-        <Link className="btn btn-green" href="/anunciar">Anunciar pelo WhatsApp</Link>
+        <Link className="btn btn-whats" href="/anunciar">Anunciar caminhão</Link>
       </section>
 
-      <section className="wrap how-section" id="como-funciona">
-        <div className="section-head">
-          <div>
-            <span className="section-label">Processo</span>
-            <h2>Como funciona</h2>
-            <p>Um fluxo simples para comprar, vender ou trocar caminhões sem complicar.</p>
-          </div>
-        </div>
-
-        <div className="how-grid">
-          <div className="how-card">
-            <b>1</b>
-            <h3>Compra simples</h3>
-            <p>O comprador vê os anúncios, confere os dados principais e chama direto no WhatsApp.</p>
-          </div>
-          <div className="how-card">
-            <b>2</b>
-            <h3>Venda organizada</h3>
-            <p>O vendedor envia as informações e o caminhão aparece com foto, valor, cidade e detalhes.</p>
-          </div>
-          <div className="how-card">
-            <b>3</b>
-            <h3>Contato direto</h3>
-            <p>A negociação segue pelo atendimento, com foco em caminhões reais e oportunidades claras.</p>
-          </div>
-        </div>
+      <section className="wrap how-v2" id="como-funciona">
+        <div className="step-v2"><b>01</b><h3>Compra simples</h3><p>O comprador encontra o caminhão, vê os dados e chama direto.</p></div>
+        <div className="step-v2"><b>02</b><h3>Venda organizada</h3><p>O anúncio fica com foto, valor, cidade e informações comerciais.</p></div>
+        <div className="step-v2"><b>03</b><h3>Contato direto</h3><p>WhatsApp em destaque para negociação rápida e objetiva.</p></div>
       </section>
 
-      <section className="wrap contact-section" id="contato">
+      <section className="wrap contact-v2" id="contato">
         <div>
-          <span className="section-label">Atendimento</span>
-          <h2>Fale pelo WhatsApp</h2>
+          <h2>Atendimento pelo WhatsApp</h2>
           <p>Consulte caminhões disponíveis, envie proposta ou solicite a divulgação do seu caminhão.</p>
         </div>
-        <a className="btn btn-green" href="https://wa.me/5549999999999" target="_blank" rel="noreferrer">Chamar no WhatsApp</a>
+        <a className="btn btn-whats" href="https://wa.me/5549999999999" target="_blank" rel="noreferrer">Chamar agora</a>
       </section>
 
       <SiteFooter />
 
       <style>{`
         :global(html) { scroll-behavior: smooth; }
-        .home-page {
-          --bg: #ffffff;
-          --soft: #f6f7f9;
-          --text: #171717;
-          --muted: #626975;
-          --line: #e5e7eb;
-          --dark: #1f2933;
-          --green: #19a75b;
-          --yellow: #f5b521;
-          --red: #c8242f;
-          min-height: 100vh;
-          color: var(--text);
+        .home-v2 {
+          --dark: #17212b;
+          --text: #1f2933;
+          --muted: #677381;
+          --line: #e7e9ee;
+          --soft: #f5f6f8;
+          --white: #ffffff;
+          --green: #17a25b;
+          --yellow: #f4b325;
           background: #fff;
+          color: var(--text);
           overflow-x: hidden;
         }
-        .home-page a { text-decoration: none; }
+        .home-v2 a { text-decoration: none; }
         .wrap { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; }
 
-        .hero-white {
-          padding: 58px 0 42px;
-          border-bottom: 1px solid var(--line);
+        .hero-v2 {
+          padding: 54px 0 30px;
           background:
-            radial-gradient(circle at top left, rgba(245, 181, 33, 0.16), transparent 34%),
-            radial-gradient(circle at top right, rgba(200, 36, 47, 0.08), transparent 32%),
-            #fff;
+            linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
+          border-bottom: 1px solid var(--line);
         }
-        .hero-grid {
+        .hero-layout {
           display: grid;
-          grid-template-columns: 1.05fr .95fr;
-          gap: 42px;
+          grid-template-columns: 1.04fr .96fr;
+          gap: 34px;
           align-items: center;
         }
-        .eyebrow, .section-label {
+        .label {
           display: inline-flex;
-          align-items: center;
           width: fit-content;
+          align-items: center;
           border-radius: 999px;
-          background: #fff7df;
-          color: #8a5a00;
-          border: 1px solid #ffe3a1;
+          padding: 8px 12px;
+          background: #fff4d8;
+          border: 1px solid #ffe2a0;
+          color: #805200;
           font-size: 13px;
           font-weight: 900;
-          padding: 8px 12px;
           margin-bottom: 16px;
         }
+        .label.small { margin-bottom: 12px; font-size: 12px; }
         .hero-copy h1 {
-          max-width: 720px;
-          font-size: clamp(38px, 5.6vw, 64px);
-          line-height: 1.02;
-          letter-spacing: -2px;
+          max-width: 760px;
           color: var(--dark);
+          font-size: clamp(38px, 5.5vw, 66px);
+          line-height: .99;
+          letter-spacing: -2.3px;
         }
         .hero-copy p {
-          max-width: 610px;
+          max-width: 650px;
           margin-top: 18px;
           color: var(--muted);
           font-size: 19px;
         }
         .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
         .btn {
+          min-height: 48px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-height: 46px;
           border-radius: 999px;
           padding: 0 18px;
           font-weight: 900;
           border: 1px solid transparent;
-          transition: .2s ease;
-          white-space: nowrap;
+          color: inherit;
         }
-        .btn:hover { transform: translateY(-1px); }
-        .btn-dark { background: var(--dark); color: #fff; box-shadow: 0 14px 26px rgba(31,41,51,.18); }
-        .btn-light { background: #fff; color: var(--dark); border-color: #d1d5db; }
-        .btn-green { background: var(--green); color: #fff; box-shadow: 0 14px 28px rgba(25,167,91,.18); }
+        .btn-main { color: #fff; background: var(--dark); box-shadow: 0 14px 30px rgba(23,33,43,.18); }
+        .btn-soft { color: var(--dark); background: #fff; border-color: #d7dce3; }
+        .btn-whats { color: #fff; background: var(--green); box-shadow: 0 14px 30px rgba(23,162,91,.18); }
+        .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; max-width: 650px; }
+        .mini-stats div { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; box-shadow: 0 8px 20px rgba(15,23,42,.04); }
+        .mini-stats strong { display: block; color: var(--dark); font-size: 15px; }
+        .mini-stats span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
 
-        .featured-card {
-          overflow: hidden;
-          background: #fff;
-          border: 1px solid var(--line);
-          border-radius: 28px;
-          box-shadow: 0 14px 35px rgba(15,23,42,.08);
-        }
-        .featured-photo {
-          display: grid;
-          place-items: center;
-          aspect-ratio: 4 / 3;
-          background: var(--soft);
-          color: var(--muted);
-          font-weight: 800;
-          overflow: hidden;
-        }
-        .featured-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .featured-body { padding: 20px; }
-        .featured-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-        .featured-topline span { background: #ecfdf3; color: #087a3b; border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 900; }
-        .featured-topline strong { color: var(--dark); font-size: 22px; }
-        .featured-body h2 { color: var(--dark); font-size: 25px; letter-spacing: -.6px; }
-        .featured-specs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-        .featured-specs small { background: var(--soft); color: var(--dark); border-radius: 13px; padding: 11px; font-weight: 800; text-align: center; }
+        .showcase-card { background: #fff; border: 1px solid var(--line); border-radius: 28px; overflow: hidden; box-shadow: 0 20px 45px rgba(15,23,42,.10); }
+        .showcase-photo { aspect-ratio: 4 / 3; background: var(--soft); display: grid; place-items: center; color: var(--muted); font-weight: 800; overflow: hidden; }
+        .showcase-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .showcase-info { padding: 20px; }
+        .status-pill { display: inline-flex; background: #ecfdf3; color: #087a3b; border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 900; margin-bottom: 10px; }
+        .showcase-info h2 { color: var(--dark); font-size: 26px; line-height: 1.12; letter-spacing: -.7px; }
+        .showcase-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
+        .showcase-row strong { color: var(--dark); font-size: 23px; }
+        .showcase-row a { color: var(--green); font-weight: 900; }
 
-        .quick-section { padding: 24px 0; border-bottom: 1px solid var(--line); }
-        .quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .quick-card {
-          min-height: 116px;
-          display: flex;
-          justify-content: space-between;
-          gap: 16px;
-          border-radius: 18px;
-          padding: 20px;
-          box-shadow: 0 16px 30px rgba(31,41,51,.10);
-          transition: .2s ease;
-        }
-        .quick-card:hover { transform: translateY(-2px); }
-        .quick-card h3 { font-size: 18px; margin-bottom: 5px; }
-        .quick-card p { font-size: 14px; opacity: .78; }
-        .quick-card.dark { background: var(--dark); color: #fff; }
-        .quick-card.light { background: #fff; color: var(--dark); border: 1px solid var(--line); }
-        .quick-card.green { background: var(--green); color: #fff; }
-        .quick-card span { font-weight: 900; font-size: 22px; }
+        .action-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 20px 0; }
+        .action-strip a { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 86px; border-radius: 18px; border: 1px solid var(--line); background: #fff; padding: 18px; box-shadow: 0 10px 25px rgba(15,23,42,.05); }
+        .action-strip b { display: block; color: var(--dark); font-size: 17px; }
+        .action-strip span { display: block; color: var(--muted); font-size: 13px; margin-top: 3px; }
 
-        .stock-section, .how-section { padding: 52px 0; }
-        .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
-        .section-head h2, .sell-box h2, .contact-section h2 { color: var(--dark); font-size: clamp(30px, 4vw, 42px); line-height: 1.08; letter-spacing: -1px; }
-        .section-head p, .sell-box p, .contact-section p { color: var(--muted); max-width: 590px; margin-top: 8px; }
-        .view-all { color: var(--dark); font-weight: 900; border: 1px solid #d1d5db; border-radius: 999px; padding: 10px 14px; background: #fff; }
+        .stock-area { padding: 36px 0 52px; }
+        .section-title { display: flex; align-items: end; justify-content: space-between; gap: 22px; margin-bottom: 20px; }
+        .section-title h2, .sell-v2 h2, .contact-v2 h2 { color: var(--dark); font-size: clamp(30px, 4vw, 42px); line-height: 1.05; letter-spacing: -1.2px; }
+        .section-title p, .sell-v2 p, .contact-v2 p { color: var(--muted); margin-top: 7px; max-width: 610px; }
+        .all-link { color: var(--dark); background: #fff; border: 1px solid #d7dce3; border-radius: 999px; padding: 10px 15px; font-weight: 900; }
 
-        .filter-panel {
-          display: grid;
-          grid-template-columns: 1.5fr repeat(4, 1fr);
-          gap: 10px;
-          margin-bottom: 22px;
-          padding: 14px;
-          border: 1px solid var(--line);
-          border-radius: 18px;
-          background: var(--soft);
-        }
-        .filter-panel input, .filter-panel select {
-          width: 100%;
-          height: 46px;
-          border: 1px solid #d7dbe2;
-          border-radius: 13px;
-          background: #fff;
-          color: var(--dark);
-          padding: 0 12px;
-          font-size: 14px;
-          outline: none;
-        }
+        .filters-v2 { display: grid; grid-template-columns: 1.7fr repeat(3, 1fr) auto; gap: 10px; margin-bottom: 22px; padding: 12px; border-radius: 18px; border: 1px solid var(--line); background: var(--soft); }
+        .filters-v2 input, .filters-v2 select, .filters-v2 button { height: 46px; border-radius: 13px; border: 1px solid #d8dde5; background: #fff; color: var(--dark); padding: 0 12px; font-size: 14px; outline: none; }
+        .filters-v2 button { background: var(--dark); color: #fff; font-weight: 900; border-color: var(--dark); padding: 0 18px; cursor: pointer; }
 
-        .truck-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-        .truck-card {
-          overflow: hidden;
-          background: #fff;
-          border: 1px solid var(--line);
-          border-radius: 20px;
-          box-shadow: 0 12px 26px rgba(15,23,42,.06);
-          transition: .2s ease;
-        }
-        .truck-card:hover { transform: translateY(-3px); box-shadow: 0 18px 38px rgba(15,23,42,.10); }
-        .truck-photo {
-          position: relative;
-          display: grid;
-          place-items: center;
-          aspect-ratio: 1 / 1;
-          background: var(--soft);
-          color: var(--muted);
-          overflow: hidden;
-        }
-        .truck-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .truck-photo i { font-style: normal; font-weight: 800; }
-        .badge {
-          position: absolute;
-          top: 12px;
-          left: 12px;
-          z-index: 2;
-          background: rgba(255,255,255,.94);
-          color: var(--dark);
-          border-radius: 999px;
-          padding: 7px 10px;
-          font-size: 12px;
-          font-weight: 900;
-          box-shadow: 0 8px 18px rgba(0,0,0,.12);
-        }
-        .card-body { padding: 16px; }
-        .truck-title { display: block; color: var(--dark); font-size: 20px; font-weight: 900; letter-spacing: -.4px; margin-bottom: 9px; }
-        .meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
-        .meta span { background: var(--soft); color: var(--muted); border-radius: 999px; padding: 6px 8px; font-size: 13px; font-weight: 700; }
-        .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
-        .card-footer strong { color: var(--dark); font-size: 18px; }
-        .whats-btn, .details-btn {
-          width: 42px;
-          height: 42px;
-          border-radius: 50%;
-          display: grid;
-          place-items: center;
-          background: var(--green);
-          color: #fff;
-          font-weight: 900;
-        }
-        .details-btn { background: var(--dark); font-size: 12px; }
-        .empty-state { grid-column: 1 / -1; background: var(--soft); border: 1px solid var(--line); border-radius: 18px; padding: 28px; color: var(--dark); }
-        .empty-state p { color: var(--muted); margin-top: 6px; }
+        .truck-grid-v2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .ad-v2 { border: 1px solid var(--line); border-radius: 22px; background: #fff; overflow: hidden; box-shadow: 0 14px 30px rgba(15,23,42,.06); transition: .2s ease; }
+        .ad-v2:hover { transform: translateY(-3px); box-shadow: 0 22px 42px rgba(15,23,42,.10); }
+        .ad-photo-v2 { position: relative; display: grid; place-items: center; aspect-ratio: 1 / 1; overflow: hidden; background: var(--soft); color: var(--muted); }
+        .ad-photo-v2 img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .ad-photo-v2 i { font-style: normal; font-weight: 800; }
+        .ad-photo-v2 span { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,.94); color: var(--dark); border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 900; box-shadow: 0 8px 18px rgba(0,0,0,.12); }
+        .ad-content-v2 { padding: 16px; }
+        .ad-title-v2 { display: block; color: var(--dark); font-size: 20px; font-weight: 950; letter-spacing: -.5px; margin-bottom: 10px; }
+        .ad-tags-v2 { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+        .ad-tags-v2 small { background: var(--soft); color: var(--muted); border-radius: 999px; padding: 6px 8px; font-size: 13px; font-weight: 750; }
+        .ad-bottom-v2 { display: flex; justify-content: space-between; gap: 12px; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
+        .ad-bottom-v2 strong { color: var(--dark); font-size: 18px; }
+        .ad-bottom-v2 div { display: flex; gap: 8px; align-items: center; }
+        .ad-bottom-v2 a { color: var(--dark); background: var(--soft); border-radius: 999px; padding: 8px 10px; font-size: 12px; font-weight: 900; }
+        .ad-bottom-v2 a:last-child { color: #fff; background: var(--green); }
+        .empty-box { grid-column: 1 / -1; background: var(--soft); border: 1px solid var(--line); border-radius: 18px; padding: 28px; color: var(--dark); }
+        .empty-box p { color: var(--muted); margin-top: 6px; }
 
-        .sell-box {
-          margin-top: 18px;
-          margin-bottom: 52px;
-          display: grid;
-          grid-template-columns: 1fr auto;
-          align-items: center;
-          gap: 24px;
-          border-radius: 28px;
-          padding: 38px;
-          color: #fff;
-          background: linear-gradient(135deg, rgba(31,41,51,.98), rgba(31,41,51,.90));
-          box-shadow: 0 24px 50px rgba(31,41,51,.18);
-        }
-        .sell-box .section-label { background: rgba(245,181,33,.18); color: #ffe08a; border-color: rgba(245,181,33,.35); }
-        .sell-box h2 { color: #fff; }
-        .sell-box p { color: rgba(255,255,255,.78); }
+        .sell-v2 { margin: 4px auto 28px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 22px; border-radius: 28px; padding: 34px; background: linear-gradient(135deg, #17212b, #233140); color: #fff; box-shadow: 0 24px 50px rgba(23,33,43,.18); }
+        .sell-v2 .label { background: rgba(244,179,37,.18); color: #ffe2a0; border-color: rgba(244,179,37,.30); }
+        .sell-v2 h2 { color: #fff; }
+        .sell-v2 p { color: rgba(255,255,255,.78); }
 
-        .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .how-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 22px; }
-        .how-card b { width: 42px; height: 42px; border-radius: 50%; background: var(--yellow); color: #332100; display: grid; place-items: center; margin-bottom: 16px; }
-        .how-card h3 { color: var(--dark); font-size: 20px; margin-bottom: 8px; }
-        .how-card p { color: var(--muted); font-size: 15px; }
+        .how-v2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 24px 0 52px; }
+        .step-v2 { border: 1px solid var(--line); border-radius: 20px; background: #fff; padding: 22px; }
+        .step-v2 b { display: inline-grid; place-items: center; height: 42px; min-width: 42px; border-radius: 999px; background: #fff4d8; color: #805200; margin-bottom: 14px; }
+        .step-v2 h3 { color: var(--dark); font-size: 20px; margin-bottom: 8px; }
+        .step-v2 p { color: var(--muted); font-size: 15px; }
 
-        .contact-section {
-          margin-bottom: 52px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 22px;
-          border: 1px solid var(--line);
-          border-radius: 24px;
-          background: var(--soft);
-          padding: 28px;
-        }
+        .contact-v2 { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin-bottom: 52px; border: 1px solid var(--line); border-radius: 24px; background: var(--soft); padding: 28px; }
 
-        @media (max-width: 920px) {
-          .hero-grid, .sell-box { grid-template-columns: 1fr; }
-          .quick-grid, .how-grid { grid-template-columns: 1fr; }
-          .filter-panel { grid-template-columns: 1fr 1fr; }
-          .truck-grid { grid-template-columns: repeat(2, 1fr); }
-          .contact-section { align-items: flex-start; flex-direction: column; }
+        @media (max-width: 930px) {
+          .hero-layout, .sell-v2 { grid-template-columns: 1fr; }
+          .action-strip, .how-v2 { grid-template-columns: 1fr; }
+          .filters-v2 { grid-template-columns: 1fr 1fr; }
+          .filters-v2 button { grid-column: 1 / -1; }
+          .truck-grid-v2 { grid-template-columns: repeat(2, 1fr); }
+          .contact-v2 { align-items: flex-start; flex-direction: column; }
         }
         @media (max-width: 620px) {
           .wrap { width: min(100vw - 22px, 1180px); }
-          .hero-white { padding: 34px 0 28px; }
-          .hero-copy h1 { letter-spacing: -1.2px; }
+          .hero-v2 { padding: 34px 0 20px; }
+          .hero-copy h1 { letter-spacing: -1.4px; }
           .hero-copy p { font-size: 16px; }
           .hero-actions { display: grid; grid-template-columns: 1fr; }
-          .featured-specs, .filter-panel, .truck-grid { grid-template-columns: 1fr; }
-          .section-head { display: block; }
-          .view-all { display: inline-flex; margin-top: 14px; }
-          .sell-box, .contact-section { padding: 24px; }
+          .mini-stats, .filters-v2, .truck-grid-v2 { grid-template-columns: 1fr; }
+          .section-title { display: block; }
+          .all-link { display: inline-flex; margin-top: 14px; }
+          .sell-v2, .contact-v2 { padding: 24px; }
+          .ad-bottom-v2 { align-items: flex-start; flex-direction: column; }
         }
       `}</style>
     </main>
