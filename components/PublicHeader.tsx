@@ -1,57 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 
-export async function PublicHeader() {
-  const supabase = await createClient();
+const whatsappLink = "https://wa.me/5549999999999?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Caminh%C3%B5es%20%C3%A0%20Venda.";
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let role: string | null = null;
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    role = profile?.role || "anunciante";
-  }
-
-  const isLogged = Boolean(user);
-  const isAdmin = role === "admin";
-
+export function PublicHeader() {
   return (
     <header className="public-header">
       <div className="public-header-inner">
-        <Link href="/" className="public-brand" aria-label="Caminhões em Oferta">
-          <Image src="/logo-horizontal.png" alt="Caminhões em Oferta" width={190} height={55} priority />
+        <Link href="/" className="public-brand" aria-label="Caminhões à Venda">
+          <Image src="/logo-horizontal.png" alt="Caminhões à Venda" width={190} height={55} priority />
         </Link>
 
         <nav className="public-nav" aria-label="Menu principal">
-          <Link href="/anuncios">Estoque</Link>
-          <Link href="/como-funciona">Como funciona</Link>
-
-          {!isLogged && (
-            <>
-              <Link href="/login">Entrar</Link>
-              <Link href="/anunciar" className="public-announce">＋ Anunciar</Link>
-            </>
-          )}
-
-          {isLogged && !isAdmin && (
-            <>
-              <Link href="/painel" className="public-announce">Meu painel</Link>
-              <Link href="/logout">Sair</Link>
-            </>
-          )}
-
-          {isLogged && isAdmin && (
-            <Link href="/logout" className="public-logout">Sair</Link>
-          )}
+          <Link href="/anuncios">Comprar</Link>
+          <Link href="/anunciar">Vender</Link>
+          <Link href="/anuncios">Anúncios</Link>
+          <a href={whatsappLink} target="_blank" rel="noreferrer" className="public-whatsapp">
+            WhatsApp
+          </a>
         </nav>
       </div>
 
@@ -60,14 +26,14 @@ export async function PublicHeader() {
           position: sticky;
           top: 0;
           z-index: 60;
-          background: rgba(2,6,23,.84);
-          backdrop-filter: blur(18px);
-          border-bottom: 1px solid rgba(255,255,255,.08);
+          background: rgba(255,255,255,.96);
+          backdrop-filter: blur(16px);
+          border-bottom: 1px solid #e5e7eb;
         }
 
         .public-header-inner {
-          width: min(1240px, calc(100vw - 32px));
-          min-height: 76px;
+          width: min(1180px, calc(100vw - 32px));
+          min-height: 74px;
           margin: 0 auto;
           display: flex;
           align-items: center;
@@ -78,8 +44,6 @@ export async function PublicHeader() {
         .public-brand {
           display: inline-flex;
           align-items: center;
-          color: white;
-          text-decoration: none;
           min-width: 0;
         }
 
@@ -93,61 +57,54 @@ export async function PublicHeader() {
         .public-nav {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
         }
 
         .public-nav a {
-          min-height: 42px;
-          padding: 0 14px;
-          border-radius: 14px;
-          color: white;
+          min-height: 40px;
+          padding: 0 13px;
+          border-radius: 999px;
+          color: #20252c;
           text-decoration: none;
           font-weight: 900;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.10);
+          background: #f4f5f7;
+          border: 1px solid #e2e6ec;
           white-space: nowrap;
+          font-size: 14px;
         }
 
-        .public-nav .public-announce {
-          background: #22c55e;
-          color: #052e16;
+        .public-nav .public-whatsapp {
+          background: #1faa59;
+          color: white;
           border-color: transparent;
-        }
-
-        .public-nav .public-logout {
-          background: rgba(239,68,68,.12);
-          color: #fecaca;
-          border-color: rgba(239,68,68,.22);
         }
 
         @media (max-width: 720px) {
           .public-header-inner {
-            width: calc(100vw - 24px);
+            width: calc(100vw - 22px);
             min-height: auto;
             padding: 10px 0;
+            align-items: flex-start;
+            flex-direction: column;
           }
 
           .public-brand img {
-            width: 142px;
+            width: 150px;
           }
 
           .public-nav {
-            gap: 7px;
+            width: 100%;
             overflow-x: auto;
             padding-bottom: 2px;
           }
 
           .public-nav a {
-            min-height: 38px;
-            padding: 0 10px;
+            min-height: 36px;
+            padding: 0 11px;
             font-size: 12px;
-          }
-
-          .public-nav a:nth-child(2) {
-            display: none;
           }
         }
       `}</style>
