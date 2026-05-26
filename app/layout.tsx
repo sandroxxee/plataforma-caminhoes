@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+import "./final-classificados.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -92,7 +93,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#020617",
+  themeColor: "#f3f4f6",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
