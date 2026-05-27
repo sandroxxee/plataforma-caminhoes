@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -13,6 +14,7 @@ function limparTelefone(telefone: string) {
 }
 
 export function CadastroForm() {
+  const router = useRouter();
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
 
@@ -100,16 +102,23 @@ export function CadastroForm() {
     const userId = loginData.user?.id || signupData.user?.id;
 
     if (userId) {
-      await supabase.from("profiles").upsert({
+      const { error: profileError } = await supabase.from("profiles").upsert({
         id: userId,
         email,
         nome,
         telefone: telefoneLimpo,
         role: "anunciante",
       });
+
+      if (profileError) {
+        setErro("Conta criada, mas não foi possível preparar o perfil. Tente entrar novamente.");
+        setCarregando(false);
+        return;
+      }
     }
 
-    window.location.assign("/painel");
+    router.replace("/painel");
+    router.refresh();
   }
 
   return (
