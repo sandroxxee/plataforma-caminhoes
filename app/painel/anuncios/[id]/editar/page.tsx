@@ -47,7 +47,7 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
       badge="Edição"
       actions={<Link href={isAdmin ? "/admin/anuncios" : "/painel/anuncios"} style={styles.secondaryButton}>Voltar</Link>}
     >
-      <form action={editarAnuncio} style={styles.formCard}>
+      <form action={editarAnuncio} style={styles.formCard} encType="multipart/form-data">
         <input type="hidden" name="id" value={truck.id} />
 
         <div style={styles.formGrid}>
