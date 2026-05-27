@@ -209,8 +209,8 @@ export default async function HomePage() {
       <section className="wrap sell-section" id="anunciar">
         <div>
           <span className="kicker">Para vendedores</span>
-          <h2>Anuncie seu caminhão com aparência profissional.</h2>
-          <p>Envie dados, fotos e localização. A troca entra como uma opção marcada dentro do anúncio, não como uma aba separada.</p>
+          <h2>Quer vender seu caminhão?</h2>
+          <p>Crie sua conta e comece o cadastro do anúncio. Depois você informa os dados, fotos, valor e contato pelo WhatsApp.</p>
           <div className="hero-actions"><Link className="btn btn-primary" href="/anunciar">Começar anúncio</Link></div>
         </div>
         <div className="steps"><div className="step"><b>1</b> Dados e fotos</div><div className="step"><b>2</b> Revisão do anúncio</div><div className="step"><b>3</b> Publicação e contatos</div></div>
