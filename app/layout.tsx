@@ -16,18 +16,20 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const siteUrl = "https://plataforma-caminhoes.vercel.app";
+const siteUrl = "https://www.caminhoesavenda.com.br";
+const ogImage = "/og-caminhoesavenda.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Caminhões em Oferta | Compra, venda e troca de caminhões",
-    template: "%s | Caminhões em Oferta",
+    default: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
+    template: "%s | Caminhões à Venda",
   },
   description:
-    "Plataforma de anúncios de caminhões usados e seminovos. Veja ofertas reais, confira preço e fale direto com o anunciante pelo WhatsApp.",
+    "Compra, venda e anúncios de caminhões usados e seminovos. Veja ofertas reais, confira preço e fale direto com o anunciante pelo WhatsApp.",
   keywords: [
-    "caminhões em oferta",
+    "caminhões à venda",
+    "caminhões a venda",
     "comprar caminhão",
     "vender caminhão",
     "caminhões usados",
@@ -36,11 +38,11 @@ export const metadata: Metadata = {
     "caminhão traçado",
     "caminhão 6x4",
     "caminhão 8x4",
-    "plataforma de caminhões",
+    "classificados de caminhões",
   ],
-  authors: [{ name: "Caminhões em Oferta" }],
-  creator: "Caminhões em Oferta",
-  publisher: "Caminhões em Oferta",
+  authors: [{ name: "Caminhões à Venda" }],
+  creator: "Caminhões à Venda",
+  publisher: "Caminhões à Venda",
   alternates: {
     canonical: "/",
   },
@@ -48,25 +50,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
-    siteName: "Caminhões em Oferta",
-    title: "Caminhões em Oferta | Compra, venda e troca de caminhões",
+    siteName: "Caminhões à Venda",
+    title: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
     description:
-      "Veja caminhões reais, confira preço e fale direto com o anunciante pelo WhatsApp.",
+      "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
     images: [
       {
-        url: "/logo-horizontal.png",
-        width: 900,
-        height: 260,
-        alt: "Caminhões em Oferta",
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Caminhões à Venda - compra, venda e anúncios de caminhões",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Caminhões em Oferta | Compra, venda e troca de caminhões",
+    title: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
     description:
-      "Plataforma de anúncios de caminhões usados e seminovos com contato direto pelo WhatsApp.",
-    images: ["/logo-horizontal.png"],
+      "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
+    images: [ogImage],
   },
   icons: {
     icon: [
