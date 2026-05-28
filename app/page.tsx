@@ -211,7 +211,7 @@ export default async function HomePage() {
           <span className="kicker">Para vendedores</span>
           <h2>Quer vender seu caminhão?</h2>
           <p>Crie sua conta e comece o cadastro do anúncio. Depois você informa os dados, fotos, valor e contato pelo WhatsApp.</p>
-          <div className="hero-actions"><Link className="btn btn-primary" href="/anunciar">Começar anúncio</Link></div>
+          <div className="hero-actions"><Link className="btn btn-primary" href="/anunciar">Quero anunciar meu caminhão</Link></div>
         </div>
         <div className="steps"><div className="step"><b>1</b> Dados e fotos</div><div className="step"><b>2</b> Revisão do anúncio</div><div className="step"><b>3</b> Publicação e contatos</div></div>
       </section>
