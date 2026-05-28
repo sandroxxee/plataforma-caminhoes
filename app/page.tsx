@@ -94,12 +94,25 @@ export default async function HomePage() {
 
       <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)), linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95)), url(${heroImage})` } : undefined}>
         <div className="wrap hero-content">
-          <h1>Caminhões selecionados para o <span>seu negócio.</span></h1>
-          <p>Cavalos mecânicos, trucks, tocos e implementos. Encontre caminhões anunciados com dados claros e contato direto pelo WhatsApp.</p>
-          <div className="hero-actions">
-            <Link className="btn btn-primary" href="/anuncios">🔎 Ver estoque</Link>
-            <Link className="btn btn-ghost" href="/#contato">Falar com atendimento</Link>
+          <div className="hero-copy">
+            <h1>Caminhões selecionados para o <span>seu negócio.</span></h1>
+            <p>Cavalos mecânicos, trucks, tocos e implementos. Encontre caminhões anunciados com dados claros e contato direto pelo WhatsApp.</p>
+            <div className="hero-actions">
+              <Link className="btn btn-primary" href="/anuncios">🔎 Ver estoque</Link>
+              <Link className="btn btn-ghost" href="/#contato">Falar com atendimento</Link>
+            </div>
           </div>
+
+          <aside className="hero-card" aria-label="Mensagem para compradores e vendedores">
+            <span>Classificados do transporte</span>
+            <h2>Oportunidades para quem compra, resultado para quem vende.</h2>
+            <p>Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.</p>
+            <div className="hero-card-points">
+              <small>Compra direta</small>
+              <small>Anúncios organizados</small>
+              <small>Contato pelo WhatsApp</small>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -273,11 +286,19 @@ export default async function HomePage() {
           border-bottom: 1px solid rgba(255,255,255,.08);
         }
         .hero::after { content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(circle at 15% 30%, rgba(34,197,94,.12), transparent 26%), linear-gradient(90deg, rgba(2,6,8,.68), transparent 60%); }
-        .hero-content { position:relative; z-index:2; padding:160px 0 84px; width:min(670px,100%); }
+        .hero-content { position:relative; z-index:2; padding:160px 0 84px; display:grid; grid-template-columns:minmax(0, 670px) minmax(320px, 430px); justify-content:space-between; align-items:end; gap:42px; }
+        .hero-copy { min-width:0; }
+        .hero-card { justify-self:end; width:min(430px,100%); padding:26px; border-radius:22px; background:linear-gradient(180deg, rgba(8,14,16,.70), rgba(2,6,8,.54)); border:1px solid rgba(34,197,94,.26); box-shadow:0 24px 70px rgba(0,0,0,.26); backdrop-filter:blur(14px); }
+        .hero-card span { display:inline-flex; margin-bottom:14px; min-height:28px; align-items:center; padding:0 10px; border-radius:999px; background:rgba(34,197,94,.13); border:1px solid rgba(34,197,94,.26); color:#86efac; font-size:11px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
+        .hero-card h2 { margin:0 0 12px; color:white; font-size:clamp(24px,2.4vw,34px); line-height:1.04; letter-spacing:-.04em; }
+        .hero-card p { margin:0; color:#d7dee8; line-height:1.55; font-size:15px; }
+        .hero-card-points { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+        .hero-card-points small { min-height:28px; display:inline-flex; align-items:center; padding:0 10px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10); color:#cbd5e1; font-weight:850; }
         .kicker { display:inline-flex; align-items:center; gap:9px; min-height:34px; padding:0 13px; border-radius:999px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.32); color:#bbf7d0; font-size:12px; font-weight:950; letter-spacing:.07em; text-transform:uppercase; }
         h1 { margin:18px 0 16px; font-size:clamp(38px,5.4vw,68px); line-height:1.02; letter-spacing:-.055em; max-width:640px; }
         h1 span { color:var(--green); }
         .hero p { margin:0; max-width:520px; color:#d7dee8; font-size:17px; line-height:1.55; }
+        .hero-card p { max-width:none; font-size:15px; }
         .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:27px; }
         .btn { min-height:52px; display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:0 22px; border-radius:8px; border:1px solid rgba(255,255,255,.15); font-size:13px; font-weight:950; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
         .btn-primary { background:var(--green); color:#03220f; border-color:transparent; }
@@ -327,8 +348,8 @@ export default async function HomePage() {
         .step { min-height:55px; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; background:rgba(2,6,8,.44); border:1px solid rgba(255,255,255,.10); color:#dbeafe; font-weight:850; }
         .step b { width:31px; height:31px; border-radius:999px; background:var(--green); color:#042913; display:grid; place-items:center; flex:0 0 auto; }
         .empty-state { grid-column:1/-1; padding:28px; border-radius:16px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.10); }
-        @media (max-width:1120px){ .filter-panel{grid-template-columns:repeat(2,minmax(0,1fr));} .filter-field:nth-child(2n){border-right:0;} .search-box{grid-column:1/-1;padding:10px 0 0;} .truck-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-bar{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-item:nth-child(2n){border-right:0;} .sell-section,.about-section,.contact-section{grid-template-columns:1fr;} }
-        @media (max-width:640px){ .wrap{width:calc(100vw - 22px);} .hero{margin-top:-152px;min-height:570px;background-position:center top;} .hero-content{padding:245px 0 44px;} h1{font-size:38px;} .hero p{font-size:15px;} .hero-actions{display:grid;grid-template-columns:1fr;} .btn{width:100%;} .filter-panel{margin-top:-22px;grid-template-columns:1fr;} .filter-field{min-height:58px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .search-box{grid-template-columns:1fr 54px;} .section-title{align-items:flex-start;flex-direction:column;} .truck-grid{grid-template-columns:1fr;} .truck-photo{aspect-ratio:1.35/1;} .trust-bar{grid-template-columns:1fr;} .trust-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .trust-item:last-child{border-bottom:0;} }
+        @media (max-width:1120px){ .hero-content{grid-template-columns:1fr;padding-top:145px;} .hero-card{justify-self:start;} .filter-panel{grid-template-columns:repeat(2,minmax(0,1fr));} .filter-field:nth-child(2n){border-right:0;} .search-box{grid-column:1/-1;padding:10px 0 0;} .truck-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-bar{grid-template-columns:repeat(2,minmax(0,1fr));} .trust-item:nth-child(2n){border-right:0;} .sell-section,.about-section,.contact-section{grid-template-columns:1fr;} }
+        @media (max-width:640px){ .wrap{width:calc(100vw - 22px);} .hero{margin-top:-152px;min-height:690px;background-position:center top;} .hero-content{padding:245px 0 44px;gap:24px;} .hero-card{padding:18px;border-radius:18px;} .hero-card h2{font-size:24px;} h1{font-size:38px;} .hero p{font-size:15px;} .hero-actions{display:grid;grid-template-columns:1fr;} .btn{width:100%;} .filter-panel{margin-top:-22px;grid-template-columns:1fr;} .filter-field{min-height:58px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .search-box{grid-template-columns:1fr 54px;} .section-title{align-items:flex-start;flex-direction:column;} .truck-grid{grid-template-columns:1fr;} .truck-photo{aspect-ratio:1.35/1;} .trust-bar{grid-template-columns:1fr;} .trust-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.08);} .trust-item:last-child{border-bottom:0;} }
       `}</style>
     </main>
   );
