@@ -8,7 +8,7 @@ import { editarAnuncio } from "../../actions";
 export const dynamic = "force-dynamic";
 
 const marcas = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
-const carrocerias = ["Caçamba basculante", "Caçamba meia-cana", "Prancha", "Plataforma", "Baú seco", "Baú frigorífico", "Cavalo mecânico", "Munck", "Outra"];
+const carrocerias = ["Caçamba basculante", "Caçamba meia-cana", "Graneleira", "Chassi", "Prancha", "Plataforma", "Baú seco", "Baú frigorífico", "Cavalo mecânico", "Munck", "Outra"];
 const tracoes = ["4x2", "6x2", "6x4", "8x2", "8x4", "Truck", "Bitruck", "Traçado"];
 const estados = ["SC", "PR", "RS", "SP", "MG", "MS", "MT", "GO", "BA", "RJ", "ES", "Outro"];
 
