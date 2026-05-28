@@ -218,7 +218,7 @@ export default async function HomePage() {
 
       <section className="wrap about-section" id="sobre">
         <span className="kicker">Sobre a plataforma</span>
-        <h2>Um espaço simples para anunciar e encontrar caminhões.</h2>
+        <h2>Mais visibilidade para quem vende.<br />Mais opções para quem procura caminhões.</h2>
         <p>A Caminhões em Oferta aproxima compradores e vendedores com anúncios organizados, contato direto e visual profissional para valorizar cada veículo.</p>
       </section>
 
@@ -321,6 +321,8 @@ export default async function HomePage() {
         .sell-section,.about-section,.contact-section { margin-bottom:34px; padding:clamp(22px,3.2vw,36px); border-radius:16px; background:linear-gradient(135deg, rgba(34,197,94,.12), rgba(255,255,255,.045)); border:1px solid rgba(34,197,94,.20); display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center; }
         .sell-section h2,.about-section h2,.contact-section h2 { margin:8px 0 10px; font-size:clamp(28px,4vw,46px); line-height:1.02; letter-spacing:-.045em; }
         .sell-section p,.about-section p,.contact-section p { margin:0; color:#d6dee8; line-height:1.56; font-size:17px; }
+        .about-section { grid-template-columns:1fr; text-align:center; justify-items:center; }
+        .about-section p { max-width:760px; }
         .steps { display:grid; gap:10px; }
         .step { min-height:55px; display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; background:rgba(2,6,8,.44); border:1px solid rgba(255,255,255,.10); color:#dbeafe; font-weight:850; }
         .step b { width:31px; height:31px; border-radius:999px; background:var(--green); color:#042913; display:grid; place-items:center; flex:0 0 auto; }
