@@ -104,14 +104,8 @@ export default async function HomePage() {
           </div>
 
           <aside className="hero-card" aria-label="Mensagem para compradores e vendedores">
-            <span>Classificados do transporte</span>
             <h2>Oportunidades para quem compra, resultado para quem vende.</h2>
             <p>Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.</p>
-            <div className="hero-card-points">
-              <small>Compra direta</small>
-              <small>Anúncios organizados</small>
-              <small>Contato pelo WhatsApp</small>
-            </div>
           </aside>
         </div>
       </section>
