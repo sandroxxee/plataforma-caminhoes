@@ -10,6 +10,8 @@ const marcas = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco
 const carrocerias = [
   "Caçamba basculante",
   "Caçamba meia-cana",
+  "Graneleira",
+  "Chassi",
   "Prancha",
   "Plataforma",
   "Baú seco",
