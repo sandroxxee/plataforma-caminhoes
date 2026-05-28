@@ -218,8 +218,8 @@ export default async function HomePage() {
 
       <section className="wrap about-section" id="sobre">
         <span className="kicker">Sobre a plataforma</span>
-        <h2>Mais visibilidade para quem vende.<br />Mais opções para quem procura caminhões.</h2>
-        <p>A Caminhões em Oferta aproxima compradores e vendedores com anúncios organizados, contato direto e visual profissional para valorizar cada veículo.</p>
+        <h2>Oportunidades para quem compra,<br />resultado para quem vende.</h2>
+        <p>Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.</p>
       </section>
 
       <section className="wrap contact-section" id="contato">
