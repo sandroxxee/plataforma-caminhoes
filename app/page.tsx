@@ -225,8 +225,8 @@ export default async function HomePage() {
 
       <section className="wrap about-section" id="sobre">
         <span className="kicker">Sobre a plataforma</span>
-        <h2>Oportunidades para quem compra,<br />resultado para quem vende.</h2>
-        <p>Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.</p>
+        <h2>Uma vitrine simples para caminhões reais.</h2>
+        <p>Anúncios organizados, informações claras e contato direto para facilitar a negociação no ramo de caminhões.</p>
       </section>
 
       <section className="wrap contact-section" id="contato">
