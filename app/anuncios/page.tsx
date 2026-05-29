@@ -104,7 +104,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <section className="hero">
         <div className="wrap heroContent">
-          <span className="kicker">▣ Estoque</span>
+          <span className="kicker">▣ Anúncios</span>
           <h1>Caminhões disponíveis para <span>negociação.</span></h1>
           <p>Filtre por marca, modelo ou tração e fale direto pelo WhatsApp.</p>
         </div>
@@ -114,12 +114,12 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         <div className="field"><label>Marca</label><select name="marca" defaultValue={marca}><option value="">Todas as marcas</option><option>Mercedes-Benz</option><option>Volkswagen</option><option>Volvo</option><option>Scania</option><option>Ford</option><option>Iveco</option><option>DAF</option></select></div>
         <div className="field"><label>Modelo</label><select name="modelo" defaultValue={modelo}><option value="">Todos os modelos</option><option>3/4</option><option>Toco</option><option>Truck</option><option value="Bi Truck">Bi Truck</option><option>Cavalo mecânico</option></select></div>
         <div className="field"><label>Tração</label><select name="tracao" defaultValue={tracao}><option value="">Todas as trações</option><option>4x2</option><option>6x2</option><option>6x4</option><option>8x2</option><option>8x4</option><option>Truck</option><option>Bitruck</option><option>Traçado</option></select></div>
-        <div className="search"><input name="busca" defaultValue={busca} placeholder="Buscar no estoque..." /><button type="submit">⌕</button></div>
+        <div className="search"><input name="busca" defaultValue={busca} placeholder="Buscar caminhão..." /><button type="submit">⌕</button></div>
         {temFiltro && <Link href="/anuncios" className="clear">Limpar</Link>}
       </form>
 
       <section className="wrap titleRow">
-        <h2><span>▱</span> {temFiltro ? "Resultado da pesquisa" : "Todos os anúncios"} <small>{trucks.length} encontrados</small></h2>
+        <h2><span>▱</span> {temFiltro ? "Resultado da pesquisa" : "Todos os caminhões"} <small>{trucks.length} encontrados</small></h2>
       </section>
 
       <section className="wrap grid">
@@ -144,7 +144,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             </article>
           );
         }) : (
-          <div className="empty"><h3>Nenhum anúncio encontrado.</h3><p>Limpe os filtros ou tente outra busca.</p><Link href="/anuncios">Ver todos os anúncios</Link></div>
+          <div className="empty"><h3>Nenhum caminhão encontrado.</h3><p>Limpe os filtros ou tente outra busca.</p><Link href="/anuncios">Ver caminhões</Link></div>
         )}
       </section>
 
