@@ -25,7 +25,15 @@ type Truck = {
 };
 
 type PageProps = {
-  searchParams?: Promise<{ marca?: string; modelo?: string; tracao?: string; busca?: string }>;
+  searchParams?: Promise<{
+    marca?: string;
+    modelo?: string;
+    carroceria?: string;
+    tracao?: string;
+    estado?: string;
+    busca?: string;
+    ordem?: string;
+  }>;
 };
 
 function clean(value?: string) {
@@ -59,8 +67,11 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const params = (await searchParams) || {};
   const marca = clean(params.marca);
   const modelo = clean(params.modelo);
+  const carroceria = clean(params.carroceria);
   const tracao = clean(params.tracao);
+  const estado = clean(params.estado);
   const busca = clean(params.busca);
+  const ordem = clean(params.ordem);
 
   const supabase = await createClient();
 
@@ -86,17 +97,23 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       )
     `)
     .eq("status", "aprovado")
-    .eq("vendido", false)
-    .order("created_at", { ascending: false });
+    .eq("vendido", false);
 
   if (marca) query = query.ilike("marca", `%${marca}%`);
   if (modelo) query = query.or(`modelo.ilike.%${modelo}%,titulo.ilike.%${modelo}%`);
+  if (carroceria) query = query.ilike("carroceria", `%${carroceria}%`);
   if (tracao) query = query.ilike("tracao", `%${tracao}%`);
-  if (busca) query = query.ilike("titulo", `%${busca}%`);
+  if (estado) query = query.eq("estado", estado);
+  if (busca) query = query.or(`titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%,carroceria.ilike.%${busca}%`);
+
+  if (ordem === "menor-valor") query = query.order("preco", { ascending: true });
+  else if (ordem === "maior-valor") query = query.order("preco", { ascending: false });
+  else if (ordem === "ano") query = query.order("ano_modelo", { ascending: false });
+  else query = query.order("created_at", { ascending: false });
 
   const { data } = await query;
   const trucks = (data || []) as Truck[];
-  const temFiltro = Boolean(marca || modelo || tracao || busca);
+  const temFiltro = Boolean(marca || modelo || carroceria || tracao || estado || busca || ordem);
 
   return (
     <main className="page">
@@ -105,15 +122,18 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <section className="hero">
         <div className="wrap heroContent">
           <h1>Caminhões disponíveis para <span>negociação.</span></h1>
-          <p>Filtre por marca, modelo ou tração e fale direto pelo WhatsApp.</p>
+          <p>Use os filtros para encontrar por marca, modelo, tipo, tração, região ou valor.</p>
         </div>
       </section>
 
       <form className="wrap filters" action="/anuncios">
         <div className="field"><label>Marca</label><select name="marca" defaultValue={marca}><option value="">Todas as marcas</option><option>Mercedes-Benz</option><option>Volkswagen</option><option>Volvo</option><option>Scania</option><option>Ford</option><option>Iveco</option><option>DAF</option></select></div>
         <div className="field"><label>Modelo</label><select name="modelo" defaultValue={modelo}><option value="">Todos os modelos</option><option>3/4</option><option>Toco</option><option>Truck</option><option value="Bi Truck">Bi Truck</option><option>Cavalo mecânico</option></select></div>
+        <div className="field"><label>Tipo</label><select name="carroceria" defaultValue={carroceria}><option value="">Todos os tipos</option><option>Cavalo mecânico</option><option>Caçamba basculante</option><option>Caçamba meia-cana</option><option>Graneleira</option><option>Chassis</option><option>Tanque</option><option>Prancha</option><option>Plataforma</option><option>Baú seco</option><option>Baú frigorífico</option><option>Munck</option><option>Outra</option></select></div>
         <div className="field"><label>Tração</label><select name="tracao" defaultValue={tracao}><option value="">Todas as trações</option><option>4x2</option><option>6x2</option><option>6x4</option><option>8x2</option><option>8x4</option><option>Truck</option><option>Bitruck</option><option>Traçado</option></select></div>
-        <div className="search"><input name="busca" defaultValue={busca} placeholder="Buscar caminhão..." /><button type="submit">⌕</button></div>
+        <div className="field"><label>Localização</label><select name="estado" defaultValue={estado}><option value="">Todas as regiões</option><option value="SC">Santa Catarina</option><option value="RS">Rio Grande do Sul</option><option value="PR">Paraná</option><option value="SP">São Paulo</option><option value="MG">Minas Gerais</option><option value="MS">Mato Grosso do Sul</option><option value="MT">Mato Grosso</option><option value="GO">Goiás</option></select></div>
+        <div className="field"><label>Ordenar</label><select name="ordem" defaultValue={ordem}><option value="">Mais recentes</option><option value="menor-valor">Menor valor</option><option value="maior-valor">Maior valor</option><option value="ano">Ano mais novo</option></select></div>
+        <div className="search"><input name="busca" defaultValue={busca} placeholder="Buscar modelo, marca, cidade..." /><button type="submit">⌕</button></div>
         {temFiltro && <Link href="/anuncios" className="clear">Limpar</Link>}
       </form>
 
@@ -150,7 +170,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <SiteFooter />
 
       <style>{`
-        .page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero{margin-top:-90px;min-height:360px;display:flex;align-items:end;background:linear-gradient(90deg,rgba(2,6,8,.96),rgba(2,6,8,.72) 45%,rgba(2,6,8,.25));border-bottom:1px solid rgba(255,255,255,.08)}.heroContent{padding:150px 0 62px}.kicker{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.32);color:#bbf7d0;font-size:12px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}h1{margin:18px 0 12px;font-size:clamp(38px,5vw,64px);line-height:1.02;letter-spacing:-.055em;max-width:760px}h1 span,.titleRow h2 span{color:var(--green)}.hero p{margin:0;max-width:620px;color:#d7dee8;font-size:17px;line-height:1.55}.filters{position:relative;z-index:5;margin:-38px auto 34px;padding:14px;border-radius:16px;display:grid;grid-template-columns:1fr 1fr 1fr minmax(220px,1.3fr) auto;background:linear-gradient(180deg,rgba(14,20,22,.92),rgba(9,14,16,.86));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);backdrop-filter:blur(16px);overflow:hidden}.field{min-height:68px;display:grid;align-content:center;gap:6px;padding:0 18px;border-right:1px solid rgba(255,255,255,.09)}.field label{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.field select,.field input,.search input{width:100%;border:0;outline:0;background:transparent;color:#f8fafc;font-size:14px;font-weight:850}.field option{background:#0b1114;color:white}.search{display:grid;grid-template-columns:1fr 58px;align-items:center;padding-left:18px}.search input{min-height:54px;padding:0 16px;border-radius:8px 0 0 8px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);border-right:0}.search button{min-height:54px;border:0;border-radius:0 8px 8px 0;background:var(--green);color:#042913;font-size:22px;cursor:pointer}.clear{min-height:54px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;color:#fecaca;text-decoration:none;font-weight:950}.titleRow{margin:22px auto 18px}.titleRow h2{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:clamp(26px,3vw,36px);letter-spacing:-.035em}.titleRow small{min-height:28px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.28);color:#86efac;font-size:12px;display:inline-flex;align-items:center}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px}.card{overflow:hidden;border-radius:10px;background:linear-gradient(180deg,rgba(16,23,26,.94),rgba(8,13,15,.94));border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 45px rgba(0,0,0,.22)}.photo{position:relative;aspect-ratio:1.55/1;overflow:hidden;background:#111827;display:block;color:#94a3b8;text-decoration:none}.photo img{width:100%;height:100%;object-fit:cover;display:block}.photo i{height:100%;display:grid;place-items:center;font-style:normal;font-weight:900}.photo em{position:absolute;left:10px;top:10px;z-index:2;min-height:24px;padding:0 9px;border-radius:5px;background:rgba(34,197,94,.92);color:#052e16;font-size:10px;font-weight:950;text-transform:uppercase;font-style:normal}.photo b{position:absolute;right:10px;top:10px;z-index:2;width:31px;height:31px;border-radius:999px;display:grid;place-items:center;background:rgba(2,6,8,.42);border:1px solid rgba(255,255,255,.14);color:white}.body{padding:14px}.truckTitle{display:block;min-height:42px;color:white;text-decoration:none;font-size:17px;line-height:1.18;font-weight:950}.meta{display:flex;flex-wrap:wrap;gap:9px 12px;margin:10px 0 12px;color:#cbd5e1;font-size:12px;font-weight:800}.body strong{display:block;margin-bottom:4px;color:var(--green);font-size:22px}.body small{color:#aeb7c3;font-size:12px;font-weight:800}.actions{display:grid;grid-template-columns:1fr 44px;gap:10px;margin-top:13px}.actions a{min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-size:12px;font-weight:950;text-transform:uppercase;text-decoration:none}.actions a:first-child{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:white}.actions a:last-child{background:var(--green);color:#042913}.empty{grid-column:1/-1;padding:28px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);color:#dbeafe}.empty a{color:#86efac;font-weight:950}@media(max-width:1120px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.search{grid-column:1/-1;padding:10px 0 0}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:440px}.heroContent{padding:235px 0 44px}h1{font-size:38px}.filters{margin-top:-22px;grid-template-columns:1fr}.field{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.search{grid-template-columns:1fr 54px}.grid{grid-template-columns:1fr}}
+        .page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero{margin-top:-90px;min-height:360px;display:flex;align-items:end;background:linear-gradient(90deg,rgba(2,6,8,.96),rgba(2,6,8,.72) 45%,rgba(2,6,8,.25));border-bottom:1px solid rgba(255,255,255,.08)}.heroContent{padding:150px 0 62px}h1{margin:18px 0 12px;font-size:clamp(38px,5vw,64px);line-height:1.02;letter-spacing:-.055em;max-width:760px}h1 span,.titleRow h2 span{color:var(--green)}.hero p{margin:0;max-width:660px;color:#d7dee8;font-size:17px;line-height:1.55}.filters{position:relative;z-index:5;margin:-38px auto 34px;padding:14px;border-radius:16px;display:grid;grid-template-columns:repeat(6,minmax(120px,1fr)) minmax(240px,1.3fr) auto;background:linear-gradient(180deg,rgba(14,20,22,.92),rgba(9,14,16,.86));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);backdrop-filter:blur(16px);overflow:hidden}.field{min-height:68px;display:grid;align-content:center;gap:6px;padding:0 14px;border-right:1px solid rgba(255,255,255,.09)}.field label{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.field select,.field input,.search input{width:100%;border:0;outline:0;background:transparent;color:#f8fafc;font-size:14px;font-weight:850}.field option{background:#0b1114;color:white}.search{display:grid;grid-template-columns:1fr 58px;align-items:center;padding-left:14px}.search input{min-height:54px;padding:0 16px;border-radius:8px 0 0 8px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);border-right:0}.search button{min-height:54px;border:0;border-radius:0 8px 8px 0;background:var(--green);color:#042913;font-size:22px;cursor:pointer}.clear{min-height:54px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;color:#fecaca;text-decoration:none;font-weight:950}.titleRow{margin:22px auto 18px}.titleRow h2{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:clamp(26px,3vw,36px);letter-spacing:-.035em}.titleRow small{min-height:28px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.28);color:#86efac;font-size:12px;display:inline-flex;align-items:center}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px}.card{overflow:hidden;border-radius:10px;background:linear-gradient(180deg,rgba(16,23,26,.94),rgba(8,13,15,.94));border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 45px rgba(0,0,0,.22)}.photo{position:relative;aspect-ratio:1.55/1;overflow:hidden;background:#111827;display:block;color:#94a3b8;text-decoration:none}.photo img{width:100%;height:100%;object-fit:cover;display:block}.photo i{height:100%;display:grid;place-items:center;font-style:normal;font-weight:900}.photo em{position:absolute;left:10px;top:10px;z-index:2;min-height:24px;padding:0 9px;border-radius:5px;background:rgba(34,197,94,.92);color:#052e16;font-size:10px;font-weight:950;text-transform:uppercase;font-style:normal}.photo b{position:absolute;right:10px;top:10px;z-index:2;width:31px;height:31px;border-radius:999px;display:grid;place-items:center;background:rgba(2,6,8,.42);border:1px solid rgba(255,255,255,.14);color:white}.body{padding:14px}.truckTitle{display:block;min-height:42px;color:white;text-decoration:none;font-size:17px;line-height:1.18;font-weight:950}.meta{display:flex;flex-wrap:wrap;gap:9px 12px;margin:10px 0 12px;color:#cbd5e1;font-size:12px;font-weight:800}.body strong{display:block;margin-bottom:4px;color:var(--green);font-size:22px}.body small{color:#aeb7c3;font-size:12px;font-weight:800}.actions{display:grid;grid-template-columns:1fr 44px;gap:10px;margin-top:13px}.actions a{min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-size:12px;font-weight:950;text-transform:uppercase;text-decoration:none}.actions a:first-child{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:white}.actions a:last-child{background:var(--green);color:#042913}.empty{grid-column:1/-1;padding:28px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);color:#dbeafe}.empty a{color:#86efac;font-weight:950}@media(max-width:1280px){.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.search{grid-column:1/-1;padding:10px 0 0}.clear{grid-column:1/-1}}@media(max-width:1120px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:440px}.heroContent{padding:235px 0 44px}h1{font-size:38px}.filters{margin-top:-22px;grid-template-columns:1fr}.field{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.search{grid-template-columns:1fr 54px}.grid{grid-template-columns:1fr}}
       `}</style>
     </main>
   );
