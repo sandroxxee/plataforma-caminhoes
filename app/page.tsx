@@ -181,7 +181,7 @@ export default async function HomePage() {
       </form>
 
       <section className="wrap section-title" id="estoque">
-        <h2><span>▱</span> Caminhões disponíveis <small className="pill">{trucks.length} anúncios</small></h2>
+        <h2><span>▱</span> Caminhões disponíveis <small className="pill">Estoque atualizado</small></h2>
         <Link href="/anuncios" className="view-all">Ver todos</Link>
       </section>
 
