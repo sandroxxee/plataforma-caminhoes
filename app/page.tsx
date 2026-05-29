@@ -130,9 +130,17 @@ export default async function HomePage() {
           <select name="carroceria" defaultValue="">
             <option value="">Todos os tipos</option>
             <option>Cavalo mecânico</option>
-            <option>Truck</option>
-            <option>Toco</option>
-            <option>Implemento</option>
+            <option>Caçamba basculante</option>
+            <option>Caçamba meia-cana</option>
+            <option>Graneleira</option>
+            <option>Chassis</option>
+            <option>Tanque</option>
+            <option>Prancha</option>
+            <option>Plataforma</option>
+            <option>Baú seco</option>
+            <option>Baú frigorífico</option>
+            <option>Munck</option>
+            <option>Outra</option>
           </select>
         </div>
 
@@ -143,7 +151,11 @@ export default async function HomePage() {
             <option>4x2</option>
             <option>6x2</option>
             <option>6x4</option>
+            <option>8x2</option>
             <option>8x4</option>
+            <option>Truck</option>
+            <option>Bitruck</option>
+            <option>Traçado</option>
           </select>
         </div>
 
@@ -154,6 +166,11 @@ export default async function HomePage() {
             <option value="SC">Santa Catarina</option>
             <option value="RS">Rio Grande do Sul</option>
             <option value="PR">Paraná</option>
+            <option value="SP">São Paulo</option>
+            <option value="MG">Minas Gerais</option>
+            <option value="MS">Mato Grosso do Sul</option>
+            <option value="MT">Mato Grosso</option>
+            <option value="GO">Goiás</option>
           </select>
         </div>
 
