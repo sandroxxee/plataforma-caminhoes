@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { ChevronRight, Info, Menu, MessageCircle, Phone, Search, Truck, X } from "lucide-react";
 import { useState } from "react";
 
-const whatsappLink = "https://wa.me/5549999999999?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Caminh%C3%B5es%20%C3%A0%20Venda.";
+const whatsappLink = "https://wa.me/5549999362681?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Caminh%C3%B5es%20%C3%A0%20Venda%20e%20preciso%20de%20atendimento.";
 
 const navItems = [
   { href: "/anuncios", label: "Estoque", helper: "Ver caminhões", icon: Truck },
@@ -31,13 +31,7 @@ export function PublicHeader() {
     <header className="public-header">
       <div className="public-header-shell">
         <Link href="/" className="public-brand" aria-label="Caminhões à Venda" onClick={closeMenu}>
-          <span className="public-brand-logo">
-            <Image src="/logo-horizontal.png" alt="Caminhões à Venda" width={190} height={55} priority />
-          </span>
-          <span className="public-brand-text">
-            <strong>Caminhões à Venda</strong>
-            <small>Classificados do transporte</small>
-          </span>
+          <Image src="/logo-horizontal-web.png" alt="Caminhões à Venda" width={260} height={95} priority />
         </Link>
 
         <nav className="public-nav" aria-label="Menu principal">
@@ -124,12 +118,12 @@ export function PublicHeader() {
         }
 
         .public-header-shell {
-          min-height: 78px;
+          min-height: 76px;
           display: grid;
-          grid-template-columns: auto minmax(360px, 1fr) auto;
+          grid-template-columns: auto minmax(340px, 1fr) auto;
           align-items: center;
           gap: 18px;
-          padding: 10px 14px 10px 18px;
+          padding: 10px 14px 10px 16px;
           border-radius: 22px;
           background:
             linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.035)),
@@ -140,54 +134,21 @@ export function PublicHeader() {
         }
 
         .public-brand {
+          width: min(260px, 28vw);
+          min-width: 190px;
+          height: 58px;
           display: flex;
           align-items: center;
-          gap: 12px;
-          min-width: 250px;
           color: white;
           text-decoration: none;
         }
 
-        .public-brand-logo {
-          width: 68px;
-          height: 68px;
-          flex: 0 0 68px;
-          display: grid;
-          place-items: center;
-          border-radius: 20px;
-          overflow: hidden;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(250,204,21,.42);
-          box-shadow: 0 0 0 3px rgba(34,197,94,.10), 0 12px 34px rgba(0,0,0,.34);
-        }
-
-        .public-brand-logo img {
+        .public-brand img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           display: block;
-          transform: scale(1.12);
-        }
-
-        .public-brand-text {
-          display: grid;
-          line-height: 1.04;
-        }
-
-        .public-brand-text strong {
-          font-size: 17px;
-          font-weight: 950;
-          letter-spacing: .02em;
-          text-transform: uppercase;
-        }
-
-        .public-brand-text small {
-          margin-top: 6px;
-          color: #86efac;
-          font-size: 11px;
-          font-weight: 950;
-          letter-spacing: .09em;
-          text-transform: uppercase;
+          filter: drop-shadow(0 12px 20px rgba(0,0,0,.38));
         }
 
         .public-nav {
@@ -300,6 +261,7 @@ export function PublicHeader() {
           }
 
           .public-brand {
+            width: 220px;
             min-width: 0;
           }
 
@@ -464,20 +426,9 @@ export function PublicHeader() {
             border-radius: 18px;
           }
 
-          .public-brand-logo {
-            width: 52px;
-            height: 52px;
-            flex-basis: 52px;
-            border-radius: 16px;
-          }
-
-          .public-brand-text strong {
-            font-size: 14px;
-          }
-
-          .public-brand-text small {
-            font-size: 10px;
-            letter-spacing: .06em;
+          .public-brand {
+            width: 178px;
+            height: 50px;
           }
 
           .public-whatsapp {
