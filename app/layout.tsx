@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import "./final-classificados.css";
+import "./visual-cards.css";
 
 const inter = Inter({
   subsets: ["latin"],
