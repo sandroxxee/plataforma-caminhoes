@@ -14,7 +14,6 @@ export default function AnunciarPage() {
 
       <section className="hero">
         <div className="wrap heroContent">
-          <h1>Anuncie seu caminhão com <span>aparência profissional.</span></h1>
           <p>Envie fotos reais, dados principais, valor, cidade e informe se aceita troca. O anúncio fica organizado para gerar contato direto pelo WhatsApp.</p>
           <div className="heroActions">
             <Link href="/cadastro" className="btn primary">Começar anúncio</Link>
