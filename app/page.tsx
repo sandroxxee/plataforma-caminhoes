@@ -84,12 +84,7 @@ export default async function HomePage() {
 
       <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)), linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95)), url(${heroImage})` } : undefined}>
         <div className="wrap hero-content">
-          <div className="hero-copy">
-            <div className="hero-actions">
-              <Link className="btn btn-primary" href="/anuncios">🔎 Ver caminhões</Link>
-              <Link className="btn btn-ghost" href="/#contato">Falar com atendimento</Link>
-            </div>
-          </div>
+          <div className="hero-copy" aria-hidden="true" />
 
           <aside className="hero-card" aria-label="Mensagem para compradores e vendedores">
             <h2>Oportunidades para quem compra, resultado para quem vende.</h2>
