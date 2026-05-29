@@ -98,7 +98,7 @@ export default async function HomePage() {
             <h1>Caminhões selecionados para o <span>seu negócio.</span></h1>
             <p>Cavalos mecânicos, trucks, tocos e implementos. Encontre caminhões anunciados com dados claros e contato direto pelo WhatsApp.</p>
             <div className="hero-actions">
-              <Link className="btn btn-primary" href="/anuncios">🔎 Ver estoque</Link>
+              <Link className="btn btn-primary" href="/anuncios">🔎 Ver caminhões</Link>
               <Link className="btn btn-ghost" href="/#contato">Falar com atendimento</Link>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <form className="wrap filter-panel" action="/anuncios" aria-label="Filtros do estoque">
+      <form className="wrap filter-panel" action="/anuncios" aria-label="Filtros de caminhões">
         <div className="filter-field">
           <label>Marca</label>
           <select name="marca" defaultValue="">
@@ -192,8 +192,8 @@ export default async function HomePage() {
         </div>
       </form>
 
-      <section className="wrap section-title" id="estoque">
-        <h2><span>▱</span> Caminhões disponíveis <small className="pill">Estoque atualizado</small></h2>
+      <section className="wrap section-title" id="caminhoes">
+        <h2><span>▱</span> Caminhões disponíveis <small className="pill">Ativos</small></h2>
         <Link href="/anuncios" className="view-all">Ver todos</Link>
       </section>
 
@@ -238,7 +238,7 @@ export default async function HomePage() {
       <section className="wrap trust-bar" aria-label="Diferenciais">
         <div className="trust-item"><span className="trust-icon">▱</span><span><strong>Negociação direta</strong><small>Contato pelo WhatsApp</small></span></div>
         <div className="trust-item"><span className="trust-icon">▤</span><span><strong>Dados organizados</strong><small>Foto, valor, cidade e detalhes</small></span></div>
-        <div className="trust-item"><span className="trust-icon">▰</span><span><strong>Estoque atualizado</strong><small>Anúncios aprovados</small></span></div>
+        <div className="trust-item"><span className="trust-icon">▰</span><span><strong>Publicados</strong><small>Somente anúncios aprovados</small></span></div>
         <div className="trust-item"><span className="trust-icon">☘</span><span><strong>Atendimento rápido</strong><small>Compra e venda sem complicar</small></span></div>
       </section>
 
@@ -271,43 +271,10 @@ export default async function HomePage() {
 
       <style>{`
         :global(html) { scroll-behavior: smooth; }
-        .home-page {
-          --green: #22c55e;
-          --text: #f8fafc;
-          --muted: #cbd5e1;
-          min-height: 100vh;
-          color: var(--text);
-          background:
-            radial-gradient(circle at 8% 5%, rgba(34,197,94,.17), transparent 28%),
-            radial-gradient(circle at 82% 12%, rgba(34,197,94,.10), transparent 24%),
-            linear-gradient(135deg, #020506 0%, #06110e 48%, #030608 100%);
-          overflow-x: hidden;
-        }
-        .home-page::before {
-          content: "";
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          opacity: .16;
-          background-image: linear-gradient(rgba(34,197,94,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,.10) 1px, transparent 1px);
-          background-size: 78px 78px;
-          mask-image: linear-gradient(to bottom, black, transparent 74%);
-        }
+        .home-page { --green: #22c55e; --text: #f8fafc; --muted: #cbd5e1; min-height: 100vh; color: var(--text); background: radial-gradient(circle at 8% 5%, rgba(34,197,94,.17), transparent 28%), radial-gradient(circle at 82% 12%, rgba(34,197,94,.10), transparent 24%), linear-gradient(135deg, #020506 0%, #06110e 48%, #030608 100%); overflow-x: hidden; }
+        .home-page::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .16; background-image: linear-gradient(rgba(34,197,94,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(34,197,94,.10) 1px, transparent 1px); background-size: 78px 78px; mask-image: linear-gradient(to bottom, black, transparent 74%); }
         .wrap { width: min(1240px, calc(100vw - 32px)); margin: 0 auto; }
-        .hero {
-          position: relative;
-          margin-top: -90px;
-          min-height: 500px;
-          display: flex;
-          align-items: end;
-          overflow: hidden;
-          background:
-            linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)),
-            linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95));
-          background-size: cover;
-          background-position: center top;
-          border-bottom: 1px solid rgba(255,255,255,.08);
-        }
+        .hero { position: relative; margin-top: -90px; min-height: 500px; display: flex; align-items: end; overflow: hidden; background: linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.72) 40%, rgba(2,6,8,.20)), linear-gradient(180deg, rgba(2,6,8,.20), rgba(2,6,8,.95)); background-size: cover; background-position: center top; border-bottom: 1px solid rgba(255,255,255,.08); }
         .hero::after { content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(circle at 15% 30%, rgba(34,197,94,.12), transparent 26%), linear-gradient(90deg, rgba(2,6,8,.68), transparent 60%); }
         .hero-content { position:relative; z-index:2; padding:160px 0 84px; display:grid; grid-template-columns:minmax(0, 670px) minmax(320px, 430px); justify-content:space-between; align-items:end; gap:42px; }
         .hero-copy { min-width:0; }
