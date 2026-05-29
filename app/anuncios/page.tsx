@@ -112,8 +112,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <form className="wrap filters" action="/anuncios">
         <div className="field"><label>Marca</label><select name="marca" defaultValue={marca}><option value="">Todas as marcas</option><option>Mercedes-Benz</option><option>Volkswagen</option><option>Volvo</option><option>Scania</option><option>Ford</option><option>Iveco</option><option>DAF</option></select></div>
-        <div className="field"><label>Modelo</label><input name="modelo" defaultValue={modelo} placeholder="Modelo" /></div>
-        <div className="field"><label>Tração</label><select name="tracao" defaultValue={tracao}><option value="">Todas as trações</option><option>4x2</option><option>6x2</option><option>6x4</option><option>8x2</option><option>8x4</option></select></div>
+        <div className="field"><label>Modelo</label><select name="modelo" defaultValue={modelo}><option value="">Todos os modelos</option><option>3/4</option><option>Toco</option><option>Truck</option><option value="Bi Truck">Bi Truck</option><option>Cavalo mecânico</option></select></div>
+        <div className="field"><label>Tração</label><select name="tracao" defaultValue={tracao}><option value="">Todas as trações</option><option>4x2</option><option>6x2</option><option>6x4</option><option>8x2</option><option>8x4</option><option>Truck</option><option>Bitruck</option><option>Traçado</option></select></div>
         <div className="search"><input name="busca" defaultValue={busca} placeholder="Buscar no estoque..." /><button type="submit">⌕</button></div>
         {temFiltro && <Link href="/anuncios" className="clear">Limpar</Link>}
       </form>
