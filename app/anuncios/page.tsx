@@ -104,7 +104,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <section className="hero">
         <div className="wrap heroContent">
-          <span className="kicker">▣ Anúncios</span>
           <h1>Caminhões disponíveis para <span>negociação.</span></h1>
           <p>Filtre por marca, modelo ou tração e fale direto pelo WhatsApp.</p>
         </div>
