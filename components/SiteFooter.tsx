@@ -10,7 +10,7 @@ export function SiteFooter() {
         </div>
 
         <nav aria-label="Links do rodapé">
-          <Link href="/anuncios">Estoque</Link>
+          <Link href="/anuncios">Anúncios</Link>
           <Link href="/anunciar">Anunciar</Link>
           <Link href="/#sobre">Sobre</Link>
           <Link href="/#contato">Contato</Link>
