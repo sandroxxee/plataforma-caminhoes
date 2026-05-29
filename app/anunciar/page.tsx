@@ -14,12 +14,11 @@ export default function AnunciarPage() {
 
       <section className="hero">
         <div className="wrap heroContent">
-          <span className="kicker">▣ Para vendedores</span>
           <h1>Anuncie seu caminhão com <span>aparência profissional.</span></h1>
           <p>Envie fotos reais, dados principais, valor, cidade e informe se aceita troca. O anúncio fica organizado para gerar contato direto pelo WhatsApp.</p>
           <div className="heroActions">
             <Link href="/cadastro" className="btn primary">Começar anúncio</Link>
-            <Link href="/anuncios" className="btn ghost">Ver estoque</Link>
+            <Link href="/anuncios" className="btn ghost">Ver caminhões</Link>
           </div>
         </div>
       </section>
@@ -38,7 +37,7 @@ export default function AnunciarPage() {
         <article>
           <span>03</span>
           <b>Publicação</b>
-          <p>O anúncio pode passar por revisão antes de aparecer no estoque público. Isso mantém a plataforma organizada e confiável.</p>
+          <p>O anúncio pode passar por revisão antes de aparecer publicamente. Isso mantém a plataforma organizada e confiável.</p>
         </article>
       </section>
 
