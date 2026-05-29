@@ -8,9 +8,9 @@ export default function LoginPage() {
   return (
     <main className="page">
       <header className="topbar">
-        <Link href="/" className="brand">Caminhões em Oferta</Link>
+        <Link href="/" className="brand">Caminhões à Venda</Link>
         <nav>
-          <Link href="/anuncios">Estoque</Link>
+          <Link href="/anuncios">Anúncios</Link>
           <Link href="/cadastro">Criar conta</Link>
         </nav>
       </header>
