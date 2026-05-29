@@ -3,16 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Info, Menu, MessageCircle, Phone, Search, Truck, X } from "lucide-react";
+import { ChevronRight, Info, LogIn, Menu, Search, Truck, X } from "lucide-react";
 import { useState } from "react";
-
-const whatsappLink = "https://wa.me/5549999362681?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Caminh%C3%B5es%20%C3%A0%20Venda%20e%20preciso%20de%20atendimento.";
 
 const navItems = [
   { href: "/anuncios", label: "Anúncios", helper: "Ver caminhões", icon: Truck },
   { href: "/anunciar", label: "Anunciar", helper: "Cadastrar veículo", icon: Search },
   { href: "/#sobre", label: "Sobre", helper: "Como funciona", icon: Info },
-  { href: "/#contato", label: "Contato", helper: "Atendimento", icon: Phone },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -53,10 +50,10 @@ export function PublicHeader() {
             <Search size={16} aria-hidden="true" />
             Buscar caminhão
           </Link>
-          <a href={whatsappLink} target="_blank" rel="noreferrer" className="public-whatsapp">
-            <MessageCircle size={17} aria-hidden="true" />
-            WhatsApp
-          </a>
+          <Link href="/login" className="public-login">
+            <LogIn size={17} aria-hidden="true" />
+            Entrar
+          </Link>
           <button
             type="button"
             className="menu-toggle"
@@ -98,10 +95,10 @@ export function PublicHeader() {
             <Truck size={17} aria-hidden="true" />
             Quero anunciar
           </Link>
-          <a href={whatsappLink} target="_blank" rel="noreferrer" onClick={closeMenu}>
-            <MessageCircle size={17} aria-hidden="true" />
-            Atendimento
-          </a>
+          <Link href="/login" onClick={closeMenu}>
+            <LogIn size={17} aria-hidden="true" />
+            Entrar
+          </Link>
         </div>
       </div>
 
@@ -200,7 +197,7 @@ export function PublicHeader() {
         }
 
         .public-search,
-        .public-whatsapp,
+        .public-login,
         .menu-toggle {
           min-height: 46px;
           display: inline-flex;
@@ -223,7 +220,7 @@ export function PublicHeader() {
           color: #f8fafc;
         }
 
-        .public-whatsapp {
+        .public-login {
           padding: 0 16px;
           background: #22c55e;
           border: 1px solid rgba(34,197,94,.72);
@@ -232,7 +229,7 @@ export function PublicHeader() {
         }
 
         .public-search:hover,
-        .public-whatsapp:hover,
+        .public-login:hover,
         .menu-toggle:hover {
           transform: translateY(-1px);
         }
@@ -290,7 +287,7 @@ export function PublicHeader() {
             height: 50px;
           }
 
-          .public-whatsapp {
+          .public-login {
             display: none;
           }
 
