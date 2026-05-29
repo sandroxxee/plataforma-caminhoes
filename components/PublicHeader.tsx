@@ -9,7 +9,7 @@ import { useState } from "react";
 const whatsappLink = "https://wa.me/5549999362681?text=Ol%C3%A1%2C%20vim%20pelo%20site%20Caminh%C3%B5es%20%C3%A0%20Venda%20e%20preciso%20de%20atendimento.";
 
 const navItems = [
-  { href: "/anuncios", label: "Estoque", helper: "Ver caminhões", icon: Truck },
+  { href: "/anuncios", label: "Anúncios", helper: "Ver caminhões", icon: Truck },
   { href: "/anunciar", label: "Anunciar", helper: "Cadastrar veículo", icon: Search },
   { href: "/#sobre", label: "Sobre", helper: "Como funciona", icon: Info },
   { href: "/#contato", label: "Contato", helper: "Atendimento", icon: Phone },
@@ -218,36 +218,32 @@ export function PublicHeader() {
 
         .public-search {
           padding: 0 15px;
-          background: rgba(255,255,255,.07);
+          background: rgba(255,255,255,.065);
           border: 1px solid rgba(255,255,255,.12);
           color: #f8fafc;
         }
 
-        .public-search:hover {
-          background: rgba(255,255,255,.12);
-          transform: translateY(-1px);
-        }
-
         .public-whatsapp {
-          padding: 0 17px;
+          padding: 0 16px;
           background: #22c55e;
           border: 1px solid rgba(34,197,94,.72);
-          color: #042913;
+          color: #052e16;
           box-shadow: 0 14px 34px rgba(34,197,94,.18);
         }
 
-        .public-whatsapp:hover {
+        .public-search:hover,
+        .public-whatsapp:hover,
+        .menu-toggle:hover {
           transform: translateY(-1px);
-          filter: brightness(1.05);
         }
 
         .menu-toggle {
+          display: none;
           width: 46px;
           border: 1px solid rgba(255,255,255,.14);
           background: rgba(255,255,255,.07);
-          color: #f8fafc;
+          color: white;
           cursor: pointer;
-          display: none;
         }
 
         .mobile-menu,
@@ -256,13 +252,13 @@ export function PublicHeader() {
         }
 
         @media (max-width: 1120px) {
-          .public-header-shell {
-            grid-template-columns: 1fr auto;
+          .public-header {
+            top: 10px;
           }
 
-          .public-brand {
-            width: 220px;
-            min-width: 0;
+          .public-header-shell {
+            grid-template-columns: auto 1fr auto;
+            min-height: 72px;
           }
 
           .public-nav,
@@ -273,52 +269,68 @@ export function PublicHeader() {
           .menu-toggle {
             display: inline-flex;
           }
+        }
+
+        @media (max-width: 760px) {
+          .public-header {
+            width: calc(100vw - 22px);
+            top: 8px;
+            padding-bottom: 10px;
+          }
+
+          .public-header-shell {
+            min-height: 68px;
+            padding: 9px 10px 9px 12px;
+            border-radius: 18px;
+          }
+
+          .public-brand {
+            min-width: 0;
+            width: 178px;
+            height: 50px;
+          }
+
+          .public-whatsapp {
+            display: none;
+          }
 
           .mobile-menu {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: calc(100% - 6px);
+            position: fixed;
+            left: 11px;
+            right: 11px;
+            top: 88px;
+            z-index: 95;
             display: grid;
             gap: 14px;
-            padding: 16px;
-            border-radius: 20px;
-            background:
-              radial-gradient(circle at 18% 0%, rgba(34,197,94,.18), transparent 36%),
-              linear-gradient(180deg, rgba(12,18,20,.98), rgba(5,10,12,.96));
+            padding: 14px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(12,18,20,.98), rgba(5,8,10,.98));
             border: 1px solid rgba(255,255,255,.14);
-            box-shadow: 0 24px 72px rgba(0,0,0,.44);
-            backdrop-filter: blur(18px);
+            box-shadow: 0 28px 80px rgba(0,0,0,.48);
+            transform: translateY(-12px);
             opacity: 0;
-            transform: translateY(-8px) scale(.98);
             pointer-events: none;
-            transition: opacity .18s ease, transform .18s ease;
+            transition: .18s ease;
           }
 
           .mobile-menu.open {
+            transform: translateY(0);
             opacity: 1;
-            transform: translateY(0) scale(1);
             pointer-events: auto;
           }
 
-          .mobile-menu-head {
-            display: grid;
-            gap: 3px;
-            color: #f8fafc;
-          }
-
           .mobile-menu-head span {
+            display: block;
+            color: white;
             font-size: 18px;
             font-weight: 950;
-            letter-spacing: -.02em;
           }
 
           .mobile-menu-head small {
+            display: block;
+            margin-top: 3px;
             color: #94a3b8;
-            font-size: 12px;
             font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: .08em;
           }
 
           .mobile-menu-list {
@@ -327,22 +339,22 @@ export function PublicHeader() {
           }
 
           .mobile-menu-list a {
-            min-height: 64px;
+            min-height: 58px;
             display: grid;
             grid-template-columns: 42px 1fr auto;
             align-items: center;
             gap: 12px;
-            padding: 10px 12px;
-            border-radius: 15px;
-            color: #f8fafc;
-            text-decoration: none;
+            padding: 9px 12px;
+            border-radius: 16px;
+            color: white;
             background: rgba(255,255,255,.055);
-            border: 1px solid rgba(255,255,255,.09);
+            border: 1px solid rgba(255,255,255,.10);
+            text-decoration: none;
           }
 
           .mobile-menu-list a.active {
-            border-color: rgba(34,197,94,.52);
-            background: rgba(34,197,94,.11);
+            border-color: rgba(34,197,94,.36);
+            background: rgba(34,197,94,.12);
           }
 
           .mobile-icon {
@@ -350,25 +362,21 @@ export function PublicHeader() {
             height: 42px;
             display: grid;
             place-items: center;
-            border-radius: 13px;
-            background: rgba(34,197,94,.14);
+            border-radius: 14px;
+            background: rgba(34,197,94,.13);
             color: #86efac;
           }
 
-          .mobile-menu-list strong,
-          .mobile-menu-list small {
-            display: block;
-          }
-
           .mobile-menu-list strong {
+            display: block;
             font-size: 15px;
             font-weight: 950;
           }
 
           .mobile-menu-list small {
+            display: block;
             margin-top: 3px;
             color: #94a3b8;
-            font-size: 12px;
             font-weight: 800;
           }
 
@@ -379,7 +387,7 @@ export function PublicHeader() {
           }
 
           .mobile-cta-row a {
-            min-height: 48px;
+            min-height: 46px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -392,52 +400,30 @@ export function PublicHeader() {
           }
 
           .mobile-cta-row a:first-child {
-            background: rgba(255,255,255,.08);
-            color: #f8fafc;
-            border: 1px solid rgba(255,255,255,.12);
+            background: #22c55e;
+            color: #052e16;
           }
 
           .mobile-cta-row a:last-child {
-            background: #22c55e;
-            color: #042913;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.12);
+            color: white;
           }
 
           .menu-backdrop {
             position: fixed;
             inset: 0;
-            z-index: -1;
+            z-index: 70;
             display: block;
             border: 0;
-            background: rgba(2,6,8,.34);
+            background: rgba(0,0,0,.26);
             cursor: pointer;
           }
         }
 
-        @media (max-width: 640px) {
-          .public-header {
-            width: calc(100vw - 22px);
-            top: 8px;
-            padding-bottom: 8px;
-          }
-
-          .public-header-shell {
-            min-height: 66px;
-            padding: 8px;
-            border-radius: 18px;
-          }
-
+        @media (max-width: 390px) {
           .public-brand {
-            width: 178px;
-            height: 50px;
-          }
-
-          .public-whatsapp {
-            display: none;
-          }
-
-          .mobile-menu {
-            padding: 12px;
-            border-radius: 18px;
+            width: 158px;
           }
 
           .mobile-cta-row {
