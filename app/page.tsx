@@ -126,6 +126,18 @@ export default async function HomePage() {
         </div>
 
         <div className="filter-field">
+          <label>Modelo</label>
+          <select name="modelo" defaultValue="">
+            <option value="">Todos os modelos</option>
+            <option>3/4</option>
+            <option>Toco</option>
+            <option>Truck</option>
+            <option value="Bi Truck">Bi Truck</option>
+            <option>Cavalo mecânico</option>
+          </select>
+        </div>
+
+        <div className="filter-field">
           <label>Tipo</label>
           <select name="carroceria" defaultValue="">
             <option value="">Todos os tipos</option>
@@ -314,12 +326,12 @@ export default async function HomePage() {
         .btn { min-height:52px; display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:0 22px; border-radius:8px; border:1px solid rgba(255,255,255,.15); font-size:13px; font-weight:950; letter-spacing:.04em; text-transform:uppercase; text-decoration:none; }
         .btn-primary { background:var(--green); color:#03220f; border-color:transparent; }
         .btn-ghost { background:rgba(3,7,10,.58); color:#f8fafc; }
-        .filter-panel { position:relative; z-index:5; margin:-38px auto 34px; padding:14px; border-radius:16px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr minmax(220px,1.3fr); gap:0; background:linear-gradient(180deg, rgba(14,20,22,.92), rgba(9,14,16,.86)); border:1px solid rgba(255,255,255,.12); box-shadow:0 22px 54px rgba(0,0,0,.30); backdrop-filter:blur(16px); overflow:hidden; }
-        .filter-field { min-height:68px; display:grid; align-content:center; gap:6px; padding:0 18px; border-right:1px solid rgba(255,255,255,.09); color:#f8fafc; }
+        .filter-panel { position:relative; z-index:5; margin:-38px auto 34px; padding:14px; border-radius:16px; display:grid; grid-template-columns:repeat(5,minmax(120px,1fr)) minmax(220px,1.3fr); gap:0; background:linear-gradient(180deg, rgba(14,20,22,.92), rgba(9,14,16,.86)); border:1px solid rgba(255,255,255,.12); box-shadow:0 22px 54px rgba(0,0,0,.30); backdrop-filter:blur(16px); overflow:hidden; }
+        .filter-field { min-height:68px; display:grid; align-content:center; gap:6px; padding:0 14px; border-right:1px solid rgba(255,255,255,.09); color:#f8fafc; }
         .filter-field label { color:#9ca3af; font-size:11px; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
         .filter-field select, .search-box input { width:100%; border:0; outline:0; background:transparent; color:#f8fafc; font-size:14px; font-weight:850; font-family:inherit; }
         .filter-field select option { background:#0b1114; color:white; }
-        .search-box { display:grid; grid-template-columns:1fr 58px; align-items:center; gap:0; padding-left:18px; }
+        .search-box { display:grid; grid-template-columns:1fr 58px; align-items:center; gap:0; padding-left:14px; }
         .search-box input { min-height:54px; padding:0 16px; border-radius:8px 0 0 8px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.11); border-right:0; }
         .search-box button { min-height:54px; border:0; border-radius:0 8px 8px 0; background:var(--green); color:#042913; font-size:22px; cursor:pointer; }
         .section-title { display:flex; align-items:center; justify-content:space-between; gap:18px; margin:22px auto 18px; }
