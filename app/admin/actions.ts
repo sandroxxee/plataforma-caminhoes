@@ -32,12 +32,14 @@ export async function aprovarAnuncio(formData: FormData) {
 
   await supabase
     .from("trucks")
-    .update({ status: "aprovado" })
+    .update({ status: "aprovado", vendido: false })
     .eq("id", id);
 
+  revalidatePath("/");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
   revalidatePath("/anuncios");
+  revalidatePath(`/anuncios/${id}`);
 }
 
 export async function reprovarAnuncio(formData: FormData) {
@@ -51,9 +53,11 @@ export async function reprovarAnuncio(formData: FormData) {
     .update({ status: "reprovado" })
     .eq("id", id);
 
+  revalidatePath("/");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
   revalidatePath("/anuncios");
+  revalidatePath(`/anuncios/${id}`);
 }
 
 export async function excluirAnuncioAdmin(formData: FormData) {
@@ -78,6 +82,7 @@ export async function excluirAnuncioAdmin(formData: FormData) {
   await supabase.from("truck_images").delete().eq("truck_id", id);
   await supabase.from("trucks").delete().eq("id", id);
 
+  revalidatePath("/");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
   revalidatePath("/anuncios");
