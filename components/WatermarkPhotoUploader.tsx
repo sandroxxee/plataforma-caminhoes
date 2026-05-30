@@ -19,6 +19,8 @@ type BlurRect = {
   h: number;
 };
 
+type Point = { x: number; y: number };
+
 type EditorTarget = {
   type: "principal" | "extra";
   index: number;
@@ -47,7 +49,6 @@ function loadImage(file: File) {
 function loadImageFromUrl(url: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
-
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error("Não foi possível carregar a prévia."));
     image.src = url;
@@ -136,7 +137,7 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   const y = Math.max(0, Math.min(source.height, rect.y));
   const w = Math.max(1, Math.min(source.width - x, rect.w));
   const h = Math.max(1, Math.min(source.height - y, rect.h));
-  const blur = Math.max(22, Math.round(Math.min(source.width, source.height) * 0.035));
+  const blur = Math.max(26, Math.round(Math.min(source.width, source.height) * 0.045));
   const expand = blur * 2;
 
   const sx = Math.max(0, x - expand);
@@ -151,8 +152,8 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   ctx.filter = `blur(${blur}px)`;
   ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
   ctx.filter = "none";
-  ctx.globalAlpha = 0.16;
-  ctx.fillStyle = "rgba(180, 190, 200, 1)";
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = "rgba(190, 198, 205, 1)";
   ctx.fillRect(x, y, w, h);
   ctx.restore();
 }
@@ -200,15 +201,18 @@ function makePreviews(files: File[]) {
   }));
 }
 
-function getPointerPosition(event: React.PointerEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement) {
+function getPointerPosition(event: React.PointerEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement): Point {
   const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
   return {
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top,
+    x: Math.max(0, Math.min(canvas.width, (event.clientX - rect.left) * scaleX)),
+    y: Math.max(0, Math.min(canvas.height, (event.clientY - rect.top) * scaleY)),
   };
 }
 
-function normalizeRect(start: { x: number; y: number }, end: { x: number; y: number }) {
+function normalizeRect(start: Point, end: Point): BlurRect {
   return {
     x: Math.min(start.x, end.x),
     y: Math.min(start.y, end.y),
@@ -220,11 +224,12 @@ function normalizeRect(start: { x: number; y: number }, end: { x: number; y: num
 function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCancel: () => void; onApply: (type: EditorTarget["type"], index: number, file: File) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const displayRef = useRef({ x: 0, y: 0, w: 0, h: 0, scale: 1 });
+  const displayRef = useRef({ scale: 1 });
+  const dragStartRef = useRef<Point | null>(null);
+  const dragEndRef = useRef<Point | null>(null);
   const [rects, setRects] = useState<BlurRect[]>([]);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
-  const [dragEnd, setDragEnd] = useState<{ x: number; y: number } | null>(null);
-  const [status, setStatus] = useState("Arraste em cima da placa, adesivo, telefone ou contato que precisa esconder.");
+  const rectsRef = useRef<BlurRect[]>([]);
+  const [status, setStatus] = useState("Modo manual: arraste uma caixa em cima da placa Mercosul, placa cinza, adesivo, telefone ou contato.");
 
   function drawCanvas(currentRects: BlurRect[], tempRect?: BlurRect) {
     const canvas = canvasRef.current;
@@ -235,13 +240,13 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
     if (!ctx) return;
 
     const maxCanvasWidth = Math.min(980, window.innerWidth - 36);
-    const scale = Math.min(maxCanvasWidth / image.width, 620 / image.height, 1);
-    const drawWidth = Math.round(image.width * scale);
-    const drawHeight = Math.round(image.height * scale);
+    const scale = Math.min(maxCanvasWidth / image.width, 650 / image.height, 1);
+    const drawWidth = Math.max(1, Math.round(image.width * scale));
+    const drawHeight = Math.max(1, Math.round(image.height * scale));
 
     canvas.width = drawWidth;
     canvas.height = drawHeight;
-    displayRef.current = { x: 0, y: 0, w: drawWidth, h: drawHeight, scale };
+    displayRef.current = { scale };
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(image, 0, 0, drawWidth, drawHeight);
@@ -249,10 +254,10 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
     const allRects = tempRect ? [...currentRects, tempRect] : currentRects;
     allRects.forEach((rect) => {
       ctx.save();
-      ctx.fillStyle = "rgba(255, 255, 255, 0.28)";
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
-      ctx.lineWidth = 2;
-      ctx.setLineDash([8, 5]);
+      ctx.fillStyle = "rgba(34, 197, 94, 0.22)";
+      ctx.strokeStyle = "rgba(34, 197, 94, 0.98)";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([10, 6]);
       ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
       ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
       ctx.restore();
@@ -265,7 +270,9 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
     loadImageFromUrl(target.item.url).then((image) => {
       if (!mounted) return;
       imageRef.current = image;
-      drawCanvas(rects);
+      rectsRef.current = [];
+      setRects([]);
+      drawCanvas([]);
     });
 
     return () => {
@@ -273,18 +280,67 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
     };
   }, [target.item.url]);
 
-  useEffect(() => {
-    drawCanvas(rects, dragStart && dragEnd ? normalizeRect(dragStart, dragEnd) : undefined);
-  }, [rects, dragStart, dragEnd]);
+  function startDrag(event: React.PointerEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    event.preventDefault();
+    canvas.setPointerCapture(event.pointerId);
+    const pos = getPointerPosition(event, canvas);
+    dragStartRef.current = pos;
+    dragEndRef.current = pos;
+    setStatus("Segure e arraste até cobrir toda a placa/contato. Solte para marcar a área.");
+    drawCanvas(rectsRef.current, normalizeRect(pos, pos));
+  }
+
+  function moveDrag(event: React.PointerEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    const start = dragStartRef.current;
+    if (!canvas || !start) return;
+
+    event.preventDefault();
+    const pos = getPointerPosition(event, canvas);
+    dragEndRef.current = pos;
+    drawCanvas(rectsRef.current, normalizeRect(start, pos));
+  }
+
+  function endDrag(event: React.PointerEvent<HTMLCanvasElement>) {
+    const canvas = canvasRef.current;
+    const start = dragStartRef.current;
+    const end = dragEndRef.current;
+    if (!canvas || !start || !end) return;
+
+    event.preventDefault();
+    try {
+      canvas.releasePointerCapture(event.pointerId);
+    } catch {
+      // Alguns navegadores soltam automaticamente o pointer capture.
+    }
+
+    const rect = normalizeRect(start, end);
+    dragStartRef.current = null;
+    dragEndRef.current = null;
+
+    if (rect.w > 8 && rect.h > 8) {
+      const nextRects = [...rectsRef.current, rect];
+      rectsRef.current = nextRects;
+      setRects(nextRects);
+      setStatus("Área marcada. Pode marcar outra placa/adesivo ou clicar em aplicar desfoque.");
+      drawCanvas(nextRects);
+    } else {
+      setStatus("Arraste uma caixa maior em cima da placa ou contato.");
+      drawCanvas(rectsRef.current);
+    }
+  }
 
   async function apply() {
-    if (rects.length === 0) {
+    if (rectsRef.current.length === 0) {
       setStatus("Selecione pelo menos uma área para borrar antes de aplicar.");
       return;
     }
 
     const scale = displayRef.current.scale || 1;
-    const fullRects = rects.map((rect) => ({
+    const fullRects = rectsRef.current.map((rect) => ({
       x: rect.x / scale,
       y: rect.y / scale,
       w: rect.w / scale,
@@ -302,51 +358,51 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
     }
   }
 
+  function undoLast() {
+    const nextRects = rectsRef.current.slice(0, -1);
+    rectsRef.current = nextRects;
+    setRects(nextRects);
+    drawCanvas(nextRects);
+  }
+
+  function clearRects() {
+    rectsRef.current = [];
+    setRects([]);
+    drawCanvas([]);
+  }
+
+  function autoNotice() {
+    setStatus("Automático ainda precisa integração de IA no servidor. Por enquanto use o manual: arraste a caixa em cima da placa/contato. Esse manual é o que garante não passar nada.");
+  }
+
   return (
     <div className="editor-backdrop" role="dialog" aria-modal="true">
       <div className="editor-panel">
         <div className="editor-head">
           <div>
-            <strong>Borrar placa, adesivo ou contato</strong>
+            <strong>Borrar placa/contato</strong>
             <p>{status}</p>
           </div>
           <button type="button" onClick={onCancel} className="editor-close">Fechar</button>
         </div>
 
+        <div className="mode-actions">
+          <button type="button" onClick={autoNotice}>Automático</button>
+          <button type="button" className="mode-active">Manual: arrastar caixa</button>
+        </div>
+
         <canvas
           ref={canvasRef}
           className="blur-canvas"
-          onPointerDown={(event) => {
-            const canvas = canvasRef.current;
-            if (!canvas) return;
-            canvas.setPointerCapture(event.pointerId);
-            const pos = getPointerPosition(event, canvas);
-            setDragStart(pos);
-            setDragEnd(pos);
-          }}
-          onPointerMove={(event) => {
-            if (!dragStart) return;
-            const canvas = canvasRef.current;
-            if (!canvas) return;
-            setDragEnd(getPointerPosition(event, canvas));
-          }}
-          onPointerUp={(event) => {
-            const canvas = canvasRef.current;
-            if (!canvas || !dragStart || !dragEnd) return;
-            canvas.releasePointerCapture(event.pointerId);
-            const rect = normalizeRect(dragStart, dragEnd);
-            if (rect.w > 8 && rect.h > 8) {
-              setRects((old) => [...old, rect]);
-              setStatus("Área marcada. Pode marcar outra área ou aplicar o desfoque.");
-            }
-            setDragStart(null);
-            setDragEnd(null);
-          }}
+          onPointerDown={startDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
         />
 
         <div className="editor-actions">
-          <button type="button" onClick={() => setRects((old) => old.slice(0, -1))} disabled={rects.length === 0}>Desfazer última área</button>
-          <button type="button" onClick={() => setRects([])} disabled={rects.length === 0}>Limpar marcações</button>
+          <button type="button" onClick={undoLast} disabled={rects.length === 0}>Desfazer última área</button>
+          <button type="button" onClick={clearRects} disabled={rects.length === 0}>Limpar marcações</button>
           <button type="button" onClick={apply} className="apply-blur">Aplicar desfoque</button>
         </div>
       </div>
@@ -379,7 +435,7 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
           justify-content: space-between;
           gap: 14px;
           align-items: flex-start;
-          margin-bottom: 14px;
+          margin-bottom: 12px;
         }
 
         .editor-head strong {
@@ -396,7 +452,8 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
         }
 
         .editor-close,
-        .editor-actions button {
+        .editor-actions button,
+        .mode-actions button {
           min-height: 42px;
           border: 1px solid rgba(255,255,255,.14);
           border-radius: 12px;
@@ -405,6 +462,19 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
           padding: 0 14px;
           font-weight: 900;
           cursor: pointer;
+        }
+
+        .mode-actions {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          margin-bottom: 12px;
+        }
+
+        .mode-active {
+          background: #22c55e !important;
+          color: #052e16 !important;
+          border-color: transparent !important;
         }
 
         .blur-canvas {
@@ -416,6 +486,7 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
           touch-action: none;
           cursor: crosshair;
           display: block;
+          user-select: none;
         }
 
         .editor-actions {
@@ -470,7 +541,7 @@ export function WatermarkPhotoUploader() {
         updateInputs(nextPrincipal, extrasPreview);
         return nextPrincipal;
       });
-      setStatus("Marca d’água aplicada. Use 'Borrar placa/adesivo' se precisar esconder placa, telefone ou contato.");
+      setStatus("Marca d’água aplicada. Use 'Borrar automático/manual' se precisar esconder placa, telefone, adesivo ou contato.");
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água nessa foto. Tente outra imagem.");
@@ -494,7 +565,7 @@ export function WatermarkPhotoUploader() {
         updateInputs(principalPreview, nextExtras);
         return nextExtras;
       });
-      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Use o botão de borrar nas fotos que tiverem placa, adesivo ou contato.`);
+      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Use o botão de borrar automático/manual nas fotos que tiverem placa, adesivo ou contato.`);
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água em uma das fotos. Tente enviar menos imagens ou fotos menores.");
@@ -538,13 +609,13 @@ export function WatermarkPhotoUploader() {
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal</strong>
-          <small>Será enviada com marca d’água centralizada. Depois você pode borrar placa, adesivo, telefone ou contato.</small>
+          <small>Será enviada com marca d’água centralizada. Depois você pode borrar placa Mercosul, placa antiga, adesivo, telefone ou contato.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
 
         <label className="upload-field">
           <strong>Fotos extras</strong>
-          <small>Frente, lateral, traseira, cabine, pneus e carroceria.</small>
+          <small>Frente, traseira, lateral, cabine, pneus e carroceria.</small>
           <input ref={extrasRef} name="fotos_extras" type="file" accept="image/*" multiple onChange={processExtras} disabled={processando} />
         </label>
       </div>
@@ -558,7 +629,7 @@ export function WatermarkPhotoUploader() {
               <img src={item.url} alt={item.name} />
               <figcaption>{label}</figcaption>
               <button type="button" className="blur-button" onClick={() => setEditorTarget({ type, index, item })}>
-                Borrar placa/adesivo
+                Borrar automático/manual
               </button>
             </figure>
           ))}
@@ -669,7 +740,7 @@ export function WatermarkPhotoUploader() {
 
         .blur-button {
           margin: 10px;
-          min-height: 40px;
+          min-height: 42px;
           border: 0;
           border-radius: 12px;
           background: #22c55e;
