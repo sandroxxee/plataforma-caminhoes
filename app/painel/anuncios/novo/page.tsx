@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
 import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
+import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
 import { criarAnuncio } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -181,23 +182,11 @@ export default async function NovoAnuncioPage() {
             <span>04</span>
             <div>
               <h2>Fotos do caminhão</h2>
-              <p>Use fotos reais, nítidas e atuais. A primeira foto é a mais importante.</p>
+              <p>As fotos serão preparadas com a marca d’água www.caminhoesavenda.com antes do envio.</p>
             </div>
           </div>
 
-          <div className="photo-grid">
-            <label className="upload-field">
-              <strong>Foto principal</strong>
-              <small>Imagem que aparece primeiro nos anúncios.</small>
-              <input name="foto_principal" type="file" accept="image/*" />
-            </label>
-
-            <label className="upload-field">
-              <strong>Fotos extras</strong>
-              <small>Frente, lateral, traseira, cabine, pneus e carroceria.</small>
-              <input name="fotos_extras" type="file" accept="image/*" multiple />
-            </label>
-          </div>
+          <WatermarkPhotoUploader />
         </section>
 
         <div className="preview-box">
@@ -226,23 +215,19 @@ export default async function NovoAnuncioPage() {
         .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .form-grid.two { grid-template-columns: .8fr 1.2fr; }
         label { display: grid; gap: 8px; color: #dbeafe; font-size: 13px; font-weight: 900; }
-        label small, .upload-field small { color: #94a3b8; line-height: 1.45; font-weight: 700; }
+        label small { color: #94a3b8; line-height: 1.45; font-weight: 700; }
         input, select, textarea { width: 100%; min-height: 50px; border-radius: 15px; border: 1px solid rgba(255,255,255,.14); background: rgba(2,6,23,.52); color: white; padding: 0 14px; outline: none; box-sizing: border-box; }
         textarea { min-height: 130px; resize: vertical; padding-top: 13px; line-height: 1.5; }
         input:focus, select:focus, textarea:focus { border-color: rgba(34,197,94,.65); box-shadow: 0 0 0 4px rgba(34,197,94,.10); }
         select option { background: #0b1114; color: white; }
         .wide { min-width: 0; }
         .upload-section { background: radial-gradient(circle at 0 0, rgba(34,197,94,.16), transparent 34%), linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94)); }
-        .photo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-        .upload-field { min-height: 150px; padding: 20px; border-radius: 20px; border: 1px dashed rgba(34,197,94,.45); background: rgba(34,197,94,.07); align-content: center; }
-        .upload-field strong { font-size: 18px; color: white; }
-        .upload-field input { margin-top: 8px; padding: 12px; border-style: solid; background: rgba(2,6,23,.52); }
         .preview-box { padding: 16px 18px; display: flex; gap: 10px; flex-wrap: wrap; color: #cbd5e1; }
         .preview-box strong { color: #86efac; }
         .form-footer { padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
         .form-footer p { margin: 0; color: #cbd5e1; line-height: 1.55; }
         .form-footer button { min-height: 52px; border: 0; padding: 0 20px; border-radius: 16px; background: #22c55e; color: #052e16; font-weight: 950; cursor: pointer; box-shadow: 0 14px 34px rgba(34,197,94,.18); }
-        @media (max-width: 980px) { .form-grid.three, .form-grid.two, .photo-grid, .ai-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 980px) { .form-grid.three, .form-grid.two, .ai-grid { grid-template-columns: 1fr; } }
         @media (max-width: 560px) { .form-section { padding: 18px; border-radius: 20px; } .section-head { display: grid; } .form-footer button, .secondary-button { width: 100%; } }
       `}</style>
     </PanelLayout>
