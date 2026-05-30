@@ -187,7 +187,6 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   roundedRectPath(ctx, x, y, w, h, radius);
   ctx.clip();
 
-  // Desfoque limpo: sem cinza, sem cor, só embaralhando a própria imagem.
   ctx.filter = `blur(${blur}px)`;
   ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
   ctx.filter = `blur(${Math.round(blur * 0.38)}px)`;
@@ -196,7 +195,6 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   ctx.filter = "none";
   ctx.globalAlpha = 1;
 
-  // Granulação fina sem cor: mantém aparência natural e impede leitura de números.
   addFineGrain(ctx, x, y, w, h);
 
   ctx.restore();
@@ -572,6 +570,31 @@ export function WatermarkPhotoUploader() {
     setInputFiles(extrasRef.current, extraItems.map((item) => item.file));
   }
 
+  function removePhoto(type: EditorTarget["type"], index: number) {
+    if (type === "principal") {
+      setPrincipalPreview((old) => {
+        const next = old.filter((item, itemIndex) => {
+          if (itemIndex === index) URL.revokeObjectURL(item.url);
+          return itemIndex !== index;
+        });
+        updateInputs(next, extrasPreview);
+        return next;
+      });
+      setStatus("Foto principal removida. Você pode escolher outra antes de enviar.");
+      return;
+    }
+
+    setExtrasPreview((old) => {
+      const next = old.filter((item, itemIndex) => {
+        if (itemIndex === index) URL.revokeObjectURL(item.url);
+        return itemIndex !== index;
+      });
+      updateInputs(principalPreview, next);
+      return next;
+    });
+    setStatus("Foto extra removida.");
+  }
+
   async function processPrincipal(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -674,9 +697,14 @@ export function WatermarkPhotoUploader() {
             <figure key={`${item.name}-${type}-${index}`}>
               <img src={item.url} alt={item.name} />
               <figcaption>{label}</figcaption>
-              <button type="button" className="blur-button" onClick={() => setEditorTarget({ type, index, item })}>
-                Borrar automático/manual
-              </button>
+              <div className="photo-actions">
+                <button type="button" className="blur-button" onClick={() => setEditorTarget({ type, index, item })}>
+                  Borrar automático/manual
+                </button>
+                <button type="button" className="remove-button" onClick={() => removePhoto(type, index)}>
+                  Remover foto
+                </button>
+              </div>
             </figure>
           ))}
         </div>
@@ -784,20 +812,36 @@ export function WatermarkPhotoUploader() {
           font-weight: 950;
         }
 
-        .blur-button {
+        .photo-actions {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
           margin: 10px;
+        }
+
+        .blur-button,
+        .remove-button {
           min-height: 42px;
           border: 0;
           border-radius: 12px;
-          background: #22c55e;
-          color: #052e16;
           font-weight: 950;
           cursor: pointer;
         }
 
+        .blur-button {
+          background: #22c55e;
+          color: #052e16;
+        }
+
+        .remove-button {
+          background: rgba(239, 68, 68, 0.92);
+          color: white;
+        }
+
         @media (max-width: 980px) {
           .photo-grid,
-          .preview-grid-watermark {
+          .preview-grid-watermark,
+          .photo-actions {
             grid-template-columns: 1fr;
           }
         }
