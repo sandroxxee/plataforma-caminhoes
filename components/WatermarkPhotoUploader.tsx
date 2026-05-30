@@ -50,61 +50,44 @@ function canvasToFile(canvas: HTMLCanvasElement, originalName: string) {
 
 function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const shortSide = Math.min(width, height);
-  const fontSize = Math.max(42, Math.round(shortSide * 0.052));
-  const padding = Math.max(30, Math.round(shortSide * 0.045));
-  const letterSpacing = Math.max(1.5, fontSize * 0.035);
+  const fontSize = Math.max(26, Math.round(shortSide * 0.032));
+  const bottomMargin = Math.max(24, Math.round(shortSide * 0.04));
 
   ctx.save();
-  ctx.font = `900 ${fontSize}px Arial, Helvetica, sans-serif`;
+  ctx.font = `800 ${fontSize}px Inter, Arial, Helvetica, sans-serif`;
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
 
   const x = width / 2;
-  const y = height - padding - fontSize * 0.55;
+  const y = height - bottomMargin - fontSize * 0.45;
 
-  // Base escura muito transparente, sem cor forte. Ajuda a aparecer em foto clara.
-  ctx.globalAlpha = 0.22;
+  // Sombra baixa e transparente para aparecer em fotos claras sem virar tarja.
+  ctx.globalAlpha = 0.3;
   ctx.fillStyle = "rgba(0, 0, 0, 1)";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
-  ctx.shadowBlur = fontSize * 0.18;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
+  ctx.shadowBlur = fontSize * 0.16;
   ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = Math.max(2, fontSize * 0.05);
-  ctx.fillText(WATERMARK_TEXT, x, y);
+  ctx.shadowOffsetY = Math.max(2, fontSize * 0.06);
+  ctx.fillText(WATERMARK_TEXT, x, y + Math.max(1, fontSize * 0.035));
 
-  // Relevo claro/transparente, estilo vidro/3D, sem usar cor de marca.
-  ctx.globalAlpha = 0.34;
-  ctx.shadowColor = "rgba(255, 255, 255, 0.45)";
-  ctx.shadowBlur = fontSize * 0.09;
+  // Relevo claro, efeito vidro/3D discreto e sem cor.
+  ctx.globalAlpha = 0.36;
+  ctx.shadowColor = "rgba(255, 255, 255, 0.32)";
+  ctx.shadowBlur = fontSize * 0.06;
   ctx.shadowOffsetX = -Math.max(1, fontSize * 0.025);
   ctx.shadowOffsetY = -Math.max(1, fontSize * 0.025);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
-  ctx.lineWidth = Math.max(1.8, fontSize * 0.055);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+  ctx.lineWidth = Math.max(1.1, fontSize * 0.035);
   ctx.strokeText(WATERMARK_TEXT, x, y);
 
-  // Texto principal branco com transparência controlada.
-  ctx.globalAlpha = 0.58;
-  ctx.shadowColor = "rgba(0, 0, 0, 0.75)";
-  ctx.shadowBlur = fontSize * 0.12;
-  ctx.shadowOffsetX = Math.max(1, fontSize * 0.025);
-  ctx.shadowOffsetY = Math.max(2, fontSize * 0.045);
+  // Preenchimento principal: moderno, transparente e centralizado.
+  ctx.globalAlpha = 0.48;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.68)";
+  ctx.shadowBlur = fontSize * 0.08;
+  ctx.shadowOffsetX = Math.max(1, fontSize * 0.02);
+  ctx.shadowOffsetY = Math.max(1, fontSize * 0.035);
   ctx.fillStyle = "rgba(255, 255, 255, 1)";
   ctx.fillText(WATERMARK_TEXT, x, y);
-
-  // Segunda marca grande diagonal, bem transparente, para proteger sem poluir.
-  ctx.translate(width / 2, height / 2);
-  ctx.rotate(-Math.PI / 11);
-  ctx.font = `900 ${Math.max(54, Math.round(shortSide * 0.075))}px Arial, Helvetica, sans-serif`;
-  ctx.globalAlpha = 0.105;
-  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
-  ctx.shadowBlur = fontSize * 0.22;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
-  ctx.lineWidth = Math.max(2, fontSize * 0.045);
-  ctx.strokeText(WATERMARK_TEXT, 0, 0);
-  ctx.globalAlpha = 0.12;
-  ctx.fillStyle = "rgba(255, 255, 255, 1)";
-  ctx.fillText(WATERMARK_TEXT, letterSpacing, letterSpacing);
 
   ctx.restore();
 }
@@ -206,7 +189,7 @@ export function WatermarkPhotoUploader() {
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal</strong>
-          <small>Será enviada com marca d’água transparente, moderna e sem cor forte: {WATERMARK_TEXT}.</small>
+          <small>Será enviada com marca d’água menor, centralizada, transparente e sem cor forte: {WATERMARK_TEXT}.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
 
