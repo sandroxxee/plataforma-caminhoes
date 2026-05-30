@@ -137,7 +137,7 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   const y = Math.max(0, Math.min(source.height, rect.y));
   const w = Math.max(1, Math.min(source.width - x, rect.w));
   const h = Math.max(1, Math.min(source.height - y, rect.h));
-  const blur = Math.max(26, Math.round(Math.min(source.width, source.height) * 0.045));
+  const blur = Math.max(42, Math.round(Math.min(source.width, source.height) * 0.075));
   const expand = blur * 2;
 
   const sx = Math.max(0, x - expand);
@@ -151,10 +151,9 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   ctx.clip();
   ctx.filter = `blur(${blur}px)`;
   ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
+  ctx.filter = `blur(${Math.round(blur * 0.55)}px)`;
+  ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
   ctx.filter = "none";
-  ctx.globalAlpha = 0.2;
-  ctx.fillStyle = "rgba(190, 198, 205, 1)";
-  ctx.fillRect(x, y, w, h);
   ctx.restore();
 }
 
@@ -347,7 +346,7 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
       h: rect.h / scale,
     }));
 
-    setStatus("Aplicando desfoque profissional...");
+    setStatus("Aplicando desfoque profissional sem camada cinza...");
 
     try {
       const blurredFile = await applyBlurToFile(target.item.file, fullRects);
@@ -596,7 +595,7 @@ export function WatermarkPhotoUploader() {
     }
 
     setEditorTarget(null);
-    setStatus("Desfoque aplicado. Confira a prévia antes de enviar o anúncio.");
+    setStatus("Desfoque aplicado sem camada cinza. Confira a prévia antes de enviar o anúncio.");
   }
 
   const allPreviews = [
