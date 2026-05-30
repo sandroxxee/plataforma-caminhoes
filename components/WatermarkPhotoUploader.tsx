@@ -50,42 +50,41 @@ function canvasToFile(canvas: HTMLCanvasElement, originalName: string) {
 
 function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const shortSide = Math.min(width, height);
-  const fontSize = Math.max(26, Math.round(shortSide * 0.032));
-  const bottomMargin = Math.max(24, Math.round(shortSide * 0.04));
+  const fontSize = Math.max(24, Math.round(shortSide * 0.03));
 
   ctx.save();
-  ctx.font = `800 ${fontSize}px Inter, Arial, Helvetica, sans-serif`;
+  ctx.font = `800 ${fontSize}px Arial, Helvetica, sans-serif`;
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
 
   const x = width / 2;
-  const y = height - bottomMargin - fontSize * 0.45;
+  const y = height / 2;
 
-  // Sombra baixa e transparente para aparecer em fotos claras sem virar tarja.
-  ctx.globalAlpha = 0.3;
+  // Sombra escura bem transparente: dá leitura sem criar tarja ou cor forte.
+  ctx.globalAlpha = 0.26;
   ctx.fillStyle = "rgba(0, 0, 0, 1)";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
-  ctx.shadowBlur = fontSize * 0.16;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = Math.max(2, fontSize * 0.06);
+  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+  ctx.shadowBlur = fontSize * 0.18;
+  ctx.shadowOffsetX = Math.max(1, fontSize * 0.025);
+  ctx.shadowOffsetY = Math.max(2, fontSize * 0.055);
   ctx.fillText(WATERMARK_TEXT, x, y + Math.max(1, fontSize * 0.035));
 
-  // Relevo claro, efeito vidro/3D discreto e sem cor.
-  ctx.globalAlpha = 0.36;
-  ctx.shadowColor = "rgba(255, 255, 255, 0.32)";
+  // Contorno claro: efeito moderno/3D transparente, visível em foto escura.
+  ctx.globalAlpha = 0.42;
+  ctx.shadowColor = "rgba(255, 255, 255, 0.26)";
   ctx.shadowBlur = fontSize * 0.06;
-  ctx.shadowOffsetX = -Math.max(1, fontSize * 0.025);
-  ctx.shadowOffsetY = -Math.max(1, fontSize * 0.025);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
-  ctx.lineWidth = Math.max(1.1, fontSize * 0.035);
+  ctx.shadowOffsetX = -Math.max(1, fontSize * 0.018);
+  ctx.shadowOffsetY = -Math.max(1, fontSize * 0.018);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.82)";
+  ctx.lineWidth = Math.max(1, fontSize * 0.032);
   ctx.strokeText(WATERMARK_TEXT, x, y);
 
-  // Preenchimento principal: moderno, transparente e centralizado.
-  ctx.globalAlpha = 0.48;
-  ctx.shadowColor = "rgba(0, 0, 0, 0.68)";
+  // Texto principal: sem cor, translúcido e pequeno no centro real da imagem.
+  ctx.globalAlpha = 0.52;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.62)";
   ctx.shadowBlur = fontSize * 0.08;
-  ctx.shadowOffsetX = Math.max(1, fontSize * 0.02);
-  ctx.shadowOffsetY = Math.max(1, fontSize * 0.035);
+  ctx.shadowOffsetX = Math.max(1, fontSize * 0.018);
+  ctx.shadowOffsetY = Math.max(1, fontSize * 0.03);
   ctx.fillStyle = "rgba(255, 255, 255, 1)";
   ctx.fillText(WATERMARK_TEXT, x, y);
 
@@ -143,7 +142,7 @@ export function WatermarkPhotoUploader() {
     if (!file) return;
 
     setProcessando(true);
-    setStatus("Aplicando marca d’água moderna na foto principal...");
+    setStatus("Aplicando marca d’água no centro da foto principal...");
 
     try {
       const processed = await addWatermark(file);
@@ -152,7 +151,7 @@ export function WatermarkPhotoUploader() {
         revokePreviews(old);
         return makePreviews([processed]);
       });
-      setStatus("Marca d’água aplicada. Confira a prévia antes de enviar.");
+      setStatus("Marca d’água aplicada no centro da foto. Confira a prévia antes de enviar.");
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água nessa foto. Tente outra imagem.");
@@ -166,7 +165,7 @@ export function WatermarkPhotoUploader() {
     if (files.length === 0) return;
 
     setProcessando(true);
-    setStatus("Aplicando marca d’água moderna nas fotos extras...");
+    setStatus("Aplicando marca d’água no centro das fotos extras...");
 
     try {
       const processed = await Promise.all(files.map((file) => addWatermark(file)));
@@ -189,7 +188,7 @@ export function WatermarkPhotoUploader() {
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal</strong>
-          <small>Será enviada com marca d’água menor, centralizada, transparente e sem cor forte: {WATERMARK_TEXT}.</small>
+          <small>Será enviada com marca d’água pequena, centralizada, transparente e sem cor forte: {WATERMARK_TEXT}.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
 
