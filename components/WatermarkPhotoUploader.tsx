@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 
 const WATERMARK_TEXT = "www.caminhoesavenda.com";
 const MAX_WIDTH = 1800;
-const JPEG_QUALITY = 0.88;
+const JPEG_QUALITY = 0.9;
 
 type PreviewItem = {
   name: string;
@@ -50,28 +50,62 @@ function canvasToFile(canvas: HTMLCanvasElement, originalName: string) {
 
 function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const shortSide = Math.min(width, height);
-  const fontSize = Math.max(28, Math.round(shortSide * 0.035));
-  const padding = Math.max(26, Math.round(shortSide * 0.035));
-  const radius = Math.round(fontSize * 0.55);
+  const fontSize = Math.max(42, Math.round(shortSide * 0.052));
+  const padding = Math.max(30, Math.round(shortSide * 0.045));
+  const letterSpacing = Math.max(1.5, fontSize * 0.035);
 
   ctx.save();
-  ctx.font = `900 ${fontSize}px Arial, sans-serif`;
-  const textWidth = ctx.measureText(WATERMARK_TEXT).width;
-  const boxWidth = textWidth + padding * 1.35;
-  const boxHeight = fontSize + padding * 0.8;
-  const x = width - boxWidth - padding;
-  const y = height - boxHeight - padding;
-
-  ctx.globalAlpha = 0.74;
-  ctx.fillStyle = "rgba(2, 6, 23, 0.72)";
-  ctx.beginPath();
-  ctx.roundRect(x, y, boxWidth, boxHeight, radius);
-  ctx.fill();
-
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = "rgba(255, 255, 255, 0.94)";
+  ctx.font = `900 ${fontSize}px Arial, Helvetica, sans-serif`;
   ctx.textBaseline = "middle";
-  ctx.fillText(WATERMARK_TEXT, x + padding * 0.68, y + boxHeight / 2 + 1);
+  ctx.textAlign = "center";
+
+  const x = width / 2;
+  const y = height - padding - fontSize * 0.55;
+
+  // Base escura muito transparente, sem cor forte. Ajuda a aparecer em foto clara.
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = "rgba(0, 0, 0, 1)";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+  ctx.shadowBlur = fontSize * 0.18;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = Math.max(2, fontSize * 0.05);
+  ctx.fillText(WATERMARK_TEXT, x, y);
+
+  // Relevo claro/transparente, estilo vidro/3D, sem usar cor de marca.
+  ctx.globalAlpha = 0.34;
+  ctx.shadowColor = "rgba(255, 255, 255, 0.45)";
+  ctx.shadowBlur = fontSize * 0.09;
+  ctx.shadowOffsetX = -Math.max(1, fontSize * 0.025);
+  ctx.shadowOffsetY = -Math.max(1, fontSize * 0.025);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+  ctx.lineWidth = Math.max(1.8, fontSize * 0.055);
+  ctx.strokeText(WATERMARK_TEXT, x, y);
+
+  // Texto principal branco com transparência controlada.
+  ctx.globalAlpha = 0.58;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.75)";
+  ctx.shadowBlur = fontSize * 0.12;
+  ctx.shadowOffsetX = Math.max(1, fontSize * 0.025);
+  ctx.shadowOffsetY = Math.max(2, fontSize * 0.045);
+  ctx.fillStyle = "rgba(255, 255, 255, 1)";
+  ctx.fillText(WATERMARK_TEXT, x, y);
+
+  // Segunda marca grande diagonal, bem transparente, para proteger sem poluir.
+  ctx.translate(width / 2, height / 2);
+  ctx.rotate(-Math.PI / 11);
+  ctx.font = `900 ${Math.max(54, Math.round(shortSide * 0.075))}px Arial, Helvetica, sans-serif`;
+  ctx.globalAlpha = 0.105;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+  ctx.shadowBlur = fontSize * 0.22;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+  ctx.lineWidth = Math.max(2, fontSize * 0.045);
+  ctx.strokeText(WATERMARK_TEXT, 0, 0);
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = "rgba(255, 255, 255, 1)";
+  ctx.fillText(WATERMARK_TEXT, letterSpacing, letterSpacing);
+
   ctx.restore();
 }
 
@@ -102,6 +136,10 @@ function setInputFiles(input: HTMLInputElement | null, files: File[]) {
   input.files = transfer.files;
 }
 
+function revokePreviews(items: PreviewItem[]) {
+  items.forEach((item) => URL.revokeObjectURL(item.url));
+}
+
 function makePreviews(files: File[]) {
   return files.map((file) => ({
     name: file.name,
@@ -122,13 +160,16 @@ export function WatermarkPhotoUploader() {
     if (!file) return;
 
     setProcessando(true);
-    setStatus("Aplicando marca d’água na foto principal...");
+    setStatus("Aplicando marca d’água moderna na foto principal...");
 
     try {
       const processed = await addWatermark(file);
       setInputFiles(principalRef.current, [processed]);
-      setPrincipalPreview(makePreviews([processed]));
-      setStatus("Marca d’água aplicada na foto principal.");
+      setPrincipalPreview((old) => {
+        revokePreviews(old);
+        return makePreviews([processed]);
+      });
+      setStatus("Marca d’água aplicada. Confira a prévia antes de enviar.");
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água nessa foto. Tente outra imagem.");
@@ -142,13 +183,16 @@ export function WatermarkPhotoUploader() {
     if (files.length === 0) return;
 
     setProcessando(true);
-    setStatus("Aplicando marca d’água nas fotos extras...");
+    setStatus("Aplicando marca d’água moderna nas fotos extras...");
 
     try {
       const processed = await Promise.all(files.map((file) => addWatermark(file)));
       setInputFiles(extrasRef.current, processed);
-      setExtrasPreview(makePreviews(processed));
-      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}.`);
+      setExtrasPreview((old) => {
+        revokePreviews(old);
+        return makePreviews(processed);
+      });
+      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Confira a prévia antes de enviar.`);
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água em uma das fotos. Tente enviar menos imagens ou fotos menores.");
@@ -162,7 +206,7 @@ export function WatermarkPhotoUploader() {
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal</strong>
-          <small>Será enviada já com a marca d’água {WATERMARK_TEXT}.</small>
+          <small>Será enviada com marca d’água transparente, moderna e sem cor forte: {WATERMARK_TEXT}.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
 
@@ -246,8 +290,8 @@ export function WatermarkPhotoUploader() {
 
         .preview-grid-watermark {
           display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 12px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
         }
 
         .preview-grid-watermark figure {
