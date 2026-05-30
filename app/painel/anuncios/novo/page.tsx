@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
+import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
 import { criarAnuncio } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -38,11 +39,34 @@ export default async function NovoAnuncioPage() {
   return (
     <PanelLayout
       title="Cadastrar caminhão"
-      subtitle="Preencha os dados principais. O título será montado automaticamente com marca, modelo, tração e ano."
+      subtitle="Cole uma descrição simples, use a IA para preencher os campos e revise antes de enviar para aprovação."
       badge="Novo anúncio"
       actions={<Link href="/painel/anuncios" className="secondary-button">Voltar aos anúncios</Link>}
     >
       <form action={criarAnuncio} className="truck-form" encType="multipart/form-data">
+        <section className="form-section ai-section">
+          <div className="section-head">
+            <span>IA</span>
+            <div>
+              <h2>Preenchimento automático</h2>
+              <p>Cole a mensagem recebida no WhatsApp, Facebook ou de um vendedor. A IA tenta identificar marca, modelo, ano, valor, categoria, tração e descrição.</p>
+            </div>
+          </div>
+
+          <div className="ai-grid">
+            <label>
+              Texto base para a IA
+              <textarea
+                name="texto_ia"
+                placeholder="Ex: VW 24.280 8x2 com tanque, ano 2014, pronto para trabalhar, valor 249 no chassi e 278 com tanque."
+              />
+              <small>A IA apenas sugere. Confira tudo antes de enviar o anúncio.</small>
+            </label>
+
+            <AutoFillTruckButton />
+          </div>
+        </section>
+
         <section className="form-section">
           <div className="section-head">
             <span>01</span>
@@ -191,11 +215,13 @@ export default async function NovoAnuncioPage() {
         .secondary-button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06); color: white; text-decoration: none; font-weight: 900; }
         .truck-form { display: grid; gap: 18px; }
         .form-section, .preview-box, .form-footer { border-radius: 24px; background: radial-gradient(circle at 0 0, rgba(34,197,94,.10), transparent 34%), linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94)); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 22px 54px rgba(0,0,0,.20); }
+        .ai-section { background: radial-gradient(circle at 0 0, rgba(34,197,94,.18), transparent 36%), linear-gradient(180deg, rgba(16,23,26,.98), rgba(8,13,15,.96)); }
         .form-section { padding: 24px; }
         .section-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 20px; }
         .section-head span { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: #22c55e; color: #052e16; font-weight: 950; flex: 0 0 auto; box-shadow: 0 12px 30px rgba(34,197,94,.16); }
         .section-head h2 { margin: 0 0 5px; font-size: 22px; line-height: 1.1; letter-spacing: -.035em; }
         .section-head p { margin: 0; color: #94a3b8; line-height: 1.45; }
+        .ai-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 16px; align-items: end; }
         .form-grid { display: grid; gap: 16px; }
         .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .form-grid.two { grid-template-columns: .8fr 1.2fr; }
@@ -216,7 +242,7 @@ export default async function NovoAnuncioPage() {
         .form-footer { padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
         .form-footer p { margin: 0; color: #cbd5e1; line-height: 1.55; }
         .form-footer button { min-height: 52px; border: 0; padding: 0 20px; border-radius: 16px; background: #22c55e; color: #052e16; font-weight: 950; cursor: pointer; box-shadow: 0 14px 34px rgba(34,197,94,.18); }
-        @media (max-width: 980px) { .form-grid.three, .form-grid.two, .photo-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 980px) { .form-grid.three, .form-grid.two, .photo-grid, .ai-grid { grid-template-columns: 1fr; } }
         @media (max-width: 560px) { .form-section { padding: 18px; border-radius: 20px; } .section-head { display: grid; } .form-footer button, .secondary-button { width: 100%; } }
       `}</style>
     </PanelLayout>
