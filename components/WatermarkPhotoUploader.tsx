@@ -1,14 +1,28 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const WATERMARK_TEXT = "www.caminhoesavenda.com";
 const MAX_WIDTH = 1800;
 const JPEG_QUALITY = 0.9;
 
 type PreviewItem = {
+  file: File;
   name: string;
   url: string;
+};
+
+type BlurRect = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+};
+
+type EditorTarget = {
+  type: "principal" | "extra";
+  index: number;
+  item: PreviewItem;
 };
 
 function loadImage(file: File) {
@@ -30,7 +44,17 @@ function loadImage(file: File) {
   });
 }
 
-function canvasToFile(canvas: HTMLCanvasElement, originalName: string) {
+function loadImageFromUrl(url: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Não foi possível carregar a prévia."));
+    image.src = url;
+  });
+}
+
+function canvasToFile(canvas: HTMLCanvasElement, originalName: string, suffix = "marca-dagua") {
   return new Promise<File>((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
@@ -39,8 +63,8 @@ function canvasToFile(canvas: HTMLCanvasElement, originalName: string) {
           return;
         }
 
-        const cleanName = originalName.replace(/\.[a-z0-9]+$/i, "");
-        resolve(new File([blob], `${cleanName}-marca-dagua.jpg`, { type: "image/jpeg" }));
+        const cleanName = originalName.replace(/\.[a-z0-9]+$/i, "").replace(/-(marca-dagua|borrado)$/i, "");
+        resolve(new File([blob], `${cleanName}-${suffix}.jpg`, { type: "image/jpeg" }));
       },
       "image/jpeg",
       JPEG_QUALITY,
@@ -60,7 +84,6 @@ function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: num
   const x = width / 2;
   const y = height / 2;
 
-  // Camada escura: garante leitura em foto clara, sem usar tarja.
   ctx.globalAlpha = 0.34;
   ctx.fillStyle = "rgba(0, 0, 0, 1)";
   ctx.shadowColor = "rgba(0, 0, 0, 0.75)";
@@ -69,7 +92,6 @@ function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: num
   ctx.shadowOffsetY = Math.max(2, fontSize * 0.07);
   ctx.fillText(WATERMARK_TEXT, x, y + Math.max(1, fontSize * 0.04));
 
-  // Contorno claro: efeito 3D/vidro, sem cor forte.
   ctx.globalAlpha = 0.52;
   ctx.shadowColor = "rgba(255, 255, 255, 0.35)";
   ctx.shadowBlur = fontSize * 0.08;
@@ -79,7 +101,6 @@ function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: num
   ctx.lineWidth = Math.max(1.4, fontSize * 0.04);
   ctx.strokeText(WATERMARK_TEXT, x, y);
 
-  // Texto principal: centralizado, moderno, transparente e visível.
   ctx.globalAlpha = 0.68;
   ctx.shadowColor = "rgba(0, 0, 0, 0.72)";
   ctx.shadowBlur = fontSize * 0.1;
@@ -110,6 +131,55 @@ async function addWatermark(file: File) {
   return canvasToFile(canvas, file.name);
 }
 
+function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, rect: BlurRect) {
+  const x = Math.max(0, Math.min(source.width, rect.x));
+  const y = Math.max(0, Math.min(source.height, rect.y));
+  const w = Math.max(1, Math.min(source.width - x, rect.w));
+  const h = Math.max(1, Math.min(source.height - y, rect.h));
+  const blur = Math.max(22, Math.round(Math.min(source.width, source.height) * 0.035));
+  const expand = blur * 2;
+
+  const sx = Math.max(0, x - expand);
+  const sy = Math.max(0, y - expand);
+  const sw = Math.min(source.width - sx, w + expand * 2);
+  const sh = Math.min(source.height - sy, h + expand * 2);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  ctx.filter = `blur(${blur}px)`;
+  ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
+  ctx.filter = "none";
+  ctx.globalAlpha = 0.16;
+  ctx.fillStyle = "rgba(180, 190, 200, 1)";
+  ctx.fillRect(x, y, w, h);
+  ctx.restore();
+}
+
+async function applyBlurToFile(file: File, rects: BlurRect[]) {
+  const image = await loadImage(file);
+  const canvas = document.createElement("canvas");
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Navegador não conseguiu borrar a imagem.");
+
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+  const source = document.createElement("canvas");
+  source.width = canvas.width;
+  source.height = canvas.height;
+  const sourceCtx = source.getContext("2d");
+  if (!sourceCtx) throw new Error("Navegador não conseguiu preparar o desfoque.");
+  sourceCtx.drawImage(canvas, 0, 0);
+
+  rects.forEach((rect) => drawBlurArea(ctx, source, rect));
+
+  return canvasToFile(canvas, file.name, "borrado");
+}
+
 function setInputFiles(input: HTMLInputElement | null, files: File[]) {
   if (!input) return;
 
@@ -124,9 +194,251 @@ function revokePreviews(items: PreviewItem[]) {
 
 function makePreviews(files: File[]) {
   return files.map((file) => ({
+    file,
     name: file.name,
     url: URL.createObjectURL(file),
   }));
+}
+
+function getPointerPosition(event: React.PointerEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+  };
+}
+
+function normalizeRect(start: { x: number; y: number }, end: { x: number; y: number }) {
+  return {
+    x: Math.min(start.x, end.x),
+    y: Math.min(start.y, end.y),
+    w: Math.abs(end.x - start.x),
+    h: Math.abs(end.y - start.y),
+  };
+}
+
+function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCancel: () => void; onApply: (type: EditorTarget["type"], index: number, file: File) => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const displayRef = useRef({ x: 0, y: 0, w: 0, h: 0, scale: 1 });
+  const [rects, setRects] = useState<BlurRect[]>([]);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [dragEnd, setDragEnd] = useState<{ x: number; y: number } | null>(null);
+  const [status, setStatus] = useState("Arraste em cima da placa, adesivo, telefone ou contato que precisa esconder.");
+
+  function drawCanvas(currentRects: BlurRect[], tempRect?: BlurRect) {
+    const canvas = canvasRef.current;
+    const image = imageRef.current;
+    if (!canvas || !image) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const maxCanvasWidth = Math.min(980, window.innerWidth - 36);
+    const scale = Math.min(maxCanvasWidth / image.width, 620 / image.height, 1);
+    const drawWidth = Math.round(image.width * scale);
+    const drawHeight = Math.round(image.height * scale);
+
+    canvas.width = drawWidth;
+    canvas.height = drawHeight;
+    displayRef.current = { x: 0, y: 0, w: drawWidth, h: drawHeight, scale };
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, 0, 0, drawWidth, drawHeight);
+
+    const allRects = tempRect ? [...currentRects, tempRect] : currentRects;
+    allRects.forEach((rect) => {
+      ctx.save();
+      ctx.fillStyle = "rgba(255, 255, 255, 0.28)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 5]);
+      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.restore();
+    });
+  }
+
+  useEffect(() => {
+    let mounted = true;
+
+    loadImageFromUrl(target.item.url).then((image) => {
+      if (!mounted) return;
+      imageRef.current = image;
+      drawCanvas(rects);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [target.item.url]);
+
+  useEffect(() => {
+    drawCanvas(rects, dragStart && dragEnd ? normalizeRect(dragStart, dragEnd) : undefined);
+  }, [rects, dragStart, dragEnd]);
+
+  async function apply() {
+    if (rects.length === 0) {
+      setStatus("Selecione pelo menos uma área para borrar antes de aplicar.");
+      return;
+    }
+
+    const scale = displayRef.current.scale || 1;
+    const fullRects = rects.map((rect) => ({
+      x: rect.x / scale,
+      y: rect.y / scale,
+      w: rect.w / scale,
+      h: rect.h / scale,
+    }));
+
+    setStatus("Aplicando desfoque profissional...");
+
+    try {
+      const blurredFile = await applyBlurToFile(target.item.file, fullRects);
+      onApply(target.type, target.index, blurredFile);
+    } catch (error) {
+      console.error(error);
+      setStatus("Não consegui aplicar o desfoque. Tente selecionar uma área menor.");
+    }
+  }
+
+  return (
+    <div className="editor-backdrop" role="dialog" aria-modal="true">
+      <div className="editor-panel">
+        <div className="editor-head">
+          <div>
+            <strong>Borrar placa, adesivo ou contato</strong>
+            <p>{status}</p>
+          </div>
+          <button type="button" onClick={onCancel} className="editor-close">Fechar</button>
+        </div>
+
+        <canvas
+          ref={canvasRef}
+          className="blur-canvas"
+          onPointerDown={(event) => {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            canvas.setPointerCapture(event.pointerId);
+            const pos = getPointerPosition(event, canvas);
+            setDragStart(pos);
+            setDragEnd(pos);
+          }}
+          onPointerMove={(event) => {
+            if (!dragStart) return;
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            setDragEnd(getPointerPosition(event, canvas));
+          }}
+          onPointerUp={(event) => {
+            const canvas = canvasRef.current;
+            if (!canvas || !dragStart || !dragEnd) return;
+            canvas.releasePointerCapture(event.pointerId);
+            const rect = normalizeRect(dragStart, dragEnd);
+            if (rect.w > 8 && rect.h > 8) {
+              setRects((old) => [...old, rect]);
+              setStatus("Área marcada. Pode marcar outra área ou aplicar o desfoque.");
+            }
+            setDragStart(null);
+            setDragEnd(null);
+          }}
+        />
+
+        <div className="editor-actions">
+          <button type="button" onClick={() => setRects((old) => old.slice(0, -1))} disabled={rects.length === 0}>Desfazer última área</button>
+          <button type="button" onClick={() => setRects([])} disabled={rects.length === 0}>Limpar marcações</button>
+          <button type="button" onClick={apply} className="apply-blur">Aplicar desfoque</button>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .editor-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          padding: 18px;
+          display: grid;
+          place-items: center;
+          background: rgba(0, 0, 0, 0.78);
+          backdrop-filter: blur(10px);
+        }
+
+        .editor-panel {
+          width: min(1040px, 100%);
+          max-height: 96vh;
+          overflow: auto;
+          border-radius: 22px;
+          border: 1px solid rgba(255,255,255,.16);
+          background: #071014;
+          padding: 16px;
+          box-shadow: 0 30px 80px rgba(0,0,0,.45);
+        }
+
+        .editor-head {
+          display: flex;
+          justify-content: space-between;
+          gap: 14px;
+          align-items: flex-start;
+          margin-bottom: 14px;
+        }
+
+        .editor-head strong {
+          display: block;
+          color: white;
+          font-size: 18px;
+          margin-bottom: 5px;
+        }
+
+        .editor-head p {
+          margin: 0;
+          color: #cbd5e1;
+          line-height: 1.45;
+        }
+
+        .editor-close,
+        .editor-actions button {
+          min-height: 42px;
+          border: 1px solid rgba(255,255,255,.14);
+          border-radius: 12px;
+          background: rgba(255,255,255,.08);
+          color: white;
+          padding: 0 14px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .blur-canvas {
+          width: 100%;
+          height: auto;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,.14);
+          background: rgba(2,6,23,.78);
+          touch-action: none;
+          cursor: crosshair;
+          display: block;
+        }
+
+        .editor-actions {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          margin-top: 14px;
+        }
+
+        .editor-actions button:disabled {
+          opacity: .45;
+          cursor: not-allowed;
+        }
+
+        .apply-blur {
+          background: #22c55e !important;
+          color: #052e16 !important;
+          border-color: transparent !important;
+        }
+      `}</style>
+    </div>
+  );
 }
 
 export function WatermarkPhotoUploader() {
@@ -134,8 +446,14 @@ export function WatermarkPhotoUploader() {
   const extrasRef = useRef<HTMLInputElement>(null);
   const [principalPreview, setPrincipalPreview] = useState<PreviewItem[]>([]);
   const [extrasPreview, setExtrasPreview] = useState<PreviewItem[]>([]);
+  const [editorTarget, setEditorTarget] = useState<EditorTarget | null>(null);
   const [status, setStatus] = useState("");
   const [processando, setProcessando] = useState(false);
+
+  function updateInputs(principalItems: PreviewItem[], extraItems: PreviewItem[]) {
+    setInputFiles(principalRef.current, principalItems.map((item) => item.file));
+    setInputFiles(extrasRef.current, extraItems.map((item) => item.file));
+  }
 
   async function processPrincipal(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -146,12 +464,13 @@ export function WatermarkPhotoUploader() {
 
     try {
       const processed = await addWatermark(file);
-      setInputFiles(principalRef.current, [processed]);
+      const nextPrincipal = makePreviews([processed]);
       setPrincipalPreview((old) => {
         revokePreviews(old);
-        return makePreviews([processed]);
+        updateInputs(nextPrincipal, extrasPreview);
+        return nextPrincipal;
       });
-      setStatus("Marca d’água aplicada no centro. Confira a prévia sem corte antes de enviar.");
+      setStatus("Marca d’água aplicada. Use 'Borrar placa/adesivo' se precisar esconder placa, telefone ou contato.");
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água nessa foto. Tente outra imagem.");
@@ -169,12 +488,13 @@ export function WatermarkPhotoUploader() {
 
     try {
       const processed = await Promise.all(files.map((file) => addWatermark(file)));
-      setInputFiles(extrasRef.current, processed);
+      const nextExtras = makePreviews(processed);
       setExtrasPreview((old) => {
         revokePreviews(old);
-        return makePreviews(processed);
+        updateInputs(principalPreview, nextExtras);
+        return nextExtras;
       });
-      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Confira a prévia sem corte antes de enviar.`);
+      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Use o botão de borrar nas fotos que tiverem placa, adesivo ou contato.`);
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água em uma das fotos. Tente enviar menos imagens ou fotos menores.");
@@ -183,12 +503,42 @@ export function WatermarkPhotoUploader() {
     }
   }
 
+  function applyEditedFile(type: EditorTarget["type"], index: number, file: File) {
+    const nextItem = makePreviews([file])[0];
+
+    if (type === "principal") {
+      setPrincipalPreview((old) => {
+        const next = [...old];
+        if (next[index]) URL.revokeObjectURL(next[index].url);
+        next[index] = nextItem;
+        updateInputs(next, extrasPreview);
+        return next;
+      });
+    } else {
+      setExtrasPreview((old) => {
+        const next = [...old];
+        if (next[index]) URL.revokeObjectURL(next[index].url);
+        next[index] = nextItem;
+        updateInputs(principalPreview, next);
+        return next;
+      });
+    }
+
+    setEditorTarget(null);
+    setStatus("Desfoque aplicado. Confira a prévia antes de enviar o anúncio.");
+  }
+
+  const allPreviews = [
+    ...principalPreview.map((item, index) => ({ item, index, type: "principal" as const, label: "Principal" })),
+    ...extrasPreview.map((item, index) => ({ item, index, type: "extra" as const, label: "Extra" })),
+  ];
+
   return (
     <div className="watermark-uploader">
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal</strong>
-          <small>Será enviada com marca d’água centralizada, transparente, moderna e visível: {WATERMARK_TEXT}.</small>
+          <small>Será enviada com marca d’água centralizada. Depois você pode borrar placa, adesivo, telefone ou contato.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
 
@@ -201,15 +551,26 @@ export function WatermarkPhotoUploader() {
 
       {status && <p className="watermark-status">{status}</p>}
 
-      {(principalPreview.length > 0 || extrasPreview.length > 0) && (
+      {allPreviews.length > 0 && (
         <div className="preview-grid-watermark">
-          {[...principalPreview, ...extrasPreview].map((item, index) => (
-            <figure key={`${item.name}-${index}`}>
+          {allPreviews.map(({ item, index, type, label }) => (
+            <figure key={`${item.name}-${type}-${index}`}>
               <img src={item.url} alt={item.name} />
-              <figcaption>{index === 0 ? "Principal" : "Extra"}</figcaption>
+              <figcaption>{label}</figcaption>
+              <button type="button" className="blur-button" onClick={() => setEditorTarget({ type, index, item })}>
+                Borrar placa/adesivo
+              </button>
             </figure>
           ))}
         </div>
+      )}
+
+      {editorTarget && (
+        <BlurEditor
+          target={editorTarget}
+          onCancel={() => setEditorTarget(null)}
+          onApply={applyEditedFile}
+        />
       )}
 
       <style jsx>{`
@@ -283,6 +644,7 @@ export function WatermarkPhotoUploader() {
           border: 1px solid rgba(255,255,255,.12);
           background: rgba(2,6,23,.52);
           position: relative;
+          display: grid;
         }
 
         .preview-grid-watermark img {
@@ -303,6 +665,17 @@ export function WatermarkPhotoUploader() {
           color: white;
           font-size: 11px;
           font-weight: 950;
+        }
+
+        .blur-button {
+          margin: 10px;
+          min-height: 40px;
+          border: 0;
+          border-radius: 12px;
+          background: #22c55e;
+          color: #052e16;
+          font-weight: 950;
+          cursor: pointer;
         }
 
         @media (max-width: 980px) {
