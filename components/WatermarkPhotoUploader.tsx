@@ -50,41 +50,41 @@ function canvasToFile(canvas: HTMLCanvasElement, originalName: string) {
 
 function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const shortSide = Math.min(width, height);
-  const fontSize = Math.max(24, Math.round(shortSide * 0.03));
+  const fontSize = Math.max(34, Math.round(shortSide * 0.045));
 
   ctx.save();
-  ctx.font = `800 ${fontSize}px Arial, Helvetica, sans-serif`;
+  ctx.font = `850 ${fontSize}px Arial, Helvetica, sans-serif`;
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
 
   const x = width / 2;
   const y = height / 2;
 
-  // Sombra escura bem transparente: dá leitura sem criar tarja ou cor forte.
-  ctx.globalAlpha = 0.26;
+  // Camada escura: garante leitura em foto clara, sem usar tarja.
+  ctx.globalAlpha = 0.34;
   ctx.fillStyle = "rgba(0, 0, 0, 1)";
-  ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
-  ctx.shadowBlur = fontSize * 0.18;
-  ctx.shadowOffsetX = Math.max(1, fontSize * 0.025);
-  ctx.shadowOffsetY = Math.max(2, fontSize * 0.055);
-  ctx.fillText(WATERMARK_TEXT, x, y + Math.max(1, fontSize * 0.035));
+  ctx.shadowColor = "rgba(0, 0, 0, 0.75)";
+  ctx.shadowBlur = fontSize * 0.2;
+  ctx.shadowOffsetX = Math.max(1, fontSize * 0.03);
+  ctx.shadowOffsetY = Math.max(2, fontSize * 0.07);
+  ctx.fillText(WATERMARK_TEXT, x, y + Math.max(1, fontSize * 0.04));
 
-  // Contorno claro: efeito moderno/3D transparente, visível em foto escura.
-  ctx.globalAlpha = 0.42;
-  ctx.shadowColor = "rgba(255, 255, 255, 0.26)";
-  ctx.shadowBlur = fontSize * 0.06;
-  ctx.shadowOffsetX = -Math.max(1, fontSize * 0.018);
-  ctx.shadowOffsetY = -Math.max(1, fontSize * 0.018);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.82)";
-  ctx.lineWidth = Math.max(1, fontSize * 0.032);
+  // Contorno claro: efeito 3D/vidro, sem cor forte.
+  ctx.globalAlpha = 0.52;
+  ctx.shadowColor = "rgba(255, 255, 255, 0.35)";
+  ctx.shadowBlur = fontSize * 0.08;
+  ctx.shadowOffsetX = -Math.max(1, fontSize * 0.025);
+  ctx.shadowOffsetY = -Math.max(1, fontSize * 0.025);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.lineWidth = Math.max(1.4, fontSize * 0.04);
   ctx.strokeText(WATERMARK_TEXT, x, y);
 
-  // Texto principal: sem cor, translúcido e pequeno no centro real da imagem.
-  ctx.globalAlpha = 0.52;
-  ctx.shadowColor = "rgba(0, 0, 0, 0.62)";
-  ctx.shadowBlur = fontSize * 0.08;
-  ctx.shadowOffsetX = Math.max(1, fontSize * 0.018);
-  ctx.shadowOffsetY = Math.max(1, fontSize * 0.03);
+  // Texto principal: centralizado, moderno, transparente e visível.
+  ctx.globalAlpha = 0.68;
+  ctx.shadowColor = "rgba(0, 0, 0, 0.72)";
+  ctx.shadowBlur = fontSize * 0.1;
+  ctx.shadowOffsetX = Math.max(1, fontSize * 0.02);
+  ctx.shadowOffsetY = Math.max(1, fontSize * 0.035);
   ctx.fillStyle = "rgba(255, 255, 255, 1)";
   ctx.fillText(WATERMARK_TEXT, x, y);
 
@@ -142,7 +142,7 @@ export function WatermarkPhotoUploader() {
     if (!file) return;
 
     setProcessando(true);
-    setStatus("Aplicando marca d’água no centro da foto principal...");
+    setStatus("Aplicando marca d’água centralizada na foto principal...");
 
     try {
       const processed = await addWatermark(file);
@@ -151,7 +151,7 @@ export function WatermarkPhotoUploader() {
         revokePreviews(old);
         return makePreviews([processed]);
       });
-      setStatus("Marca d’água aplicada no centro da foto. Confira a prévia antes de enviar.");
+      setStatus("Marca d’água aplicada no centro. Confira a prévia sem corte antes de enviar.");
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água nessa foto. Tente outra imagem.");
@@ -165,7 +165,7 @@ export function WatermarkPhotoUploader() {
     if (files.length === 0) return;
 
     setProcessando(true);
-    setStatus("Aplicando marca d’água no centro das fotos extras...");
+    setStatus("Aplicando marca d’água centralizada nas fotos extras...");
 
     try {
       const processed = await Promise.all(files.map((file) => addWatermark(file)));
@@ -174,7 +174,7 @@ export function WatermarkPhotoUploader() {
         revokePreviews(old);
         return makePreviews(processed);
       });
-      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Confira a prévia antes de enviar.`);
+      setStatus(`Marca d’água aplicada em ${processed.length} foto${processed.length === 1 ? "" : "s"}. Confira a prévia sem corte antes de enviar.`);
     } catch (error) {
       console.error(error);
       setStatus("Não consegui aplicar a marca d’água em uma das fotos. Tente enviar menos imagens ou fotos menores.");
@@ -188,7 +188,7 @@ export function WatermarkPhotoUploader() {
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal</strong>
-          <small>Será enviada com marca d’água pequena, centralizada, transparente e sem cor forte: {WATERMARK_TEXT}.</small>
+          <small>Será enviada com marca d’água centralizada, transparente, moderna e visível: {WATERMARK_TEXT}.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
 
@@ -287,9 +287,10 @@ export function WatermarkPhotoUploader() {
 
         .preview-grid-watermark img {
           width: 100%;
-          aspect-ratio: 1.35 / 1;
-          object-fit: cover;
+          max-height: 520px;
+          object-fit: contain;
           display: block;
+          background: rgba(2,6,23,.78);
         }
 
         .preview-grid-watermark figcaption {
