@@ -132,12 +132,50 @@ async function addWatermark(file: File) {
   return canvasToFile(canvas, file.name);
 }
 
+function roundedRectPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number) {
+  const r = Math.min(radius, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function addFineGrain(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+  const area = Math.max(1, w * h);
+  const dots = Math.min(2200, Math.max(180, Math.round(area / 520)));
+
+  ctx.save();
+  ctx.globalCompositeOperation = "overlay";
+
+  for (let i = 0; i < dots; i += 1) {
+    const px = x + Math.random() * w;
+    const py = y + Math.random() * h;
+    const alpha = 0.035 + Math.random() * 0.055;
+    const tone = Math.random() > 0.5 ? 255 : 0;
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = `rgb(${tone}, ${tone}, ${tone})`;
+    ctx.fillRect(px, py, 1.15, 1.15);
+  }
+
+  ctx.restore();
+}
+
 function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, rect: BlurRect) {
   const x = Math.max(0, Math.min(source.width, rect.x));
   const y = Math.max(0, Math.min(source.height, rect.y));
   const w = Math.max(1, Math.min(source.width - x, rect.w));
   const h = Math.max(1, Math.min(source.height - y, rect.h));
-  const blur = Math.max(42, Math.round(Math.min(source.width, source.height) * 0.075));
+  const shortSide = Math.min(source.width, source.height);
+  const blur = Math.max(28, Math.round(shortSide * 0.052));
+  const radius = Math.max(10, Math.round(Math.min(w, h) * 0.18));
   const expand = blur * 2;
 
   const sx = Math.max(0, x - expand);
@@ -146,14 +184,21 @@ function drawBlurArea(ctx: CanvasRenderingContext2D, source: HTMLCanvasElement, 
   const sh = Math.min(source.height - sy, h + expand * 2);
 
   ctx.save();
-  ctx.beginPath();
-  ctx.rect(x, y, w, h);
+  roundedRectPath(ctx, x, y, w, h, radius);
   ctx.clip();
+
+  // Desfoque limpo: sem cinza, sem cor, só embaralhando a própria imagem.
   ctx.filter = `blur(${blur}px)`;
   ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
-  ctx.filter = `blur(${Math.round(blur * 0.55)}px)`;
+  ctx.filter = `blur(${Math.round(blur * 0.38)}px)`;
+  ctx.globalAlpha = 0.82;
   ctx.drawImage(source, sx, sy, sw, sh, sx, sy, sw, sh);
   ctx.filter = "none";
+  ctx.globalAlpha = 1;
+
+  // Granulação fina sem cor: mantém aparência natural e impede leitura de números.
+  addFineGrain(ctx, x, y, w, h);
+
   ctx.restore();
 }
 
@@ -252,13 +297,15 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
 
     const allRects = tempRect ? [...currentRects, tempRect] : currentRects;
     allRects.forEach((rect) => {
+      const radius = Math.max(8, Math.round(Math.min(rect.w, rect.h) * 0.16));
       ctx.save();
-      ctx.fillStyle = "rgba(34, 197, 94, 0.22)";
-      ctx.strokeStyle = "rgba(34, 197, 94, 0.98)";
+      roundedRectPath(ctx, rect.x, rect.y, rect.w, rect.h, radius);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
       ctx.lineWidth = 3;
       ctx.setLineDash([10, 6]);
-      ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.fill();
+      ctx.stroke();
       ctx.restore();
     });
   }
@@ -346,7 +393,7 @@ function BlurEditor({ target, onCancel, onApply }: { target: EditorTarget; onCan
       h: rect.h / scale,
     }));
 
-    setStatus("Aplicando desfoque profissional sem camada cinza...");
+    setStatus("Aplicando desfoque fino com granulação, sem cor...");
 
     try {
       const blurredFile = await applyBlurToFile(target.item.file, fullRects);
@@ -595,7 +642,7 @@ export function WatermarkPhotoUploader() {
     }
 
     setEditorTarget(null);
-    setStatus("Desfoque aplicado sem camada cinza. Confira a prévia antes de enviar o anúncio.");
+    setStatus("Desfoque aplicado com cantos arredondados, sem cor e com granulação fina. Confira a prévia antes de enviar.");
   }
 
   const allPreviews = [
