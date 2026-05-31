@@ -50,42 +50,7 @@ export function ShareAdButton({ title, text }: Props) {
       </button>
 
       <style>{`
-        .share-box {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 10px;
-          margin-top: 12px;
-        }
-
-        .share-main,
-        .share-whatsapp {
-          width: 100%;
-          min-height: 50px;
-          border-radius: 16px;
-          border: 1px solid rgba(255,255,255,.12);
-          cursor: pointer;
-          font-weight: 950;
-          font-size: 15px;
-        }
-
-        .share-main {
-          background: rgba(255,255,255,.08);
-          color: white;
-        }
-
-        .share-whatsapp {
-          background: rgba(34,197,94,.12);
-          color: #86efac;
-          border-color: rgba(34,197,94,.25);
-        }
-
-        @media (max-width: 640px) {
-          .share-main,
-          .share-whatsapp {
-            min-height: 52px;
-            font-size: 15px;
-          }
-        }
+        .share-box{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}.share-main,.share-whatsapp{width:100%;min-height:48px;border-radius:999px;cursor:pointer;font-weight:950;font-size:14px}.share-main{background:var(--surface-soft);color:var(--text);border:1px solid var(--border)}.share-whatsapp{background:var(--surface);color:#0c7a3a;border:1px solid rgba(37,211,102,.45)}@media(max-width:640px){.share-main,.share-whatsapp{min-height:52px}}
       `}</style>
     </div>
   );
