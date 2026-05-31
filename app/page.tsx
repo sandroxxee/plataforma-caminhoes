@@ -114,11 +114,11 @@ export default async function HomePage() {
 
       <section className="wrap hero-market">
         <div className="hero-copy">
-          <span>Estoque</span>
+          <span>Anúncios</span>
           <h1>Caminhões à venda</h1>
           <p>Veja fotos, valor, cidade e chame direto no WhatsApp.</p>
           <div className="hero-actions">
-            <Link className="btn primary" href="/anuncios">Ver estoque</Link>
+            <Link className="btn primary" href="/anuncios">Ver anúncios</Link>
             <Link className="btn ghost" href="/anunciar">Anunciar</Link>
           </div>
         </div>
@@ -144,7 +144,7 @@ export default async function HomePage() {
       <section className="wrap stock-head">
         <div>
           <span>Anúncios</span>
-          <h2>Disponíveis no estoque</h2>
+          <h2>Caminhões disponíveis</h2>
         </div>
         <Link href="/anuncios">Ver todos</Link>
       </section>
