@@ -28,7 +28,7 @@ export type HomeContent = {
 };
 
 export const defaultHomeContent: HomeContent = {
-  heroMini: "Caminhões reais • Dados claros • WhatsApp direto",
+  heroMini: "",
   heroTitle: "Encontre caminhões com informação clara e contato direto.",
   heroSubtitle:
     "Veja valor, cidade, configuração e chame no WhatsApp para confirmar disponibilidade, pedir fotos, vídeo e negociar.",
