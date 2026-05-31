@@ -14,20 +14,25 @@ function getInitialTheme(): Theme {
   return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
 }
 
+function applyTheme(theme: Theme) {
+  document.documentElement.dataset.theme = theme;
+  if (document.body) document.body.dataset.theme = theme;
+  window.localStorage.setItem("site-theme", theme);
+}
+
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
     const initialTheme = getInitialTheme();
     setTheme(initialTheme);
-    document.documentElement.dataset.theme = initialTheme;
+    applyTheme(initialTheme);
   }, []);
 
   function toggleTheme() {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
-    document.documentElement.dataset.theme = nextTheme;
-    window.localStorage.setItem("site-theme", nextTheme);
+    applyTheme(nextTheme);
   }
 
   return (
