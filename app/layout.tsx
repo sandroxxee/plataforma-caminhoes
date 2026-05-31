@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope } from "next/font/google";
 import Script from "next/script";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 import "./final-classificados.css";
 import "./visual-cards.css";
@@ -108,17 +109,22 @@ const themeScript = `
       ? savedTheme
       : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     document.documentElement.dataset.theme = theme;
+    if (document.body) document.body.dataset.theme = theme;
   } catch (error) {
     document.documentElement.dataset.theme = 'dark';
+    if (document.body) document.body.dataset.theme = 'dark';
   }
 `;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`} data-theme="dark">
-      <body>
+      <body data-theme="dark">
         <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeScript }} />
         {children}
+        <div className="global-theme-control" aria-label="Controle global de tema">
+          <ThemeToggle />
+        </div>
       </body>
     </html>
   );
