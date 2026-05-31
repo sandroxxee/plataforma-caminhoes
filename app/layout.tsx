@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import "./final-classificados.css";
 import "./visual-cards.css";
+import "./theme.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -99,10 +101,25 @@ export const viewport: Viewport = {
   themeColor: "#f3f4f6",
 };
 
+const themeScript = `
+  try {
+    var savedTheme = window.localStorage.getItem('site-theme');
+    var theme = savedTheme === 'light' || savedTheme === 'dark'
+      ? savedTheme
+      : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.dataset.theme = theme;
+  } catch (error) {
+    document.documentElement.dataset.theme = 'dark';
+  }
+`;
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`}>
-      <body>{children}</body>
+    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`} data-theme="dark">
+      <body>
+        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {children}
+      </body>
     </html>
   );
 }
