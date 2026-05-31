@@ -13,7 +13,6 @@ export function SiteFooter() {
           <Link href="/anuncios">Anúncios</Link>
           <Link href="/anunciar">Anunciar</Link>
           <Link href="/#sobre">Sobre</Link>
-          <Link href="/#contato">Contato</Link>
         </nav>
 
         <div className="security-note">
