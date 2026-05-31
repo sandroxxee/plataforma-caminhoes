@@ -12,7 +12,7 @@ export function SiteFooter() {
         <nav aria-label="Links do rodapé">
           <Link href="/anuncios">Anúncios</Link>
           <Link href="/anunciar">Anunciar</Link>
-          <Link href="/#sobre">Sobre</Link>
+          <Link href="/sobre">Sobre</Link>
         </nav>
 
         <div className="security-note">
@@ -24,72 +24,7 @@ export function SiteFooter() {
       </div>
 
       <style>{`
-        .site-footer {
-          width: min(1240px, calc(100vw - 32px));
-          margin: 36px auto 0;
-          padding: 28px 0 42px;
-          border-top: 1px solid rgba(255,255,255,.09);
-          color: #94a3b8;
-        }
-
-        .footer-inner {
-          display: grid;
-          grid-template-columns: 1.1fr .8fr 1.2fr;
-          gap: 22px;
-          align-items: start;
-        }
-
-        .site-footer strong {
-          color: #f8fafc;
-          display: block;
-          margin-bottom: 8px;
-          font-size: 16px;
-        }
-
-        .site-footer p,
-        .security-note span {
-          margin: 0;
-          color: #94a3b8;
-          font-size: 14px;
-          line-height: 1.55;
-        }
-
-        .site-footer nav {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .site-footer nav a {
-          color: #cbd5e1;
-          text-decoration: none;
-          font-weight: 900;
-          padding: 8px 10px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.055);
-          border: 1px solid rgba(255,255,255,.10);
-        }
-
-        .security-note {
-          padding: 16px;
-          border-radius: 16px;
-          background: rgba(34,197,94,.08);
-          border: 1px solid rgba(34,197,94,.20);
-        }
-
-        .security-note strong {
-          color: #86efac;
-        }
-
-        @media (max-width: 800px) {
-          .site-footer {
-            width: calc(100vw - 24px);
-          }
-
-          .footer-inner {
-            grid-template-columns: 1fr;
-          }
-        }
+        .site-footer{width:min(1240px,calc(100vw - 32px));margin:36px auto 0;padding:28px 0 42px;border-top:1px solid var(--site-line);color:var(--site-muted)}.footer-inner{display:grid;grid-template-columns:1.1fr .8fr 1.2fr;gap:22px;align-items:start}.site-footer strong{color:var(--site-text);display:block;margin-bottom:8px;font-size:16px}.site-footer p,.security-note span{margin:0;color:var(--site-muted);font-size:14px;line-height:1.55}.site-footer nav{display:flex;flex-wrap:wrap;gap:10px}.site-footer nav a{color:var(--site-text);text-decoration:none;font-weight:900;padding:8px 10px;border-radius:999px;background:var(--site-surface);border:1px solid var(--site-line)}.security-note{padding:16px;border-radius:18px;background:var(--site-green-soft);border:1px solid color-mix(in srgb,var(--site-green) 24%,transparent)}.security-note strong{color:var(--site-green)}@media(max-width:800px){.site-footer{width:calc(100vw - 24px)}.footer-inner{grid-template-columns:1fr}}
       `}</style>
     </footer>
   );
