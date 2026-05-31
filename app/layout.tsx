@@ -8,6 +8,7 @@ import "./final-classificados.css";
 import "./visual-cards.css";
 import "./theme.css";
 import "./theme-control.css";
+import "./photo-fit.css";
 
 const inter = Inter({
   subsets: ["latin"],
