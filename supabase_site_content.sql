@@ -54,7 +54,7 @@ insert into public.site_content (id, content)
 values (
   'home',
   '{
-    "heroMini": "Caminhões reais • Dados claros • WhatsApp direto",
+    "heroMini": "",
     "heroTitle": "Encontre caminhões com informação clara e contato direto.",
     "heroSubtitle": "Veja valor, cidade, configuração e chame no WhatsApp para confirmar disponibilidade, pedir fotos, vídeo e negociar.",
     "primaryButtonText": "Ver caminhões",
