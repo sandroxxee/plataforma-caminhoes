@@ -9,7 +9,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/anuncios", label: "Caminhões", helper: "Ver anúncios", icon: Truck },
   { href: "/anunciar", label: "Anunciar", helper: "Cadastrar veículo", icon: Search },
-  { href: "/#sobre", label: "Sobre", helper: "Como funciona", icon: Info },
+  { href: "/sobre", label: "Sobre", helper: "Como funciona", icon: Info },
   { href: "/#contato", label: "Contato", helper: "Atendimento", icon: MessageCircle },
 ];
 
