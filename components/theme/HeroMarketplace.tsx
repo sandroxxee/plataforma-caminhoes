@@ -14,10 +14,33 @@ export function HeroMarketplace() {
         </div>
       </div>
 
-      <div className="market-hero-panel">
-        <strong>Buscar no estoque</strong>
-        <p>Encontre por marca, modelo, cidade, ano ou carroceria.</p>
-        <SearchMarketplace compact />
+      <div className="market-hero-visual" aria-label="Visual marketplace de caminhões">
+        <div className="hero-3d-card hero-3d-main">
+          <div className="hero-3d-photo">
+            <span className="hero-truck-shape" />
+          </div>
+          <div className="hero-3d-lines">
+            <strong>Estoque atualizado</strong>
+            <span />
+            <span />
+          </div>
+        </div>
+
+        <div className="hero-3d-card hero-3d-float hero-3d-float-a">
+          <b>Fotos</b>
+          <span>Centralizadas</span>
+        </div>
+
+        <div className="hero-3d-card hero-3d-float hero-3d-float-b">
+          <b>WhatsApp</b>
+          <span>Contato direto</span>
+        </div>
+
+        <div className="market-hero-panel">
+          <strong>Buscar no estoque</strong>
+          <p>Encontre por marca, modelo, cidade, ano ou carroceria.</p>
+          <SearchMarketplace compact />
+        </div>
       </div>
     </section>
   );
