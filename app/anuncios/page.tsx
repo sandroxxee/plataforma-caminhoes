@@ -56,6 +56,68 @@ const IMPLEMENTOS = [
   "Plataforma",
 ];
 
+const TERMOS_IMPLEMENTO_REAL = [
+  "implemento",
+  "implementos",
+  "carreta",
+  "carretas",
+  "semirreboque",
+  "semi reboque",
+  "reboque",
+  "bitrem",
+  "rodotrem",
+  "dolly",
+  "randon",
+  "guerra",
+  "facchini",
+  "librelato",
+  "noma",
+  "pastre",
+  "prancha",
+  "plataforma",
+  "sider",
+  "graneleira",
+  "bau seco",
+  "bau frigorifico",
+  "tanque",
+  "silo graneleiro",
+];
+
+const TERMOS_CAMINHAO = [
+  "caminhao",
+  "caminhoes",
+  "cavalo",
+  "cavalo mecanico",
+  "toco",
+  "truck",
+  "bitruck",
+  "vw",
+  "volkswagen",
+  "volvo",
+  "scania",
+  "mercedes",
+  "mercedes benz",
+  "ford",
+  "iveco",
+  "daf",
+  "constellation",
+  "cargo",
+  "atego",
+  "actros",
+  "fh",
+  "vm",
+  "r440",
+  "p310",
+  "p340",
+  "p360",
+  "4x2",
+  "6x2",
+  "6x4",
+  "8x2",
+  "8x4",
+  "tracado",
+];
+
 function clean(value?: string) {
   return String(value || "").trim();
 }
@@ -140,6 +202,18 @@ function searchableText(truck: Truck) {
   ].filter(Boolean).join(" "));
 }
 
+function isImplementoReal(truck: Truck) {
+  const tituloModeloCarroceria = normalize([truck.titulo, truck.modelo, truck.carroceria].filter(Boolean).join(" "));
+  const marca = normalize(truck.marca);
+  const tracao = normalize(truck.tracao);
+  const textoCompleto = searchableText(truck);
+
+  const temTermoDeImplemento = containsAny(tituloModeloCarroceria, TERMOS_IMPLEMENTO_REAL) || containsAny(marca, ["randon", "guerra", "facchini", "librelato", "noma", "pastre"]);
+  const pareceCaminhao = containsAny(textoCompleto, TERMOS_CAMINHAO) || Boolean(tracao);
+
+  return temTermoDeImplemento && !pareceCaminhao;
+}
+
 function matchesPerfil(truck: Truck, perfil: string) {
   if (!perfil) return true;
   const text = searchableText(truck);
@@ -149,8 +223,8 @@ function matchesPerfil(truck: Truck, perfil: string) {
   if (perfilNormalizado === "toco") return containsAny(text, ["toco", "4x2"]);
   if (perfilNormalizado === "truck") return containsAny(text, ["truck", "6x2", "6x4"]);
   if (perfilNormalizado === "bitruck") return containsAny(text, ["bitruck", "bi truck", "8x2", "8x4"]);
-  if (perfilNormalizado === "cavalo mecanico") return containsAny(text, ["cavalo", "cavalo mecanico", "carreta", "quinta roda"]);
-  if (perfilNormalizado === "implementos") return containsAny(text, IMPLEMENTOS.concat(["implemento", "carroceria"]));
+  if (perfilNormalizado === "cavalo mecanico") return containsAny(text, ["cavalo", "cavalo mecanico", "quinta roda"]);
+  if (perfilNormalizado === "implementos") return isImplementoReal(truck);
 
   return text.includes(perfilNormalizado);
 }
@@ -211,7 +285,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     const marcaOk = !marcaFiltro || normalize(truck.marca).includes(marcaFiltro);
     const perfilOk = matchesPerfil(truck, perfil);
     const tracaoOk = matchesTracao(truck, tracao);
-    const implementoOk = !implementoFiltro || normalize(`${truck.carroceria || ""} ${truck.titulo || ""} ${truck.modelo || ""}`).includes(implementoFiltro);
+    const implementoOk = !implementoFiltro || (isImplementoReal(truck) && normalize(`${truck.carroceria || ""} ${truck.titulo || ""} ${truck.modelo || ""}`).includes(implementoFiltro));
     const buscaOk = !buscaFiltro || buscaFiltro.split(" ").every((word) => texto.includes(word));
     return marcaOk && perfilOk && tracaoOk && implementoOk && buscaOk;
   });
