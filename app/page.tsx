@@ -26,7 +26,7 @@ type Truck = {
 
 function formatMoney(value: number | null) {
   if (!value) return "Sob consulta";
-  return `R$ ${Math.round(value).toLocaleString("pt-BR")}`;
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
 function normalizeCity(city: string | null) {
@@ -112,39 +112,57 @@ export default async function HomePage() {
     <main className="market-home">
       <PublicHeader />
 
-      <section className="wrap hero-market">
-        <div className="hero-copy">
-          <span>Anúncios</span>
-          <h1>Caminhões à venda</h1>
-          <p>Veja fotos, valor, cidade e chame direto no WhatsApp.</p>
+      <section className="wrap home-hero">
+        <div className="hero-main-card">
+          <span className="pill">Marketplace de caminhões usados</span>
+          <h1>Caminhões à venda com visual de loja e contato direto.</h1>
+          <p>Veja anúncios organizados, fotos, cidade, configuração, valor e chame no WhatsApp para confirmar disponibilidade.</p>
           <div className="hero-actions">
             <Link className="btn primary" href="/anuncios">Ver anúncios</Link>
-            <Link className="btn ghost" href="/anunciar">Anunciar</Link>
+            <Link className="btn ghost" href="/anunciar">Anunciar caminhão</Link>
+          </div>
+          <div className="replace-box">
+            <div><strong>SUA MARCA AQUI</strong><span>Nome da loja ou vitrine digital.</span></div>
+            <div><strong>SEU CAMINHÃO AQUI</strong><span>Fotos reais do estoque.</span></div>
+            <div><strong>SEU NÚMERO AQUI</strong><span>WhatsApp do vendedor.</span></div>
           </div>
         </div>
 
         {featured ? (
-          <Link className="hero-photo" href={`/anuncios/${featured.id}`}>
-            {featuredImage ? <img src={featuredImage} alt={getTitle(featured)} /> : <b>Sem foto</b>}
-            <div>
+          <Link className="featured-card" href={`/anuncios/${featured.id}`}>
+            <div className="featured-photo">
+              <span>Destaque</span>
+              {featuredImage ? <img src={featuredImage} alt={getTitle(featured)} /> : <b>Sem foto</b>}
+            </div>
+            <div className="featured-info">
               <strong>{getCardTitle(featured)}</strong>
               <small>{featured.ano_modelo || featured.ano_fabricacao || "Ano"} • {featured.tracao || featured.carroceria || "Configuração"} • {getLocation(featured)}</small>
               <em>{formatMoney(featured.preco)}</em>
             </div>
           </Link>
-        ) : null}
+        ) : (
+          <div className="featured-card empty-featured"><strong>Os anúncios aprovados aparecerão aqui.</strong></div>
+        )}
       </section>
 
-      <section className="wrap market-shortcuts">
-        <Link href="/anuncios">Caminhões</Link>
-        <Link href="/anuncios?perfil=Implementos">Implementos</Link>
-        <Link href="/anunciar">Anunciar</Link>
+      <section className="wrap quick-market">
+        <Link href="/anuncios"><b>Anúncios</b><span>Ver estoque completo</span></Link>
+        <Link href="/anuncios?perfil=Implementos"><b>Implementos</b><span>Carretas e carrocerias</span></Link>
+        <Link href="/anunciar"><b>Anunciar</b><span>Enviar caminhão para análise</span></Link>
+        <Link href="/sobre"><b>Quem somos</b><span>Conheça a plataforma</span></Link>
       </section>
 
-      <section className="wrap stock-head">
+      <section className="wrap store-info">
+        <article><span>✓</span><strong>Informação clara</strong><p>Preço, cidade, ano e configuração no card.</p></article>
+        <article><span>✓</span><strong>Fotos centralizadas</strong><p>Imagem do caminhão com aparência limpa.</p></article>
+        <article><span>✓</span><strong>WhatsApp direto</strong><p>Menos formulário, mais conversa com comprador.</p></article>
+      </section>
+
+      <section className="wrap section-title-row">
         <div>
-          <span>Anúncios</span>
+          <span className="pill">Estoque</span>
           <h2>Caminhões disponíveis</h2>
+          <p>Exibição em cards estilo marketplace, usando os anúncios reais aprovados no Supabase.</p>
         </div>
         <Link href="/anuncios">Ver todos</Link>
       </section>
@@ -159,14 +177,15 @@ export default async function HomePage() {
           return (
             <article className="truck-card" key={truck.id}>
               <Link className="photo-box" href={`/anuncios/${truck.id}`}>
-                {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
+                <span>{truck.carroceria || truck.tracao || "Caminhão"}</span>
+                {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
               </Link>
               <div className="card-info">
+                <strong>{formatMoney(truck.preco)}</strong>
                 <Link className="title" href={`/anuncios/${truck.id}`}>{getCardTitle(truck)}</Link>
                 <p>{year} • {config} • {getLocation(truck)}</p>
-                <strong>{formatMoney(truck.preco)}</strong>
                 <div className="card-actions">
-                  <Link href={`/anuncios/${truck.id}`}>Detalhes</Link>
+                  <Link href={`/anuncios/${truck.id}`}>Ver detalhes</Link>
                   {truck.whatsapp ? <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer">WhatsApp</a> : null}
                 </div>
               </div>
@@ -180,7 +199,7 @@ export default async function HomePage() {
       <SiteFooter />
 
       <style>{`
-        .market-home{min-height:100vh;background:var(--site-bg,#06100b);color:var(--site-text,#eefaf3);padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero-market{display:grid;grid-template-columns:.85fr 1.15fr;gap:18px;margin-top:10px}.hero-copy,.hero-photo,.truck-card,.market-shortcuts a{border:1px solid var(--site-line,rgba(255,255,255,.12));background:var(--site-surface,rgba(11,23,17,.82));box-shadow:var(--site-shadow-soft,0 16px 48px rgba(0,0,0,.22));border-radius:24px}.hero-copy{padding:28px;display:flex;flex-direction:column;justify-content:center;min-height:300px}.hero-copy span,.stock-head span{color:var(--site-green,#22d37d);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.08em}.hero-copy h1{margin:10px 0 8px;font-size:clamp(38px,5vw,66px);line-height:.95;letter-spacing:-.06em}.hero-copy p{margin:0;color:var(--site-muted,#9fb4aa);font-size:17px;font-weight:760}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.hero-photo{overflow:hidden;text-decoration:none;color:var(--site-text);display:grid;grid-template-rows:minmax(260px,1fr) auto}.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center center;background:#07110c;display:block}.hero-photo b{display:grid;place-items:center;min-height:260px;color:var(--site-muted)}.hero-photo div{padding:16px}.hero-photo strong{display:block;font-size:24px;line-height:1.05}.hero-photo small{display:block;margin:7px 0;color:var(--site-muted);font-weight:800}.hero-photo em{font-style:normal;color:var(--site-green);font-size:24px;font-weight:950}.market-shortcuts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.market-shortcuts a{min-height:68px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--site-text);font-weight:950;font-size:18px}.stock-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:28px auto 14px}.stock-head h2{margin:8px 0 0;font-size:clamp(28px,3vw,42px);line-height:1;letter-spacing:-.045em}.stock-head a{min-height:42px;border-radius:999px;padding:0 16px;display:inline-flex;align-items:center;text-decoration:none;color:var(--site-text);background:var(--site-surface);border:1px solid var(--site-line);font-weight:900}.truck-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.truck-card{overflow:hidden}.photo-box{height:260px;background:#07110c;display:grid;place-items:center;text-decoration:none;color:var(--site-muted);overflow:hidden}.photo-box img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block}.card-info{padding:15px}.title{display:block;color:var(--site-text);text-decoration:none;font-size:19px;font-weight:950;line-height:1.15}.card-info p{margin:8px 0 10px;color:var(--site-muted);font-size:13px;font-weight:800}.card-info strong{display:block;color:var(--site-green);font-size:21px;margin-bottom:12px}.card-actions{display:grid;grid-template-columns:1fr auto;gap:10px}.card-actions a{min-height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 14px;text-decoration:none;font-size:12px;font-weight:950}.card-actions a:first-child{background:var(--site-surface-2,rgba(255,255,255,.06));color:var(--site-text);border:1px solid var(--site-line)}.card-actions a:last-child{background:#19c56f;color:#052e16}.empty{grid-column:1/-1;padding:28px;border-radius:20px;background:var(--site-surface);border:1px solid var(--site-line);text-align:center;color:var(--site-muted);font-weight:900}@media(max-width:980px){.hero-market,.truck-grid{grid-template-columns:1fr 1fr}.hero-copy{min-height:230px}.hero-photo{grid-column:1/-1}.photo-box{height:240px}}@media(max-width:640px){.wrap{width:min(100% - 22px,1240px)}.hero-market,.truck-grid,.market-shortcuts{grid-template-columns:1fr}.hero-copy{min-height:auto;padding:22px}.hero-actions .btn{width:100%;min-height:48px}.stock-head{align-items:flex-start;flex-direction:column}.stock-head a{width:100%;justify-content:center}.photo-box{height:225px}.hero-photo{grid-template-rows:240px auto}}
+        .market-home{min-height:100vh;background:var(--site-bg);color:var(--site-text);padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 28px));margin:0 auto}.home-hero{display:grid;grid-template-columns:1.06fr .94fr;gap:18px;padding-top:24px}.hero-main-card,.featured-card,.quick-market a,.store-info article,.truck-card{background:var(--site-surface);border:1px solid var(--site-line);border-radius:var(--site-radius-lg);box-shadow:var(--site-shadow-soft)}.hero-main-card{position:relative;overflow:hidden;min-height:410px;padding:clamp(24px,4vw,48px);background:linear-gradient(135deg,#fff 0%,#eef5ff 58%,#dcecff 100%)}html[data-theme="dark"] .hero-main-card{background:linear-gradient(135deg,var(--site-surface),#172033 58%,#1e3a5f)}.pill{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:var(--site-blue-soft);color:var(--site-blue);font-size:12px;font-weight:950;letter-spacing:.055em;text-transform:uppercase}.hero-main-card h1{max-width:760px;margin:16px 0 12px;font-size:clamp(38px,5.5vw,68px);line-height:.95;letter-spacing:-.065em}.hero-main-card p{max-width:630px;margin:0;color:var(--site-muted);font-size:18px;font-weight:720}.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.replace-box{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}.replace-box div{border:1px dashed color-mix(in srgb,var(--site-blue) 38%,var(--site-line));background:rgba(255,255,255,.64);border-radius:16px;padding:13px}html[data-theme="dark"] .replace-box div{background:rgba(255,255,255,.05)}.replace-box strong{display:block;color:var(--site-blue);font-size:14px}.replace-box span{display:block;color:var(--site-muted);font-size:12px;margin-top:3px}.featured-card{overflow:hidden;color:var(--site-text);text-decoration:none;display:grid;grid-template-rows:minmax(280px,1fr) auto}.featured-photo{position:relative;background:var(--site-surface-2);display:grid;place-items:center;overflow:hidden}.featured-photo span,.photo-box span{position:absolute;left:12px;top:12px;z-index:2;background:rgba(5,5,5,.78);color:#fff;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900}.featured-photo img,.photo-box img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block}.featured-photo b,.photo-box i{color:var(--site-muted);font-weight:900;font-style:normal}.featured-info{padding:15px}.featured-info strong{display:block;font-size:24px;line-height:1.05}.featured-info small{display:block;color:var(--site-muted);font-weight:800;margin:7px 0}.featured-info em{font-style:normal;color:var(--site-text);font-size:24px;font-weight:950}.empty-featured{display:grid;place-items:center;min-height:320px;padding:22px;color:var(--site-muted)}.quick-market{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.quick-market a{min-height:82px;padding:16px;text-decoration:none;display:grid;align-content:center;gap:3px}.quick-market b{font-size:18px}.quick-market span{color:var(--site-muted);font-size:13px;font-weight:750}.store-info{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.store-info article{padding:18px}.store-info span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--site-blue-soft);color:var(--site-blue);font-weight:950;margin-bottom:10px}.store-info strong{display:block;font-size:16px}.store-info p{margin:5px 0 0;color:var(--site-muted);font-size:14px}.section-title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-top:30px;margin-bottom:16px}.section-title-row h2{margin:10px 0 6px;font-size:clamp(28px,3vw,44px);line-height:1;letter-spacing:-.05em}.section-title-row p{margin:0;color:var(--site-muted);font-weight:720}.section-title-row>a{min-height:42px;border-radius:999px;padding:0 16px;background:var(--site-surface);border:1px solid var(--site-line);font-weight:900;color:var(--site-text)}.truck-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.truck-card{overflow:hidden;transition:.18s ease}.truck-card:hover{transform:translateY(-3px);box-shadow:var(--site-shadow)}.photo-box{position:relative;aspect-ratio:1/1;background:var(--site-surface-2);display:grid;place-items:center;overflow:hidden;text-decoration:none}.card-info{padding:12px}.card-info>strong{display:block;font-size:20px;line-height:1.1;margin-bottom:6px;color:var(--site-text)}.title{display:block;color:var(--site-text);font-size:16px;font-weight:950;line-height:1.15;text-decoration:none}.card-info p{margin:7px 0 12px;color:var(--site-muted);font-size:13px;font-weight:800}.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.card-actions a{min-height:39px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 10px;font-size:12px;font-weight:950;text-decoration:none}.card-actions a:first-child{background:var(--site-surface-2);border:1px solid var(--site-line);color:var(--site-text)}.card-actions a:last-child{background:var(--site-green);color:#fff}.empty{grid-column:1/-1;padding:28px;border-radius:20px;background:var(--site-surface);border:1px solid var(--site-line);text-align:center;color:var(--site-muted);font-weight:900}@media(max-width:1080px){.home-hero{grid-template-columns:1fr}.featured-card{grid-template-rows:320px auto}.truck-grid,.quick-market{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.wrap{width:min(100% - 22px,1240px)}.home-hero{padding-top:16px}.hero-main-card{min-height:auto;padding:22px;border-radius:22px}.hero-main-card h1{font-size:38px;letter-spacing:-.05em}.hero-main-card p{font-size:16px}.replace-box,.store-info,.truck-grid,.quick-market{grid-template-columns:1fr}.hero-actions .btn{width:100%;min-height:48px}.featured-card{grid-template-rows:240px auto}.section-title-row{align-items:flex-start;flex-direction:column}.section-title-row>a{width:100%;display:flex;align-items:center;justify-content:center}.card-actions{grid-template-columns:1fr}.card-actions a{width:100%}}
       `}</style>
     </main>
   );
