@@ -24,10 +24,6 @@ type Truck = {
   truck_images?: TruckImage[];
 };
 
-const PERFIS = ["3/4", "Toco", "Truck", "Bitruck", "Cavalo mecânico", "Implementos"];
-const TRACOES = ["Simples", "Traçado"];
-const IMPLEMENTOS = ["Graneleira", "Baú seco", "Baú frigorífico", "Sider", "Tanque", "Silo graneleiro", "Chassis", "Munck", "Cabine suplementar", "Comboio", "Betoneira", "Bomba lança", "Caçamba agrícola", "Caçamba meia-cana", "Caçamba basculante", "Prancha", "Plataforma"];
-
 function formatMoney(value: number | null) {
   if (!value) return "Sob consulta";
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
@@ -36,8 +32,13 @@ function formatMoney(value: number | null) {
 function getImage(truck: Truck) {
   const images = [...(truck.truck_images || [])]
     .filter((img) => img.image_url)
-    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-  return images.find((img) => img.principal)?.image_url || images[0]?.image_url || "";
+    .sort((a, b) => {
+      if (a.principal && !b.principal) return -1;
+      if (!a.principal && b.principal) return 1;
+      return (a.ordem || 0) - (b.ordem || 0);
+    });
+
+  return images[0]?.image_url || "";
 }
 
 function getTitle(truck: Truck) {
@@ -49,13 +50,11 @@ function getCardTitle(truck: Truck) {
   const ano = truck.ano_modelo || truck.ano_fabricacao;
   if (!ano) return title;
 
-  const cleanTitle = title
+  return title
     .replace(new RegExp(`\\s*[-–—]?\\s*ano\\s*${ano}\\b`, "i"), "")
     .replace(new RegExp(`\\s*[-–—]\\s*${ano}\\b`, "i"), "")
     .replace(/\s{2,}/g, " ")
-    .trim();
-
-  return cleanTitle || title;
+    .trim() || title;
 }
 
 function getWhatsappLink(truck: Truck) {
@@ -91,96 +90,122 @@ export default async function HomePage() {
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
-    .limit(8);
+    .limit(4);
 
   const trucks = (data || []) as Truck[];
   const heroImage = trucks[0] ? getImage(trucks[0]) : "";
 
   return (
-    <main className="home-page" id="topo">
+    <main className="home-page">
       <PublicHeader />
 
-      <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.76) 44%, rgba(2,6,8,.26)), linear-gradient(180deg, rgba(2,6,8,.12), rgba(2,6,8,.92)), url(${heroImage})` } : undefined}>
-        <div className="wrap hero-content">
-          <div className="hero-copy">
-            <span className="kicker">Compra e venda de caminhões</span>
-            <h1>Encontre ou anuncie caminhões com contato direto.</h1>
-            <p>Para quem compra, mais opções. Para quem vende, mais visibilidade e organização no anúncio.</p>
-            <div className="hero-actions">
-              <Link className="btn btn-primary" href="/anuncios">Ver caminhões</Link>
-              <Link className="btn btn-ghost" href="/anunciar">Anunciar caminhão</Link>
+      <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.82) 45%, rgba(2,6,8,.42)), linear-gradient(180deg, rgba(2,6,8,.16), rgba(2,6,8,.95)), url(${heroImage})` } : undefined}>
+        <div className="wrap heroGrid">
+          <div className="heroCopy">
+            <span className="kicker">Caminhões à venda no Brasil</span>
+            <h1>Mais visibilidade para quem vende. Mais opções para quem procura caminhões.</h1>
+            <p>Caminhões, implementos e carrocerias com dados claros, fotos organizadas e contato direto pelo WhatsApp.</p>
+
+            <div className="heroActions">
+              <Link className="btn primary" href="/anuncios">Ver caminhões</Link>
+              <Link className="btn ghost" href="/anunciar">Anunciar caminhão</Link>
             </div>
           </div>
 
-          <aside className="hero-card" aria-label="Mensagem para compradores e vendedores">
-            <strong>Negociação simples</strong>
-            <h2>Caminhões reais, dados claros e WhatsApp direto.</h2>
-            <p>Use os filtros para encontrar por caminhão, marca, modelo, tração ou implemento.</p>
+          <aside className="trustCard">
+            <strong>Negociação direta</strong>
+            <h2>Caminhões reais, anúncios revisados e contato rápido.</h2>
+            <p>A plataforma organiza os anúncios para facilitar a vida de quem compra e de quem vende.</p>
           </aside>
         </div>
       </section>
 
-      <form className="wrap filter-panel" action="/anuncios" aria-label="Filtros de caminhões">
-        <div className="filter-field"><label>Caminhão</label><input name="busca" placeholder="Modelo, cidade, ano..." /></div>
-        <div className="filter-field"><label>Marca</label><select name="marca" defaultValue=""><option value="">Todas</option><option>Mercedes-Benz</option><option>Scania</option><option>Volvo</option><option>Volkswagen</option><option>Ford</option><option>Iveco</option><option>DAF</option></select></div>
-        <div className="filter-field"><label>Modelo</label><select name="perfil" defaultValue=""><option value="">Todos</option>{PERFIS.map((option) => <option key={option}>{option}</option>)}</select></div>
-        <div className="filter-field"><label>Tração</label><select name="tracao" defaultValue=""><option value="">Todas</option>{TRACOES.map((option) => <option key={option}>{option}</option>)}</select></div>
-        <div className="filter-field"><label>Implemento</label><select name="implemento" defaultValue=""><option value="">Todos</option>{IMPLEMENTOS.map((option) => <option key={option}>{option}</option>)}</select></div>
-        <div className="filter-actions"><button type="submit">Buscar</button></div>
+      <form className="wrap quickSearch" action="/anuncios">
+        <label>
+          <span>Buscar caminhão</span>
+          <input name="busca" placeholder="Ex: Scania, Volvo VM, caçamba, bitruck, Xanxerê..." />
+        </label>
+        <button type="submit">Buscar no estoque</button>
       </form>
 
-      <section className="wrap section-title" id="caminhoes">
-        <h2><span>▱</span> Caminhões disponíveis <small className="pill">Ativos</small></h2>
-        <Link href="/anuncios" className="view-all">Ver todos</Link>
+      <section className="wrap sectionHead">
+        <div>
+          <span className="mini">Destaques recentes</span>
+          <h2>Alguns caminhões disponíveis</h2>
+        </div>
+        <Link href="/anuncios">Ver estoque completo</Link>
       </section>
 
-      <section className="wrap truck-grid">
+      <section className="wrap highlightGrid">
         {trucks.length > 0 ? trucks.map((truck) => {
           const title = getTitle(truck);
           const cardTitle = getCardTitle(truck);
           const image = getImage(truck);
 
           return (
-            <article className="truck-card" key={truck.id}>
-              <Link href={`/anuncios/${truck.id}`} className="truck-photo">
-                <span className="badge">{truck.carroceria || "Caminhão"}</span>
-                <span className="heart">♡</span>
+            <article className="card" key={truck.id}>
+              <Link href={`/anuncios/${truck.id}`} className="photo">
+                <span>{truck.carroceria || truck.tracao || "Caminhão"}</span>
                 {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
               </Link>
-              <div className="card-body">
-                <Link className="truck-title" href={`/anuncios/${truck.id}`}>{cardTitle}</Link>
-                <div className="meta"><span>▣ {truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span><span>⚙ {truck.tracao || "Tração"}</span><span>⌖ {truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span></div>
-                <strong className="price">{formatMoney(truck.preco)}</strong>
-                <small className="payment">À vista / negociação direta</small>
-                <div className="card-actions"><Link className="details" href={`/anuncios/${truck.id}`}>☘ Ver detalhes</Link>{truck.whatsapp && <a className="whats" href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" aria-label="Chamar no WhatsApp">☏</a>}</div>
+
+              <div className="cardBody">
+                <Link href={`/anuncios/${truck.id}`} className="cardTitle">{cardTitle}</Link>
+                <div className="meta">
+                  <b>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</b>
+                  <b>{truck.tracao || "Tração"}</b>
+                  <b>{truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</b>
+                </div>
+                <strong>{formatMoney(truck.preco)}</strong>
+                <div className="cardActions">
+                  <Link href={`/anuncios/${truck.id}`}>☘ Ver detalhes</Link>
+                  {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" aria-label="Chamar no WhatsApp">☏</a>}
+                </div>
               </div>
             </article>
           );
         }) : (
-          <div className="empty-state"><h3>Nenhum caminhão aprovado ainda.</h3><p>Assim que os anúncios forem aprovados, eles aparecem aqui automaticamente.</p></div>
+          <div className="empty">Os caminhões aprovados aparecerão aqui.</div>
         )}
       </section>
 
-      <section className="wrap trust-bar" aria-label="Diferenciais">
-        <div className="trust-item"><span className="trust-icon">▱</span><span><strong>Negociação direta</strong><small>Contato pelo WhatsApp</small></span></div>
-        <div className="trust-item"><span className="trust-icon">▤</span><span><strong>Dados organizados</strong><small>Foto, valor, cidade e detalhes</small></span></div>
-        <div className="trust-item"><span className="trust-icon">▰</span><span><strong>Publicados</strong><small>Somente anúncios aprovados</small></span></div>
-        <div className="trust-item"><span className="trust-icon">☘</span><span><strong>Atendimento rápido</strong><small>Compra e venda sem complicar</small></span></div>
+      <section className="wrap audienceGrid">
+        <div className="audienceCard">
+          <span className="mini">Para quem compra</span>
+          <h2>Encontre caminhões com informação clara.</h2>
+          <p>Veja fotos, valor, cidade, configuração e chame direto no WhatsApp para confirmar disponibilidade e negociar.</p>
+          <Link href="/anuncios">Procurar caminhões</Link>
+        </div>
+
+        <div className="audienceCard">
+          <span className="mini">Para quem vende</span>
+          <h2>Anuncie com mais organização e alcance.</h2>
+          <p>Cadastre dados, fotos, valor e contato. O anúncio passa por revisão antes de aparecer publicamente.</p>
+          <Link href="/anunciar">Quero anunciar</Link>
+        </div>
       </section>
 
-      <section className="wrap sell-section" id="anunciar">
-        <div><span className="kicker">Para vendedores</span><h2>Quer vender seu caminhão?</h2><p>Crie sua conta e comece o cadastro do anúncio. Depois você informa os dados, fotos, valor e contato pelo WhatsApp.</p><div className="hero-actions"><Link className="btn btn-primary" href="/anunciar">Quero anunciar meu caminhão</Link></div></div>
-        <div className="steps"><div className="step"><b>1</b> Dados e fotos</div><div className="step"><b>2</b> Revisão do anúncio</div><div className="step"><b>3</b> Publicação e contatos</div></div>
+      <section className="wrap steps">
+        <div className="step"><b>1</b><strong>Cadastre ou encontre</strong><span>Comprador busca no estoque. Vendedor cria o anúncio.</span></div>
+        <div className="step"><b>2</b><strong>Veja dados claros</strong><span>Fotos, valor, cidade, tração, tipo e descrição organizada.</span></div>
+        <div className="step"><b>3</b><strong>Negocie no WhatsApp</strong><span>Contato direto para tirar dúvidas, enviar vídeo e fechar negócio.</span></div>
       </section>
 
-      <section className="wrap about-section" id="sobre"><span className="kicker">Sobre a plataforma</span><h2>Uma vitrine simples para caminhões reais.</h2><p>Anúncios organizados, informações claras e contato direto para facilitar a negociação no ramo de caminhões.</p></section>
-
-      <section className="wrap contact-section" id="contato"><div><span className="kicker">Atendimento</span><h2>Precisa de ajuda para anunciar?</h2><p>Fale com nosso atendimento para tirar dúvidas sobre cadastro, fotos e publicação do anúncio.</p></div><a className="btn btn-primary" href="https://wa.me/5549999362681" target="_blank" rel="noreferrer">Chamar no WhatsApp</a></section>
+      <section className="wrap finalCta">
+        <div>
+          <span className="mini">Caminhões à venda</span>
+          <h2>Entre no estoque completo ou anuncie seu caminhão.</h2>
+        </div>
+        <div className="heroActions">
+          <Link className="btn primary" href="/anuncios">Ver caminhões</Link>
+          <Link className="btn ghost" href="/anunciar">Anunciar</Link>
+        </div>
+      </section>
 
       <SiteFooter />
 
       <style>{`
-        :global(html){scroll-behavior:smooth}.home-page{--green:#22c55e;color:#f8fafc;min-height:100vh;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero{position:relative;margin-top:-90px;min-height:500px;display:flex;align-items:end;overflow:hidden;background-size:cover;background-position:center top;border-bottom:1px solid rgba(255,255,255,.08)}.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 30%,rgba(34,197,94,.12),transparent 26%),linear-gradient(90deg,rgba(2,6,8,.72),rgba(2,6,8,.35) 62%,transparent)}.hero-content{position:relative;z-index:2;padding:160px 0 84px;display:grid;grid-template-columns:minmax(0,660px) minmax(300px,410px);justify-content:space-between;align-items:end;gap:42px}.hero-copy h1{margin:18px 0 14px;max-width:660px;font-size:clamp(38px,5vw,64px);line-height:1;letter-spacing:-.055em}.hero-copy p{margin:0;max-width:560px;color:#d7dee8;font-size:17px;line-height:1.55}.hero-card{justify-self:end;width:min(410px,100%);padding:22px;border-radius:20px;background:linear-gradient(180deg,rgba(8,14,16,.70),rgba(2,6,8,.54));border:1px solid rgba(34,197,94,.24);box-shadow:0 24px 70px rgba(0,0,0,.26);backdrop-filter:blur(14px)}.hero-card strong{display:inline-flex;margin-bottom:12px;min-height:28px;align-items:center;padding:0 10px;border-radius:999px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.26);color:#86efac;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.hero-card h2{margin:0 0 10px;color:white;font-size:clamp(22px,2.2vw,30px);line-height:1.05;letter-spacing:-.04em}.hero-card p{margin:0;color:#d7dee8;line-height:1.55;font-size:14px}.kicker{display:inline-flex;align-items:center;gap:9px;min-height:34px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.32);color:#bbf7d0;font-size:12px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 22px;border-radius:8px;border:1px solid rgba(255,255,255,.15);font-size:13px;font-weight:950;letter-spacing:.04em;text-transform:uppercase;text-decoration:none}.btn-primary{background:var(--green);color:#03220f;border-color:transparent}.btn-ghost{background:rgba(3,7,10,.58);color:#f8fafc}.filter-panel{position:relative;z-index:5;margin:-38px auto 34px;padding:14px;border-radius:16px;display:grid;grid-template-columns:minmax(160px,1.1fr) minmax(120px,.75fr) minmax(130px,.75fr) minmax(110px,.65fr) minmax(160px,1fr) auto;gap:10px;background:linear-gradient(180deg,rgba(14,20,22,.92),rgba(9,14,16,.86));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);backdrop-filter:blur(16px);overflow:hidden}.filter-field{min-height:68px;display:grid;align-content:center;gap:6px;padding:0 12px;border-right:1px solid rgba(255,255,255,.09);color:#f8fafc}.filter-field label{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.filter-field select,.filter-field input{width:100%;border:0;outline:0;background:transparent;color:#f8fafc;font-size:14px;font-weight:850;font-family:inherit}.filter-field select option{background:#0b1114;color:white}.filter-actions{display:grid;align-content:center}.filter-actions button{min-height:54px;border:0;border-radius:8px;background:var(--green);color:#042913;font-size:13px;font-weight:950;text-transform:uppercase;cursor:pointer;padding:0 18px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:22px auto 18px}.section-title h2{margin:0;display:flex;align-items:center;gap:12px;font-size:clamp(26px,3vw,36px);letter-spacing:-.035em}.section-title h2 span{color:var(--green)}.pill{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:0 13px;border-radius:999px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.28);color:#86efac;font-size:12px;font-weight:950}.view-all{min-height:44px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:white;padding:0 14px;display:inline-flex;align-items:center;text-decoration:none;font-weight:900}.truck-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px}.truck-card{min-width:0;overflow:hidden;border-radius:10px;background:linear-gradient(180deg,rgba(16,23,26,.94),rgba(8,13,15,.94));border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 45px rgba(0,0,0,.22);transition:transform .18s ease,border-color .18s ease}.truck-card:hover{transform:translateY(-4px);border-color:rgba(34,197,94,.34)}.truck-photo{position:relative;aspect-ratio:1.55/1;overflow:hidden;background:#111827;display:block;color:#94a3b8;text-decoration:none}.truck-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.96) contrast(1.04)}.truck-photo i{height:100%;display:grid;place-items:center;font-style:normal;font-weight:900}.badge{position:absolute;left:10px;top:10px;z-index:2;min-height:24px;padding:0 9px;border-radius:5px;background:rgba(34,197,94,.92);color:#052e16;font-size:10px;font-weight:950;text-transform:uppercase}.heart{position:absolute;right:10px;top:10px;z-index:2;width:31px;height:31px;border-radius:999px;display:grid;place-items:center;background:rgba(2,6,8,.42);border:1px solid rgba(255,255,255,.14);color:white}.card-body{padding:14px}.truck-title{display:block;min-height:42px;color:white;text-decoration:none;font-size:17px;line-height:1.18;font-weight:950;letter-spacing:-.02em}.meta{display:flex;flex-wrap:wrap;gap:9px 12px;margin:10px 0 12px;color:#cbd5e1;font-size:12px;font-weight:800}.price{display:block;margin-bottom:4px;color:var(--green);font-size:22px;font-weight:950;letter-spacing:-.02em}.payment{color:#aeb7c3;font-size:12px;font-weight:800}.card-actions{display:grid;grid-template-columns:1fr 44px;gap:10px;margin-top:13px}.details,.whats{min-height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-size:12px;font-weight:950;letter-spacing:.04em;text-transform:uppercase;text-decoration:none}.details{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);color:white}.whats{background:var(--green);color:#042913;font-size:20px}.trust-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:10px auto 38px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.trust-item{min-height:86px;display:flex;align-items:center;gap:14px;padding:16px 24px;border-right:1px solid rgba(255,255,255,.08)}.trust-item:last-child{border-right:0}.trust-icon{color:var(--green);font-size:27px}.trust-item strong{display:block;font-size:16px;margin-bottom:4px}.trust-item small{color:#cbd5e1;font-weight:750}.sell-section,.about-section,.contact-section{margin-bottom:34px;padding:clamp(22px,3.2vw,36px);border-radius:16px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(255,255,255,.045));border:1px solid rgba(34,197,94,.20);display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}.sell-section h2,.about-section h2,.contact-section h2{margin:8px 0 10px;font-size:clamp(28px,4vw,46px);line-height:1.02;letter-spacing:-.045em}.sell-section p,.about-section p,.contact-section p{margin:0;color:#d6dee8;line-height:1.56;font-size:17px}.about-section{grid-template-columns:1fr;text-align:center;justify-items:center}.about-section p{max-width:760px}.steps{display:grid;gap:10px}.step{min-height:55px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:rgba(2,6,8,.44);border:1px solid rgba(255,255,255,.10);color:#dbeafe;font-weight:850}.step b{width:31px;height:31px;border-radius:999px;background:var(--green);color:#042913;display:grid;place-items:center;flex:0 0 auto}.empty-state{grid-column:1/-1;padding:28px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}@media(max-width:1120px){.hero-content{grid-template-columns:1fr;padding-top:145px}.hero-card{justify-self:start}.filter-panel{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-field:nth-child(2n){border-right:0}.filter-actions{grid-column:1/-1}.truck-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.trust-bar{grid-template-columns:repeat(2,minmax(0,1fr))}.trust-item:nth-child(2n){border-right:0}.sell-section,.about-section,.contact-section{grid-template-columns:1fr}}@media(max-width:640px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:620px;background-position:center top}.hero-content{padding:240px 0 44px;gap:22px}.hero-copy h1{font-size:38px}.hero-copy p{font-size:15px}.hero-card{padding:18px;border-radius:18px}.hero-card h2{font-size:23px}.hero-actions{display:grid;grid-template-columns:1fr}.btn{width:100%}.filter-panel{margin-top:-22px;grid-template-columns:1fr}.filter-field{min-height:58px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.filter-actions{grid-column:auto}.filter-actions button{width:100%}.section-title{align-items:flex-start;flex-direction:column}.truck-grid{grid-template-columns:1fr}.truck-photo{aspect-ratio:1.35/1}.trust-bar{grid-template-columns:1fr}.trust-item{border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.trust-item:last-child{border-bottom:0}}
+        .home-page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero{position:relative;margin-top:-90px;min-height:560px;display:flex;align-items:end;background-size:cover;background-position:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08)}.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 32%,rgba(34,197,94,.16),transparent 28%)}.heroGrid{position:relative;z-index:2;padding:165px 0 96px;display:grid;grid-template-columns:minmax(0,760px) minmax(320px,420px);gap:36px;align-items:end}.kicker,.mini{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.30);color:#bbf7d0;font-size:12px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}.heroCopy h1{margin:18px 0 14px;max-width:760px;font-size:clamp(38px,5.2vw,72px);line-height:.98;letter-spacing:-.06em}.heroCopy p{margin:0;max-width:620px;color:#d7dee8;font-size:18px;line-height:1.55}.heroActions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{min-height:52px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border-radius:10px;border:1px solid rgba(255,255,255,.16);font-weight:950;text-decoration:none;text-transform:uppercase;font-size:13px;letter-spacing:.04em}.primary{background:var(--green);color:#03220f;border-color:transparent}.ghost{background:rgba(2,6,8,.55);color:white}.trustCard{padding:24px;border-radius:22px;background:linear-gradient(180deg,rgba(8,14,16,.72),rgba(2,6,8,.56));border:1px solid rgba(34,197,94,.24);box-shadow:0 24px 70px rgba(0,0,0,.28);backdrop-filter:blur(14px)}.trustCard strong{display:inline-flex;margin-bottom:12px;color:#86efac;font-size:12px;font-weight:950;text-transform:uppercase}.trustCard h2{margin:0 0 10px;font-size:clamp(24px,2.3vw,32px);line-height:1.04;letter-spacing:-.04em}.trustCard p{margin:0;color:#cbd5e1;line-height:1.55}.quickSearch{position:relative;z-index:5;margin:-38px auto 38px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(14,20,22,.95),rgba(9,14,16,.90));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);display:grid;grid-template-columns:1fr 190px;gap:12px}.quickSearch label{display:grid;gap:6px}.quickSearch span{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.quickSearch input{min-height:54px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);outline:0;color:white;padding:0 16px;font-size:15px;font-weight:850}.quickSearch button{border:0;border-radius:12px;background:var(--green);color:#042913;font-weight:950;cursor:pointer;text-transform:uppercase}.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:22px auto 18px}.sectionHead h2{margin:10px 0 0;font-size:clamp(28px,3vw,42px);letter-spacing:-.045em}.sectionHead a{min-height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:white;padding:0 14px;display:inline-flex;align-items:center;text-decoration:none;font-weight:900}.highlightGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:36px}.card{overflow:hidden;border-radius:14px;background:linear-gradient(180deg,rgba(16,23,26,.94),rgba(8,13,15,.94));border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 45px rgba(0,0,0,.22)}.photo{position:relative;aspect-ratio:1.45/1;display:block;overflow:hidden;background:#111827;color:#94a3b8;text-decoration:none}.photo img{width:100%;height:100%;object-fit:cover;display:block}.photo i{height:100%;display:grid;place-items:center;font-style:normal;font-weight:900}.photo span{position:absolute;left:10px;top:10px;z-index:2;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(34,197,94,.92);color:#052e16;font-size:10px;font-weight:950;text-transform:uppercase}.cardBody{padding:14px}.cardTitle{display:block;min-height:42px;color:white;text-decoration:none;font-size:17px;line-height:1.18;font-weight:950}.meta{display:grid;gap:6px;margin:10px 0 12px}.meta b{color:#cbd5e1;font-size:12px;font-weight:800}.cardBody strong{display:block;color:var(--green);font-size:24px;margin-bottom:12px}.cardActions{display:grid;grid-template-columns:1fr 52px;gap:8px}.cardActions a{min-height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:950}.cardActions a:first-child{background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.12)}.cardActions a:last-child{background:var(--green);color:#052e16;font-size:22px}.empty{grid-column:1/-1;padding:28px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.audienceGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}.audienceCard,.finalCta{padding:clamp(22px,3vw,34px);border-radius:18px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(255,255,255,.045));border:1px solid rgba(34,197,94,.20)}.audienceCard h2,.finalCta h2{margin:12px 0 10px;font-size:clamp(28px,3.6vw,44px);line-height:1.03;letter-spacing:-.045em}.audienceCard p{margin:0 0 18px;color:#d6dee8;line-height:1.6;font-size:17px}.audienceCard a{min-height:46px;padding:0 16px;border-radius:10px;background:var(--green);color:#052e16;text-decoration:none;font-weight:950;display:inline-flex;align-items:center}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.step{padding:20px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);display:grid;gap:8px}.step b{width:34px;height:34px;border-radius:999px;background:var(--green);color:#052e16;display:grid;place-items:center}.step strong{font-size:18px}.step span{color:#cbd5e1;line-height:1.5}.finalCta{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:34px}.finalCta .heroActions{margin-top:0}@media(max-width:1100px){.heroGrid{grid-template-columns:1fr}.trustCard{max-width:520px}.highlightGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.audienceGrid{grid-template-columns:1fr}.finalCta{display:block}.finalCta .heroActions{margin-top:18px}}@media(max-width:640px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:650px}.heroGrid{padding:240px 0 52px}.heroCopy h1{font-size:38px}.heroCopy p{font-size:15px}.heroActions{display:grid;grid-template-columns:1fr}.btn{width:100%}.quickSearch{grid-template-columns:1fr;margin-top:-26px}.quickSearch button{min-height:52px}.sectionHead{display:block}.sectionHead a{margin-top:14px}.highlightGrid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
       `}</style>
     </main>
   );
