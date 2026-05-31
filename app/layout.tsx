@@ -1,14 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope } from "next/font/google";
-import Script from "next/script";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
-import "./final-classificados.css";
-import "./visual-cards.css";
-import "./theme.css";
-import "./theme-control.css";
-import "./photo-fit.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,17 +42,14 @@ export const metadata: Metadata = {
   authors: [{ name: "Caminhões à Venda" }],
   creator: "Caminhões à Venda",
   publisher: "Caminhões à Venda",
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
     siteName: "Caminhões à Venda",
     title: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
-    description:
-      "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
+    description: "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
     images: [
       {
         url: ogImage,
@@ -72,8 +62,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
-    description:
-      "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
+    description: "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
     images: [ogImage],
   },
   icons: {
@@ -101,33 +90,13 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f3f4f6",
+  themeColor: "#f0f2f5",
 };
-
-const themeScript = `
-  try {
-    var savedTheme = window.localStorage.getItem('site-theme');
-    var theme = savedTheme === 'light' || savedTheme === 'dark'
-      ? savedTheme
-      : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    document.documentElement.dataset.theme = theme;
-    if (document.body) document.body.dataset.theme = theme;
-  } catch (error) {
-    document.documentElement.dataset.theme = 'dark';
-    if (document.body) document.body.dataset.theme = 'dark';
-  }
-`;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`} data-theme="dark">
-      <body data-theme="dark">
-        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {children}
-        <div className="global-theme-control" aria-label="Controle global de tema">
-          <ThemeToggle />
-        </div>
-      </body>
+    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }
