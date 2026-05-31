@@ -163,22 +163,6 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="wrap audienceGrid">
-        <div className="audienceCard">
-          <span className="mini">Para quem compra</span>
-          <h2>Encontre caminhões com informação clara.</h2>
-          <p>Veja fotos, valor, cidade, configuração e chame direto no WhatsApp para confirmar disponibilidade e negociar.</p>
-          <Link href="/anuncios">Procurar caminhões</Link>
-        </div>
-
-        <div className="audienceCard">
-          <span className="mini">Para quem vende</span>
-          <h2>Anuncie com mais organização e alcance.</h2>
-          <p>Cadastre dados, fotos, valor e contato. O anúncio passa por revisão antes de aparecer publicamente.</p>
-          <Link href="/anunciar">Quero anunciar</Link>
-        </div>
-      </section>
-
       <section className="wrap stepsTitle">
         <span className="mini">Processo simples</span>
         <h2>Como funciona</h2>
@@ -235,11 +219,6 @@ export default async function HomePage() {
         .cardActions a:first-child{background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.12)}
         .cardActions a:last-child{background:var(--green);color:#052e16;font-size:12px;padding:0 12px;text-transform:uppercase;letter-spacing:.03em}
         .empty{grid-column:1/-1;padding:28px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}
-        .audienceGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-        .audienceCard,.finalCta{padding:clamp(22px,3vw,34px);border-radius:18px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(255,255,255,.045));border:1px solid rgba(34,197,94,.20)}
-        .audienceCard h2,.finalCta h2{margin:12px 0 10px;font-size:clamp(28px,3.6vw,44px);line-height:1.03;letter-spacing:-.045em}
-        .audienceCard p{margin:0 0 18px;color:#d6dee8;line-height:1.6;font-size:17px}
-        .audienceCard a{min-height:46px;padding:0 16px;border-radius:10px;background:var(--green);color:#052e16;text-decoration:none;font-weight:950;display:inline-flex;align-items:center}
         .stepsTitle{margin:8px auto 14px}
         .stepsTitle h2{margin:10px 0 0;font-size:clamp(28px,3vw,42px);letter-spacing:-.045em}
         .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
@@ -247,9 +226,10 @@ export default async function HomePage() {
         .step b{width:34px;height:34px;border-radius:999px;background:var(--green);color:#052e16;display:grid;place-items:center}
         .step strong{font-size:18px}
         .step span{color:#cbd5e1;line-height:1.5}
-        .finalCta{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:34px}
+        .finalCta{padding:clamp(22px,3vw,34px);border-radius:18px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(255,255,255,.045));border:1px solid rgba(34,197,94,.20);display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:34px}
+        .finalCta h2{margin:12px 0 10px;font-size:clamp(28px,3.6vw,44px);line-height:1.03;letter-spacing:-.045em}
         .finalCta .heroActions{margin-top:0}
-        @media(max-width:1100px){.highlightGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.audienceGrid{grid-template-columns:1fr}.finalCta{display:block}.finalCta .heroActions{margin-top:18px}}
+        @media(max-width:1100px){.highlightGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.finalCta{display:block}.finalCta .heroActions{margin-top:18px}}
         @media(max-width:640px){.wrap{width:calc(100vw - 22px)}.heroActions{display:grid;grid-template-columns:1fr}.btn{width:100%}.quickSearch{grid-template-columns:1fr;margin:18px auto 28px}.quickSearch button{min-height:52px}.sectionHead{display:block}.sectionHead a{margin-top:14px}.highlightGrid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
       `}</style>
     </main>
