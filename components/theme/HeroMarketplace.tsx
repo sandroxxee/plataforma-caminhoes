@@ -6,11 +6,11 @@ export function HeroMarketplace() {
     <section className="market-container market-hero">
       <div className="market-hero-copy">
         <span>Anúncios verificados</span>
-        <h1>Caminhões à venda com fotos, detalhes e contato rápido</h1>
-        <p>Veja anúncios com informações claras, mais fotos, localização e negociação direta pelo WhatsApp.</p>
+        <h1>Caminhões e implementos com fotos, detalhes e WhatsApp direto</h1>
+        <p>Encontre oportunidades reais por marca, modelo, cidade, ano, carroceria ou tração. Tudo organizado para comparar rápido e chamar o anunciante.</p>
         <div className="market-hero-actions">
           <Link href="/anuncios">Ver caminhões</Link>
-          <Link href="/anunciar">Anunciar</Link>
+          <Link href="/anunciar">Anunciar caminhão</Link>
         </div>
       </div>
 
@@ -37,8 +37,8 @@ export function HeroMarketplace() {
         </div>
 
         <div className="market-hero-panel">
-          <strong>Buscar no estoque</strong>
-          <p>Encontre por marca, modelo, cidade, ano ou carroceria.</p>
+          <strong>Buscar caminhão</strong>
+          <p>Digite modelo, marca, cidade ou tipo de carroceria.</p>
           <SearchMarketplace compact />
         </div>
       </div>
