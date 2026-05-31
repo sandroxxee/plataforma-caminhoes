@@ -40,12 +40,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const truck = data as Truck;
   const title = truck.titulo || `${truck.marca || ""} ${truck.modelo || ""}`.trim() || "Caminhão";
   const whatsappLink = truck.whatsapp ? getWhatsappLink(truck, title) : "";
-  const orderedImages = [...(truck.truck_images || [])].sort((a, b) => {
-    if (a.principal && !b.principal) return -1;
-    if (!a.principal && b.principal) return 1;
-    return (a.ordem || 0) - (b.ordem || 0);
-  });
-  const principalImageUrl = orderedImages.find((image) => image.image_url)?.image_url || "";
   const shareText = `🚛 ${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${truck.cidade ? ` em ${truck.cidade}` : ""}.\n\n${truck.descricao?.trim() || "Caminhão anunciado com fotos e contato direto pelo WhatsApp."}`;
 
   return (
@@ -78,7 +72,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <div><span>Tração</span><b>{truck.tracao || "-"}</b></div>
           </div>
           {truck.whatsapp && <a href={whatsappLink} target="_blank" rel="noreferrer" className="whatsapp">Tenho interesse nesse caminhão</a>}
-          <ShareAdButton title={title} text={shareText} imageUrl={principalImageUrl} />
+          <ShareAdButton title={title} text={shareText} />
         </aside>
       </section>
 
