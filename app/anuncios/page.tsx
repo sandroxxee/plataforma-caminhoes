@@ -78,6 +78,20 @@ function formatMoney(value: number | null) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
+function normalizeCity(city: string | null) {
+  const value = (city || "").trim();
+  if (!value) return "Cidade";
+  const normalized = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if (normalized === "xanxere") return "Xanxerê";
+  if (normalized === "florianopolis") return "Florianópolis";
+  return value;
+}
+
+function getLocation(truck: Truck) {
+  const city = normalizeCity(truck.cidade);
+  return truck.estado ? `${city} - ${truck.estado}` : city;
+}
+
 function getImage(truck: Truck) {
   const images = [...(truck.truck_images || [])]
     .filter((img) => img.image_url)
@@ -92,6 +106,18 @@ function getImage(truck: Truck) {
 
 function getTitle(truck: Truck) {
   return truck.titulo || `${truck.marca || ""} ${truck.modelo || ""}`.trim() || "Caminhão anunciado";
+}
+
+function getCardTitle(truck: Truck) {
+  const title = getTitle(truck);
+  const ano = truck.ano_modelo || truck.ano_fabricacao;
+  if (!ano) return title;
+
+  return title
+    .replace(new RegExp(`\\s*[-–—]?\\s*ano\\s*${ano}\\b`, "i"), "")
+    .replace(new RegExp(`\\s*[-–—]\\s*${ano}\\b`, "i"), "")
+    .replace(/\s{2,}/g, " ")
+    .trim() || title;
 }
 
 function getWhatsappLink(truck: Truck) {
@@ -193,17 +219,22 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const temFiltro = Boolean(busca || marca || perfil || tracao || implemento);
 
   return (
-    <main className="page">
+    <main className="stock-page">
       <PublicHeader />
 
-      <section className="hero">
-        <div className="wrap heroContent">
-          <h1>Caminhões, implementos e carrocerias para <span>negociação.</span></h1>
-          <p>Filtro pensado para o mundo real dos caminhões: caminhão, marca, configuração, tração e implemento.</p>
+      <section className="wrap stock-hero">
+        <div>
+          <span className="mini">Estoque de caminhões</span>
+          <h1>Caminhões, implementos e carrocerias com informação clara.</h1>
+          <p>Use os filtros para encontrar por marca, configuração, tração, implemento ou cidade. Depois chame direto no WhatsApp para confirmar disponibilidade.</p>
         </div>
+        <aside>
+          <strong>{trucks.length}</strong>
+          <span>{temFiltro ? "resultado(s) encontrado(s)" : "anúncio(s) disponível(is)"}</span>
+        </aside>
       </section>
 
-      <form className="wrap filters" action="/anuncios">
+      <form className="wrap stock-filters" action="/anuncios">
         <div className="field searchField">
           <label>Caminhão</label>
           <input name="busca" defaultValue={busca} placeholder="Digite modelo, cidade, ano, carroceria..." />
@@ -213,18 +244,18 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           <label>Marca</label>
           <select name="marca" defaultValue={marca}>
             <option value="">Todas</option>
-            <option>Mercedes-Benz</option>
-            <option>Volkswagen</option>
-            <option>Volvo</option>
-            <option>Scania</option>
+            <option>DAF</option>
             <option>Ford</option>
             <option>Iveco</option>
-            <option>DAF</option>
+            <option>Mercedes-Benz</option>
+            <option>Scania</option>
+            <option>Volkswagen</option>
+            <option>Volvo</option>
           </select>
         </div>
 
         <div className="field">
-          <label>Modelo</label>
+          <label>Perfil</label>
           <select name="perfil" defaultValue={perfil}>
             <option value="">Todos</option>
             {PERFIS.map((option) => <option key={option}>{option}</option>)}
@@ -253,42 +284,45 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         </div>
       </form>
 
-      <section className="wrap titleRow">
-        <h2><span>▱</span> {temFiltro ? "Resultado da busca" : "Caminhões anunciados"}</h2>
+      <section className="wrap stock-title-row">
+        <div>
+          <span className="mini">{temFiltro ? "Resultado da busca" : "Disponíveis"}</span>
+          <h2>{temFiltro ? "Anúncios encontrados" : "Caminhões anunciados"}</h2>
+        </div>
+        <Link href="/anunciar">Anunciar caminhão</Link>
       </section>
 
-      <section className="wrap grid">
+      <section className="wrap stock-grid">
         {trucks.length > 0 ? trucks.map((truck) => {
           const title = getTitle(truck);
+          const cardTitle = getCardTitle(truck);
           const image = getImage(truck);
+          const year = truck.ano_modelo || truck.ano_fabricacao || "Ano";
+          const configuration = truck.tracao || truck.carroceria || "Configuração";
 
           return (
-            <article className="card" key={truck.id}>
-              <Link href={`/anuncios/${truck.id}`} className="photo">
-                <em>{truck.carroceria || truck.tracao || "Caminhão"}</em>
+            <article className="stock-card" key={truck.id}>
+              <Link href={`/anuncios/${truck.id}`} className="stock-photo">
+                <span>{truck.carroceria || truck.tracao || "Caminhão"}</span>
                 {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
               </Link>
 
-              <div className="body">
-                <Link href={`/anuncios/${truck.id}`} className="truckTitle">{title}</Link>
-                <div className="meta">
-                  <span>{truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span>
-                  <span>{truck.tracao || "Tração"}</span>
-                  <span>{truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span>
-                </div>
+              <div className="stock-card-body">
+                <Link href={`/anuncios/${truck.id}`} className="stock-card-title">{cardTitle}</Link>
+                <div className="stock-card-meta"><b>{year} • {configuration} • {getLocation(truck)}</b></div>
+                <p>{truck.marca || "Caminhão"}{truck.modelo ? ` ${truck.modelo}` : ""} com dados claros e contato direto pelo WhatsApp.</p>
                 <strong>{formatMoney(truck.preco)}</strong>
-                <small>Contato direto pelo WhatsApp</small>
-                <div className="actions">
-                  <Link href={`/anuncios/${truck.id}`}><span aria-hidden="true">☘</span> Ver detalhes</Link>
-                  {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" className="whatsappButton" aria-label="Chamar no WhatsApp">☏</a>}
+                <div className="stock-card-actions">
+                  <Link href={`/anuncios/${truck.id}`}>Ver detalhes →</Link>
+                  {truck.whatsapp && <a href={getWhatsappLink(truck)} target="_blank" rel="noreferrer" aria-label="Chamar no WhatsApp">WhatsApp</a>}
                 </div>
               </div>
             </article>
           );
         }) : (
-          <div className="empty">
+          <div className="empty-stock">
             <h3>Nenhum caminhão encontrado.</h3>
-            <p>Tente buscar por marca, modelo, tração, implemento ou uma palavra do anúncio.</p>
+            <p>Tente buscar por marca, modelo, tração, implemento, cidade ou uma palavra do anúncio.</p>
             <Link href="/anuncios">Limpar busca</Link>
           </div>
         )}
@@ -297,7 +331,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <SiteFooter />
 
       <style>{`
-        .page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.hero{margin-top:-90px;min-height:340px;display:flex;align-items:end;background:linear-gradient(90deg,rgba(2,6,8,.96),rgba(2,6,8,.72) 45%,rgba(2,6,8,.25));border-bottom:1px solid rgba(255,255,255,.08)}.heroContent{padding:145px 0 56px}h1{margin:18px 0 12px;font-size:clamp(36px,5vw,62px);line-height:1.02;letter-spacing:-.055em;max-width:860px}h1 span,.titleRow h2 span{color:var(--green)}.hero p{margin:0;max-width:720px;color:#d7dee8;font-size:17px;line-height:1.55}.filters{position:relative;z-index:5;margin:-34px auto 34px;padding:14px;border-radius:18px;display:grid;grid-template-columns:minmax(220px,1.35fr) minmax(130px,.65fr) minmax(150px,.75fr) minmax(120px,.58fr) minmax(180px,.95fr) auto;gap:10px;background:linear-gradient(180deg,rgba(14,20,22,.94),rgba(9,14,16,.9));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);backdrop-filter:blur(16px)}.field{display:grid;gap:6px}.field label{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}.field select,.field input{width:100%;min-height:52px;border-radius:12px;border:1px solid rgba(255,255,255,.12);outline:0;background:rgba(255,255,255,.06);color:#f8fafc;font-size:14px;font-weight:850;padding:0 13px;box-sizing:border-box}.field option{background:#0b1114;color:white}.filterActions{display:grid;gap:8px;align-content:end}.filterActions button{min-height:52px;border:0;border-radius:12px;background:var(--green);color:#042913;font-weight:950;cursor:pointer;padding:0 18px}.filterActions a{min-height:42px;padding:0 12px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;color:#fecaca;text-decoration:none;font-weight:950;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.18)}.titleRow{margin:22px auto 18px}.titleRow h2{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:clamp(26px,3vw,36px);letter-spacing:-.035em}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:28px}.card{overflow:hidden;border-radius:14px;background:linear-gradient(180deg,rgba(16,23,26,.94),rgba(8,13,15,.94));border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 45px rgba(0,0,0,.22)}.photo{position:relative;aspect-ratio:1.45/1;overflow:hidden;background:#111827;display:block;color:#94a3b8;text-decoration:none}.photo img{width:100%;height:100%;object-fit:cover;display:block}.photo i{height:100%;display:grid;place-items:center;font-style:normal;font-weight:900}.photo em{position:absolute;left:10px;top:10px;z-index:2;min-height:24px;padding:0 9px;border-radius:999px;background:rgba(34,197,94,.92);color:#052e16;font-size:10px;font-weight:950;text-transform:uppercase;font-style:normal}.body{padding:14px}.truckTitle{display:block;color:#f8fafc;text-decoration:none;font-size:17px;font-weight:950;line-height:1.22;margin-bottom:10px}.meta{display:grid;gap:6px;margin-bottom:12px}.meta span{color:#cbd5e1;font-size:13px;font-weight:800}.body strong{display:block;color:var(--green);font-size:22px;margin-bottom:3px}.body small{display:block;color:#94a3b8;font-weight:750;margin-bottom:12px}.actions{display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:8px}.actions a{min-height:42px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font-weight:950;white-space:nowrap;box-sizing:border-box}.actions a:first-child{min-width:0;padding:0 10px;background:rgba(255,255,255,.08);color:white;border:1px solid rgba(255,255,255,.12)}.actions a:first-child span{color:var(--green);font-size:16px}.whatsappButton{width:52px;padding:0!important;background:#22c55e!important;color:#052e16!important;border:1px solid rgba(34,197,94,.45)!important;font-size:22px;line-height:1;overflow:hidden}.empty{grid-column:1/-1;text-align:center;padding:44px 20px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}.empty h3{margin:0 0 8px;font-size:28px}.empty p{margin:0 0 18px;color:#cbd5e1}.empty a{min-height:46px;padding:0 18px;border-radius:12px;background:var(--green);color:#042913;text-decoration:none;font-weight:950;display:inline-flex;align-items:center}@media(max-width:1180px){.filters{grid-template-columns:1fr 1fr 1fr}.filterActions{grid-column:auto}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:760px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:430px}.heroContent{padding:230px 0 42px}h1{font-size:34px}.filters{grid-template-columns:1fr;margin-top:-28px}.filterActions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
+        .stock-page{min-height:100vh;color:var(--site-text);background:radial-gradient(circle at 82% -12%,color-mix(in srgb,var(--site-green) 18%,transparent),transparent 34%),radial-gradient(circle at 8% 4%,color-mix(in srgb,var(--site-gold) 10%,transparent),transparent 27%),linear-gradient(180deg,var(--site-bg),var(--site-bg-2));overflow-x:hidden;padding-bottom:30px}.wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}.mini{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:var(--site-green-soft);border:1px solid color-mix(in srgb,var(--site-green) 28%,transparent);color:var(--site-green);font-size:12px;font-weight:950;letter-spacing:.06em;text-transform:uppercase}.stock-hero{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:stretch;margin-top:10px;padding:30px;border-radius:30px;background:linear-gradient(115deg,var(--site-surface),color-mix(in srgb,var(--site-surface) 70%,transparent)),radial-gradient(circle at 82% 18%,color-mix(in srgb,var(--site-green) 22%,transparent),transparent 28%);border:1px solid var(--site-line);box-shadow:var(--site-shadow);overflow:hidden}.stock-hero h1{margin:14px 0 10px;max-width:840px;font-size:clamp(34px,4.4vw,58px);line-height:.98;letter-spacing:-.06em}.stock-hero p{margin:0;max-width:760px;color:var(--site-muted);font-size:16px;line-height:1.55;font-weight:720}.stock-hero aside{display:flex;flex-direction:column;justify-content:flex-end;padding:20px;border-radius:24px;background:var(--site-surface-2);border:1px solid var(--site-line)}.stock-hero aside strong{font-size:56px;line-height:.9;color:var(--site-green);letter-spacing:-.06em}.stock-hero aside span{margin-top:8px;color:var(--site-muted);font-weight:900}.stock-filters{position:relative;z-index:5;margin:16px auto 30px;padding:12px;border-radius:24px;display:grid;grid-template-columns:minmax(220px,1.35fr) minmax(130px,.65fr) minmax(150px,.75fr) minmax(120px,.58fr) minmax(180px,.95fr) auto;gap:10px;background:var(--site-surface);border:1px solid var(--site-line);box-shadow:var(--site-shadow-soft);backdrop-filter:blur(16px)}.field{display:grid;gap:7px}.field label{font-size:12px;color:var(--site-muted);font-weight:950;letter-spacing:.04em;text-transform:uppercase}.field input,.field select{width:100%;min-height:48px;border-radius:16px;border:1px solid var(--site-line);background:var(--site-surface-2);color:var(--site-text);outline:0;padding:0 13px;font-weight:800}.filterActions{display:grid;grid-template-rows:1fr 1fr;gap:8px;align-self:end}.filterActions button,.filterActions a{min-width:96px;min-height:40px;border-radius:999px;border:0;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:950}.filterActions button{background:linear-gradient(135deg,var(--site-green),var(--site-green-2));color:#052e16}.filterActions a{background:var(--site-surface-2);color:var(--site-text);border:1px solid var(--site-line)}.stock-title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:16px}.stock-title-row h2{margin:10px 0 0;font-size:clamp(28px,3vw,42px);line-height:1.05;letter-spacing:-.045em}.stock-title-row>a{min-height:44px;border-radius:999px;background:linear-gradient(135deg,var(--site-green),var(--site-green-2));color:#052e16;padding:0 16px;display:inline-flex;align-items:center;text-decoration:none;font-weight:950}.stock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.stock-card{overflow:hidden;border-radius:24px;background:var(--site-surface);border:1px solid var(--site-line);box-shadow:var(--site-shadow-soft);transition:.2s ease}.stock-card:hover{transform:translateY(-4px);box-shadow:var(--site-shadow)}.stock-photo{position:relative;aspect-ratio:1/.72;background:linear-gradient(145deg,#1b2a23,#070f0b);display:grid;place-items:center;overflow:hidden;color:var(--site-muted);text-decoration:none;font-weight:950}.stock-photo img{width:100%;height:100%;object-fit:cover;display:block}.stock-photo span{position:absolute;top:14px;left:14px;z-index:2;padding:7px 10px;border-radius:999px;background:rgba(34,211,125,.92);color:#052e16;font-size:11px;font-weight:950}.stock-photo i{font-style:normal}.stock-card-body{padding:16px}.stock-card-title{display:block;color:var(--site-text);font-size:19px;font-weight:950;line-height:1.15;text-decoration:none;letter-spacing:-.02em}.stock-card-meta{margin:8px 0 10px;color:var(--site-muted);font-size:13px}.stock-card-body p{margin:0 0 12px;color:var(--site-muted);font-size:14px;line-height:1.42;font-weight:680}.stock-card-body>strong{display:block;color:var(--site-green);font-size:20px;margin-bottom:12px}.stock-card-actions{display:grid;grid-template-columns:1fr auto;gap:10px}.stock-card-actions a{min-height:40px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;padding:0 12px;text-decoration:none;font-weight:950;font-size:12px}.stock-card-actions a:first-child{background:var(--site-surface-2);border:1px solid var(--site-line);color:var(--site-text)}.stock-card-actions a:last-child{background:#19c56f;color:#052e16}.empty-stock{grid-column:1/-1;padding:30px;border-radius:24px;background:var(--site-surface);border:1px solid var(--site-line);box-shadow:var(--site-shadow-soft);text-align:center}.empty-stock h3{margin:0 0 8px;font-size:24px}.empty-stock p{margin:0 auto 16px;max-width:560px;color:var(--site-muted)}.empty-stock a{min-height:44px;border-radius:999px;background:linear-gradient(135deg,var(--site-green),var(--site-green-2));color:#052e16;padding:0 16px;display:inline-flex;align-items:center;text-decoration:none;font-weight:950}@media(max-width:1080px){.stock-hero{grid-template-columns:1fr}.stock-filters{grid-template-columns:1fr 1fr}.filterActions{grid-template-columns:1fr 1fr;grid-template-rows:auto}.stock-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:640px){.wrap{width:min(100% - 22px,1240px)}.stock-hero{padding:22px;border-radius:24px}.stock-hero h1{font-size:34px;letter-spacing:-.045em}.stock-filters,.stock-grid,.stock-title-row{grid-template-columns:1fr}.stock-title-row{align-items:stretch;flex-direction:column}.stock-title-row>a{justify-content:center}.filterActions{grid-template-columns:1fr}.stock-card-actions{grid-template-columns:1fr}.stock-card-actions a{width:100%}}
       `}</style>
     </main>
   );
