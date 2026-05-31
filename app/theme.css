@@ -1,106 +1,238 @@
-html[data-theme="dark"] body {
+/*
+  Pacote 1 — Tema global premium
+  Objetivo: padronizar claro/escuro, fundos, cards, botões, inputs e áreas comuns
+  sem alterar rotas, Supabase, login, admin ou lógica dos anúncios.
+*/
+
+:root,
+html[data-theme="dark"] {
   color-scheme: dark;
-  background: #050b08 !important;
+  --site-bg: #050b08;
+  --site-bg-2: #08140f;
+  --site-surface: rgba(11, 23, 17, 0.88);
+  --site-surface-solid: #0b1711;
+  --site-surface-2: #10231a;
+  --site-text: #eefaf3;
+  --site-muted: #9fb2a9;
+  --site-line: rgba(255, 255, 255, 0.105);
+  --site-green: #22d37d;
+  --site-green-2: #10a763;
+  --site-green-soft: rgba(34, 211, 125, 0.14);
+  --site-gold: #f1c86c;
+  --site-red: #ef4444;
+  --site-radius: 24px;
+  --site-radius-sm: 16px;
+  --site-shadow: 0 28px 80px rgba(0, 0, 0, 0.36);
+  --site-shadow-soft: 0 16px 42px rgba(0, 0, 0, 0.26);
+  --site-header: rgba(5, 11, 8, 0.86);
 }
 
-html[data-theme="light"] body {
+html[data-theme="light"] {
   color-scheme: light;
-  background: #f4f7f5 !important;
+  --site-bg: #f4f7f5;
+  --site-bg-2: #eaf1ed;
+  --site-surface: rgba(255, 255, 255, 0.9);
+  --site-surface-solid: #ffffff;
+  --site-surface-2: #eef4f1;
+  --site-text: #102018;
+  --site-muted: #5d6f66;
+  --site-line: rgba(16, 32, 24, 0.12);
+  --site-green: #16b86e;
+  --site-green-2: #087f4d;
+  --site-green-soft: rgba(22, 184, 110, 0.13);
+  --site-gold: #d8aa55;
+  --site-red: #dc2626;
+  --site-radius: 24px;
+  --site-radius-sm: 16px;
+  --site-shadow: 0 20px 55px rgba(16, 32, 24, 0.12);
+  --site-shadow-soft: 0 12px 32px rgba(16, 32, 24, 0.08);
+  --site-header: rgba(244, 247, 245, 0.88);
 }
 
-html[data-theme="dark"] .home-page {
-  --home-bg: #050b08 !important;
-  --home-bg-2: #08140f !important;
-  --home-card: rgba(11,23,17,.86) !important;
-  --home-card-solid: #0b1711 !important;
-  --home-soft: #10231a !important;
-  --home-text: #eefaf3 !important;
-  --home-muted: #a9b8b0 !important;
-  --home-line: rgba(255,255,255,.105) !important;
-  --home-green: #22d37d !important;
-  --home-green-2: #10a763 !important;
-  --home-shadow: 0 28px 80px rgba(0,0,0,.36) !important;
+html[data-theme="dark"] body,
+html[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 82% -12%, color-mix(in srgb, var(--site-green) 18%, transparent), transparent 34%),
+    radial-gradient(circle at 8% 4%, color-mix(in srgb, var(--site-gold) 11%, transparent), transparent 27%),
+    linear-gradient(180deg, var(--site-bg), var(--site-bg-2)) !important;
+  color: var(--site-text);
 }
 
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(120deg, transparent 0 72%, color-mix(in srgb, var(--site-green) 13%, transparent) 73%, transparent 74%),
+    linear-gradient(color-mix(in srgb, var(--site-text) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--site-text) 5%, transparent) 1px, transparent 1px);
+  background-size: 180px 180px, 56px 56px, 56px 56px;
+}
+
+/* Sincroniza variáveis antigas com o novo tema sem obrigar refatoração das páginas. */
+html[data-theme="dark"],
+html[data-theme="light"] {
+  --bg: var(--site-bg);
+  --bg2: var(--site-bg-2);
+  --panel: var(--site-surface-solid);
+  --card: var(--site-surface);
+  --card2: var(--site-surface-2);
+  --line: var(--site-line);
+  --text: var(--site-text);
+  --muted: var(--site-muted);
+  --green: var(--site-green);
+  --green2: var(--site-green-2);
+  --red: var(--site-red);
+  --radius: var(--site-radius);
+  --shadow-soft: var(--site-shadow-soft);
+}
+
+/* Base visual reutilizável para páginas atuais e próximas páginas. */
+.container,
+.wrap {
+  width: min(1240px, calc(100vw - 32px));
+  margin-inline: auto;
+}
+
+.btn,
+button.btn,
+a.btn {
+  min-height: 46px;
+  border-radius: 999px;
+  font-weight: 950;
+  letter-spacing: 0.035em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover,
+a.btn:hover,
+button.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn.primary,
+.primary {
+  background: linear-gradient(135deg, var(--site-green), var(--site-green-2)) !important;
+  color: #03220f !important;
+  border-color: transparent !important;
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--site-green) 24%, transparent) !important;
+}
+
+.btn.ghost,
+.ghost,
+.btn.dark {
+  background: color-mix(in srgb, var(--site-surface-solid) 82%, transparent) !important;
+  color: var(--site-text) !important;
+  border-color: var(--site-line) !important;
+}
+
+.btn.whatsapp,
+.whatsapp {
+  background: #19c56f !important;
+  color: #042713 !important;
+  border-color: transparent !important;
+}
+
+.card,
+.stat,
+.page-head,
+.spec,
+.filters,
+.auth-card,
+.glass,
+.truck-card,
+.sell-copy,
+.sell-panel,
+.final-cta,
+.main-feature,
+.category-card,
+.benefit,
+.trust-strip {
+  background: var(--site-surface);
+  border-color: var(--site-line);
+  box-shadow: var(--site-shadow-soft);
+  color: var(--site-text);
+}
+
+.glass,
+.card,
+.auth-card,
+.page-head,
+.filters {
+  border-radius: var(--site-radius);
+  backdrop-filter: blur(16px);
+}
+
+input,
+select,
+textarea,
+.field input,
+.field select,
+.field textarea {
+  background: var(--site-surface-2) !important;
+  border: 1px solid var(--site-line) !important;
+  color: var(--site-text) !important;
+  border-radius: 14px;
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--site-muted) 82%, transparent);
+}
+
+.field label,
+.muted,
+.meta,
+.lead,
+.card-body p,
+.side-stack span,
+.benefits-grid span,
+.trust-strip span,
+.sell-copy p,
+.sell-panel p {
+  color: var(--site-muted) !important;
+}
+
+.badge,
+.badge.green,
+.mini,
+.eyebrow,
+.chip {
+  background: var(--site-green-soft) !important;
+  border-color: color-mix(in srgb, var(--site-green) 28%, transparent) !important;
+  color: var(--site-green) !important;
+}
+
+.price,
+.card-body strong,
+.feature-info strong,
+.green {
+  color: var(--site-green) !important;
+}
+
+/* Mantém a home visual atual responsiva ao tema global. */
+html[data-theme="dark"] .home-page,
 html[data-theme="light"] .home-page {
-  --home-bg: #f4f7f5 !important;
-  --home-bg-2: #eaf1ed !important;
-  --home-card: rgba(255,255,255,.88) !important;
-  --home-card-solid: #ffffff !important;
-  --home-soft: #eef4f1 !important;
-  --home-text: #102018 !important;
-  --home-muted: #5d6f66 !important;
-  --home-line: rgba(16,32,24,.12) !important;
-  --home-green: #16b86e !important;
-  --home-green-2: #087f4d !important;
-  --home-shadow: 0 20px 55px rgba(16,32,24,.12) !important;
-}
-
-html[data-theme="light"] .home-page,
-html[data-theme="light"] .home-page .category-card,
-html[data-theme="light"] .home-page .market-card,
-html[data-theme="light"] .home-page .card-title,
-html[data-theme="light"] .home-page .section-head h2,
-html[data-theme="light"] .home-page .feature-info h3,
-html[data-theme="light"] .home-page .benefits-grid strong,
-html[data-theme="light"] .home-page .trust-strip b,
-html[data-theme="light"] .home-page .sell-panel strong,
-html[data-theme="light"] .home-page .sell-copy h2,
-html[data-theme="light"] .home-page .final-cta h2 {
-  color: #102018 !important;
-}
-
-html[data-theme="light"] .home-page .market-card,
-html[data-theme="light"] .home-page .trust-row div,
-html[data-theme="light"] .home-page .side-stack div,
-html[data-theme="light"] .home-page .main-feature,
-html[data-theme="light"] .home-page .category-card,
-html[data-theme="light"] .home-page .truck-card,
-html[data-theme="light"] .home-page .benefits-grid div,
-html[data-theme="light"] .home-page .trust-strip,
-html[data-theme="light"] .home-page .sell-copy,
-html[data-theme="light"] .home-page .sell-panel,
-html[data-theme="light"] .home-page .final-cta {
-  background: rgba(255,255,255,.88) !important;
-  border-color: rgba(16,32,24,.12) !important;
-  box-shadow: 0 18px 48px rgba(16,32,24,.10) !important;
-}
-
-html[data-theme="light"] .home-page .hero-card {
-  background: linear-gradient(105deg, rgba(246,249,247,.96), rgba(246,249,247,.86) 48%, rgba(22,184,110,.18)) !important;
-  border-color: rgba(16,32,24,.12) !important;
-}
-
-html[data-theme="light"] .home-page .hero-content h1,
-html[data-theme="light"] .home-page .hero-content p {
-  color: #102018 !important;
-}
-
-html[data-theme="light"] .home-page .mini,
-html[data-theme="light"] .home-page .badge {
-  color: #087f4d !important;
-  background: rgba(22,184,110,.13) !important;
-  border-color: rgba(22,184,110,.24) !important;
-}
-
-html[data-theme="light"] .home-page .ghost,
-html[data-theme="light"] .home-page .section-head a,
-html[data-theme="light"] .home-page .card-actions a:first-child {
-  background: #ffffff !important;
-  color: #102018 !important;
-  border-color: rgba(16,32,24,.12) !important;
-}
-
-html[data-theme="light"] .home-page .market-card small,
-html[data-theme="light"] .home-page .card-meta b,
-html[data-theme="light"] .home-page .card-body p,
-html[data-theme="light"] .home-page .feature-info p,
-html[data-theme="light"] .home-page .side-stack span,
-html[data-theme="light"] .home-page .benefits-grid span,
-html[data-theme="light"] .home-page .trust-strip span,
-html[data-theme="light"] .home-page .sell-copy p,
-html[data-theme="light"] .home-page .sell-panel p {
-  color: #5d6f66 !important;
+  --home-bg: var(--site-bg) !important;
+  --home-bg-2: var(--site-bg-2) !important;
+  --home-card: var(--site-surface) !important;
+  --home-card-solid: var(--site-surface-solid) !important;
+  --home-soft: var(--site-surface-2) !important;
+  --home-text: var(--site-text) !important;
+  --home-muted: var(--site-muted) !important;
+  --home-line: var(--site-line) !important;
+  --home-green: var(--site-green) !important;
+  --home-green-2: var(--site-green-2) !important;
+  --home-shadow: var(--site-shadow) !important;
+  background:
+    radial-gradient(circle at 82% -12%, color-mix(in srgb, var(--site-green) 18%, transparent), transparent 34%),
+    radial-gradient(circle at 8% 4%, color-mix(in srgb, var(--site-gold) 10%, transparent), transparent 27%),
+    linear-gradient(180deg, var(--site-bg), var(--site-bg-2)) !important;
+  color: var(--site-text) !important;
 }
 
 html[data-theme="dark"] .home-page .market-card,
@@ -113,11 +245,33 @@ html[data-theme="dark"] .home-page .benefits-grid div,
 html[data-theme="dark"] .home-page .trust-strip,
 html[data-theme="dark"] .home-page .sell-copy,
 html[data-theme="dark"] .home-page .sell-panel,
-html[data-theme="dark"] .home-page .final-cta {
-  background: rgba(11,23,17,.86) !important;
-  border-color: rgba(255,255,255,.105) !important;
+html[data-theme="dark"] .home-page .final-cta,
+html[data-theme="light"] .home-page .market-card,
+html[data-theme="light"] .home-page .trust-row div,
+html[data-theme="light"] .home-page .side-stack div,
+html[data-theme="light"] .home-page .main-feature,
+html[data-theme="light"] .home-page .category-card,
+html[data-theme="light"] .home-page .truck-card,
+html[data-theme="light"] .home-page .benefits-grid div,
+html[data-theme="light"] .home-page .trust-strip,
+html[data-theme="light"] .home-page .sell-copy,
+html[data-theme="light"] .home-page .sell-panel,
+html[data-theme="light"] .home-page .final-cta {
+  background: var(--site-surface) !important;
+  border-color: var(--site-line) !important;
+  box-shadow: var(--site-shadow-soft) !important;
 }
 
+html[data-theme="light"] .home-page .hero-card {
+  background: linear-gradient(105deg, rgba(246, 249, 247, 0.96), rgba(246, 249, 247, 0.86) 48%, rgba(22, 184, 110, 0.18)) !important;
+  border-color: var(--site-line) !important;
+}
+
+html[data-theme="dark"] .home-page .hero-card {
+  border-color: var(--site-line) !important;
+}
+
+html[data-theme="dark"] .home-page,
 html[data-theme="dark"] .home-page .category-card,
 html[data-theme="dark"] .home-page .market-card,
 html[data-theme="dark"] .home-page .card-title,
@@ -127,6 +281,57 @@ html[data-theme="dark"] .home-page .benefits-grid strong,
 html[data-theme="dark"] .home-page .trust-strip b,
 html[data-theme="dark"] .home-page .sell-panel strong,
 html[data-theme="dark"] .home-page .sell-copy h2,
-html[data-theme="dark"] .home-page .final-cta h2 {
-  color: #eefaf3 !important;
+html[data-theme="dark"] .home-page .final-cta h2,
+html[data-theme="light"] .home-page,
+html[data-theme="light"] .home-page .category-card,
+html[data-theme="light"] .home-page .market-card,
+html[data-theme="light"] .home-page .card-title,
+html[data-theme="light"] .home-page .section-head h2,
+html[data-theme="light"] .home-page .feature-info h3,
+html[data-theme="light"] .home-page .benefits-grid strong,
+html[data-theme="light"] .home-page .trust-strip b,
+html[data-theme="light"] .home-page .sell-panel strong,
+html[data-theme="light"] .home-page .sell-copy h2,
+html[data-theme="light"] .home-page .final-cta h2 {
+  color: var(--site-text) !important;
+}
+
+html[data-theme="light"] .home-page .hero-content h1,
+html[data-theme="light"] .home-page .hero-content p {
+  color: var(--site-text) !important;
+}
+
+html[data-theme="light"] .home-page .ghost,
+html[data-theme="light"] .home-page .section-head a,
+html[data-theme="light"] .home-page .card-actions a:first-child {
+  background: var(--site-surface-solid) !important;
+  color: var(--site-text) !important;
+  border-color: var(--site-line) !important;
+}
+
+html[data-theme="light"] .home-page .market-card small,
+html[data-theme="light"] .home-page .card-meta b,
+html[data-theme="light"] .home-page .card-body p,
+html[data-theme="light"] .home-page .feature-info p,
+html[data-theme="light"] .home-page .side-stack span,
+html[data-theme="light"] .home-page .benefits-grid span,
+html[data-theme="light"] .home-page .trust-strip span,
+html[data-theme="light"] .home-page .sell-copy p,
+html[data-theme="light"] .home-page .sell-panel p {
+  color: var(--site-muted) !important;
+}
+
+/* Melhor leitura em celular sem alterar componentes. */
+@media (max-width: 760px) {
+  .container,
+  .wrap {
+    width: min(100% - 22px, 1240px);
+  }
+
+  .btn,
+  button.btn,
+  a.btn {
+    min-height: 46px;
+    padding-inline: 15px;
+  }
 }
