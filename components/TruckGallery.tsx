@@ -68,6 +68,9 @@ export function TruckGallery({ title, images }: Props) {
   );
 }
 
+const photoBackground =
+  "radial-gradient(circle at 50% 46%, rgba(34,197,94,.13), transparent 44%), linear-gradient(145deg, rgba(16,23,26,.98), rgba(5,11,8,.98))";
+
 const styles: Record<string, CSSProperties> = {
   gallery: {
     display: "grid",
@@ -77,14 +80,20 @@ const styles: Record<string, CSSProperties> = {
     height: 520,
     borderRadius: 28,
     overflow: "hidden",
-    background: "rgba(15,23,42,.72)",
+    background: photoBackground,
     border: "1px solid rgba(255,255,255,.10)",
+    display: "grid",
+    placeItems: "center",
   },
   mainImage: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
+    objectPosition: "center center",
     display: "block",
+    padding: 10,
+    boxSizing: "border-box",
+    background: photoBackground,
   },
   noImage: {
     height: "100%",
@@ -104,13 +113,17 @@ const styles: Record<string, CSSProperties> = {
     height: 110,
     borderRadius: 16,
     overflow: "hidden",
-    background: "rgba(15,23,42,.75)",
+    background: photoBackground,
     cursor: "pointer",
   },
   thumb: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
+    objectPosition: "center center",
     display: "block",
+    padding: 5,
+    boxSizing: "border-box",
+    background: photoBackground,
   },
 };
