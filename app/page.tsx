@@ -40,6 +40,20 @@ function getTitle(truck: Truck) {
   return truck.titulo || `${truck.marca || ""} ${truck.modelo || ""}`.trim() || "Caminhão anunciado";
 }
 
+function getCardTitle(truck: Truck) {
+  const title = getTitle(truck);
+  const ano = truck.ano_modelo || truck.ano_fabricacao;
+  if (!ano) return title;
+
+  const cleanTitle = title
+    .replace(new RegExp(`\\s*[-–—]?\\s*ano\\s*${ano}\\b`, "i"), "")
+    .replace(new RegExp(`\\s*[-–—]\\s*${ano}\\b`, "i"), "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  return cleanTitle || title;
+}
+
 function getWhatsappLink(truck: Truck) {
   const phone = (truck.whatsapp || "").replace(/\D/g, "");
   const text = encodeURIComponent(`Olá, tenho interesse no caminhão ${getTitle(truck)}.`);
@@ -119,6 +133,7 @@ export default async function HomePage() {
       <section className="wrap truck-grid">
         {trucks.length > 0 ? trucks.map((truck) => {
           const title = getTitle(truck);
+          const cardTitle = getCardTitle(truck);
           const image = getImage(truck);
 
           return (
@@ -129,7 +144,7 @@ export default async function HomePage() {
                 {image ? <img src={image} alt={title} /> : <i>Sem foto</i>}
               </Link>
               <div className="card-body">
-                <Link className="truck-title" href={`/anuncios/${truck.id}`}>{title}</Link>
+                <Link className="truck-title" href={`/anuncios/${truck.id}`}>{cardTitle}</Link>
                 <div className="meta"><span>▣ {truck.ano_modelo || truck.ano_fabricacao || "Ano"}</span><span>⚙ {truck.tracao || "Tração"}</span><span>⌖ {truck.cidade || "Cidade"}{truck.estado ? ` - ${truck.estado}` : ""}</span></div>
                 <strong className="price">{formatMoney(truck.preco)}</strong>
                 <small className="payment">À vista / negociação direta</small>
