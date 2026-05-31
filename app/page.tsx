@@ -109,32 +109,10 @@ export default async function HomePage() {
     .limit(4);
 
   const trucks = (data || []) as Truck[];
-  const heroImage = trucks[0] ? getImage(trucks[0]) : "";
 
   return (
     <main className="home-page">
       <PublicHeader />
-
-      <section className="hero" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.96), rgba(2,6,8,.82) 45%, rgba(2,6,8,.42)), linear-gradient(180deg, rgba(2,6,8,.16), rgba(2,6,8,.95)), url(${heroImage})` } : undefined}>
-        <div className="wrap heroGrid">
-          <div className="heroCopy">
-            <span className="kicker">Caminhões à venda no Brasil</span>
-            <h1>Mais visibilidade para quem vende. Mais opções para quem procura caminhões.</h1>
-            <p>Caminhões, implementos e carrocerias com dados claros, fotos organizadas e contato direto pelo WhatsApp.</p>
-
-            <div className="heroActions">
-              <Link className="btn primary" href="/anuncios">Ver caminhões</Link>
-              <Link className="btn ghost" href="/anunciar">Anunciar caminhão</Link>
-            </div>
-          </div>
-
-          <aside className="trustCard">
-            <strong>Negociação direta</strong>
-            <h2>Caminhões reais, anúncios revisados e contato rápido.</h2>
-            <p>A plataforma organiza os anúncios para facilitar a vida de quem compra e de quem vende.</p>
-          </aside>
-        </div>
-      </section>
 
       <form className="wrap quickSearch" action="/anuncios">
         <label>
@@ -226,28 +204,14 @@ export default async function HomePage() {
       <SiteFooter />
 
       <style>{`
-        .home-page{--green:#22c55e;--panel:rgba(9,15,17,.78);min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}
+        .home-page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}
         .wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}
-        .hero{position:relative;margin-top:-90px;min-height:560px;display:flex;align-items:end;background-size:cover;background-position:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08)}
-        .hero::before{content:"";position:absolute;inset:110px 24px 54px;border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.12);box-shadow:0 34px 90px rgba(0,0,0,.34);backdrop-filter:blur(6px);opacity:.88;pointer-events:none}
-        .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 32%,rgba(34,197,94,.20),transparent 25%),linear-gradient(120deg,rgba(34,197,94,.16),transparent 28%,rgba(255,255,255,.06) 43%,transparent 58%)}
-        .heroGrid{position:relative;z-index:2;padding:165px 0 86px;display:grid;grid-template-columns:minmax(0,760px) minmax(300px,390px);gap:22px;align-items:stretch}
-        .heroCopy{position:relative;padding:28px 30px 30px;border-radius:26px;background:linear-gradient(135deg,rgba(3,10,11,.76),rgba(3,10,11,.38));border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-        .heroCopy::before{content:"";position:absolute;left:0;top:24px;bottom:24px;width:4px;border-radius:999px;background:linear-gradient(180deg,var(--green),rgba(34,197,94,.18))}
         .kicker,.mini{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.30);color:#bbf7d0;font-size:12px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}
-        .heroCopy h1{margin:18px 0 14px;max-width:760px;font-size:clamp(38px,5.2vw,72px);line-height:.98;letter-spacing:-.06em;text-wrap:balance}
-        .heroCopy p{margin:0;max-width:620px;color:#d7dee8;font-size:18px;line-height:1.55}
         .heroActions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
         .btn{min-height:52px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border-radius:10px;border:1px solid rgba(255,255,255,.16);font-weight:950;text-decoration:none;text-transform:uppercase;font-size:13px;letter-spacing:.04em}
         .primary{background:var(--green);color:#03220f;border-color:transparent;box-shadow:0 12px 28px rgba(34,197,94,.22)}
         .ghost{background:rgba(2,6,8,.55);color:white}
-        .trustCard{position:relative;overflow:hidden;padding:24px;border-radius:26px;background:linear-gradient(180deg,rgba(8,14,16,.82),rgba(2,6,8,.64));border:1px solid rgba(34,197,94,.28);box-shadow:0 24px 70px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:flex-end;min-height:100%}
-        .trustCard::before{content:"";position:absolute;right:-40px;top:-45px;width:155px;height:155px;border-radius:999px;background:radial-gradient(circle,rgba(34,197,94,.34),transparent 62%)}
-        .trustCard::after{content:"✓";position:absolute;right:20px;top:18px;width:44px;height:44px;border-radius:16px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.28);display:grid;place-items:center;color:#86efac;font-weight:950;font-size:24px}
-        .trustCard strong{display:inline-flex;align-self:flex-start;margin-bottom:12px;color:#86efac;font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.08em}
-        .trustCard h2{margin:0 0 10px;font-size:clamp(24px,2.3vw,32px);line-height:1.04;letter-spacing:-.04em;text-wrap:balance}
-        .trustCard p{margin:0;color:#cbd5e1;line-height:1.55}
-        .quickSearch{position:relative;z-index:5;margin:-38px auto 38px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(14,20,22,.95),rgba(9,14,16,.90));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);display:grid;grid-template-columns:1fr 190px;gap:12px}
+        .quickSearch{position:relative;z-index:5;margin:24px auto 38px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(14,20,22,.95),rgba(9,14,16,.90));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);display:grid;grid-template-columns:1fr 190px;gap:12px}
         .quickSearch label{display:grid;gap:6px}
         .quickSearch span{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
         .quickSearch input{min-height:54px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);outline:0;color:white;padding:0 16px;font-size:15px;font-weight:850}
@@ -285,8 +249,8 @@ export default async function HomePage() {
         .step span{color:#cbd5e1;line-height:1.5}
         .finalCta{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:34px}
         .finalCta .heroActions{margin-top:0}
-        @media(max-width:1100px){.heroGrid{grid-template-columns:1fr}.trustCard{max-width:520px}.highlightGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.audienceGrid{grid-template-columns:1fr}.finalCta{display:block}.finalCta .heroActions{margin-top:18px}}
-        @media(max-width:640px){.wrap{width:calc(100vw - 22px)}.hero{margin-top:-152px;min-height:650px}.hero::before{inset:178px 10px 34px;border-radius:24px}.heroGrid{padding:240px 0 52px;gap:14px}.heroCopy{padding:22px 18px 20px;border-radius:22px}.heroCopy h1{font-size:38px}.heroCopy p{font-size:15px}.heroActions{display:grid;grid-template-columns:1fr}.btn{width:100%}.trustCard{padding:20px;border-radius:22px}.trustCard::after{right:14px;top:14px}.quickSearch{grid-template-columns:1fr;margin-top:-26px}.quickSearch button{min-height:52px}.sectionHead{display:block}.sectionHead a{margin-top:14px}.highlightGrid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
+        @media(max-width:1100px){.highlightGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.audienceGrid{grid-template-columns:1fr}.finalCta{display:block}.finalCta .heroActions{margin-top:18px}}
+        @media(max-width:640px){.wrap{width:calc(100vw - 22px)}.heroActions{display:grid;grid-template-columns:1fr}.btn{width:100%}.quickSearch{grid-template-columns:1fr;margin:18px auto 28px}.quickSearch button{min-height:52px}.sectionHead{display:block}.sectionHead a{margin-top:14px}.highlightGrid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
       `}</style>
     </main>
   );
