@@ -3,14 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Info, LogIn, Menu, MessageCircle, Search, Store, Truck, X } from "lucide-react";
+import { Info, LogIn, Menu, MessageCircle, Search, Store, Truck, X } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { href: "/anuncios", label: "Caminhões", icon: Store },
   { href: "/anuncios?perfil=Implementos", label: "Implementos", icon: Truck },
   { href: "/sobre", label: "Sobre", icon: Info },
-  { href: "/anunciar", label: "Anunciar", icon: ChevronRight },
   { href: "/login", label: "Entrar", icon: LogIn },
 ];
 
@@ -32,7 +31,6 @@ export function PublicHeader() {
           <span className="brand-mark"><Truck size={22} aria-hidden="true" /></span>
           <span className="brand-text">
             <Image src="/logo-horizontal-web.png" alt="Caminhões à Venda" width={230} height={84} priority />
-            <small>Marketplace de caminhões</small>
           </span>
         </Link>
 
