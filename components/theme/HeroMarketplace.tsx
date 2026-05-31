@@ -5,7 +5,7 @@ export function HeroMarketplace() {
     <section className="market-container market-hero compact-hero hero-single">
       <div className="market-hero-copy">
         <span>Anúncios verificados</span>
-        <h1>Caminhões à venda com fotos e WhatsApp direto</h1>
+        <h1>Encontre o caminhão certo para o seu trabalho</h1>
         <p>Consulte anúncios reais e negocie direto com o anunciante.</p>
 
         <div className="market-hero-actions">
