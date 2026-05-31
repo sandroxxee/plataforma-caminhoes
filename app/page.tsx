@@ -109,10 +109,23 @@ export default async function HomePage() {
     .limit(4);
 
   const trucks = (data || []) as Truck[];
+  const heroImage = trucks[0] ? getImage(trucks[0]) : "";
 
   return (
     <main className="home-page">
       <PublicHeader />
+
+      <section className="wrap visualBanner" style={heroImage ? { backgroundImage: `linear-gradient(90deg, rgba(2,6,8,.94), rgba(2,6,8,.74) 44%, rgba(2,6,8,.28)), linear-gradient(180deg, rgba(2,6,8,.04), rgba(2,6,8,.88)), url(${heroImage})` } : undefined}>
+        <div className="bannerContent">
+          <span className="mini">Caminhões à venda</span>
+          <h1>Anúncios recentes em um só lugar.</h1>
+          <p>Procure, compare e encontre oportunidades para compra ou venda de caminhões.</p>
+          <div className="heroActions">
+            <Link className="btn primary" href="/anuncios">Ver caminhões</Link>
+            <Link className="btn ghost" href="/anunciar">Anunciar</Link>
+          </div>
+        </div>
+      </section>
 
       <form className="wrap quickSearch" action="/anuncios">
         <label>
@@ -191,11 +204,17 @@ export default async function HomePage() {
         .home-page{--green:#22c55e;min-height:100vh;color:#f8fafc;background:radial-gradient(circle at 8% 5%,rgba(34,197,94,.17),transparent 28%),radial-gradient(circle at 82% 12%,rgba(34,197,94,.10),transparent 24%),linear-gradient(135deg,#020506 0%,#06110e 48%,#030608 100%);overflow-x:hidden;padding-bottom:30px}
         .wrap{width:min(1240px,calc(100vw - 32px));margin:0 auto}
         .kicker,.mini{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.30);color:#bbf7d0;font-size:12px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}
+        .visualBanner{position:relative;overflow:hidden;margin-top:18px;min-height:330px;border-radius:26px;background:linear-gradient(135deg,rgba(10,18,20,.96),rgba(4,8,10,.88));background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.13);box-shadow:0 28px 80px rgba(0,0,0,.34)}
+        .visualBanner::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 25%,rgba(34,197,94,.20),transparent 28%),linear-gradient(120deg,rgba(34,197,94,.13),transparent 35%,rgba(255,255,255,.06) 52%,transparent 70%);pointer-events:none}
+        .visualBanner::after{content:"";position:absolute;right:28px;bottom:24px;width:170px;height:170px;border-radius:999px;border:1px solid rgba(34,197,94,.18);box-shadow:inset 0 0 50px rgba(34,197,94,.13);pointer-events:none}
+        .bannerContent{position:relative;z-index:2;max-width:680px;padding:clamp(28px,5vw,54px)}
+        .bannerContent h1{margin:18px 0 12px;font-size:clamp(38px,5.4vw,70px);line-height:.98;letter-spacing:-.06em;text-wrap:balance}
+        .bannerContent p{margin:0;max-width:560px;color:#d7dee8;font-size:18px;line-height:1.55}
         .heroActions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
         .btn{min-height:52px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px;border-radius:10px;border:1px solid rgba(255,255,255,.16);font-weight:950;text-decoration:none;text-transform:uppercase;font-size:13px;letter-spacing:.04em}
         .primary{background:var(--green);color:#03220f;border-color:transparent;box-shadow:0 12px 28px rgba(34,197,94,.22)}
         .ghost{background:rgba(2,6,8,.55);color:white}
-        .quickSearch{position:relative;z-index:5;margin:24px auto 38px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(14,20,22,.95),rgba(9,14,16,.90));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);display:grid;grid-template-columns:1fr 190px;gap:12px}
+        .quickSearch{position:relative;z-index:5;margin:-24px auto 38px;padding:14px;border-radius:18px;background:linear-gradient(180deg,rgba(14,20,22,.95),rgba(9,14,16,.90));border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 54px rgba(0,0,0,.30);display:grid;grid-template-columns:1fr 190px;gap:12px}
         .quickSearch label{display:grid;gap:6px}
         .quickSearch span{color:#9ca3af;font-size:11px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
         .quickSearch input{min-height:54px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);outline:0;color:white;padding:0 16px;font-size:15px;font-weight:850}
@@ -230,7 +249,7 @@ export default async function HomePage() {
         .finalCta h2{margin:12px 0 10px;font-size:clamp(28px,3.6vw,44px);line-height:1.03;letter-spacing:-.045em}
         .finalCta .heroActions{margin-top:0}
         @media(max-width:1100px){.highlightGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.finalCta{display:block}.finalCta .heroActions{margin-top:18px}}
-        @media(max-width:640px){.wrap{width:calc(100vw - 22px)}.heroActions{display:grid;grid-template-columns:1fr}.btn{width:100%}.quickSearch{grid-template-columns:1fr;margin:18px auto 28px}.quickSearch button{min-height:52px}.sectionHead{display:block}.sectionHead a{margin-top:14px}.highlightGrid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
+        @media(max-width:640px){.wrap{width:calc(100vw - 22px)}.visualBanner{margin-top:10px;min-height:360px;border-radius:22px;background-position:center}.visualBanner::after{display:none}.bannerContent{padding:26px 18px}.bannerContent h1{font-size:40px}.bannerContent p{font-size:15px}.heroActions{display:grid;grid-template-columns:1fr}.btn{width:100%}.quickSearch{grid-template-columns:1fr;margin:-18px auto 28px}.quickSearch button{min-height:52px}.sectionHead{display:block}.sectionHead a{margin-top:14px}.highlightGrid{grid-template-columns:1fr}.photo{aspect-ratio:1.35/1}}
       `}</style>
     </main>
   );
