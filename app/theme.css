@@ -1,0 +1,132 @@
+html[data-theme="dark"] body {
+  color-scheme: dark;
+  background: #050b08 !important;
+}
+
+html[data-theme="light"] body {
+  color-scheme: light;
+  background: #f4f7f5 !important;
+}
+
+html[data-theme="dark"] .home-page {
+  --home-bg: #050b08 !important;
+  --home-bg-2: #08140f !important;
+  --home-card: rgba(11,23,17,.86) !important;
+  --home-card-solid: #0b1711 !important;
+  --home-soft: #10231a !important;
+  --home-text: #eefaf3 !important;
+  --home-muted: #a9b8b0 !important;
+  --home-line: rgba(255,255,255,.105) !important;
+  --home-green: #22d37d !important;
+  --home-green-2: #10a763 !important;
+  --home-shadow: 0 28px 80px rgba(0,0,0,.36) !important;
+}
+
+html[data-theme="light"] .home-page {
+  --home-bg: #f4f7f5 !important;
+  --home-bg-2: #eaf1ed !important;
+  --home-card: rgba(255,255,255,.88) !important;
+  --home-card-solid: #ffffff !important;
+  --home-soft: #eef4f1 !important;
+  --home-text: #102018 !important;
+  --home-muted: #5d6f66 !important;
+  --home-line: rgba(16,32,24,.12) !important;
+  --home-green: #16b86e !important;
+  --home-green-2: #087f4d !important;
+  --home-shadow: 0 20px 55px rgba(16,32,24,.12) !important;
+}
+
+html[data-theme="light"] .home-page,
+html[data-theme="light"] .home-page .category-card,
+html[data-theme="light"] .home-page .market-card,
+html[data-theme="light"] .home-page .card-title,
+html[data-theme="light"] .home-page .section-head h2,
+html[data-theme="light"] .home-page .feature-info h3,
+html[data-theme="light"] .home-page .benefits-grid strong,
+html[data-theme="light"] .home-page .trust-strip b,
+html[data-theme="light"] .home-page .sell-panel strong,
+html[data-theme="light"] .home-page .sell-copy h2,
+html[data-theme="light"] .home-page .final-cta h2 {
+  color: #102018 !important;
+}
+
+html[data-theme="light"] .home-page .market-card,
+html[data-theme="light"] .home-page .trust-row div,
+html[data-theme="light"] .home-page .side-stack div,
+html[data-theme="light"] .home-page .main-feature,
+html[data-theme="light"] .home-page .category-card,
+html[data-theme="light"] .home-page .truck-card,
+html[data-theme="light"] .home-page .benefits-grid div,
+html[data-theme="light"] .home-page .trust-strip,
+html[data-theme="light"] .home-page .sell-copy,
+html[data-theme="light"] .home-page .sell-panel,
+html[data-theme="light"] .home-page .final-cta {
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(16,32,24,.12) !important;
+  box-shadow: 0 18px 48px rgba(16,32,24,.10) !important;
+}
+
+html[data-theme="light"] .home-page .hero-card {
+  background: linear-gradient(105deg, rgba(246,249,247,.96), rgba(246,249,247,.86) 48%, rgba(22,184,110,.18)) !important;
+  border-color: rgba(16,32,24,.12) !important;
+}
+
+html[data-theme="light"] .home-page .hero-content h1,
+html[data-theme="light"] .home-page .hero-content p {
+  color: #102018 !important;
+}
+
+html[data-theme="light"] .home-page .mini,
+html[data-theme="light"] .home-page .badge {
+  color: #087f4d !important;
+  background: rgba(22,184,110,.13) !important;
+  border-color: rgba(22,184,110,.24) !important;
+}
+
+html[data-theme="light"] .home-page .ghost,
+html[data-theme="light"] .home-page .section-head a,
+html[data-theme="light"] .home-page .card-actions a:first-child {
+  background: #ffffff !important;
+  color: #102018 !important;
+  border-color: rgba(16,32,24,.12) !important;
+}
+
+html[data-theme="light"] .home-page .market-card small,
+html[data-theme="light"] .home-page .card-meta b,
+html[data-theme="light"] .home-page .card-body p,
+html[data-theme="light"] .home-page .feature-info p,
+html[data-theme="light"] .home-page .side-stack span,
+html[data-theme="light"] .home-page .benefits-grid span,
+html[data-theme="light"] .home-page .trust-strip span,
+html[data-theme="light"] .home-page .sell-copy p,
+html[data-theme="light"] .home-page .sell-panel p {
+  color: #5d6f66 !important;
+}
+
+html[data-theme="dark"] .home-page .market-card,
+html[data-theme="dark"] .home-page .trust-row div,
+html[data-theme="dark"] .home-page .side-stack div,
+html[data-theme="dark"] .home-page .main-feature,
+html[data-theme="dark"] .home-page .category-card,
+html[data-theme="dark"] .home-page .truck-card,
+html[data-theme="dark"] .home-page .benefits-grid div,
+html[data-theme="dark"] .home-page .trust-strip,
+html[data-theme="dark"] .home-page .sell-copy,
+html[data-theme="dark"] .home-page .sell-panel,
+html[data-theme="dark"] .home-page .final-cta {
+  background: rgba(11,23,17,.86) !important;
+  border-color: rgba(255,255,255,.105) !important;
+}
+
+html[data-theme="dark"] .home-page .category-card,
+html[data-theme="dark"] .home-page .market-card,
+html[data-theme="dark"] .home-page .card-title,
+html[data-theme="dark"] .home-page .section-head h2,
+html[data-theme="dark"] .home-page .feature-info h3,
+html[data-theme="dark"] .home-page .benefits-grid strong,
+html[data-theme="dark"] .home-page .trust-strip b,
+html[data-theme="dark"] .home-page .sell-panel strong,
+html[data-theme="dark"] .home-page .sell-copy h2,
+html[data-theme="dark"] .home-page .final-cta h2 {
+  color: #eefaf3 !important;
+}
