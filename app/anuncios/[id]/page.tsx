@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { notFound } from "next/navigation";
@@ -9,6 +10,9 @@ import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const siteUrl = "https://www.caminhoesavenda.com.br";
+const defaultOgImage = "/og-caminhoesavenda.png";
 
 type Truck = TruckCardData & {
   descricao: string | null;
@@ -28,11 +32,9 @@ function formatKm(value?: number | null) {
   return `${value.toLocaleString("pt-BR")} km`;
 }
 
-type PageProps = { params: Promise<{ id: string }> };
-
-export default async function AnuncioDetalhePage({ params }: PageProps) {
-  const { id } = await params;
+async function getApprovedTruck(id: string) {
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,truck_images(image_url,principal,ordem)`)
@@ -40,9 +42,75 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
     .eq("status", "aprovado")
     .single();
 
-  if (error || !data) notFound();
+  if (error || !data) return null;
+  return data as Truck;
+}
 
-  const truck = data as Truck;
+function getMainImage(truck: Truck) {
+  const images = truck.truck_images || [];
+  const main = images.find((image) => image.principal)?.image_url || images[0]?.image_url;
+  return main || defaultOgImage;
+}
+
+type PageProps = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const truck = await getApprovedTruck(id);
+
+  if (!truck) {
+    return {
+      title: "Anúncio não encontrado",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = getTitle(truck);
+  const location = getLocation(truck);
+  const price = formatMoney(truck.preco);
+  const description = `${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${location ? ` em ${location}` : ""}. ${price}. Veja fotos, detalhes e contato direto pelo WhatsApp.`;
+  const url = `${siteUrl}/anuncios/${truck.id}`;
+  const image = getMainImage(truck);
+
+  return {
+    title: `${title}${truck.ano_modelo ? ` ${truck.ano_modelo}` : ""} - ${price}`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      locale: "pt_BR",
+      url,
+      siteName: "Caminhões à Venda",
+      title: `${title} - ${price}`,
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} - ${price}`,
+      description,
+      images: [image],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+  };
+}
+
+export default async function AnuncioDetalhePage({ params }: PageProps) {
+  const { id } = await params;
+  const truck = await getApprovedTruck(id);
+
+  if (!truck) notFound();
+
   const title = getTitle(truck);
   const whatsappLink = getWhatsappLink(truck, title);
   const shareText = `🚛 ${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${truck.cidade ? ` em ${truck.cidade}` : ""}.\n\n${truck.descricao?.trim() || "Caminhão anunciado com fotos e contato direto pelo WhatsApp."}`;
