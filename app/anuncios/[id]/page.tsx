@@ -11,7 +11,7 @@ import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const siteUrl = "https://www.caminhoesavenda.com.br";
+const siteUrl = "https://www.caminhaoavenda.com";
 const defaultOgImage = "/og-caminhoesavenda.png";
 
 type Truck = TruckCardData & {
