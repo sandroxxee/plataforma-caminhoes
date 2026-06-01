@@ -43,7 +43,7 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
   return (
     <PanelLayout
       title="Editar anúncio"
-      subtitle="Ao editar como anunciante, o anúncio volta para pendente. Como admin, você pode manter aprovado."
+      subtitle="Revise as informações do caminhão e salve as alterações com segurança."
       badge="Edição"
       actions={<Link href={isAdmin ? "/admin/anuncios" : "/painel/anuncios"} style={styles.secondaryButton}>Voltar</Link>}
     >
@@ -117,7 +117,7 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
 
           <div style={{ ...styles.field, gridColumn: "1 / -1" }}>
             <label style={styles.label}>Descrição</label>
-            <textarea style={{ ...styles.input, minHeight: 130, resize: "vertical" }} name="descricao" defaultValue={truck.descricao || ""} />
+            <textarea style={{ ...styles.input, minHeight: 130, resize: "vertical", paddingTop: 13 }} name="descricao" defaultValue={truck.descricao || ""} />
           </div>
 
           <div style={{ ...styles.uploadBox, gridColumn: "1 / -1" }}>
@@ -148,17 +148,17 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
 }
 
 const styles: Record<string, CSSProperties> = {
-  formCard: { padding: 26, borderRadius: 24, background: "rgba(255,255,255,.07)", border: "1px solid rgba(255,255,255,.10)" },
+  formCard: { padding: 24, borderRadius: 22, background: "#ffffff", border: "1px solid #d8dee9", boxShadow: "0 8px 22px rgba(15,23,42,.05)" },
   formGrid: { display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 16 },
   field: { display: "grid", gap: 8 },
-  label: { color: "#cbd5e1", fontWeight: 800, fontSize: 13 },
-  input: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px solid rgba(255,255,255,.14)", background: "rgba(15,23,42,.78)", color: "white", outline: "none" },
-  fileInput: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px dashed rgba(34,197,94,.45)", background: "rgba(15,23,42,.78)", color: "#cbd5e1", outline: "none" },
-  uploadBox: { padding: 20, borderRadius: 20, background: "rgba(34,197,94,.08)", border: "1px solid rgba(34,197,94,.20)" },
-  uploadTitle: { color: "white", fontSize: 18 },
+  label: { color: "#334155", fontWeight: 900, fontSize: 13 },
+  input: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px solid #d8dee9", background: "#ffffff", color: "#111827", outline: "none", boxSizing: "border-box" },
+  fileInput: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px dashed #9fc3ff", background: "#f8fafc", color: "#334155", outline: "none", boxSizing: "border-box" },
+  uploadBox: { padding: 20, borderRadius: 18, background: "#f8fafc", border: "1px solid #d8dee9" },
+  uploadTitle: { color: "#111827", fontSize: 18 },
   photoGrid: { display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 16, marginTop: 16 },
-  footer: { marginTop: 22, paddingTop: 18, borderTop: "1px solid rgba(255,255,255,.10)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" },
-  helpText: { color: "#a7b5c7", margin: 0, lineHeight: 1.6 },
-  primaryButton: { border: 0, padding: "13px 18px", borderRadius: 14, background: "#22c55e", color: "#052e16", fontWeight: 900, cursor: "pointer" },
-  secondaryButton: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "11px 14px", borderRadius: 14, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.06)", color: "white", textDecoration: "none", fontWeight: 800 },
+  footer: { marginTop: 22, paddingTop: 18, borderTop: "1px solid #d8dee9", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" },
+  helpText: { color: "#64748b", margin: 0, lineHeight: 1.6 },
+  primaryButton: { border: 0, padding: "13px 18px", borderRadius: 14, background: "#1f64b5", color: "#ffffff", fontWeight: 900, cursor: "pointer" },
+  secondaryButton: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "11px 14px", borderRadius: 14, border: "1px solid #d8dee9", background: "#eef2f7", color: "#334155", textDecoration: "none", fontWeight: 900 },
 };
