@@ -201,32 +201,31 @@ export default async function NovoAnuncioPage() {
       </form>
 
       <style>{`
-        .secondary-button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06); color: white; text-decoration: none; font-weight: 900; }
+        .secondary-button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border-radius: 14px; border: 1px solid #d8dee9; background: #eef2f7; color: #334155; text-decoration: none; font-weight: 900; }
         .truck-form { display: grid; gap: 18px; }
-        .form-section, .preview-box, .form-footer { border-radius: 24px; background: radial-gradient(circle at 0 0, rgba(34,197,94,.10), transparent 34%), linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94)); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 22px 54px rgba(0,0,0,.20); }
-        .ai-section { background: radial-gradient(circle at 0 0, rgba(34,197,94,.18), transparent 36%), linear-gradient(180deg, rgba(16,23,26,.98), rgba(8,13,15,.96)); }
+        .form-section, .preview-box, .form-footer { border-radius: 24px; background: #ffffff; border: 1px solid #d8dee9; box-shadow: 0 8px 22px rgba(15,23,42,.05); }
+        .ai-section, .upload-section { background: #ffffff; }
         .form-section { padding: 24px; }
         .section-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 20px; }
-        .section-head span { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: #22c55e; color: #052e16; font-weight: 950; flex: 0 0 auto; box-shadow: 0 12px 30px rgba(34,197,94,.16); }
-        .section-head h2 { margin: 0 0 5px; font-size: 22px; line-height: 1.1; letter-spacing: -.035em; }
-        .section-head p { margin: 0; color: #94a3b8; line-height: 1.45; }
+        .section-head span { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: #eaf2ff; color: #164b8f; font-weight: 950; flex: 0 0 auto; }
+        .section-head h2 { margin: 0 0 5px; font-size: 22px; line-height: 1.1; letter-spacing: -.035em; color: #111827; }
+        .section-head p { margin: 0; color: #64748b; line-height: 1.45; }
         .ai-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 16px; align-items: end; }
         .form-grid { display: grid; gap: 16px; }
         .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .form-grid.two { grid-template-columns: .8fr 1.2fr; }
-        label { display: grid; gap: 8px; color: #dbeafe; font-size: 13px; font-weight: 900; }
-        label small { color: #94a3b8; line-height: 1.45; font-weight: 700; }
-        input, select, textarea { width: 100%; min-height: 50px; border-radius: 15px; border: 1px solid rgba(255,255,255,.14); background: rgba(2,6,23,.52); color: white; padding: 0 14px; outline: none; box-sizing: border-box; }
+        label { display: grid; gap: 8px; color: #334155; font-size: 13px; font-weight: 900; }
+        label small { color: #64748b; line-height: 1.45; font-weight: 700; }
+        input, select, textarea { width: 100%; min-height: 50px; border-radius: 15px; border: 1px solid #d8dee9; background: #ffffff; color: #111827; padding: 0 14px; outline: none; box-sizing: border-box; }
         textarea { min-height: 130px; resize: vertical; padding-top: 13px; line-height: 1.5; }
-        input:focus, select:focus, textarea:focus { border-color: rgba(34,197,94,.65); box-shadow: 0 0 0 4px rgba(34,197,94,.10); }
-        select option { background: #0b1114; color: white; }
+        input:focus, select:focus, textarea:focus { border-color: #9fc3ff; box-shadow: 0 0 0 4px rgba(31,100,181,.10); }
+        select option { background: #ffffff; color: #111827; }
         .wide { min-width: 0; }
-        .upload-section { background: radial-gradient(circle at 0 0, rgba(34,197,94,.16), transparent 34%), linear-gradient(180deg, rgba(16,23,26,.94), rgba(8,13,15,.94)); }
-        .preview-box { padding: 16px 18px; display: flex; gap: 10px; flex-wrap: wrap; color: #cbd5e1; }
-        .preview-box strong { color: #86efac; }
+        .preview-box { padding: 16px 18px; display: flex; gap: 10px; flex-wrap: wrap; color: #64748b; }
+        .preview-box strong { color: #164b8f; }
         .form-footer { padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .form-footer p { margin: 0; color: #cbd5e1; line-height: 1.55; }
-        .form-footer button { min-height: 52px; border: 0; padding: 0 20px; border-radius: 16px; background: #22c55e; color: #052e16; font-weight: 950; cursor: pointer; box-shadow: 0 14px 34px rgba(34,197,94,.18); }
+        .form-footer p { margin: 0; color: #64748b; line-height: 1.55; }
+        .form-footer button { min-height: 52px; border: 0; padding: 0 20px; border-radius: 16px; background: #1f64b5; color: #ffffff; font-weight: 950; cursor: pointer; }
         @media (max-width: 980px) { .form-grid.three, .form-grid.two, .ai-grid { grid-template-columns: 1fr; } }
         @media (max-width: 560px) { .form-section { padding: 18px; border-radius: 20px; } .section-head { display: grid; } .form-footer button, .secondary-button { width: 100%; } }
       `}</style>
