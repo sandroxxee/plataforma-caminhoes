@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
-  const siteUrl = "https://plataforma-caminhoes.vercel.app";
+const siteUrl = "https://www.caminhoesavenda.com.br";
 
+export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/anuncios", "/cadastro", "/login"],
-        disallow: ["/admin", "/painel", "/logout"],
+        allow: ["/", "/anuncios", "/anunciar", "/sobre", "/contato"],
+        disallow: ["/admin", "/painel", "/logout", "/api", "/teste-supabase"],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
