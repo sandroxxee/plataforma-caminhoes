@@ -5,19 +5,19 @@ import { useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
+const STORAGE_KEY = "site-theme";
+
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
-
-  const saved = window.localStorage.getItem("site-theme");
+  const saved = window.localStorage.getItem(STORAGE_KEY);
   if (saved === "light" || saved === "dark") return saved;
-
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return "dark";
 }
 
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
   if (document.body) document.body.dataset.theme = theme;
-  window.localStorage.setItem("site-theme", theme);
+  window.localStorage.setItem(STORAGE_KEY, theme);
 }
 
 export function ThemeToggle() {
