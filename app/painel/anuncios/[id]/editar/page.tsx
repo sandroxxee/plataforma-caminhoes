@@ -148,17 +148,17 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
 }
 
 const styles: Record<string, CSSProperties> = {
-  formCard: { padding: 24, borderRadius: 22, background: "#ffffff", border: "1px solid #d8dee9", boxShadow: "0 8px 22px rgba(15,23,42,.05)" },
+  formCard: { padding: 24, borderRadius: 22, background: "#1f2327", border: "1px solid #343a40", boxShadow: "0 16px 34px rgba(0,0,0,.18)" },
   formGrid: { display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 16 },
   field: { display: "grid", gap: 8 },
-  label: { color: "#334155", fontWeight: 900, fontSize: 13 },
-  input: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px solid #d8dee9", background: "#ffffff", color: "#111827", outline: "none", boxSizing: "border-box" },
-  fileInput: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px dashed #9fc3ff", background: "#f8fafc", color: "#334155", outline: "none", boxSizing: "border-box" },
-  uploadBox: { padding: 20, borderRadius: 18, background: "#f8fafc", border: "1px solid #d8dee9" },
-  uploadTitle: { color: "#111827", fontSize: 18 },
+  label: { color: "#cbd5df", fontWeight: 900, fontSize: 13 },
+  input: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px solid #343a40", background: "#15181b", color: "#e8eaed", outline: "none", boxSizing: "border-box" },
+  fileInput: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px dashed #22c55e", background: "#15181b", color: "#cbd5df", outline: "none", boxSizing: "border-box" },
+  uploadBox: { padding: 20, borderRadius: 18, background: "#181b1e", border: "1px solid #343a40" },
+  uploadTitle: { color: "#f4f4f5", fontSize: 18 },
   photoGrid: { display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: 16, marginTop: 16 },
-  footer: { marginTop: 22, paddingTop: 18, borderTop: "1px solid #d8dee9", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" },
-  helpText: { color: "#64748b", margin: 0, lineHeight: 1.6 },
-  primaryButton: { border: 0, padding: "13px 18px", borderRadius: 14, background: "#1f64b5", color: "#ffffff", fontWeight: 900, cursor: "pointer" },
-  secondaryButton: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "11px 14px", borderRadius: 14, border: "1px solid #d8dee9", background: "#eef2f7", color: "#334155", textDecoration: "none", fontWeight: 900 },
+  footer: { marginTop: 22, paddingTop: 18, borderTop: "1px solid #343a40", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" },
+  helpText: { color: "#a7afb7", margin: 0, lineHeight: 1.6 },
+  primaryButton: { border: 0, padding: "13px 18px", borderRadius: 14, background: "#22c55e", color: "#06140b", fontWeight: 900, cursor: "pointer" },
+  secondaryButton: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "11px 14px", borderRadius: 14, border: "1px solid #343a40", background: "#2a2f34", color: "#e8eaed", textDecoration: "none", fontWeight: 900 },
 };
