@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 
+const siteUrl = "https://www.caminhoesavenda.com.br";
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = "https://plataforma-caminhoes.vercel.app";
   const now = new Date();
 
   return [
@@ -15,19 +16,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${siteUrl}/anuncios`,
       lastModified: now,
       changeFrequency: "daily",
-      priority: 0.9,
+      priority: 0.95,
     },
     {
-      url: `${siteUrl}/cadastro`,
+      url: `${siteUrl}/anunciar`,
       lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
-      url: `${siteUrl}/login`,
+      url: `${siteUrl}/sobre`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.3,
+      priority: 0.6,
+    },
+    {
+      url: `${siteUrl}/contato`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
   ];
 }
