@@ -49,29 +49,29 @@ export default async function PainelPage() {
       <section style={styles.grid}>
         <Link href="/painel/anuncios" style={styles.card}>
           <span style={styles.icon}>🚛</span>
-          <strong>Meus anúncios</strong>
-          <p>Veja anúncios cadastrados, edite dados e acompanhe status.</p>
+          <strong style={styles.cardTitle}>Meus anúncios</strong>
+          <p style={styles.cardText}>Veja anúncios cadastrados, edite dados e acompanhe status.</p>
         </Link>
 
         <Link href="/painel/anuncios/novo" style={styles.card}>
           <span style={styles.icon}>➕</span>
-          <strong>Novo anúncio</strong>
-          <p>Cadastre um caminhão com fotos para aprovação.</p>
+          <strong style={styles.cardTitle}>Novo anúncio</strong>
+          <p style={styles.cardText}>Cadastre um caminhão com fotos para aprovação.</p>
         </Link>
 
         {isAdmin && (
           <Link href="/admin/pendentes" style={styles.cardAdmin}>
             <span style={styles.icon}>⚙️</span>
-            <strong>Admin pendentes</strong>
-            <p>Aprovar, reprovar, editar e excluir anúncios pendentes.</p>
+            <strong style={styles.cardTitle}>Admin pendentes</strong>
+            <p style={styles.cardText}>Aprovar, reprovar, editar e excluir anúncios pendentes.</p>
           </Link>
         )}
 
         {isAdmin && (
           <Link href="/admin/anuncios" style={styles.cardAdmin}>
             <span style={styles.icon}>📋</span>
-            <strong>Todos os anúncios</strong>
-            <p>Controle geral de todos os anúncios da plataforma.</p>
+            <strong style={styles.cardTitle}>Todos os anúncios</strong>
+            <p style={styles.cardText}>Controle geral de todos os anúncios da plataforma.</p>
           </Link>
         )}
       </section>
@@ -86,8 +86,8 @@ const styles: Record<string, CSSProperties> = {
     justifyContent: "center",
     padding: "12px 16px",
     borderRadius: 14,
-    background: "#22c55e",
-    color: "#052e16",
+    background: "#1f64b5",
+    color: "#ffffff",
     textDecoration: "none",
     fontWeight: 900,
   },
@@ -97,8 +97,8 @@ const styles: Record<string, CSSProperties> = {
     justifyContent: "center",
     padding: "12px 16px",
     borderRadius: 14,
-    background: "#eab308",
-    color: "#422006",
+    background: "#1f64b5",
+    color: "#ffffff",
     textDecoration: "none",
     fontWeight: 900,
   },
@@ -109,23 +109,42 @@ const styles: Record<string, CSSProperties> = {
   },
   card: {
     padding: 24,
-    borderRadius: 24,
-    background: "rgba(15,23,42,.72)",
-    border: "1px solid rgba(255,255,255,.10)",
-    color: "white",
+    borderRadius: 22,
+    background: "#ffffff",
+    border: "1px solid #d8dee9",
+    color: "#111827",
     textDecoration: "none",
+    boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
   },
   cardAdmin: {
     padding: 24,
-    borderRadius: 24,
-    background: "rgba(234,179,8,.10)",
-    border: "1px solid rgba(234,179,8,.25)",
-    color: "white",
+    borderRadius: 22,
+    background: "#ffffff",
+    border: "1px solid #b8d4ff",
+    color: "#111827",
     textDecoration: "none",
+    boxShadow: "0 8px 22px rgba(15, 23, 42, .05)",
   },
   icon: {
+    width: 48,
+    height: 48,
+    display: "grid",
+    placeItems: "center",
+    fontSize: 26,
+    marginBottom: 14,
+    borderRadius: 16,
+    background: "#eaf2ff",
+  },
+  cardTitle: {
     display: "block",
-    fontSize: 34,
-    marginBottom: 12,
+    fontSize: 19,
+    color: "#111827",
+    marginBottom: 8,
+  },
+  cardText: {
+    margin: 0,
+    color: "#64748b",
+    lineHeight: 1.55,
+    fontWeight: 700,
   },
 };
