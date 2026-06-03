@@ -22,7 +22,7 @@ const oswald = Oswald({
   display: "swap",
 });
 
-const siteUrl = "https://www.caminhaoavenda.com";
+const siteUrl = "https://caminhoesavenda.com";
 const ogImage = "/og-caminhoesavenda.png";
 
 export const metadata: Metadata = {
