@@ -366,3 +366,64 @@ h1, h2, h3, strong, button, .public-menu a { font-family: var(--font-manrope), v
   .ad-gallery-main { min-height: 280px; aspect-ratio: 1 / 1; }
   .ad-gallery-thumbs { grid-template-columns: repeat(4, 1fr); }
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --surface: #172033;
+    --soft: #202b40;
+    --text: #f8fafc;
+    --muted: #b6c2d1;
+    --blue: #60a5fa;
+    --blue2: #3b82f6;
+    --blueSoft: rgba(96, 165, 250, .16);
+    --line: rgba(148, 163, 184, .28);
+    --shadow: 0 10px 28px rgba(0, 0, 0, .24);
+    --shadow2: 0 16px 40px rgba(0, 0, 0, .34);
+  }
+
+  html,
+  body,
+  .market-page {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .public-header,
+  .public-menu {
+    background: #111827;
+  }
+
+  .search-top:focus-within {
+    background: var(--surface);
+  }
+
+  .market-hero-actions a:first-child,
+  .market-filter-actions button,
+  .market-section-head a,
+  .stock-head a,
+  .trust-btn.primary,
+  .trust-cta > a,
+  .trust-grid article > a,
+  .contact-button {
+    color: #07111f;
+  }
+
+  .truck-card-whatsapp,
+  .detail-whatsapp {
+    color: #052e16;
+  }
+
+  .truck-card-photo,
+  .truck-card-photo img,
+  .ad-gallery-main,
+  .ad-gallery-main img,
+  .ad-gallery-thumbs button,
+  .hero-3d-photo {
+    background: #e5e7eb;
+  }
+
+  .menu-backdrop {
+    background: rgba(2, 6, 23, .68);
+  }
+}
