@@ -82,6 +82,22 @@ h3,
   letter-spacing: 0.055em;
 }
 
+/* Ajuste visual dos cards de anúncios.
+   Mantém a foto inteira visível, sem corte agressivo, mas troca a moldura quadrada por retangular 4:3. */
+.truck-card-photo {
+  aspect-ratio: 4 / 3;
+}
+
+.truck-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  padding: 0;
+  background: var(--soft);
+}
+
 @media (max-width: 680px) {
   h1,
   h2,
