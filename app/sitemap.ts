@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { gerarSlugComId } from "@/lib/slug";
 
 const siteUrl = "https://caminhoesavenda.com";
 
@@ -41,8 +42,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const { data: trucks, error } = await supabase
     .from("trucks")
-    .select("id")
+    .select("id,marca,modelo,ano_modelo,ano_fabricacao,cidade,estado,updated_at,created_at")
     .eq("status", "aprovado")
+    .eq("vendido", false)
     .limit(5000);
 
   if (error || !trucks) {
@@ -50,8 +52,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const approvedTruckPages: MetadataRoute.Sitemap = trucks.map((truck) => ({
-    url: `${siteUrl}/anuncios/${truck.id}`,
-    lastModified: new Date(),
+    url: `${siteUrl}/anuncios/${gerarSlugComId(truck)}`,
+    lastModified: truck.updated_at || truck.created_at ? new Date(truck.updated_at || truck.created_at) : new Date(),
     changeFrequency: "weekly",
     priority: 0.85,
   }));
