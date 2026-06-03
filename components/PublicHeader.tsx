@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Info, LogIn, Menu, MessageCircle, Search, Store, Truck, X } from "lucide-react";
 import { useState } from "react";
+import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
 const navItems = [
   { href: "/anuncios", label: "Caminhões", icon: Store },
@@ -52,12 +53,17 @@ export function PublicHeader() {
           })}
 
           {open ? (
-            <Link href="/anunciar" aria-current={isActive(pathname, "/anunciar") ? "page" : undefined} className={isActive(pathname, "/anunciar") ? "active" : ""} onClick={closeMenu}>
-              <MessageCircle size={15} aria-hidden="true" />
-              <span>Anunciar</span>
-            </Link>
+            <>
+              <Link href="/anunciar" aria-current={isActive(pathname, "/anunciar") ? "page" : undefined} className={isActive(pathname, "/anunciar") ? "active" : ""} onClick={closeMenu}>
+                <MessageCircle size={15} aria-hidden="true" />
+                <span>Anunciar</span>
+              </Link>
+              <ThemeTogglePublic />
+            </>
           ) : null}
         </nav>
+
+        <ThemeTogglePublic />
 
         <Link href="/anunciar" className="contact-button">
           <MessageCircle size={17} aria-hidden="true" />
