@@ -4,9 +4,9 @@ export function HeroMarketplace() {
   return (
     <section className="market-container market-hero compact-hero hero-single">
       <div className="market-hero-copy">
-        <span>Anúncios verificados</span>
-        <h1>Encontre o caminhão certo para o seu trabalho</h1>
-        <p>Consulte anúncios reais e negocie direto com o anunciante.</p>
+        <span>Anúncios revisados • contato direto • feito para o mercado de caminhões</span>
+        <h1>Caminhões à venda para quem precisa comprar, vender ou negociar com segurança.</h1>
+        <p>Veja anúncios reais, fale direto pelo WhatsApp e encontre oportunidades de caminhões, trucks, cavalos mecânicos e implementos.</p>
 
         <div className="market-hero-actions">
           <Link href="/anuncios">Ver caminhões</Link>
