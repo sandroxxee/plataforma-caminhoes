@@ -112,6 +112,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   if (!truck) notFound();
 
   const title = getTitle(truck);
+  const location = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
   const shareText = `🚛 ${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${truck.cidade ? ` em ${truck.cidade}` : ""}.\n\n${truck.descricao?.trim() || "Caminhão anunciado com fotos e contato direto pelo WhatsApp."}`;
 
@@ -124,14 +125,21 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           <div className="detail-title">
             <Link href="/anuncios" className="detail-eyebrow">← Voltar ao estoque</Link>
             <h1>{title}</h1>
-            <p>{getLocation(truck)}</p>
+            <p>{location || "Localização não informada"}</p>
           </div>
+
           <AdGallery title={title} images={truck.truck_images || []} />
+
+          <div className="detail-description">
+            <h2>Descrição do caminhão</h2>
+            <p>{truck.descricao?.trim() || "Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado do veículo, disponibilidade e condições de negociação."}</p>
+          </div>
         </div>
 
         <aside className="detail-card">
           <span className="detail-eyebrow">Anúncio disponível</span>
           <strong className="detail-price">{formatMoney(truck.preco)}</strong>
+          <p className="stock-count">Fale direto pelo WhatsApp para confirmar disponibilidade, estado do caminhão e forma de negociação.</p>
 
           <div className="detail-specs">
             <div><span>Marca</span><b>{truck.marca || "-"}</b></div>
@@ -140,15 +148,15 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <div><span>Km</span><b>{formatKm(truck.quilometragem || truck.km)}</b></div>
             <div><span>Tração</span><b>{truck.tracao || "-"}</b></div>
             <div><span>Carroceria</span><b>{truck.carroceria || "-"}</b></div>
-            <div><span>Cidade</span><b>{getLocation(truck)}</b></div>
+            <div><span>Cidade</span><b>{location || "-"}</b></div>
           </div>
 
-          {whatsappLink ? <a href={whatsappLink} target="_blank" rel="noreferrer" className="detail-whatsapp">Chamar no WhatsApp</a> : null}
+          {whatsappLink ? <a href={whatsappLink} target="_blank" rel="noreferrer" className="detail-whatsapp">Tenho interesse neste caminhão</a> : null}
           <ShareAdButton title={title} text={shareText} />
 
           <div className="detail-description">
-            <h2>Descrição</h2>
-            <p>{truck.descricao?.trim() || "Este anúncio ainda não possui descrição cadastrada."}</p>
+            <h2>Contato e negociação</h2>
+            <p>Anúncio revisado antes de aparecer no site. O contato é direto pelo WhatsApp para facilitar a conversa com o interessado.</p>
           </div>
         </aside>
       </section>
