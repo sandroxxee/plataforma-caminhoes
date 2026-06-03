@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope, Oswald } from "next/font/google";
+import { WhatsappClickTracker } from "@/components/WhatsappClickTracker";
 import "./globals.css";
 import "./typography.css";
 
@@ -103,7 +104,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${manrope.variable} ${oswald.variable}`}>
-      <body>{children}</body>
+      <body>
+        <WhatsappClickTracker />
+        {children}
+      </body>
     </html>
   );
 }
