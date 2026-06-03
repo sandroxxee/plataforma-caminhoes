@@ -50,6 +50,13 @@ export function PublicHeader() {
               </Link>
             );
           })}
+
+          {open ? (
+            <Link href="/anunciar" aria-current={isActive(pathname, "/anunciar") ? "page" : undefined} className={isActive(pathname, "/anunciar") ? "active" : ""} onClick={closeMenu}>
+              <MessageCircle size={15} aria-hidden="true" />
+              <span>Anunciar</span>
+            </Link>
+          ) : null}
         </nav>
 
         <Link href="/anunciar" className="contact-button">
