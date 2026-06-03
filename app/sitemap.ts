@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const siteUrl = "https://caminhaoavenda.com";
+const siteUrl = "https://caminhoesavenda.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -26,6 +26,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteUrl}/sobre`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteUrl}/como-funciona`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
