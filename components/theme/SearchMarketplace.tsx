@@ -35,15 +35,15 @@ export function SearchMarketplace({
       <div className="market-field">
         <label>Marca</label>
         <select name="marca" defaultValue={marca}>
-          <option value="">Todas</option>
+          <option value="">Todas as marcas</option>
           {MARCAS.map((item) => <option key={item}>{item}</option>)}
         </select>
       </div>
 
       <div className="market-field">
-        <label>Perfil</label>
+        <label>Tipo</label>
         <select name="perfil" defaultValue={perfil}>
-          <option value="">Todos</option>
+          <option value="">Todos os tipos</option>
           {perfis.map((item) => <option key={item}>{item}</option>)}
         </select>
       </div>
@@ -51,7 +51,7 @@ export function SearchMarketplace({
       <div className="market-field">
         <label>Tração</label>
         <select name="tracao" defaultValue={tracao}>
-          <option value="">Todas</option>
+          <option value="">Todas as trações</option>
           {tracoes.map((item) => <option key={item}>{item}</option>)}
         </select>
       </div>
@@ -59,7 +59,7 @@ export function SearchMarketplace({
       <div className="market-field">
         <label>Implemento</label>
         <select name="implemento" defaultValue={implemento}>
-          <option value="">Todos</option>
+          <option value="">Todos os implementos</option>
           {implementos.map((item) => <option key={item}>{item}</option>)}
         </select>
       </div>
