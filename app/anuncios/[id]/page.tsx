@@ -14,6 +14,7 @@ export const revalidate = 0;
 
 const siteUrl = "https://caminhoesavenda.com";
 const defaultOgImage = "/og-caminhoesavenda.png";
+const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,truck_images(image_url,principal,ordem)`;
 
 type Truck = TruckCardData & {
   descricao: string | null;
@@ -54,21 +55,31 @@ function getNumericPrice(value?: number | string | null) {
 async function getApprovedTruck(parametro: string) {
   const supabase = await createClient();
   const parsed = extrairIdDoParametroAnuncio(parametro);
-  let query = supabase
+
+  if (parsed.tipo === "uuid") {
+    const { data, error } = await supabase
+      .from("trucks")
+      .select(truckSelect)
+      .eq("id", parsed.valor)
+      .eq("status", "aprovado")
+      .eq("vendido", false)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data as Truck;
+  }
+
+  const { data, error } = await supabase
     .from("trucks")
-    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,truck_images(image_url,principal,ordem)`)
+    .select(truckSelect)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .limit(1);
-
-  query = parsed.tipo === "uuid"
-    ? query.eq("id", parsed.valor)
-    : query.ilike("id", `${parsed.valor}%`);
-
-  const { data, error } = await query.maybeSingle();
+    .limit(5000);
 
   if (error || !data) return null;
-  return data as Truck;
+
+  const truck = data.find((item) => String(item.id).toLowerCase().startsWith(parsed.valor));
+  return truck ? truck as Truck : null;
 }
 
 function getMainImage(truck: Truck) {
