@@ -8,6 +8,12 @@ type PublicTheme = "light" | "dark";
 
 function applyPublicTheme(theme: PublicTheme) {
   document.documentElement.setAttribute("data-public-theme", theme);
+  document.body.classList.toggle("public-theme-dark", theme === "dark");
+  document.body.classList.toggle("public-theme-light", theme === "light");
+}
+
+function clearPublicThemeClasses() {
+  document.body.classList.remove("public-theme-dark", "public-theme-light");
 }
 
 export function ThemeTogglePublic() {
@@ -19,6 +25,8 @@ export function ThemeTogglePublic() {
 
     setTheme(initialTheme);
     applyPublicTheme(initialTheme);
+
+    return clearPublicThemeClasses;
   }, []);
 
   function toggleTheme() {
