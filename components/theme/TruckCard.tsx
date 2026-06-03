@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { gerarSlugComId } from "@/lib/slug";
 
 export type TruckImage = {
   image_url: string | null;
@@ -80,6 +81,18 @@ export function getWhatsappLink(truck: TruckCardData) {
   return phone ? `https://wa.me/${phone}?text=${text}` : "";
 }
 
+export function getTruckUrl(truck: TruckCardData) {
+  return `/anuncios/${gerarSlugComId({
+    id: truck.id,
+    marca: truck.marca,
+    modelo: truck.modelo,
+    ano_modelo: truck.ano_modelo,
+    ano_fabricacao: truck.ano_fabricacao,
+    cidade: truck.cidade,
+    estado: truck.estado,
+  })}`;
+}
+
 export function TruckCard({ truck }: { truck: TruckCardData }) {
   const title = getTitle(truck);
   const cardTitle = getCardTitle(truck);
@@ -87,22 +100,23 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const year = truck.ano_modelo || truck.ano_fabricacao || "Ano não informado";
   const type = truck.carroceria || truck.tracao || "Configuração não informada";
   const whatsappLink = getWhatsappLink(truck);
+  const truckUrl = getTruckUrl(truck);
 
   return (
     <article className="truck-card">
-      <Link className="truck-card-photo" href={`/anuncios/${truck.id}`} aria-label={`Ver detalhes de ${title}`}>
+      <Link className="truck-card-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
       </Link>
 
       <div className="truck-card-body">
         <strong className="truck-card-price">{formatMoney(truck.preco)}</strong>
-        <Link className="truck-card-title" href={`/anuncios/${truck.id}`}>{cardTitle}</Link>
+        <Link className="truck-card-title" href={truckUrl}>{cardTitle}</Link>
         <p className="truck-card-meta">{year} • {type} • {getLocation(truck)}</p>
 
         <div className="truck-card-actions">
-          <Link className="truck-card-detail" href={`/anuncios/${truck.id}`}>Ver detalhes</Link>
+          <Link className="truck-card-detail" href={truckUrl}>Ver detalhes</Link>
           {whatsappLink ? (
-            <a className="truck-card-whatsapp" href={whatsappLink} target="_blank" rel="noreferrer">WhatsApp</a>
+            <a className="truck-card-whatsapp" href={whatsappLink} target="_blank" rel="noreferrer" data-whatsapp-click data-truck-id={truck.id}>WhatsApp</a>
           ) : null}
         </div>
       </div>
