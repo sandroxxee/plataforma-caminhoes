@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { gerarSlugComId } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
 
 const siteUrl = "https://caminhoesavenda.com";
+const siteHost = "caminhoesavenda.com";
 const indexNowKey = "9f6c2a4e7b8d41c2a0f5e6b3c9d8a1f4";
 const indexNowEndpoint = "https://api.indexnow.org/indexnow";
+
+const staticUrls = [
+  siteUrl,
+  `${siteUrl}/anuncios`,
+  `${siteUrl}/anunciar`,
+  `${siteUrl}/sobre`,
+  `${siteUrl}/como-funciona`,
+];
 
 function isAuthorized(request: Request) {
   const secret = process.env.INDEXNOW_SECRET;
@@ -17,7 +27,7 @@ function isAuthorized(request: Request) {
 export async function POST(request: Request) {
   if (!isAuthorized(request)) {
     return NextResponse.json(
-      { ok: false, error: "Acesso negado." },
+      { ok: false, version: "1.0+", error: "Acesso negado." },
       { status: 401 }
     );
   }
@@ -26,22 +36,23 @@ export async function POST(request: Request) {
 
   const { data: trucks, error } = await supabase
     .from("trucks")
-    .select("id")
+    .select("id,marca,modelo,ano_modelo,ano_fabricacao,cidade,estado")
     .eq("status", "aprovado")
+    .eq("vendido", false)
     .limit(5000);
 
   if (error) {
     return NextResponse.json(
-      { ok: false, error: "Não foi possível buscar anúncios aprovados." },
+      { ok: false, version: "1.0+", error: "Não foi possível buscar anúncios aprovados." },
       { status: 500 }
     );
   }
 
-  const urlList = [
-    siteUrl,
-    `${siteUrl}/anuncios`,
-    ...(trucks || []).map((truck) => `${siteUrl}/anuncios/${truck.id}`),
-  ];
+  const truckUrls = (trucks || []).map(
+    (truck) => `${siteUrl}/anuncios/${gerarSlugComId(truck)}`
+  );
+
+  const urlList = Array.from(new Set([...staticUrls, ...truckUrls]));
 
   const response = await fetch(indexNowEndpoint, {
     method: "POST",
@@ -49,7 +60,7 @@ export async function POST(request: Request) {
       "Content-Type": "application/json; charset=utf-8",
     },
     body: JSON.stringify({
-      host: "caminhoesavenda.com",
+      host: siteHost,
       key: indexNowKey,
       keyLocation: `${siteUrl}/${indexNowKey}.txt`,
       urlList,
@@ -62,6 +73,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
+        version: "1.0+",
         error: "IndexNow recusou o envio.",
         status: response.status,
         details: body,
@@ -72,6 +84,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
+    version: "1.0+",
     sent: urlList.length,
     urls: urlList,
   });
@@ -81,7 +94,8 @@ export async function GET() {
   return NextResponse.json(
     {
       ok: true,
-      route: "IndexNow ativo. Use POST com x-indexnow-secret para enviar URLs aprovadas.",
+      version: "1.0+",
+      route: "IndexNow ativo. Use POST com x-indexnow-secret para enviar URLs públicas e anúncios aprovados.",
     },
     { status: 200 }
   );
