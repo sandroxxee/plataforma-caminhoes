@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ShareAdButton } from "@/components/ShareAdButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdGallery } from "@/components/theme/AdGallery";
 import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
+import { extrairIdDoParametroAnuncio, gerarSlugComId } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -27,6 +28,18 @@ function getWhatsappLink(truck: Truck, title: string) {
   return phone ? `https://wa.me/${phone}?text=${text}` : "";
 }
 
+function getCanonicalPath(truck: Truck) {
+  return `/anuncios/${gerarSlugComId({
+    id: truck.id,
+    marca: truck.marca,
+    modelo: truck.modelo,
+    ano_modelo: truck.ano_modelo,
+    ano_fabricacao: truck.ano_fabricacao,
+    cidade: truck.cidade,
+    estado: truck.estado,
+  })}`;
+}
+
 function formatKm(value?: number | null) {
   if (!value) return "Não informado";
   return `${value.toLocaleString("pt-BR")} km`;
@@ -38,15 +51,21 @@ function getNumericPrice(value?: number | string | null) {
   return Number.isFinite(price) ? price : undefined;
 }
 
-async function getApprovedTruck(id: string) {
+async function getApprovedTruck(parametro: string) {
   const supabase = await createClient();
-
-  const { data, error } = await supabase
+  const parsed = extrairIdDoParametroAnuncio(parametro);
+  let query = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,truck_images(image_url,principal,ordem)`)
-    .eq("id", id)
     .eq("status", "aprovado")
-    .single();
+    .eq("vendido", false)
+    .limit(1);
+
+  query = parsed.tipo === "uuid"
+    ? query.eq("id", parsed.valor)
+    : query.ilike("id", `${parsed.valor}%`);
+
+  const { data, error } = await query.maybeSingle();
 
   if (error || !data) return null;
   return data as Truck;
@@ -59,7 +78,8 @@ function getMainImage(truck: Truck) {
 }
 
 function getStructuredData(truck: Truck, title: string, location: string, whatsappLink: string) {
-  const url = `${siteUrl}/anuncios/${truck.id}`;
+  const canonicalPath = getCanonicalPath(truck);
+  const url = `${siteUrl}${canonicalPath}`;
   const image = getMainImage(truck);
   const price = getNumericPrice(truck.preco);
   const description = truck.descricao?.trim() || `${title}${location ? ` em ${location}` : ""}. Anúncio revisado com contato direto pelo WhatsApp.`;
@@ -119,7 +139,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const location = getLocation(truck);
   const price = formatMoney(truck.preco);
   const description = `${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${location ? ` em ${location}` : ""}. ${price}. Veja fotos, detalhes e contato direto pelo WhatsApp.`;
-  const url = `${siteUrl}/anuncios/${truck.id}`;
+  const canonicalPath = getCanonicalPath(truck);
+  const url = `${siteUrl}${canonicalPath}`;
   const image = getMainImage(truck);
 
   return {
@@ -160,6 +181,11 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const truck = await getApprovedTruck(id);
 
   if (!truck) notFound();
+
+  const canonicalPath = getCanonicalPath(truck);
+  if (`/anuncios/${id}` !== canonicalPath) {
+    redirect(canonicalPath);
+  }
 
   const title = getTitle(truck);
   const location = getLocation(truck);
@@ -206,7 +232,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <div><span>Cidade</span><b>{location || "-"}</b></div>
           </div>
 
-          {whatsappLink ? <a href={whatsappLink} target="_blank" rel="noreferrer" className="detail-whatsapp">Tenho interesse neste caminhão</a> : null}
+          {whatsappLink ? <a href={whatsappLink} target="_blank" rel="noreferrer" className="detail-whatsapp" data-whatsapp-click data-truck-id={truck.id}>Tenho interesse neste caminhão</a> : null}
           <ShareAdButton title={title} text={shareText} />
 
           <div className="detail-description">
