@@ -32,6 +32,12 @@ function formatKm(value?: number | null) {
   return `${value.toLocaleString("pt-BR")} km`;
 }
 
+function getNumericPrice(value?: number | string | null) {
+  if (value === null || value === undefined || value === "") return undefined;
+  const price = typeof value === "number" ? value : Number(String(value).replace(/[^\d,.-]/g, "").replace(".", "").replace(",", "."));
+  return Number.isFinite(price) ? price : undefined;
+}
+
 async function getApprovedTruck(id: string) {
   const supabase = await createClient();
 
@@ -50,6 +56,50 @@ function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
   const main = images.find((image) => image.principal)?.image_url || images[0]?.image_url;
   return main || defaultOgImage;
+}
+
+function getStructuredData(truck: Truck, title: string, location: string, whatsappLink: string) {
+  const url = `${siteUrl}/anuncios/${truck.id}`;
+  const image = getMainImage(truck);
+  const price = getNumericPrice(truck.preco);
+  const description = truck.descricao?.trim() || `${title}${location ? ` em ${location}` : ""}. Anúncio revisado com contato direto pelo WhatsApp.`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Vehicle",
+    name: title,
+    description,
+    url,
+    image: image.startsWith("http") ? image : `${siteUrl}${image}`,
+    brand: truck.marca ? { "@type": "Brand", name: truck.marca } : undefined,
+    model: truck.modelo || undefined,
+    vehicleModelDate: truck.ano_modelo ? String(truck.ano_modelo) : undefined,
+    mileageFromOdometer: truck.quilometragem || truck.km ? {
+      "@type": "QuantitativeValue",
+      value: truck.quilometragem || truck.km,
+      unitCode: "KMT",
+    } : undefined,
+    vehicleConfiguration: [truck.tracao, truck.carroceria].filter(Boolean).join(" - ") || undefined,
+    offers: {
+      "@type": "Offer",
+      url,
+      priceCurrency: "BRL",
+      price,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/UsedCondition",
+      seller: {
+        "@type": "Organization",
+        name: "Caminhões à Venda",
+        url: siteUrl,
+      },
+    },
+    areaServed: location || undefined,
+    potentialAction: whatsappLink ? {
+      "@type": "ContactAction",
+      target: whatsappLink,
+      name: "Contato pelo WhatsApp",
+    } : undefined,
+  };
 }
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -114,10 +164,15 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const title = getTitle(truck);
   const location = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
+  const structuredData = getStructuredData(truck, title, location, whatsappLink);
   const shareText = `🚛 ${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${truck.cidade ? ` em ${truck.cidade}` : ""}.\n\n${truck.descricao?.trim() || "Caminhão anunciado com fotos e contato direto pelo WhatsApp."}`;
 
   return (
     <main className="market-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <PublicHeader />
 
       <section className="market-container detail-layout">
