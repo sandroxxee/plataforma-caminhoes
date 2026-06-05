@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
 import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
+import { TruckConfigurationFields } from "@/components/TruckConfigurationFields";
 import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
 import { criarAnuncio } from "../../actions";
 
@@ -23,7 +24,6 @@ const carrocerias = [
   "Munck",
   "Outra",
 ];
-const tracoes = ["4x2", "6x2", "6x4", "8x2", "8x4", "Truck", "Bitruck", "Traçado"];
 const estados = ["SC", "PR", "RS", "SP", "MG", "MS", "MT", "GO", "BA", "RJ", "ES", "Outro"];
 
 export default async function NovoCaminhaoPage() {
@@ -40,7 +40,7 @@ export default async function NovoCaminhaoPage() {
   return (
     <PanelLayout
       title="Anunciar caminhão"
-      subtitle="Cadastro separado para caminhões. Preencha os dados do veículo e envie para aprovação."
+      subtitle="Cadastro separado para caminhões. O tipo do caminhão define automaticamente configuração e tração para evitar anúncio errado."
       badge="Novo caminhão"
       actions={<Link href="/painel/anuncios/novo" className="secondary-button">Trocar tipo de anúncio</Link>}
     >
@@ -75,14 +75,14 @@ export default async function NovoCaminhaoPage() {
             <span>01</span>
             <div>
               <h2>Dados do caminhão</h2>
-              <p>Informe marca, modelo, ano, carroceria e tração do caminhão.</p>
+              <p>Informe marca, modelo, ano, carroceria e tipo do caminhão. Configuração e tração são automáticas.</p>
             </div>
           </div>
 
           <div className="form-grid three">
             <label>
               Marca do caminhão *
-              <select name="marca" defaultValue="">
+              <select name="marca" defaultValue="" required>
                 <option value="" disabled>Selecione a marca</option>
                 {marcas.map((marca) => (
                   <option key={marca} value={marca}>{marca}</option>
@@ -92,17 +92,17 @@ export default async function NovoCaminhaoPage() {
 
             <label>
               Modelo do caminhão *
-              <input name="modelo" placeholder="Ex: 113, P420, FH 540" />
+              <input name="modelo" placeholder="Ex: 113, P420, FH 540" required />
             </label>
 
             <label>
               Ano do caminhão *
-              <input name="ano" type="number" placeholder="Ex: 1995" />
+              <input name="ano" type="number" placeholder="Ex: 1995" required />
             </label>
 
             <label>
               Carroceria *
-              <select name="carroceria" defaultValue="">
+              <select name="carroceria" defaultValue="" required>
                 <option value="" disabled>Selecione a carroceria</option>
                 {carrocerias.map((carroceria) => (
                   <option key={carroceria} value={carroceria}>{carroceria}</option>
@@ -110,15 +110,7 @@ export default async function NovoCaminhaoPage() {
               </select>
             </label>
 
-            <label>
-              Tração *
-              <select name="tracao" defaultValue="">
-                <option value="" disabled>Selecione a tração</option>
-                {tracoes.map((tracao) => (
-                  <option key={tracao} value={tracao}>{tracao}</option>
-                ))}
-              </select>
-            </label>
+            <TruckConfigurationFields />
           </div>
         </section>
 
@@ -134,17 +126,17 @@ export default async function NovoCaminhaoPage() {
           <div className="form-grid three">
             <label>
               Valor *
-              <input name="preco" type="number" placeholder="Ex: 180000" />
+              <input name="preco" type="number" placeholder="Ex: 180000" required />
             </label>
 
             <label>
               Cidade *
-              <input name="cidade" placeholder="Ex: Xanxerê" />
+              <input name="cidade" placeholder="Ex: Xanxerê" required />
             </label>
 
             <label>
               Estado *
-              <select name="estado" defaultValue="SC">
+              <select name="estado" defaultValue="SC" required>
                 {estados.map((estado) => (
                   <option key={estado} value={estado}>{estado}</option>
                 ))}
@@ -165,7 +157,7 @@ export default async function NovoCaminhaoPage() {
           <div className="form-grid two">
             <label>
               WhatsApp *
-              <input name="whatsapp" placeholder="Ex: 5549999362681" />
+              <input name="whatsapp" placeholder="Ex: 5549999362681" required />
               <small>Use DDI + DDD + número. Exemplo: 5549999999999</small>
             </label>
 
@@ -193,7 +185,7 @@ export default async function NovoCaminhaoPage() {
 
         <div className="preview-box">
           <strong>Prévia do título automático:</strong>
-          <span>Marca + Modelo + Tração + Ano</span>
+          <span>Marca + Modelo + Configuração + Ano</span>
         </div>
 
         <footer className="form-footer">
@@ -222,6 +214,7 @@ export default async function NovoCaminhaoPage() {
         input::placeholder, textarea::placeholder { color: #6f7983; }
         textarea { min-height: 130px; resize: vertical; padding-top: 13px; line-height: 1.5; }
         input:focus, select:focus, textarea:focus { border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,.12); }
+        input[readonly] { color: #a7afb7; background: #111417; cursor: default; }
         select option { background: #15181b; color: #e8eaed; }
         .wide { min-width: 0; }
         .preview-box { padding: 16px 18px; display: flex; gap: 10px; flex-wrap: wrap; color: #a7afb7; }
