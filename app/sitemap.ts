@@ -18,22 +18,22 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.95,
   },
   {
+    url: `${siteUrl}/implementos`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.85,
+  },
+  {
     url: `${siteUrl}/anunciar`,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
   },
   {
-    url: `${siteUrl}/sobre`,
+    url: `${siteUrl}/politica-de-privacidade`,
     lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.6,
-  },
-  {
-    url: `${siteUrl}/como-funciona`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.6,
+    changeFrequency: "yearly",
+    priority: 0.4,
   },
 ];
 
