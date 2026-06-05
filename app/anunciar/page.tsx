@@ -1,10 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
-export const metadata = {
-  title: "Anunciar caminhão | Caminhões à Venda",
-  description: "Veja como anunciar seu caminhão no Caminhões à Venda.",
+export const metadata: Metadata = {
+  title: "Anunciar caminhão ou implemento",
+  description:
+    "Anuncie caminhões, cavalos mecânicos, trucks, bitrucks e implementos no Caminhões à Venda com fotos, dados principais, revisão e contato pelo WhatsApp.",
+  alternates: { canonical: "/anunciar" },
 };
 
 export default function AnunciarPage() {
