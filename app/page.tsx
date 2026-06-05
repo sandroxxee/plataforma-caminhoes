@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -8,6 +9,13 @@ import type { TruckCardData } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Caminhões à Venda | Anúncios de caminhões e implementos",
+  description:
+    "Veja caminhões usados, seminovos e implementos anunciados no Caminhões à Venda. Plataforma para comprar, vender e anunciar com contato direto pelo WhatsApp.",
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const supabase = await createClient();
