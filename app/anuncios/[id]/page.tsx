@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const siteUrl = "https://caminhoesavenda.com";
-const defaultOgImage = "/og-caminhoesavenda.png";
+const defaultOgImage = "/og-caminhoes-a-venda.jpg";
 const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,truck_images(image_url,principal,ordem)`;
 
 type Truck = TruckCardData & {
@@ -50,6 +50,27 @@ function getNumericPrice(value?: number | string | null) {
   if (value === null || value === undefined || value === "") return undefined;
   const price = typeof value === "number" ? value : Number(String(value).replace(/[^\d,.-]/g, "").replace(".", "").replace(",", "."));
   return Number.isFinite(price) ? price : undefined;
+}
+
+function cleanText(value?: string | number | null) {
+  return String(value || "").trim();
+}
+
+function getSeoTitle(truck: Truck) {
+  const marca = cleanText(truck.marca);
+  const modelo = cleanText(truck.modelo || truck.titulo);
+  const ano = cleanText(truck.ano_modelo || truck.ano_fabricacao);
+  const cidade = cleanText(truck.cidade);
+  const uf = cleanText(truck.estado);
+  const partes = [marca, modelo, ano, cidade, uf].filter(Boolean);
+
+  return partes.length ? partes.join(" ") : getTitle(truck);
+}
+
+function getSeoDescription(truck: Truck, title: string, location: string, price: string) {
+  const tipo = cleanText(truck.carroceria) || cleanText(truck.tracao) || "caminhão ou implemento";
+  const detalhes = [tipo, price !== "Preço sob consulta" ? price : "", location].filter(Boolean).join(" · ");
+  return `${title}. ${detalhes ? `${detalhes}. ` : ""}Veja fotos, detalhes do anúncio e contato direto pelo WhatsApp no Caminhões à Venda.`;
 }
 
 async function getApprovedTruck(parametro: string) {
@@ -147,15 +168,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = getTitle(truck);
+  const seoTitle = getSeoTitle(truck);
   const location = getLocation(truck);
   const price = formatMoney(truck.preco);
-  const description = `${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${location ? ` em ${location}` : ""}. ${price}. Veja fotos, detalhes e contato direto pelo WhatsApp.`;
+  const description = getSeoDescription(truck, title, location, price);
   const canonicalPath = getCanonicalPath(truck);
   const url = `${siteUrl}${canonicalPath}`;
   const image = getMainImage(truck);
 
   return {
-    title: `${title}${truck.ano_modelo ? ` ${truck.ano_modelo}` : ""} - ${price}`,
+    title: seoTitle,
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -163,13 +185,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       locale: "pt_BR",
       url,
       siteName: "Caminhões à Venda",
-      title: `${title} - ${price}`,
+      title: `${seoTitle} | Caminhões à Venda`,
       description,
-      images: [{ url: image, width: 1200, height: 630, alt: title }],
+      images: [{ url: image, width: 1200, height: 630, alt: seoTitle }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} - ${price}`,
+      title: `${seoTitle} | Caminhões à Venda`,
       description,
       images: [image],
     },
