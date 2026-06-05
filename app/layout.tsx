@@ -26,16 +26,16 @@ const oswald = Oswald({
 });
 
 const siteUrl = "https://caminhoesavenda.com";
-const ogImage = "/og-caminhoesavenda.png";
+const ogImage = "/og-caminhoes-a-venda.jpg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
+    default: "Caminhões à Venda | Anúncios de caminhões e implementos",
     template: "%s | Caminhões à Venda",
   },
   description:
-    "Compra, venda e anúncios de caminhões usados e seminovos. Veja ofertas reais, confira preço e fale direto com o anunciante pelo WhatsApp.",
+    "Plataforma brasileira para anunciar, comprar e vender caminhões usados, seminovos e implementos. Veja anúncios aprovados e fale direto pelo WhatsApp.",
   keywords: [
     "caminhões à venda",
     "caminhões a venda",
@@ -44,6 +44,7 @@ export const metadata: Metadata = {
     "caminhões usados",
     "caminhões seminovos",
     "anúncios de caminhões",
+    "implementos rodoviários",
     "caminhão traçado",
     "caminhão 6x4",
     "caminhão 8x4",
@@ -58,21 +59,21 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: siteUrl,
     siteName: "Caminhões à Venda",
-    title: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
-    description: "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
+    title: "Caminhões à Venda | Anúncios de caminhões e implementos",
+    description: "Anuncie caminhões e implementos, veja ofertas aprovadas e fale direto pelo WhatsApp com segurança e organização.",
     images: [
       {
         url: ogImage,
         width: 1200,
         height: 630,
-        alt: "Caminhões à Venda - compra, venda e anúncios de caminhões",
+        alt: "Caminhões à Venda - anúncios de caminhões e implementos",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Caminhões à Venda | Compra, venda e anúncios de caminhões",
-    description: "Anuncie seu caminhão, acompanhe ofertas e encontre compradores do ramo em um só lugar.",
+    title: "Caminhões à Venda | Anúncios de caminhões e implementos",
+    description: "Anuncie caminhões e implementos, veja ofertas aprovadas e fale direto pelo WhatsApp.",
     images: [ogImage],
   },
   icons: {
