@@ -7,15 +7,38 @@ export function SiteFooter() {
     color: "var(--muted)",
     fontSize: 14,
     fontWeight: 750,
+    maxWidth: "100%",
     overflowWrap: "anywhere",
+    wordBreak: "break-word",
   } as const;
 
   const sectionStyle = {
     minWidth: 0,
+    maxWidth: "100%",
+    overflowWrap: "anywhere",
   } as const;
 
   return (
     <footer className="site-footer">
+      <style>{`
+        html,
+        body {
+          max-width: 100%;
+          overflow-x: hidden;
+        }
+
+        .market-page,
+        .site-footer,
+        .site-footer * {
+          max-width: 100%;
+          min-width: 0;
+        }
+
+        .site-footer {
+          overflow-x: hidden;
+        }
+      `}</style>
+
       <div
         className="footer-inner"
         style={{
@@ -64,7 +87,7 @@ export function SiteFooter() {
         </section>
       </div>
 
-      <p style={{ marginTop: 24, fontSize: 13, overflowWrap: "anywhere" }}>
+      <p style={{ marginTop: 24, fontSize: 13, maxWidth: "100%", overflowWrap: "anywhere" }}>
         © 2026 Caminhões à Venda. Todos os direitos reservados.
       </p>
     </footer>
