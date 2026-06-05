@@ -8,6 +8,32 @@ function tituloAutomatico(marca: string, modelo: string, tracao: string, ano: nu
   return `${marca} ${modelo} ${tracao} - Ano ${ano}`.replace(/\s+/g, " ").trim();
 }
 
+function tituloAutomaticoImplemento(marca: string, modelo: string, tipo: string, eixos: string, ano: number) {
+  return `${marca} ${modelo} ${tipo} ${eixos} - Ano ${ano}`.replace(/\s+/g, " ").trim();
+}
+
+function montarDescricaoImplemento(params: {
+  descricao: string;
+  tipo: string;
+  eixos: string;
+  composicao: string;
+  pneus: string;
+  suspensao: string;
+  conservacao: string;
+}) {
+  const ficha = [
+    "Ficha do implemento:",
+    `Tipo: ${params.tipo}`,
+    `Eixos: ${params.eixos}`,
+    params.composicao ? `Composição: ${params.composicao}` : "",
+    `Pneus: ${params.pneus}`,
+    params.suspensao ? `Suspensão: ${params.suspensao}` : "",
+    `Conservação: ${params.conservacao}`,
+  ].filter(Boolean);
+
+  return [params.descricao, ficha.join("\n")].filter(Boolean).join("\n\n");
+}
+
 async function getLoggedUser() {
   const supabase = await createClient();
 
@@ -67,18 +93,90 @@ async function enviarFotos(supabase: Awaited<ReturnType<typeof createClient>>, u
 export async function criarAnuncio(formData: FormData) {
   const { supabase, user } = await getLoggedUser();
 
-  const marca = String(formData.get("marca") || "").trim();
-  const modelo = String(formData.get("modelo") || "").trim();
-  const ano = Number(formData.get("ano") || 0);
+  const tipoAnuncio = String(formData.get("tipo_anuncio") || "Caminhão").trim();
   const preco = Number(formData.get("preco") || 0);
   const cidade = String(formData.get("cidade") || "").trim();
   const estado = String(formData.get("estado") || "SC").trim();
-  const carroceria = String(formData.get("carroceria") || "").trim();
-  const tracao = String(formData.get("tracao") || "").trim();
   const whatsapp = String(formData.get("whatsapp") || "").trim();
   const descricao = String(formData.get("descricao") || "").trim();
 
-  if (!marca || !modelo || !ano || !preco || !cidade || !estado || !carroceria || !tracao || !whatsapp) {
+  if (!preco || !cidade || !estado || !whatsapp) {
+    redirect("/painel/anuncios/novo?erro=campos");
+  }
+
+  if (tipoAnuncio === "Implemento") {
+    const tipoImplemento = String(formData.get("tipo_implemento") || "").trim();
+    const marca = String(formData.get("implemento_marca") || "").trim();
+    const modelo = String(formData.get("implemento_modelo") || "").trim();
+    const ano = Number(formData.get("implemento_ano") || 0);
+    const numeroEixos = String(formData.get("numero_eixos") || "").trim();
+    const composicao = String(formData.get("composicao") || "").trim();
+    const pneus = String(formData.get("pneus") || "").trim();
+    const suspensao = String(formData.get("suspensao") || "").trim();
+    const conservacao = String(formData.get("conservacao") || "").trim();
+
+    if (!tipoImplemento || !marca || !modelo || !ano || !numeroEixos || !pneus || !conservacao) {
+      redirect("/painel/anuncios/novo?erro=campos");
+    }
+
+    const titulo = tituloAutomaticoImplemento(marca, modelo, tipoImplemento, numeroEixos, ano);
+    const descricaoCompleta = montarDescricaoImplemento({
+      descricao,
+      tipo: tipoImplemento,
+      eixos: numeroEixos,
+      composicao,
+      pneus,
+      suspensao,
+      conservacao,
+    });
+
+    const { data: truck, error } = await supabase
+      .from("trucks")
+      .insert({
+        user_id: user.id,
+        titulo,
+        marca,
+        modelo,
+        ano_fabricacao: ano,
+        ano_modelo: ano,
+        preco,
+        cidade,
+        estado,
+        carroceria: `Implemento: ${tipoImplemento}`,
+        tracao: "Implemento",
+        quilometragem: "",
+        motor: "",
+        cambio: "",
+        combustivel: "",
+        cor: "",
+        descricao: descricaoCompleta,
+        whatsapp,
+        status: "pendente",
+        destaque: false,
+        vendido: false,
+      })
+      .select("id")
+      .single();
+
+    if (error || !truck) {
+      redirect("/painel/anuncios/novo?erro=banco");
+    }
+
+    await enviarFotos(supabase, user.id, truck.id, formData);
+
+    revalidatePath("/painel/anuncios");
+    revalidatePath("/admin/pendentes");
+
+    redirect("/painel/anuncios");
+  }
+
+  const marca = String(formData.get("marca") || "").trim();
+  const modelo = String(formData.get("modelo") || "").trim();
+  const ano = Number(formData.get("ano") || 0);
+  const carroceria = String(formData.get("carroceria") || "").trim();
+  const tracao = String(formData.get("tracao") || "").trim();
+
+  if (!marca || !modelo || !ano || !carroceria || !tracao) {
     redirect("/painel/anuncios/novo?erro=campos");
   }
 
