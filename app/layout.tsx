@@ -5,6 +5,7 @@ import { CopyProtection } from "@/components/CopyProtection";
 import { PwaRegister } from "@/components/PwaRegister";
 import { WhatsappClickTracker } from "@/components/WhatsappClickTracker";
 import "./globals.css";
+import "./android-visual.css";
 import "./typography.css";
 
 const inter = Inter({
