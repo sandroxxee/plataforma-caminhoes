@@ -7,6 +7,11 @@ export function SiteFooter() {
     color: "var(--muted)",
     fontSize: 14,
     fontWeight: 750,
+    overflowWrap: "anywhere",
+  } as const;
+
+  const sectionStyle = {
+    minWidth: 0,
   } as const;
 
   return (
@@ -15,11 +20,14 @@ export function SiteFooter() {
         className="footer-inner"
         style={{
           display: "grid",
-          gridTemplateColumns: "minmax(260px, 1.4fr) repeat(3, minmax(150px, .7fr))",
-          gap: 24,
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 190px), 1fr))",
+          gap: 20,
+          alignItems: "start",
+          maxWidth: "100%",
+          overflowX: "hidden",
         }}
       >
-        <section>
+        <section style={sectionStyle}>
           <strong>Caminhões à Venda</strong>
           <p>
             Plataforma para comprar e anunciar caminhões, carretas e implementos
@@ -33,21 +41,21 @@ export function SiteFooter() {
           </p>
         </section>
 
-        <section>
+        <section style={sectionStyle}>
           <strong>Comprar</strong>
           <Link style={linkStyle} href="/anuncios">Ver anúncios</Link>
           <Link style={linkStyle} href="/anuncios?perfil=Caminhao">Caminhões</Link>
           <Link style={linkStyle} href="/anuncios?perfil=Implementos">Implementos</Link>
         </section>
 
-        <section>
+        <section style={sectionStyle}>
           <strong>Anunciar</strong>
           <Link style={linkStyle} href="/anunciar">Anunciar caminhão</Link>
           <Link style={linkStyle} href="/como-funciona">Como funciona</Link>
           <Link style={linkStyle} href="/cadastro">Criar conta</Link>
         </section>
 
-        <section>
+        <section style={sectionStyle}>
           <strong>Atendimento</strong>
           <a style={linkStyle} href="https://wa.me/5549999362681" target="_blank" rel="noreferrer">
             WhatsApp: 49 99936-2681
@@ -56,7 +64,7 @@ export function SiteFooter() {
         </section>
       </div>
 
-      <p style={{ marginTop: 24, fontSize: 13 }}>
+      <p style={{ marginTop: 24, fontSize: 13, overflowWrap: "anywhere" }}>
         © 2026 Caminhões à Venda. Todos os direitos reservados.
       </p>
     </footer>
