@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/anuncios", "/anunciar", "/sobre", "/como-funciona"],
+        allow: ["/", "/anuncios", "/implementos", "/anunciar", "/politica-de-privacidade"],
         disallow: [
           "/admin",
           "/painel",
@@ -16,7 +16,9 @@ export default function robots(): MetadataRoute.Robots {
           "/conta",
           "/logout",
           "/api",
+          "/debug-sessao",
           "/teste-supabase",
+          "/planos",
         ],
       },
     ],
