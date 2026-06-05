@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
 import { SiteFooter } from "@/components/SiteFooter";
+import { IMPLEMENTO_TIPOS } from "@/lib/implementos";
 import { SearchMarketplace } from "@/components/theme/SearchMarketplace";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
 
@@ -20,25 +21,7 @@ type PageProps = {
 
 const PERFIS = ["3/4", "Toco", "Truck", "Bitruck", "Cavalo mecânico", "Implementos"];
 const TRACOES = ["Simples", "Traçado"];
-const IMPLEMENTOS = [
-  "Graneleira",
-  "Baú seco",
-  "Baú frigorífico",
-  "Sider",
-  "Tanque",
-  "Silo graneleiro",
-  "Chassis",
-  "Munck",
-  "Cabine suplementar",
-  "Comboio",
-  "Betoneira",
-  "Bomba lança",
-  "Caçamba agrícola",
-  "Caçamba meia-cana",
-  "Caçamba basculante",
-  "Prancha",
-  "Plataforma",
-];
+const IMPLEMENTOS = IMPLEMENTO_TIPOS.map((implemento) => implemento.nome);
 
 const TERMOS_IMPLEMENTO_REAL = [
   "implemento",
@@ -48,7 +31,10 @@ const TERMOS_IMPLEMENTO_REAL = [
   "semirreboque",
   "semi reboque",
   "reboque",
+  "julieta",
   "bitrem",
+  "bi cacamba",
+  "bicacamba",
   "rodotrem",
   "dolly",
   "randon",
@@ -56,15 +42,23 @@ const TERMOS_IMPLEMENTO_REAL = [
   "facchini",
   "librelato",
   "noma",
+  "rossetti",
   "pastre",
+  "rodofort",
+  "truckvan",
+  "4truck",
   "prancha",
   "plataforma",
   "sider",
   "graneleira",
+  "graneleiro",
   "bau seco",
   "bau frigorifico",
   "tanque",
+  "silo",
   "silo graneleiro",
+  "cacamba",
+  "caçamba",
 ];
 
 const TERMOS_CAMINHAO = [
@@ -139,7 +133,7 @@ function isImplementoReal(truck: TruckCardData) {
   const tracao = normalize(truck.tracao);
   const textoCompleto = searchableText(truck);
 
-  const temTermoDeImplemento = containsAny(tituloModeloCarroceria, TERMOS_IMPLEMENTO_REAL) || containsAny(marca, ["randon", "guerra", "facchini", "librelato", "noma", "pastre"]);
+  const temTermoDeImplemento = containsAny(tituloModeloCarroceria, TERMOS_IMPLEMENTO_REAL) || containsAny(marca, ["randon", "guerra", "facchini", "librelato", "noma", "rossetti", "pastre", "rodofort", "truckvan", "4truck"]);
   const pareceCaminhao = containsAny(textoCompleto, TERMOS_CAMINHAO) || Boolean(tracao);
 
   return temTermoDeImplemento && !pareceCaminhao;
