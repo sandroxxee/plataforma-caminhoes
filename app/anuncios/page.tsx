@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
@@ -8,6 +9,13 @@ import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Caminhões à venda",
+  description:
+    "Consulte anúncios aprovados de caminhões usados, seminovos, cavalos mecânicos, trucks, bitrucks e implementos com contato direto pelo WhatsApp.",
+  alternates: { canonical: "/anuncios" },
+};
 
 type PageProps = {
   searchParams?: Promise<{
