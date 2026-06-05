@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope, Oswald } from "next/font/google";
 import { CopyProtection } from "@/components/CopyProtection";
+import { PwaRegister } from "@/components/PwaRegister";
 import { WhatsappClickTracker } from "@/components/WhatsappClickTracker";
 import "./globals.css";
 import "./typography.css";
@@ -99,13 +100,14 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f0f2f5",
+  themeColor: "#1877f2",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${manrope.variable} ${oswald.variable}`}>
       <body>
+        <PwaRegister />
         <WhatsappClickTracker />
         <CopyProtection />
         {children}
