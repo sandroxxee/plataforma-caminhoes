@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Handshake, LayoutDashboard, LogIn, Menu, Search, Truck, X } from "lucide-react";
+import { Handshake, LayoutDashboard, LogIn, Megaphone, Menu, MessageCircle, Search, Truck, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
@@ -29,8 +29,13 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
     { href: "/parceiros", label: "Parceiros", icon: Handshake },
     { href: "/como-funciona", label: "Como funciona", icon: Search },
     isLoggedIn
-      ? { href: "/painel", label: "Entrar", icon: LayoutDashboard }
+      ? { href: "/painel", label: "Painel", icon: LayoutDashboard }
       : { href: "/login", label: "Entrar", icon: LogIn },
+  ];
+
+  const mobileQuickActions = [
+    { href: "/anunciar", label: "Anunciar", icon: Megaphone, highlight: "primary" },
+    { href: "https://wa.me/5549999362681", label: "WhatsApp", icon: MessageCircle, highlight: "whatsapp" },
   ];
 
   return (
@@ -61,6 +66,30 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
               </Link>
             );
           })}
+
+          {open
+            ? mobileQuickActions.map((item) => {
+                const Icon = item.icon;
+                const isWhatsapp = item.highlight === "whatsapp";
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenu}
+                    style={{
+                      minHeight: 56,
+                      justifyContent: "center",
+                      background: isWhatsapp ? "var(--wa)" : "var(--blue)",
+                      color: isWhatsapp ? "#073b1d" : "#fff",
+                      boxShadow: isWhatsapp ? "none" : "0 7px 16px rgba(24, 119, 242, .22)",
+                    }}
+                  >
+                    <Icon size={17} aria-hidden="true" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })
+            : null}
 
           {open ? <ThemeTogglePublic /> : null}
         </nav>
