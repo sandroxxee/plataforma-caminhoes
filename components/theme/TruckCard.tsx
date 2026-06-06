@@ -99,11 +99,74 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const image = getTruckImage(truck);
   const year = truck.ano_modelo || truck.ano_fabricacao || "Ano não informado";
   const type = truck.carroceria || truck.tracao || "Configuração não informada";
-  const whatsappLink = getWhatsappLink(truck);
   const truckUrl = getTruckUrl(truck);
 
   return (
-    <article className="truck-card">
+    <article className="truck-card truck-card-hover-detail">
+      <style>{`
+        .truck-card-hover-detail {
+          position: relative;
+        }
+
+        .truck-card-hover-detail .truck-card-actions {
+          position: absolute;
+          inset: 0;
+          z-index: 4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0;
+          padding: 16px;
+          background: linear-gradient(180deg, rgba(15, 23, 42, .08), rgba(15, 23, 42, .56));
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity .18s ease;
+        }
+
+        .truck-card-hover-detail:hover .truck-card-actions,
+        .truck-card-hover-detail:focus-within .truck-card-actions {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .truck-card-hover-detail .truck-card-detail {
+          min-height: 46px;
+          padding: 0 18px;
+          border-radius: 999px;
+          border: 0;
+          background: var(--blue);
+          color: #fff;
+          box-shadow: 0 12px 24px rgba(15, 23, 42, .24);
+          font-size: 14px;
+          transform: translateY(6px);
+          transition: transform .18s ease;
+        }
+
+        .truck-card-hover-detail:hover .truck-card-detail,
+        .truck-card-hover-detail:focus-within .truck-card-detail {
+          transform: translateY(0);
+        }
+
+        @media (hover: none), (max-width: 760px) {
+          .truck-card-hover-detail .truck-card-actions {
+            position: static;
+            display: grid;
+            grid-template-columns: 1fr;
+            opacity: 1;
+            pointer-events: auto;
+            padding: 0;
+            background: transparent;
+            margin-top: auto;
+          }
+
+          .truck-card-hover-detail .truck-card-detail {
+            width: 100%;
+            min-height: 46px;
+            border-radius: 12px;
+            transform: none;
+          }
+        }
+      `}</style>
       <Link className="truck-card-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
       </Link>
@@ -115,9 +178,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
         <div className="truck-card-actions">
           <Link className="truck-card-detail" href={truckUrl}>Ver detalhes</Link>
-          {whatsappLink ? (
-            <a className="truck-card-whatsapp" href={whatsappLink} target="_blank" rel="noreferrer" data-whatsapp-click data-truck-id={truck.id}>WhatsApp</a>
-          ) : null}
         </div>
       </div>
     </article>
