@@ -17,7 +17,7 @@ const planos = [
     nome: "Básico",
     preco: "R$ 49,90",
     descricao: "Para anunciar um caminhão de forma simples, organizada e revisada antes de publicar.",
-    linkPagamento: "LINK_PAGAMENTO_BASICO",
+    linkPagamento: "https://mpago.la/1ZoAqKF",
     itens: [
       "1 anúncio por 30 dias",
       "Até 5 fotos",
@@ -30,7 +30,7 @@ const planos = [
     nome: "Destaque",
     preco: "R$ 99,90",
     descricao: "Para quem quer mais visibilidade e uma apresentação comercial mais forte do anúncio.",
-    linkPagamento: "LINK_PAGAMENTO_DESTAQUE",
+    linkPagamento: "https://mpago.la/2mrvzjq",
     itens: [
       "1 anúncio por 45 dias",
       "Até 10 fotos",
@@ -44,7 +44,7 @@ const planos = [
     nome: "Premium",
     preco: "R$ 149,90",
     descricao: "Para anúncio com prioridade, mais fotos, apoio extra e material pronto para divulgação.",
-    linkPagamento: "LINK_PAGAMENTO_PREMIUM",
+    linkPagamento: "https://mpago.la/1WNaNtK",
     itens: [
       "1 anúncio por 60 dias",
       "Até 15 fotos",
