@@ -17,6 +17,7 @@ const planos = [
     nome: "Básico",
     preco: "R$ 49,90",
     descricao: "Para anunciar um caminhão de forma simples, organizada e revisada antes de publicar.",
+    linkPagamento: "LINK_PAGAMENTO_BASICO",
     itens: [
       "1 anúncio por 30 dias",
       "Até 5 fotos",
@@ -29,6 +30,7 @@ const planos = [
     nome: "Destaque",
     preco: "R$ 99,90",
     descricao: "Para quem quer mais visibilidade e uma apresentação comercial mais forte do anúncio.",
+    linkPagamento: "LINK_PAGAMENTO_DESTAQUE",
     itens: [
       "1 anúncio por 45 dias",
       "Até 10 fotos",
@@ -42,6 +44,7 @@ const planos = [
     nome: "Premium",
     preco: "R$ 149,90",
     descricao: "Para anúncio com prioridade, mais fotos, apoio extra e material pronto para divulgação.",
+    linkPagamento: "LINK_PAGAMENTO_PREMIUM",
     itens: [
       "1 anúncio por 60 dias",
       "Até 15 fotos",
@@ -68,8 +71,8 @@ export default function PlanosPage() {
           </p>
         </div>
         <aside>
-          <strong>WhatsApp</strong>
-          <span>Para contratar um plano, fale pelo WhatsApp.</span>
+          <strong>Pagamento externo</strong>
+          <span>Escolha o plano, pague pelo link externo e envie seu anúncio pelo painel.</span>
         </aside>
       </section>
 
@@ -84,15 +87,22 @@ export default function PlanosPage() {
                 <li key={item}>{item}</li>
               ))}
             </ul>
+            <a
+              href={plano.linkPagamento}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Pagar plano {plano.nome}
+            </a>
           </article>
         ))}
       </section>
 
       <section className="market-container trust-card">
         <span className="trust-eyebrow">Contratação</span>
-        <h2>Para contratar um plano, fale pelo WhatsApp.</h2>
+        <h2>Pagamento e aprovação manual</h2>
         <p>
-          Envie uma mensagem para o WhatsApp principal: <strong>49 99936-2681</strong>. O atendimento confirma o plano, as informações do caminhão e os próximos passos para revisão do anúncio.
+          Após o pagamento, envie seu anúncio pelo painel. A aprovação será feita após conferência das informações e confirmação do pagamento.
         </p>
       </section>
 
