@@ -3,14 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Info, LayoutDashboard, LogIn, Menu, MessageCircle, Search, Store, Truck, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, MessageCircle, Search, Store, Truck, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
 const baseNavItems = [
   { href: "/anuncios", label: "Caminhões", icon: Store },
   { href: "/anuncios?perfil=Implementos", label: "Implementos", icon: Truck },
-  { href: "/sobre", label: "Sobre", icon: Info },
 ];
 
 function isActive(pathname: string, href: string) {
