@@ -83,6 +83,7 @@ export function SiteFooter() {
           <a style={linkStyle} href="https://wa.me/5549999362681" target="_blank" rel="noreferrer">
             WhatsApp: 49 99936-2681
           </a>
+          <Link style={linkStyle} href="/parceiros">Parceiros</Link>
           <Link style={linkStyle} href="/sobre">Segurança e confiança</Link>
         </section>
       </div>
