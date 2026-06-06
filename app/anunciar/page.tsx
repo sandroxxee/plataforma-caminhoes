@@ -10,8 +10,8 @@ const etapas = [
   },
   {
     numero: "2",
-    titulo: "Crie sua conta ou entre",
-    texto: "Quem já tem cadastro entra normalmente. Quem ainda não tem pode criar uma conta para anunciar.",
+    titulo: "Escolha o plano e pague online",
+    texto: "O pagamento abre em uma página segura externa, funcionando no celular e no computador.",
   },
   {
     numero: "3",
@@ -21,7 +21,7 @@ const etapas = [
   {
     numero: "4",
     titulo: "Aguarde aprovação",
-    texto: "O anúncio fica pendente até revisão antes de aparecer publicamente no site.",
+    texto: "O anúncio fica pendente até revisão e confirmação do pagamento antes de aparecer publicamente no site.",
   },
 ];
 
@@ -34,14 +34,14 @@ export default function AnunciarPage() {
         <div className="anunciar-hero">
           <div className="anunciar-copy">
             <span className="anunciar-kicker">Anunciar no Caminhões à Venda</span>
-            <h1>Crie sua conta e anuncie.</h1>
+            <h1>Anuncie seu caminhão ou implemento.</h1>
             <p>
-              O Caminhões à Venda é aberto para anunciantes. Escolha caminhão ou implemento, crie sua conta ou entre no painel e envie o anúncio para aprovação.
+              Escolha o plano, pague online em uma página externa segura e envie o anúncio para aprovação no Caminhões à Venda.
             </p>
 
             <div className="anunciar-actions">
-              <Link href="/cadastro" className="anunciar-action-primary">Criar conta para anunciar</Link>
-              <Link href="/planos" className="anunciar-action-plans">Ver planos de anúncio</Link>
+              <Link href="/planos" className="anunciar-action-primary">Anunciar e pagar</Link>
+              <Link href="/cadastro" className="anunciar-action-plans">Criar conta para anunciar</Link>
               <Link href="/login" className="anunciar-action-secondary">Entrar na conta</Link>
             </div>
           </div>
@@ -50,7 +50,7 @@ export default function AnunciarPage() {
             <strong>Como anunciar</strong>
             <ol>
               <li>Escolha caminhão ou implemento</li>
-              <li>Crie sua conta ou entre</li>
+              <li>Escolha o plano e pague online</li>
               <li>Preencha dados e fotos</li>
               <li>Aguarde aprovação</li>
             </ol>
@@ -92,7 +92,7 @@ export default function AnunciarPage() {
         <div className="anunciar-note">
           <strong>Importante:</strong>
           <p>
-            Para enviar um anúncio é necessário estar cadastrado. Depois do envio, o anúncio passa por aprovação antes de aparecer publicamente no site.
+            Após o pagamento, envie seu anúncio pelo painel. A aprovação será feita após conferência das informações e confirmação do pagamento.
           </p>
         </div>
       </section>
