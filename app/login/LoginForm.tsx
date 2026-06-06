@@ -44,7 +44,7 @@ export function LoginForm() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-     setErro(`Conta criada, mas não foi possível preparar o perfil: ${profileError.message}`);
+      setErro("Não foi possível confirmar sua sessão. Tente entrar novamente.");
       setCarregando(false);
       return;
     }
