@@ -66,6 +66,7 @@ export function CadastroForm() {
           full_name: nome,
           name: nome,
           telefone: telefoneLimpo,
+          whatsapp: telefoneLimpo,
         },
       },
     });
@@ -102,24 +103,35 @@ export function CadastroForm() {
     const userId = loginData.user?.id || signupData.user?.id;
 
     if (userId) {
-    const { error: profileError } = await supabase.from("profiles").upsert(
-  {
-    id: userId,
-    email,
-    nome,
-    telefone: telefoneLimpo,
-    whatsapp: telefoneLimpo,
-    tipo_conta: "anunciante",
-    role: "anunciante",
-    status: "ativo",
-  },
-  { onConflict: "id" },
-);
+      const { data: profileExistente, error: buscarProfileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
 
-      if (profileError) {
-        setErro("Conta criada, mas não foi possível preparar o perfil. Tente entrar novamente.");
+      if (buscarProfileError) {
+        setErro("Conta criada, mas não foi possível verificar o perfil. Tente entrar novamente.");
         setCarregando(false);
         return;
+      }
+
+      if (!profileExistente) {
+        const { error: criarProfileError } = await supabase.from("profiles").insert({
+          id: userId,
+          email,
+          nome,
+          telefone: telefoneLimpo,
+          whatsapp: telefoneLimpo,
+          tipo_conta: "anunciante",
+          role: "anunciante",
+          status: "ativo",
+        });
+
+        if (criarProfileError) {
+          setErro("Conta criada, mas não foi possível preparar o perfil. Tente entrar novamente.");
+          setCarregando(false);
+          return;
+        }
       }
     }
 
