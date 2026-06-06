@@ -10,8 +10,8 @@ const etapas = [
   },
   {
     numero: "2",
-    titulo: "Entre ou crie sua conta",
-    texto: "A conta mantém seus anúncios organizados e permite acompanhar o status no painel.",
+    titulo: "Crie sua conta ou entre",
+    texto: "Quem já tem cadastro entra normalmente. Quem ainda não tem pode criar uma conta para anunciar.",
   },
   {
     numero: "3",
@@ -34,13 +34,13 @@ export default function AnunciarPage() {
         <div className="anunciar-hero">
           <div className="anunciar-copy">
             <span className="anunciar-kicker">Anunciar no Caminhões à Venda</span>
-            <h1>Escolha o que deseja anunciar.</h1>
+            <h1>Crie sua conta e anuncie.</h1>
             <p>
-              Anuncie caminhões e implementos em uma página direta, organizada e preparada para aprovação antes da publicação.
+              O Caminhões à Venda é aberto para anunciantes. Escolha caminhão ou implemento, crie sua conta ou entre no painel e envie o anúncio para aprovação.
             </p>
 
             <div className="anunciar-actions">
-              <Link href="/painel/anuncios/novo">Começar anúncio</Link>
+              <Link href="/cadastro">Criar conta para anunciar</Link>
               <Link href="/login">Entrar na conta</Link>
             </div>
           </div>
@@ -49,7 +49,7 @@ export default function AnunciarPage() {
             <strong>Como anunciar</strong>
             <ol>
               <li>Escolha caminhão ou implemento</li>
-              <li>Entre ou crie sua conta</li>
+              <li>Crie sua conta ou entre</li>
               <li>Preencha dados e fotos</li>
               <li>Aguarde aprovação</li>
             </ol>
@@ -91,7 +91,7 @@ export default function AnunciarPage() {
         <div className="anunciar-note">
           <strong>Importante:</strong>
           <p>
-            O anúncio só aparece no site depois de aprovado. Isso ajuda a manter os anúncios organizados, com informações claras e melhor apresentação para compradores.
+            Para enviar um anúncio é necessário estar cadastrado. Depois do envio, o anúncio passa por aprovação antes de aparecer publicamente no site.
           </p>
         </div>
       </section>
