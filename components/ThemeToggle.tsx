@@ -44,7 +44,6 @@ export function ThemeToggle() {
       onClick={toggleTheme}
     >
       {theme === "dark" ? <Sun size={17} aria-hidden="true" /> : <Moon size={17} aria-hidden="true" />}
-      <span>{theme === "dark" ? "Claro" : "Escuro"}</span>
     </button>
   );
 }
