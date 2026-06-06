@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogIn, Menu, Search, Truck, X } from "lucide-react";
+import { Handshake, LayoutDashboard, LogIn, Menu, Search, Truck, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
@@ -26,6 +26,7 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
   const navItems = [
     { href: "/anuncios", label: "Caminhões", icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Truck },
+    { href: "/parceiros", label: "Parceiros", icon: Handshake },
     { href: "/como-funciona", label: "Como funciona", icon: Search },
     isLoggedIn
       ? { href: "/painel", label: "Entrar", icon: LayoutDashboard }
