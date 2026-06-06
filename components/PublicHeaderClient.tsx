@@ -3,14 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogIn, Menu, MessageCircle, Search, Store, Truck, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, Search, Truck, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
-
-const baseNavItems = [
-  { href: "/anuncios", label: "Caminhões", icon: Store },
-  { href: "/anuncios?perfil=Implementos", label: "Implementos", icon: Truck },
-];
 
 function isActive(pathname: string, href: string) {
   const cleanHref = href.split("?")[0].split("#")[0];
@@ -27,16 +22,14 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
   const [open, setOpen] = useState(false);
   const closeMenu = () => setOpen(false);
 
-  const accountItem = isLoggedIn
-    ? { href: "/painel", label: "Meu painel", icon: LayoutDashboard }
-    : { href: "/login", label: "Entrar", icon: LogIn };
-
-  const mainButton = isLoggedIn
-    ? { href: "/painel", label: "Meu painel", icon: LayoutDashboard }
-    : { href: "/anunciar", label: "Anunciar", icon: MessageCircle };
-
-  const navItems = [...baseNavItems, accountItem];
-  const MainButtonIcon = mainButton.icon;
+  const navItems = [
+    { href: "/anuncios", label: "Caminhões", icon: Truck },
+    { href: "/implementos", label: "Implementos", icon: Truck },
+    { href: "/como-funciona", label: "Como funciona", icon: Search },
+    isLoggedIn
+      ? { href: "/painel", label: "Entrar", icon: LayoutDashboard }
+      : { href: "/login", label: "Entrar", icon: LogIn },
+  ];
 
   return (
     <header className="public-header">
@@ -65,23 +58,10 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
             );
           })}
 
-          {open ? (
-            <>
-              <Link href={mainButton.href} aria-current={isActive(pathname, mainButton.href) ? "page" : undefined} className={isActive(pathname, mainButton.href) ? "active" : ""} onClick={closeMenu}>
-                <MainButtonIcon size={15} aria-hidden="true" />
-                <span>{mainButton.label}</span>
-              </Link>
-              <ThemeTogglePublic />
-            </>
-          ) : null}
+          {open ? <ThemeTogglePublic /> : null}
         </nav>
 
         <ThemeTogglePublic />
-
-        <Link href={mainButton.href} className="contact-button">
-          <MainButtonIcon size={17} aria-hidden="true" />
-          {mainButton.label}
-        </Link>
 
         <button type="button" className="mobile-btn" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
           {open ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
