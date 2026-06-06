@@ -36,45 +36,45 @@ export default function AnunciarPage() {
             <span className="anunciar-kicker">Anunciar no Caminhões à Venda</span>
             <h1>Escolha o que deseja anunciar.</h1>
             <p>
-              Selecione caminhão ou implemento, acesse sua conta e envie as informações para aprovação antes de aparecer no site.
+              Anuncie caminhões e implementos em uma página direta, organizada e preparada para aprovação antes da publicação.
             </p>
 
             <div className="anunciar-actions">
-              <Link href="/painel/anuncios/novo">Entrar no fluxo de anúncio</Link>
-              <Link href="/login">Já tenho conta</Link>
+              <Link href="/painel/anuncios/novo">Começar anúncio</Link>
+              <Link href="/login">Entrar na conta</Link>
             </div>
           </div>
 
-          <div className="anunciar-flow-card" aria-label="Fluxo do anúncio">
-            <strong>Fluxo organizado</strong>
+          <div className="anunciar-flow-card" aria-label="Etapas para anunciar">
+            <strong>Como anunciar</strong>
             <ol>
               <li>Escolha caminhão ou implemento</li>
               <li>Entre ou crie sua conta</li>
               <li>Preencha dados e fotos</li>
-              <li>Envie para aprovação</li>
+              <li>Aguarde aprovação</li>
             </ol>
           </div>
         </div>
 
         <div className="anunciar-choice-grid" aria-label="Escolha do tipo de anúncio">
           <Link href="/painel/anuncios/novo/caminhao" className="anunciar-choice-card anunciar-choice-primary">
-            <span>01</span>
-            <small>Anúncio de caminhão</small>
+            <span>1</span>
+            <small>Caminhão</small>
             <strong>Anunciar caminhão</strong>
             <p>
               Cavalo mecânico, truck, toco, bitruck, caçamba, baú, prancha, tanque, munck e outros caminhões.
             </p>
-            <b>Começar como caminhão</b>
+            <b>Anunciar caminhão</b>
           </Link>
 
           <Link href="/painel/anuncios/novo/implemento" className="anunciar-choice-card">
-            <span>02</span>
-            <small>Anúncio de implemento</small>
+            <span>2</span>
+            <small>Implemento</small>
             <strong>Anunciar implemento</strong>
             <p>
               Carreta, caçamba, bi-caçamba, bitrem, prancha, graneleiro, tanque, baú, sider, dolly e outros implementos.
             </p>
-            <b>Começar como implemento</b>
+            <b>Anunciar implemento</b>
           </Link>
         </div>
 
