@@ -11,16 +11,17 @@ export default function SobrePage() {
         className="market-container"
         style={{
           display: "grid",
-          gap: 18,
-          paddingTop: 22,
+          gap: 24,
+          paddingTop: 28,
+          paddingBottom: 28,
         }}
       >
         <section
           className="trust-hero"
           style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr)",
-            gap: 16,
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 18,
             alignItems: "stretch",
           }}
         >
@@ -28,6 +29,9 @@ export default function SobrePage() {
             className="market-hero-copy"
             style={{
               minHeight: 0,
+              display: "grid",
+              alignContent: "center",
+              gap: 14,
             }}
           >
             <span className="trust-eyebrow">Sobre a plataforma</span>
@@ -36,14 +40,17 @@ export default function SobrePage() {
               Nosso objetivo é reunir anúncios recentes em um só lugar, facilitar a busca de quem procura caminhões e ajudar quem vende a apresentar melhor suas oportunidades.
             </p>
           </div>
+
           <aside
             className="market-section"
             style={{
               display: "grid",
-              gap: 6,
-              padding: 20,
+              alignContent: "center",
+              gap: 8,
+              padding: 24,
             }}
           >
+            <span className="trust-eyebrow">Atendimento simples</span>
             <strong>Direto</strong>
             <span>Fotos, dados e WhatsApp sem complicar.</span>
           </aside>
@@ -54,21 +61,24 @@ export default function SobrePage() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: 16,
+            gap: 18,
           }}
         >
           <article
             className="market-section"
             style={{
               display: "grid",
-              gap: 10,
-              padding: 22,
+              alignContent: "space-between",
+              gap: 14,
+              padding: 24,
             }}
           >
-            <span>01</span>
-            <b>Para quem compra</b>
-            <h2>Encontre caminhões com informação clara.</h2>
-            <p>Veja fotos, valor, cidade, configuração e chame direto no WhatsApp para confirmar disponibilidade e negociar.</p>
+            <div style={{ display: "grid", gap: 10 }}>
+              <span className="trust-eyebrow">Comprador</span>
+              <b>Para quem compra</b>
+              <h2>Encontre caminhões com informação clara.</h2>
+              <p>Veja fotos, valor, cidade, configuração e chame direto no WhatsApp para confirmar disponibilidade e negociar.</p>
+            </div>
             <Link href="/anuncios">Procurar caminhões</Link>
           </article>
 
@@ -76,14 +86,17 @@ export default function SobrePage() {
             className="market-section"
             style={{
               display: "grid",
-              gap: 10,
-              padding: 22,
+              alignContent: "space-between",
+              gap: 14,
+              padding: 24,
             }}
           >
-            <span>02</span>
-            <b>Para quem vende</b>
-            <h2>Anuncie com mais organização e alcance.</h2>
-            <p>Cadastre dados, fotos, valor e contato. O anúncio passa por revisão antes de aparecer publicamente.</p>
+            <div style={{ display: "grid", gap: 10 }}>
+              <span className="trust-eyebrow">Anunciante</span>
+              <b>Para quem vende</b>
+              <h2>Anuncie com mais organização e alcance.</h2>
+              <p>Cadastre dados, fotos, valor e contato. O anúncio passa por revisão antes de aparecer publicamente.</p>
+            </div>
             <Link href="/anunciar">Quero anunciar</Link>
           </article>
         </section>
@@ -92,8 +105,8 @@ export default function SobrePage() {
           className="trust-card market-section"
           style={{
             display: "grid",
-            gap: 10,
-            padding: 24,
+            gap: 12,
+            padding: 26,
           }}
         >
           <span className="trust-eyebrow">Nossa direção</span>
@@ -107,33 +120,44 @@ export default function SobrePage() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 14,
+            gap: 16,
           }}
         >
           <div
             className="market-section"
             style={{
               display: "grid",
-              gap: 6,
-              padding: 20,
+              gap: 8,
+              padding: 22,
             }}
-          ><strong>Anúncios recentes</strong><span>Estoque apresentado de forma organizada para facilitar a busca.</span></div>
+          >
+            <strong>Anúncios recentes</strong>
+            <span>Estoque apresentado de forma organizada para facilitar a busca.</span>
+          </div>
+
           <div
             className="market-section"
             style={{
               display: "grid",
-              gap: 6,
-              padding: 20,
+              gap: 8,
+              padding: 22,
             }}
-          ><strong>Compra e venda</strong><span>Um ponto de encontro entre quem procura e quem anuncia caminhões.</span></div>
+          >
+            <strong>Compra e venda</strong>
+            <span>Um ponto de encontro entre quem procura e quem anuncia caminhões.</span>
+          </div>
+
           <div
             className="market-section"
             style={{
               display: "grid",
-              gap: 6,
-              padding: 20,
+              gap: 8,
+              padding: 22,
             }}
-          ><strong>Evolução constante</strong><span>Melhorias contínuas para deixar a plataforma mais prática e confiável.</span></div>
+          >
+            <strong>Evolução constante</strong>
+            <span>Melhorias contínuas para deixar a plataforma mais prática e confiável.</span>
+          </div>
         </section>
 
         <section
@@ -143,11 +167,11 @@ export default function SobrePage() {
             flexWrap: "wrap",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: 16,
-            padding: 24,
+            gap: 18,
+            padding: 26,
           }}
         >
-          <div>
+          <div style={{ display: "grid", gap: 8 }}>
             <span className="trust-eyebrow">Caminhões à venda</span>
             <h2>Veja o estoque ou anuncie seu caminhão.</h2>
           </div>
