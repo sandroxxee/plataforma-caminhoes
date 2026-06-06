@@ -2,12 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Revendas e Empresas | Caminhões à Venda",
   description:
     "Espaços exclusivos para revendas, fábricas, lojistas e vendedores profissionais divulgarem caminhões e implementos dentro do Caminhões à Venda.",
   alternates: { canonical: "/revendas" },
+};
+
+type DealerSummary = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  logo_url: string | null;
+  city: string | null;
+  state: string | null;
+  type: string | null;
 };
 
 const tiposDeEspaco = [
@@ -37,7 +52,39 @@ const mensagemWhatsapp = encodeURIComponent(
   "Olá, quero criar um espaço exclusivo para minha revenda, fábrica ou empresa no Caminhões à Venda."
 );
 
-export default function RevendasPage() {
+function formatDealerType(type: string | null) {
+  const types: Record<string, string> = {
+    revenda: "Revenda",
+    lojista: "Lojista",
+    fabrica_implementos: "Fábrica de implementos",
+    vendedor: "Vendedor profissional",
+    parceiro: "Parceiro",
+  };
+
+  return types[type || ""] || "Revenda";
+}
+
+function formatLocation(dealer: DealerSummary) {
+  const city = (dealer.city || "").trim();
+  const state = (dealer.state || "").trim();
+
+  if (city && state) return `${city} - ${state}`;
+  if (city) return city;
+  if (state) return state;
+  return "Localização não informada";
+}
+
+export default async function RevendasPage() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("dealers")
+    .select("id, name, slug, description, logo_url, city, state, type")
+    .eq("status", "ativo")
+    .order("name", { ascending: true });
+
+  const dealers = error ? [] : ((data || []) as DealerSummary[]);
+
   return (
     <main className="market-page">
       <PublicHeader />
@@ -48,7 +95,7 @@ export default function RevendasPage() {
             style={{
               display: "grid",
               gap: 28,
-              gridTemplateColumns: "minmax(0, 1.2fr) minmax(280px, .8fr)",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
               alignItems: "stretch",
             }}
           >
@@ -141,15 +188,15 @@ export default function RevendasPage() {
               style={{
                 borderRadius: 28,
                 padding: 26,
-                background: "rgba(255, 255, 255, .92)",
-                border: "1px solid rgba(148, 163, 184, .22)",
-                boxShadow: "0 18px 50px rgba(15, 23, 42, .1)",
+                background: "var(--surface)",
+                border: "1px solid var(--line)",
+                boxShadow: "var(--shadow)",
               }}
             >
               <strong style={{ display: "block", fontSize: 22, marginBottom: 12 }}>
                 Como fica para a empresa?
               </strong>
-              <p style={{ margin: 0, color: "#475569", lineHeight: 1.7 }}>
+              <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.7 }}>
                 A empresa pode ter uma página própria dentro do Caminhões à Venda, com nome,
                 descrição, WhatsApp e anúncios organizados em um único endereço.
               </p>
@@ -159,17 +206,100 @@ export default function RevendasPage() {
                   marginTop: 20,
                   padding: 16,
                   borderRadius: 18,
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                  color: "#0f172a",
+                  background: "var(--soft)",
+                  border: "1px solid var(--line)",
+                  color: "var(--text)",
                   fontWeight: 800,
                   lineHeight: 1.5,
+                  overflowWrap: "anywhere",
                 }}
               >
-                Exemplo: caminhõesavenda.com.br/revendas/nome-da-revenda
+                Exemplo: caminhoesavenda.com.br/revendas/nome-da-revenda
               </div>
             </aside>
           </div>
+
+          <section className="market-section" style={{ marginTop: 28 }} aria-label="Revendas ativas">
+            <div className="market-section-head">
+              <div>
+                <span>Revendas ativas</span>
+                <h2>Espaços disponíveis no site</h2>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: 14,
+              }}
+            >
+              {dealers.length > 0 ? (
+                dealers.map((dealer) => (
+                  <article
+                    key={dealer.id}
+                    style={{
+                      minHeight: "100%",
+                      display: "grid",
+                      gap: 14,
+                      alignContent: "space-between",
+                      borderRadius: 18,
+                      padding: 18,
+                      background: "var(--soft)",
+                      border: "1px solid var(--line)",
+                    }}
+                  >
+                    <div style={{ display: "grid", gap: 10 }}>
+                      <div
+                        style={{
+                          width: 64,
+                          height: 64,
+                          borderRadius: 18,
+                          display: "grid",
+                          placeItems: "center",
+                          overflow: "hidden",
+                          background: "var(--surface)",
+                          border: "1px solid var(--line)",
+                          color: "var(--blue)",
+                          fontWeight: 950,
+                          fontSize: 24,
+                        }}
+                      >
+                        {dealer.logo_url ? (
+                          <img
+                            src={dealer.logo_url}
+                            alt={`Logo ${dealer.name}`}
+                            style={{ width: "100%", height: "100%", objectFit: "contain", padding: 6 }}
+                          />
+                        ) : (
+                          dealer.name.charAt(0).toUpperCase()
+                        )}
+                      </div>
+
+                      <span className="stock-eyebrow">{formatDealerType(dealer.type)}</span>
+                      <h3 style={{ margin: 0, fontSize: 22, lineHeight: 1.1 }}>{dealer.name}</h3>
+                      <p style={{ margin: 0, color: "var(--muted)", fontWeight: 800 }}>
+                        {formatLocation(dealer)}
+                      </p>
+                      {dealer.description ? (
+                        <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.55 }}>
+                          {dealer.description}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <Link className="trust-btn primary" href={`/revendas/${dealer.slug}`}>
+                      Ver espaço
+                    </Link>
+                  </article>
+                ))
+              ) : (
+                <div className="market-empty">
+                  Nenhuma revenda ativa disponível no momento.
+                </div>
+              )}
+            </div>
+          </section>
 
           <section style={{ marginTop: 28 }} aria-label="Tipos de espaços exclusivos">
             <div
@@ -185,37 +315,16 @@ export default function RevendasPage() {
                   style={{
                     borderRadius: 22,
                     padding: 22,
-                    background: "rgba(255, 255, 255, .92)",
-                    border: "1px solid rgba(148, 163, 184, .22)",
-                    boxShadow: "0 14px 34px rgba(15, 23, 42, .08)",
+                    background: "var(--surface)",
+                    border: "1px solid var(--line)",
+                    boxShadow: "var(--shadow)",
                   }}
                 >
                   <h2 style={{ margin: "0 0 10px", fontSize: 21 }}>{item.titulo}</h2>
-                  <p style={{ margin: 0, color: "#475569", lineHeight: 1.65 }}>{item.texto}</p>
+                  <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.65 }}>{item.texto}</p>
                 </article>
               ))}
             </div>
-          </section>
-
-          <section
-            style={{
-              marginTop: 28,
-              borderRadius: 24,
-              padding: "clamp(22px, 4vw, 34px)",
-              background: "#0f172a",
-              color: "#fff",
-              display: "grid",
-              gap: 16,
-            }}
-          >
-            <h2 style={{ margin: 0, fontSize: "clamp(24px, 4vw, 34px)" }}>
-              Um endereço para divulgar o estoque da empresa
-            </h2>
-            <p style={{ margin: 0, maxWidth: 920, color: "rgba(226, 232, 240, .9)", lineHeight: 1.7 }}>
-              A ideia é simples: cada revenda, fábrica, lojista ou vendedor profissional pode ter
-              uma vitrine própria, sem misturar tudo em uma página solta. O comprador entra, vê
-              quem está anunciando e acessa os anúncios daquele anunciante.
-            </p>
           </section>
         </section>
       </div>
