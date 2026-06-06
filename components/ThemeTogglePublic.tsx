@@ -45,10 +45,10 @@ export function ThemeTogglePublic() {
       className="public-theme-toggle"
       aria-label={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
       aria-pressed={isDark}
+      title={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
       onClick={toggleTheme}
     >
-      {isDark ? <Sun size={17} aria-hidden="true" /> : <Moon size={17} aria-hidden="true" />}
-      <span>{isDark ? "Claro" : "Escuro"}</span>
+      {isDark ? <Sun size={15} aria-hidden="true" /> : <Moon size={15} aria-hidden="true" />}
     </button>
   );
 }
