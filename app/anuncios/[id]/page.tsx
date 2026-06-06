@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ShareAdButton } from "@/components/ShareAdButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdGallery } from "@/components/theme/AdGallery";
-import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
+import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { extrairIdDoParametroAnuncio, gerarSlugComId } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
@@ -224,7 +224,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const location = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
   const structuredData = getStructuredData(truck, title, location, whatsappLink);
-  const shareText = `🚛 ${title}${truck.ano_modelo ? ` ano ${truck.ano_modelo}` : ""}${truck.cidade ? ` em ${truck.cidade}` : ""}.\n\n${truck.descricao?.trim() || "Caminhão anunciado com fotos e contato direto pelo WhatsApp."}`;
+  const shareYear = truck.ano_modelo || truck.ano_fabricacao;
+  const shareText = `🚛 ${getCardTitle(truck)}${shareYear ? ` ${shareYear}` : ""}`;
 
   return (
     <main className="market-page">
