@@ -40,8 +40,9 @@ export default function AnunciarPage() {
             </p>
 
             <div className="anunciar-actions">
-              <Link href="/cadastro">Criar conta para anunciar</Link>
-              <Link href="/login">Entrar na conta</Link>
+              <Link href="/cadastro" className="anunciar-action-primary">Criar conta para anunciar</Link>
+              <Link href="/planos" className="anunciar-action-plans">Ver planos de anúncio</Link>
+              <Link href="/login" className="anunciar-action-secondary">Entrar na conta</Link>
             </div>
           </div>
 
@@ -108,8 +109,9 @@ export default function AnunciarPage() {
         .anunciar-copy p { max-width: 720px; margin: 0; color: var(--muted); font-size: 17px; line-height: 1.6; font-weight: 750; }
         .anunciar-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
         .anunciar-actions a { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border-radius: 999px; font-weight: 950; }
-        .anunciar-actions a:first-child { background: var(--blue); color: #fff; }
-        .anunciar-actions a:last-child { background: var(--soft); border: 1px solid var(--line); color: var(--text); }
+        .anunciar-action-primary { background: var(--blue); color: #fff; }
+        .anunciar-action-plans { background: #16a34a; color: #fff; }
+        .anunciar-action-secondary { background: var(--soft); border: 1px solid var(--line); color: var(--text); }
         .anunciar-flow-card { padding: 24px; border-radius: var(--radius); background: #101827; border: 1px solid rgba(148, 163, 184, .22); box-shadow: var(--shadow); color: #fff; }
         .anunciar-flow-card strong { display: block; color: #93c5fd; font-size: 13px; font-weight: 950; letter-spacing: .04em; text-transform: uppercase; }
         .anunciar-flow-card ol { display: grid; gap: 12px; margin: 18px 0 0; padding: 0; list-style: none; counter-reset: steps; }
