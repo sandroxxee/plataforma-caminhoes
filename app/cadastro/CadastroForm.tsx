@@ -102,13 +102,19 @@ export function CadastroForm() {
     const userId = loginData.user?.id || signupData.user?.id;
 
     if (userId) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: userId,
-        email,
-        nome,
-        telefone: telefoneLimpo,
-        role: "anunciante",
-      });
+    const { error: profileError } = await supabase.from("profiles").upsert(
+  {
+    id: userId,
+    email,
+    nome,
+    telefone: telefoneLimpo,
+    whatsapp: telefoneLimpo,
+    tipo_conta: "anunciante",
+    role: "anunciante",
+    status: "ativo",
+  },
+  { onConflict: "id" },
+);
 
       if (profileError) {
         setErro("Conta criada, mas não foi possível preparar o perfil. Tente entrar novamente.");
