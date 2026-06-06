@@ -19,7 +19,6 @@ export default function ComoFuncionaPage() {
           <p>Encontre caminhões reais, veja fotos e informações principais, compare os anúncios e fale direto com o anunciante pelo WhatsApp.</p>
         </div>
         <aside>
-          <strong>3 fluxos</strong>
           <span>Comprar, anunciar e negociar com mais clareza.</span>
         </aside>
       </section>
