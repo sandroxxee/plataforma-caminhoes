@@ -21,6 +21,7 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const closeMenu = () => setOpen(false);
+  const showTopSearch = pathname !== "/anuncios";
 
   const navItems = [
     { href: "/anuncios", label: "Caminhões", icon: Truck },
@@ -41,10 +42,12 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
           </span>
         </Link>
 
-        <form className="search-top" action="/anuncios">
-          <Search size={17} aria-hidden="true" />
-          <input name="busca" type="search" placeholder="Buscar caminhões, implementos, marcas e cidades" />
-        </form>
+        {showTopSearch ? (
+          <form className="search-top" action="/anuncios">
+            <Search size={17} aria-hidden="true" />
+            <input name="busca" type="search" placeholder="Buscar caminhões, implementos, marcas e cidades" />
+          </form>
+        ) : null}
 
         <nav className={`public-menu ${open ? "open" : ""}`} id="menu" aria-label="Menu principal">
           {navItems.map((item) => {
