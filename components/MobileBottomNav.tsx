@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogIn, Megaphone, MessageCircle, PanelTop, Truck } from "lucide-react";
+import { LogIn, Megaphone, Search, Truck } from "lucide-react";
 
 function isActive(pathname: string, href: string) {
-  if (href.startsWith("http")) return false;
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -17,21 +16,21 @@ export function MobileBottomNav() {
     { href: "/anuncios", label: "Caminhões", icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Truck },
     { href: "/anunciar", label: "Anunciar", icon: Megaphone, featured: true },
+    { href: "/anuncios", label: "Buscar", icon: Search },
     { href: "/login", label: "Entrar", icon: LogIn },
-    { href: "https://wa.me/5549999362681", label: "WhatsApp", icon: MessageCircle, whatsapp: true },
   ];
 
   return (
     <nav className="mobile-bottom-nav" aria-label="Navegação rápida mobile">
       {items.map((item) => {
         const Icon = item.icon;
-        const active = isActive(pathname, item.href);
+        const active = isActive(pathname, item.href) && item.label !== "Buscar";
 
         return (
           <Link
-            key={item.href}
+            key={`${item.href}-${item.label}`}
             href={item.href}
-            className={`mobile-bottom-nav-item${active ? " active" : ""}${item.featured ? " featured" : ""}${item.whatsapp ? " whatsapp" : ""}`}
+            className={`mobile-bottom-nav-item${active ? " active" : ""}${item.featured ? " featured" : ""}`}
             aria-current={active ? "page" : undefined}
           >
             <span className="mobile-bottom-nav-icon">
