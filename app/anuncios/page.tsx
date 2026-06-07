@@ -235,6 +235,25 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             <h1>Caminhões à venda</h1>
           </div>
         </div>
+      </section>
+
+      <section className="market-container stock-grid">
+        {trucks.length > 0 ? (
+          trucks.map((truck) => <TruckCard key={truck.id} truck={truck} />)
+        ) : (
+          <div className="market-empty">
+            Nenhum anúncio encontrado. Use os filtros avançados no final da página para buscar por marca, modelo, tração, implemento ou cidade.
+          </div>
+        )}
+      </section>
+
+      <section className="market-container market-section market-filter-bottom" aria-label="Filtros avançados">
+        <div className="market-section-head">
+          <div>
+            <span>Busca</span>
+            <h2>Filtros avançados</h2>
+          </div>
+        </div>
 
         <SearchMarketplace
           busca={busca}
@@ -246,16 +265,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           tracoes={TRACOES}
           implementos={IMPLEMENTOS}
         />
-      </section>
-
-      <section className="market-container stock-grid">
-        {trucks.length > 0 ? (
-          trucks.map((truck) => <TruckCard key={truck.id} truck={truck} />)
-        ) : (
-          <div className="market-empty">
-            Nenhum anúncio encontrado. Tente buscar por marca, modelo, tração, implemento ou cidade.
-          </div>
-        )}
       </section>
 
       <SiteFooter />
