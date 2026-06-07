@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-label="Caminhões à Venda">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.42" stop-color="#0b1d35"/>
+      <stop offset="1" stop-color="#12335c"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="0.5" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="truck" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#000000" flood-opacity="0.42"/>
+    </filter>
+    <filter id="blueglow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="520" fill="url(#bg)"/>
+  <circle cx="1260" cy="130" r="240" fill="#2563eb" opacity="0.16"/>
+  <circle cx="1390" cy="180" r="150" fill="#60a5fa" opacity="0.13"/>
+
+  <g opacity="0.24">
+    <path d="M0 342 C280 260 500 300 760 238 C1030 174 1260 186 1600 130 L1600 520 L0 520 Z" fill="#2563eb" opacity="0.20"/>
+    <path d="M0 376 C320 330 610 336 870 292 C1120 250 1340 230 1600 210 L1600 520 L0 520 Z" fill="#94a3b8" opacity="0.18"/>
+  </g>
+
+  <g transform="translate(0 330)">
+    <path d="M0 90 C330 40 760 50 1600 0 L1600 190 L0 190 Z" fill="url(#road)"/>
+    <path d="M150 112 C510 75 950 72 1510 30" stroke="#e5e7eb" stroke-width="5" opacity="0.38" stroke-linecap="round"/>
+    <path d="M650 118 C850 96 1080 86 1350 58" stroke="#facc15" stroke-width="4" opacity="0.80" stroke-dasharray="56 36" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(860 145)" filter="url(#shadow)">
+    <path d="M42 192 H570 C612 192 646 226 646 268 V330 H0 V234 C0 211 19 192 42 192 Z" fill="#111827"/>
+    <path d="M88 64 H420 C461 64 494 97 494 138 V192 H54 V98 C54 79 69 64 88 64 Z" fill="url(#truck)"/>
+    <path d="M494 132 H626 C644 132 658 146 658 164 V192 H494 Z" fill="#0f172a"/>
+    <path d="M538 148 H615 C625 148 633 156 633 166 V188 H538 Z" fill="#bfdbfe" opacity="0.92"/>
+    <rect x="86" y="92" width="354" height="62" rx="8" fill="#0f172a" opacity="0.16"/>
+    <path d="M92 210 H632 V262 H92 Z" fill="#263244"/>
+    <circle cx="135" cy="330" r="50" fill="#020617"/>
+    <circle cx="135" cy="330" r="25" fill="#94a3b8"/>
+    <circle cx="398" cy="330" r="50" fill="#020617"/>
+    <circle cx="398" cy="330" r="25" fill="#94a3b8"/>
+    <circle cx="548" cy="330" r="50" fill="#020617"/>
+    <circle cx="548" cy="330" r="25" fill="#94a3b8"/>
+    <rect x="75" y="44" width="360" height="18" rx="9" fill="#facc15" opacity="0.95"/>
+    <g filter="url(#blueglow)">
+      <circle cx="68" cy="260" r="14" fill="#38bdf8"/>
+      <circle cx="622" cy="250" r="16" fill="#38bdf8"/>
+      <path d="M52 262 L-70 286" stroke="#38bdf8" stroke-width="8" opacity="0.48" stroke-linecap="round"/>
+      <path d="M640 250 L772 238" stroke="#38bdf8" stroke-width="8" opacity="0.56" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g transform="translate(650 230) scale(.44)" opacity="0.64" filter="url(#shadow)">
+    <path d="M42 192 H570 C612 192 646 226 646 268 V330 H0 V234 C0 211 19 192 42 192 Z" fill="#111827"/>
+    <path d="M88 64 H420 C461 64 494 97 494 138 V192 H54 V98 C54 79 69 64 88 64 Z" fill="#e5e7eb"/>
+    <path d="M494 132 H626 C644 132 658 146 658 164 V192 H494 Z" fill="#0f172a"/>
+    <circle cx="135" cy="330" r="50" fill="#020617"/>
+    <circle cx="398" cy="330" r="50" fill="#020617"/>
+    <circle cx="548" cy="330" r="50" fill="#020617"/>
+    <g filter="url(#blueglow)">
+      <circle cx="622" cy="250" r="16" fill="#38bdf8"/>
+    </g>
+  </g>
+
+  <g transform="translate(95 92)">
+    <text x="0" y="70" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="900" fill="#f8fafc" letter-spacing="-2">CAMINHÕES</text>
+    <text x="0" y="132" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="900" fill="#1d7cff" letter-spacing="-2">À VENDA</text>
+    <rect x="0" y="156" width="390" height="2" fill="#1d7cff" opacity="0.8"/>
+    <text x="0" y="196" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#e2e8f0">A plataforma de venda de pesados do Brasil</text>
+  </g>
+</svg>
