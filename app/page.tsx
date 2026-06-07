@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { FeaturedAds } from "@/components/theme/FeaturedAds";
 import { HeroMarketplace } from "@/components/theme/HeroMarketplace";
-import type { TruckCardData } from "@/components/theme/TruckCard";
+import { getTruckImage, type TruckCardData } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -46,13 +46,14 @@ export default async function HomePage() {
     .limit(12);
 
   const trucks = (data || []) as TruckCardData[];
+  const heroImage = trucks.map(getTruckImage).find(Boolean) || null;
 
   return (
     <main className="market-page">
       <PublicHeader />
 
       <div className="market-main">
-        <HeroMarketplace />
+        <HeroMarketplace imageUrl={heroImage} />
         <FeaturedAds trucks={trucks} />
       </div>
 
