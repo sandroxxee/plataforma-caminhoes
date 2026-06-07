@@ -48,7 +48,6 @@ export default async function NovoCaminhaoPage() {
     <PanelLayout
       title="Anunciar caminhão"
       subtitle="Cadastre o caminhão com dados claros, fotos e contato do anunciante."
-      badge="Novo caminhão"
       actions={<Link href="/painel/anuncios/novo" className="secondary-button">Trocar tipo</Link>}
     >
       <form action={criarAnuncio} className="truck-form" encType="multipart/form-data">
