@@ -5,7 +5,7 @@ export function HeroMarketplace() {
     <section className="market-container hero-glass" aria-label="Caminhões à Venda">
       <div className="hero-image-stage">
         <img
-          src="/hero-caminhoes-a-venda.svg?v=6"
+          src="/hero-caminhoes-a-venda.svg?v=7"
           alt="Caminhões à Venda"
           className="hero-glass-img"
         />
@@ -24,69 +24,81 @@ export function HeroMarketplace() {
           position: relative;
           overflow: hidden;
           border-radius: var(--radius);
-          border: 1px solid var(--line);
-          background: var(--surface);
+          border: 1px solid rgba(255, 255, 255, .22);
+          background: #07111f;
           box-shadow: var(--shadow);
         }
 
         .hero-image-stage {
           width: 100%;
-          min-height: 330px;
+          min-height: 360px;
           position: relative;
           overflow: hidden;
+          background: #07111f;
+        }
+
+        .hero-image-stage::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
           background:
-            linear-gradient(135deg, rgba(24,119,242,.08), rgba(255,255,255,.02)),
-            var(--soft);
+            linear-gradient(180deg, rgba(7, 17, 31, .06), rgba(7, 17, 31, .22)),
+            radial-gradient(circle at 50% 84%, rgba(255, 255, 255, .16), transparent 40%);
         }
 
         .hero-glass-img {
           display: block;
           width: 100%;
           height: 100%;
-          min-height: 330px;
-          aspect-ratio: 16 / 8;
-          object-fit: cover;
+          min-height: 360px;
+          aspect-ratio: 16 / 7;
+          object-fit: contain;
           object-position: center center;
         }
 
         .hero-glass-menu {
           position: absolute;
           left: 50%;
-          bottom: 18px;
+          bottom: 22px;
           z-index: 2;
           transform: translateX(-50%);
-          width: min(980px, calc(100% - 32px));
-          min-height: 62px;
+          width: min(900px, calc(100% - 36px));
+          min-height: 58px;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          padding: 9px;
+          padding: 8px;
           border-radius: 999px;
-          background: rgba(255, 255, 255, .08);
-          border: 1px solid rgba(255, 255, 255, .34);
-          box-shadow: 0 18px 44px rgba(15, 23, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .38);
-          backdrop-filter: blur(18px) saturate(145%);
-          -webkit-backdrop-filter: blur(18px) saturate(145%);
+          background: rgba(255, 255, 255, .12);
+          border: 1px solid rgba(255, 255, 255, .38);
+          box-shadow:
+            0 18px 42px rgba(0, 0, 0, .22),
+            inset 0 1px 0 rgba(255, 255, 255, .42);
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
         }
 
         .hero-glass-menu a {
-          min-height: 44px;
+          min-height: 42px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          padding: 0 15px;
+          padding: 0 14px;
           position: relative;
           overflow: hidden;
           border-radius: 999px;
-          background: rgba(255, 255, 255, .16);
+          background: rgba(255, 255, 255, .18);
           border: 1px solid rgba(255, 255, 255, .42);
           color: #0f172a;
           font-size: 13px;
-          font-weight: 950;
+          font-weight: 900;
           white-space: nowrap;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, .55);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .42), 0 8px 18px rgba(15, 23, 42, .08);
+          text-shadow: 0 1px 0 rgba(255, 255, 255, .48);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .46),
+            0 8px 18px rgba(0, 0, 0, .10);
           backdrop-filter: blur(14px) saturate(160%);
           -webkit-backdrop-filter: blur(14px) saturate(160%);
         }
@@ -95,27 +107,29 @@ export function HeroMarketplace() {
           content: "";
           position: absolute;
           inset: 1px 1px auto 1px;
-          height: 48%;
+          height: 45%;
           border-radius: 999px;
-          background: linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,0));
+          background: linear-gradient(180deg, rgba(255, 255, 255, .46), rgba(255, 255, 255, 0));
           pointer-events: none;
         }
 
         .hero-glass-menu a:hover {
-          background: rgba(255, 255, 255, .28);
+          background: rgba(255, 255, 255, .30);
           transform: translateY(-1px);
         }
 
         .hero-glass-menu .hero-glass-cta {
           background: rgba(24, 119, 242, .72);
-          border-color: rgba(147, 197, 253, .70);
+          border-color: rgba(147, 197, 253, .72);
           color: #fff;
           text-shadow: none;
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .32), 0 10px 22px rgba(24, 119, 242, .22);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .32),
+            0 10px 22px rgba(24, 119, 242, .24);
         }
 
         .hero-glass-menu .hero-glass-cta:hover {
-          background: rgba(24, 119, 242, .86);
+          background: rgba(24, 119, 242, .88);
         }
 
         @media (max-width: 760px) {
@@ -126,6 +140,7 @@ export function HeroMarketplace() {
 
           .hero-glass-img {
             aspect-ratio: 16 / 9;
+            object-fit: contain;
           }
 
           .hero-glass-menu {
