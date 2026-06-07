@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter, Manrope, Oswald } from "next/font/google";
 import { CopyProtection } from "@/components/CopyProtection";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { PwaRegister } from "@/components/PwaRegister";
 import { WhatsappClickTracker } from "@/components/WhatsappClickTracker";
 import "./globals.css";
@@ -113,6 +114,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <WhatsappClickTracker />
         <CopyProtection />
         {children}
+        <MobileBottomNav />
       </body>
     </html>
   );
