@@ -3,13 +3,11 @@
 import { usePathname } from "next/navigation";
 
 const menuItems = [
-  { href: "/painel", icon: "▣", label: "Resumo", helper: "Visão geral" },
   { href: "/painel/anuncios", icon: "▤", label: "Meus anúncios", helper: "Editar e acompanhar" },
-  { href: "/painel/anuncios/novo", icon: "+", label: "Novo anúncio", helper: "Cadastrar caminhão" },
+  { href: "/painel/anuncios/novo", icon: "+", label: "Anunciar", helper: "Cadastrar anúncio" },
 ];
 
 function isActive(pathname: string, href: string) {
-  if (href === "/painel") return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
