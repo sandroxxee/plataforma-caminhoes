@@ -4,9 +4,19 @@ export function HeroMarketplace() {
   return (
     <section className="market-container market-hero compact-hero hero-single hero-with-bottom-panel">
       <div className="market-hero-copy">
-        <span>Caminhões e implementos</span>
-        <h1>Caminhões à Venda</h1>
-        <p>A plataforma de venda de pesados do Brasil.</p>
+        <img
+          className="hero-bg-image"
+          src="/hero-caminhoes-a-venda.svg?v=2"
+          alt=""
+          aria-hidden="true"
+        />
+        <div className="hero-bg-overlay" aria-hidden="true" />
+
+        <div className="hero-copy-content">
+          <span>Caminhões e implementos</span>
+          <h1>Caminhões à Venda</h1>
+          <p>A plataforma de venda de pesados do Brasil.</p>
+        </div>
       </div>
 
       <div className="hero-bottom-panel" aria-label="Atalhos principais">
@@ -40,18 +50,39 @@ export function HeroMarketplace() {
           padding: 36px 36px 86px;
           position: relative;
           overflow: hidden;
-          background-image:
-            linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.90) 38%, rgba(255,255,255,.42) 68%, rgba(255,255,255,.10) 100%),
-            url("/hero-caminhoes-a-venda.svg");
-          background-size: cover;
-          background-position: center right;
-          background-repeat: no-repeat;
+          background: #f8fbff;
+        }
+
+        .hero-bg-image {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center right;
+          display: block;
+        }
+
+        .hero-bg-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          background: linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.90) 38%, rgba(255,255,255,.42) 68%, rgba(255,255,255,.10) 100%);
         }
 
         body.public-theme-dark .hero-with-bottom-panel .market-hero-copy {
-          background-image:
-            linear-gradient(90deg, rgba(17,28,49,.98) 0%, rgba(17,28,49,.88) 42%, rgba(17,28,49,.50) 74%, rgba(17,28,49,.18) 100%),
-            url("/hero-caminhoes-a-venda.svg");
+          background: #111c31;
+        }
+
+        body.public-theme-dark .hero-bg-overlay {
+          background: linear-gradient(90deg, rgba(17,28,49,.98) 0%, rgba(17,28,49,.88) 42%, rgba(17,28,49,.50) 74%, rgba(17,28,49,.18) 100%);
+        }
+
+        .hero-copy-content {
+          position: relative;
+          z-index: 2;
+          max-width: 760px;
         }
 
         .hero-with-bottom-panel .market-hero-copy h1 {
@@ -171,7 +202,10 @@ export function HeroMarketplace() {
           .hero-with-bottom-panel .market-hero-copy {
             min-height: 280px;
             padding: 22px 18px 92px;
-            background-position: center right -120px;
+          }
+
+          .hero-bg-image {
+            object-position: center right -120px;
           }
 
           .hero-bottom-panel {
@@ -214,7 +248,10 @@ export function HeroMarketplace() {
           .hero-with-bottom-panel .market-hero-copy {
             min-height: 260px;
             padding: 18px 14px 102px;
-            background-position: center right -190px;
+          }
+
+          .hero-bg-image {
+            object-position: center right -190px;
           }
 
           .hero-with-bottom-panel .market-hero-copy span {
