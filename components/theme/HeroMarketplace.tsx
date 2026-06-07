@@ -1,19 +1,9 @@
 import Link from "next/link";
 
-type HeroMarketplaceProps = {
-  imageUrl?: string | null;
-};
-
-export function HeroMarketplace({ imageUrl }: HeroMarketplaceProps) {
-  const heroBackground = imageUrl
-    ? {
-        backgroundImage: `linear-gradient(180deg, rgba(7, 17, 31, .08), rgba(7, 17, 31, .34)), url(${imageUrl})`,
-      }
-    : undefined;
-
+export function HeroMarketplace() {
   return (
     <section className="market-container hero-glass" aria-label="Caminhões à Venda">
-      <div className="hero-image-stage" style={heroBackground} aria-hidden="true" />
+      <div className="hero-image-stage" aria-hidden="true" />
 
       <nav className="hero-glass-menu" aria-label="Menu rápido">
         <Link href="/anuncios">Caminhões</Link>
@@ -38,23 +28,18 @@ export function HeroMarketplace({ imageUrl }: HeroMarketplaceProps) {
           min-height: 330px;
           position: relative;
           overflow: hidden;
-          background:
-            linear-gradient(180deg, rgba(7, 17, 31, .10), rgba(7, 17, 31, .36)),
-            radial-gradient(circle at 50% 78%, rgba(255, 255, 255, .10), transparent 38%),
-            #07111f;
+          background-image:
+            url("/hero-caminhoes-a-venda.webp?v=2"),
+            url("/hero-caminhoes-a-venda.jpg?v=2"),
+            url("/hero-caminhoes-a-venda.png?v=2"),
+            url("/hero-caminhoes-a-venda-real.webp?v=2"),
+            url("/hero-caminhoes-a-venda-real.jpg?v=2"),
+            url("/hero-caminhoes-a-venda-real.png?v=2"),
+            url("/hero-caminhoes-a-venda-real.svg?v=2");
           background-size: cover;
           background-position: center center;
           background-repeat: no-repeat;
-        }
-
-        .hero-image-stage::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background:
-            linear-gradient(90deg, rgba(7, 17, 31, .34), rgba(7, 17, 31, .06) 42%, rgba(7, 17, 31, .30)),
-            linear-gradient(180deg, rgba(7, 17, 31, .04), rgba(7, 17, 31, .30));
+          background-color: #07111f;
         }
 
         .hero-glass-menu {
@@ -71,13 +56,13 @@ export function HeroMarketplace({ imageUrl }: HeroMarketplaceProps) {
           gap: 8px;
           padding: 8px;
           border-radius: 999px;
-          background: rgba(255, 255, 255, .12);
-          border: 1px solid rgba(255, 255, 255, .38);
+          background: rgba(255, 255, 255, .10);
+          border: 1px solid rgba(255, 255, 255, .34);
           box-shadow:
-            0 18px 42px rgba(0, 0, 0, .22),
-            inset 0 1px 0 rgba(255, 255, 255, .42);
-          backdrop-filter: blur(20px) saturate(160%);
-          -webkit-backdrop-filter: blur(20px) saturate(160%);
+            0 18px 42px rgba(0, 0, 0, .18),
+            inset 0 1px 0 rgba(255, 255, 255, .38);
+          backdrop-filter: blur(18px) saturate(150%);
+          -webkit-backdrop-filter: blur(18px) saturate(150%);
         }
 
         .hero-glass-menu a {
@@ -98,9 +83,9 @@ export function HeroMarketplace({ imageUrl }: HeroMarketplaceProps) {
           text-shadow: 0 1px 0 rgba(255, 255, 255, .48);
           box-shadow:
             inset 0 1px 0 rgba(255, 255, 255, .46),
-            0 8px 18px rgba(0, 0, 0, .10);
-          backdrop-filter: blur(14px) saturate(160%);
-          -webkit-backdrop-filter: blur(14px) saturate(160%);
+            0 8px 18px rgba(0, 0, 0, .08);
+          backdrop-filter: blur(12px) saturate(150%);
+          -webkit-backdrop-filter: blur(12px) saturate(150%);
         }
 
         .hero-glass-menu a:before {
@@ -109,12 +94,12 @@ export function HeroMarketplace({ imageUrl }: HeroMarketplaceProps) {
           inset: 1px 1px auto 1px;
           height: 45%;
           border-radius: 999px;
-          background: linear-gradient(180deg, rgba(255, 255, 255, .46), rgba(255, 255, 255, 0));
+          background: linear-gradient(180deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, 0));
           pointer-events: none;
         }
 
         .hero-glass-menu a:hover {
-          background: rgba(255, 255, 255, .30);
+          background: rgba(255, 255, 255, .28);
           transform: translateY(-1px);
         }
 
