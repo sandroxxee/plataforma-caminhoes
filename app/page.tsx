@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
@@ -54,26 +53,6 @@ export default async function HomePage() {
 
       <div className="market-main">
         <HeroMarketplace />
-
-        <section className="market-container market-categories" aria-label="Categorias rápidas">
-          <Link href="/anuncios?perfil=Cavalo%20mec%C3%A2nico">
-            <strong>Cavalos mecânicos</strong>
-            <span>Opções para estrada</span>
-          </Link>
-          <Link href="/anuncios?perfil=Truck">
-            <strong>Trucks e tocos</strong>
-            <span>Serviço urbano e regional</span>
-          </Link>
-          <Link href="/anuncios?implemento=Ca%C3%A7amba">
-            <strong>Caçambas e tanques</strong>
-            <span>Obra, agro e transporte</span>
-          </Link>
-          <Link href="/anuncios?perfil=Implementos">
-            <strong>Implementos</strong>
-            <span>Carretas e carrocerias</span>
-          </Link>
-        </section>
-
         <FeaturedAds trucks={trucks} />
       </div>
 
