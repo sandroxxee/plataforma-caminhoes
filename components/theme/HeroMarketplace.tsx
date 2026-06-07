@@ -4,13 +4,13 @@ export function HeroMarketplace() {
   return (
     <section className="market-container market-hero compact-hero hero-single">
       <div className="market-hero-copy">
-        <span>Anúncios revisados • contato direto • feito para o mercado de caminhões</span>
-        <h1>Caminhões à venda para quem precisa comprar, vender ou negociar com segurança.</h1>
-        <p>Veja anúncios reais, fale direto pelo WhatsApp e encontre oportunidades de caminhões, trucks, cavalos mecânicos e implementos.</p>
+        <span>Caminhões e implementos</span>
+        <h1>Anúncios de caminhões com contato direto.</h1>
+        <p>Veja anúncios aprovados, compare opções e fale com o anunciante pelo WhatsApp.</p>
 
         <div className="market-hero-actions">
-          <Link href="/anuncios">Ver caminhões</Link>
-          <Link href="/anunciar">Anunciar caminhão</Link>
+          <Link href="/anuncios">Ver anúncios</Link>
+          <Link href="/anunciar">Anunciar</Link>
         </div>
       </div>
 
@@ -34,6 +34,36 @@ export function HeroMarketplace() {
         .hero-single .market-hero-copy p {
           max-width: 560px;
           font-size: 16px;
+        }
+
+        @media (max-width: 560px) {
+          .hero-single .market-hero-copy {
+            min-height: auto;
+            padding: 16px 14px;
+          }
+
+          .hero-single .market-hero-copy span {
+            font-size: 10px;
+            padding: 6px 9px;
+          }
+
+          .hero-single .market-hero-copy h1 {
+            max-width: 320px;
+            margin: 10px 0 6px;
+            font-size: 25px;
+            line-height: 1.04;
+            letter-spacing: -.04em;
+          }
+
+          .hero-single .market-hero-copy p {
+            max-width: 320px;
+            font-size: 13px;
+            line-height: 1.38;
+          }
+
+          .hero-single .market-hero-actions {
+            margin-top: 12px;
+          }
         }
       `}</style>
     </section>
