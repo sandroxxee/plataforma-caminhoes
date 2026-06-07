@@ -77,7 +77,7 @@ export default async function AdminAnunciosPage() {
   return (
     <AdminLayout
       title="Todos os anúncios"
-      subtitle="Controle os anúncios cadastrados, revise status e ajuste informações quando necessário."
+      subtitle="Controle os anúncios cadastrados, revise status e prepare divulgação dos aprovados."
       badge="Admin"
       actions={<Link href="/painel/anuncios/novo" style={styles.topButton}>Criar anúncio</Link>}
     >
@@ -101,6 +101,10 @@ export default async function AdminAnunciosPage() {
               </span>
 
               <div style={styles.actions}>
+                {truck.status === "aprovado" && (
+                  <Link href={`/admin/divulgacao/${truck.id}`} style={styles.share}>Divulgar</Link>
+                )}
+
                 {truck.status !== "aprovado" && (
                   <form action={aprovarAnuncio} style={styles.formButton}>
                     <input type="hidden" name="id" value={truck.id} />
@@ -169,5 +173,6 @@ const styles: Record<string, CSSProperties> = {
   approve: { ...buttonBase, background: "#22c55e", color: "#06140b" },
   reject: { ...buttonBase, background: "#ef4444", color: "#ffffff" },
   edit: { ...buttonBase, background: "#2a2f34", color: "#e8eaed", border: "1px solid #343a40" },
+  share: { ...buttonBase, background: "#1877f2", color: "#ffffff" },
   empty: { padding: 24, borderRadius: 18, background: "#1f2327", border: "1px solid #343a40", color: "#a7afb7", fontWeight: 800 },
 };
