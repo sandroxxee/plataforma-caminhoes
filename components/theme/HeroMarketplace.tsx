@@ -3,13 +3,7 @@ import Link from "next/link";
 export function HeroMarketplace() {
   return (
     <section className="market-container hero-glass" aria-label="Caminhões à Venda">
-      <div className="hero-image-stage">
-        <img
-          src="/hero-caminhoes-a-venda.svg?v=7"
-          alt="Caminhões à Venda"
-          className="hero-glass-img"
-        />
-      </div>
+      <div className="hero-image-stage" aria-hidden="true" />
 
       <nav className="hero-glass-menu" aria-label="Menu rápido">
         <Link href="/anuncios">Caminhões</Link>
@@ -34,27 +28,20 @@ export function HeroMarketplace() {
           min-height: 360px;
           position: relative;
           overflow: hidden;
-          background: #07111f;
+          background:
+            linear-gradient(180deg, rgba(7, 17, 31, .10), rgba(7, 17, 31, .36)),
+            radial-gradient(circle at 50% 78%, rgba(255, 255, 255, .10), transparent 38%),
+            #07111f;
         }
 
-        .hero-image-stage::after {
+        .hero-image-stage::before {
           content: "";
           position: absolute;
-          inset: 0;
+          inset: 18px;
+          border-radius: calc(var(--radius) - 6px);
+          border: 1px dashed rgba(255, 255, 255, .22);
+          background: rgba(255, 255, 255, .035);
           pointer-events: none;
-          background:
-            linear-gradient(180deg, rgba(7, 17, 31, .06), rgba(7, 17, 31, .22)),
-            radial-gradient(circle at 50% 84%, rgba(255, 255, 255, .16), transparent 40%);
-        }
-
-        .hero-glass-img {
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-height: 360px;
-          aspect-ratio: 16 / 7;
-          object-fit: contain;
-          object-position: center center;
         }
 
         .hero-glass-menu {
@@ -133,14 +120,8 @@ export function HeroMarketplace() {
         }
 
         @media (max-width: 760px) {
-          .hero-image-stage,
-          .hero-glass-img {
+          .hero-image-stage {
             min-height: 300px;
-          }
-
-          .hero-glass-img {
-            aspect-ratio: 16 / 9;
-            object-fit: contain;
           }
 
           .hero-glass-menu {
@@ -162,13 +143,8 @@ export function HeroMarketplace() {
         }
 
         @media (max-width: 560px) {
-          .hero-image-stage,
-          .hero-glass-img {
+          .hero-image-stage {
             min-height: 260px;
-          }
-
-          .hero-glass-img {
-            aspect-ratio: 16 / 10;
           }
 
           .hero-glass-menu a {
