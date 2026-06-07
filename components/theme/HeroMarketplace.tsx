@@ -31,38 +31,27 @@ export function HeroMarketplace() {
         .hero-with-bottom-panel {
           position: relative;
           grid-template-columns: 1fr;
-          margin-bottom: 42px;
+          margin-bottom: 46px;
           overflow: visible;
         }
 
         .hero-with-bottom-panel .market-hero-copy {
-          min-height: 300px;
-          padding: 34px 34px 74px;
+          min-height: 330px;
+          padding: 36px 36px 86px;
           position: relative;
           overflow: hidden;
+          background-image:
+            linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.90) 38%, rgba(255,255,255,.42) 68%, rgba(255,255,255,.10) 100%),
+            url("/hero-caminhoes-a-venda.svg");
+          background-size: cover;
+          background-position: center right;
+          background-repeat: no-repeat;
         }
 
-        .hero-with-bottom-panel .market-hero-copy:before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-          background:
-            linear-gradient(90deg, rgba(255,255,255,.96) 0%, rgba(255,255,255,.84) 42%, rgba(255,255,255,.42) 100%),
-            radial-gradient(circle at 86% 30%, rgba(24,119,242,.16), transparent 34%),
-            linear-gradient(135deg, rgba(24,119,242,.10), transparent 46%);
-        }
-
-        body.public-theme-dark .hero-with-bottom-panel .market-hero-copy:before {
-          background:
-            linear-gradient(90deg, rgba(17,28,49,.98) 0%, rgba(17,28,49,.86) 46%, rgba(17,28,49,.52) 100%),
-            radial-gradient(circle at 86% 30%, rgba(96,165,250,.20), transparent 34%),
-            linear-gradient(135deg, rgba(96,165,250,.12), transparent 46%);
-        }
-
-        .hero-with-bottom-panel .market-hero-copy > * {
-          position: relative;
-          z-index: 1;
+        body.public-theme-dark .hero-with-bottom-panel .market-hero-copy {
+          background-image:
+            linear-gradient(90deg, rgba(17,28,49,.98) 0%, rgba(17,28,49,.88) 42%, rgba(17,28,49,.50) 74%, rgba(17,28,49,.18) 100%),
+            url("/hero-caminhoes-a-venda.svg");
         }
 
         .hero-with-bottom-panel .market-hero-copy h1 {
@@ -85,24 +74,25 @@ export function HeroMarketplace() {
           min-height: 78px;
           position: absolute;
           left: 50%;
-          bottom: -38px;
+          bottom: -40px;
           z-index: 5;
           transform: translateX(-50%);
           display: grid;
-          grid-template-columns: minmax(240px, 1.1fr) auto auto;
+          grid-template-columns: minmax(250px, 1fr) minmax(360px, auto) auto;
           align-items: center;
+          justify-content: center;
           gap: 14px;
           padding: 14px;
           border-radius: 24px;
-          background: rgba(255, 255, 255, .96);
-          border: 1px solid rgba(217, 221, 227, .92);
+          background: rgba(255, 255, 255, .97);
+          border: 1px solid rgba(217, 221, 227, .95);
           box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
           backdrop-filter: blur(14px);
         }
 
         body.public-theme-dark .hero-bottom-panel {
-          background: rgba(17, 28, 49, .94);
-          border-color: rgba(148, 163, 184, .22);
+          background: rgba(17, 28, 49, .95);
+          border-color: rgba(148, 163, 184, .24);
           box-shadow: 0 18px 42px rgba(0, 0, 0, .35);
         }
 
@@ -130,6 +120,7 @@ export function HeroMarketplace() {
         .hero-panel-links {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 6px;
           overflow-x: auto;
           scrollbar-width: none;
@@ -174,17 +165,18 @@ export function HeroMarketplace() {
 
         @media (max-width: 900px) {
           .hero-with-bottom-panel {
-            margin-bottom: 74px;
+            margin-bottom: 78px;
           }
 
           .hero-with-bottom-panel .market-hero-copy {
-            min-height: 260px;
-            padding: 22px 18px 82px;
+            min-height: 280px;
+            padding: 22px 18px 92px;
+            background-position: center right -120px;
           }
 
           .hero-bottom-panel {
             width: calc(100% - 24px);
-            bottom: -62px;
+            bottom: -64px;
             grid-template-columns: 1fr;
             gap: 10px;
             padding: 12px;
@@ -195,10 +187,13 @@ export function HeroMarketplace() {
             min-height: auto;
             padding: 0;
             border-right: 0;
+            text-align: center;
           }
 
           .hero-panel-links {
             width: 100%;
+            justify-content: flex-start;
+            padding-bottom: 1px;
           }
 
           .hero-panel-links a {
@@ -213,12 +208,13 @@ export function HeroMarketplace() {
 
         @media (max-width: 560px) {
           .hero-with-bottom-panel {
-            margin-bottom: 86px;
+            margin-bottom: 92px;
           }
 
           .hero-with-bottom-panel .market-hero-copy {
-            min-height: 240px;
-            padding: 18px 14px 96px;
+            min-height: 260px;
+            padding: 18px 14px 102px;
+            background-position: center right -190px;
           }
 
           .hero-with-bottom-panel .market-hero-copy span {
@@ -241,7 +237,7 @@ export function HeroMarketplace() {
           }
 
           .hero-bottom-panel {
-            bottom: -72px;
+            bottom: -76px;
           }
         }
       `}</style>
