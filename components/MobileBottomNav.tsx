@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogIn, Megaphone, Search, Truck } from "lucide-react";
+import { LogIn, Plus, Search, Truck } from "lucide-react";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -15,7 +15,7 @@ export function MobileBottomNav() {
   const items = [
     { href: "/anuncios", label: "Caminhões", icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Truck },
-    { href: "/anunciar", label: "Anunciar", icon: Megaphone, featured: true },
+    { href: "/anunciar", label: "Anunciar", icon: Plus, featured: true },
     { href: "/anuncios", label: "Buscar", icon: Search },
     { href: "/login", label: "Entrar", icon: LogIn },
   ];
@@ -34,7 +34,7 @@ export function MobileBottomNav() {
             aria-current={active ? "page" : undefined}
           >
             <span className="mobile-bottom-nav-icon">
-              <Icon size={item.featured ? 22 : 18} aria-hidden="true" />
+              <Icon size={item.featured ? 34 : 18} strokeWidth={item.featured ? 3 : 2} aria-hidden="true" />
             </span>
             <span>{item.label}</span>
           </Link>
