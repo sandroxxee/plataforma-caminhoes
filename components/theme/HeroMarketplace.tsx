@@ -1,9 +1,19 @@
 import Link from "next/link";
 
-export function HeroMarketplace() {
+type HeroMarketplaceProps = {
+  imageUrl?: string | null;
+};
+
+export function HeroMarketplace({ imageUrl }: HeroMarketplaceProps) {
+  const heroBackground = imageUrl
+    ? {
+        backgroundImage: `linear-gradient(180deg, rgba(7, 17, 31, .08), rgba(7, 17, 31, .34)), url(${imageUrl})`,
+      }
+    : undefined;
+
   return (
     <section className="market-container hero-glass" aria-label="Caminhões à Venda">
-      <div className="hero-image-stage" aria-hidden="true" />
+      <div className="hero-image-stage" style={heroBackground} aria-hidden="true" />
 
       <nav className="hero-glass-menu" aria-label="Menu rápido">
         <Link href="/anuncios">Caminhões</Link>
@@ -32,16 +42,19 @@ export function HeroMarketplace() {
             linear-gradient(180deg, rgba(7, 17, 31, .10), rgba(7, 17, 31, .36)),
             radial-gradient(circle at 50% 78%, rgba(255, 255, 255, .10), transparent 38%),
             #07111f;
+          background-size: cover;
+          background-position: center center;
+          background-repeat: no-repeat;
         }
 
-        .hero-image-stage::before {
+        .hero-image-stage::after {
           content: "";
           position: absolute;
-          inset: 18px;
-          border-radius: calc(var(--radius) - 6px);
-          border: 1px dashed rgba(255, 255, 255, .22);
-          background: rgba(255, 255, 255, .035);
+          inset: 0;
           pointer-events: none;
+          background:
+            linear-gradient(90deg, rgba(7, 17, 31, .34), rgba(7, 17, 31, .06) 42%, rgba(7, 17, 31, .30)),
+            linear-gradient(180deg, rgba(7, 17, 31, .04), rgba(7, 17, 31, .30));
         }
 
         .hero-glass-menu {
@@ -122,6 +135,7 @@ export function HeroMarketplace() {
         @media (max-width: 760px) {
           .hero-image-stage {
             min-height: 300px;
+            background-position: center center;
           }
 
           .hero-glass-menu {
