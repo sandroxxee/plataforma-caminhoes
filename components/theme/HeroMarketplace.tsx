@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export function HeroMarketplace() {
   return (
     <section className="market-container market-hero compact-hero hero-single">
@@ -7,11 +5,6 @@ export function HeroMarketplace() {
         <span>Caminhões e implementos</span>
         <h1>Anúncios de caminhões com contato direto.</h1>
         <p>Veja anúncios aprovados, compare opções e fale com o anunciante pelo WhatsApp.</p>
-
-        <div className="market-hero-actions">
-          <Link href="/anuncios">Ver anúncios</Link>
-          <Link href="/anunciar">Anunciar</Link>
-        </div>
       </div>
 
       <style>{`
@@ -20,7 +13,7 @@ export function HeroMarketplace() {
         }
 
         .hero-single .market-hero-copy {
-          min-height: 245px;
+          min-height: 210px;
           padding: 28px;
         }
 
@@ -39,7 +32,7 @@ export function HeroMarketplace() {
         @media (max-width: 560px) {
           .hero-single .market-hero-copy {
             min-height: auto;
-            padding: 16px 14px;
+            padding: 14px;
           }
 
           .hero-single .market-hero-copy span {
@@ -59,10 +52,6 @@ export function HeroMarketplace() {
             max-width: 320px;
             font-size: 13px;
             line-height: 1.38;
-          }
-
-          .hero-single .market-hero-actions {
-            margin-top: 12px;
           }
         }
       `}</style>
