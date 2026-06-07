@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 type AdminDivulgacaoBoxProps = {
   titulo: string;
@@ -19,7 +19,7 @@ export function AdminDivulgacaoBox({ titulo, textoGrupo, textoCurto, linkAnuncio
       setCopiado(label);
       window.setTimeout(() => setCopiado(null), 2200);
     } catch {
-      setCopiado("Não foi possível copiar automaticamente");
+      setCopiado("Nao foi possivel copiar automaticamente");
     }
   }
 
@@ -27,37 +27,37 @@ export function AdminDivulgacaoBox({ titulo, textoGrupo, textoCurto, linkAnuncio
     <div style={styles.wrap}>
       <section style={styles.card}>
         <div style={styles.cardHead}>
-          <span style={styles.badge}>Facebook grupos</span>
+          <span style={styles.badge}>Facebook</span>
           {copiado && <strong style={styles.copied}>{copiado}</strong>}
         </div>
 
         <h2 style={styles.title}>Texto pronto para divulgar</h2>
-        <p style={styles.help}>Copie o texto, abra o Facebook e cole manualmente no grupo certo. Não é disparo automático.</p>
+        <p style={styles.help}>Copie o texto, abra o Facebook e cole manualmente onde fizer sentido. Nao e disparo automatico.</p>
 
-        <textarea readOnly value={textoGrupo} style={styles.textarea} aria-label={`Texto de divulgação para ${titulo}`} />
+        <textarea readOnly value={textoGrupo} style={styles.textarea} aria-label={`Texto de divulgacao para ${titulo}`} />
 
         <div style={styles.actions}>
           <button type="button" onClick={() => copiar(textoGrupo, "Texto copiado")} style={styles.primary}>Copiar texto</button>
           <button type="button" onClick={() => copiar(linkAnuncio, "Link copiado")} style={styles.secondary}>Copiar link</button>
-          <a href="https://www.facebook.com/groups/feed/" target="_blank" rel="noreferrer" style={styles.secondary}>Abrir grupos</a>
+          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" style={styles.secondary}>Abrir Facebook</a>
           <a href={facebookShareUrl} target="_blank" rel="noreferrer" style={styles.secondary}>Compartilhar link</a>
         </div>
       </section>
 
       <section style={styles.cardSoft}>
-        <h2 style={styles.title}>Versão curta</h2>
-        <p style={styles.help}>Boa para status, página, comentários ou chamada rápida.</p>
-        <textarea readOnly value={textoCurto} style={styles.smallTextarea} aria-label={`Texto curto de divulgação para ${titulo}`} />
+        <h2 style={styles.title}>Versao curta</h2>
+        <p style={styles.help}>Boa para status, pagina, comentario ou chamada rapida.</p>
+        <textarea readOnly value={textoCurto} style={styles.smallTextarea} aria-label={`Texto curto de divulgacao para ${titulo}`} />
         <div style={styles.actions}>
-          <button type="button" onClick={() => copiar(textoCurto, "Texto curto copiado")} style={styles.primary}>Copiar versão curta</button>
-          <a href={linkAnuncio} target="_blank" rel="noreferrer" style={styles.secondary}>Abrir anúncio</a>
+          <button type="button" onClick={() => copiar(textoCurto, "Texto curto copiado")} style={styles.primary}>Copiar versao curta</button>
+          <a href={linkAnuncio} target="_blank" rel="noreferrer" style={styles.secondary}>Abrir anuncio</a>
         </div>
       </section>
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   wrap: { display: "grid", gap: 18 },
   card: { padding: 22, borderRadius: 24, background: "#1f2327", border: "1px solid #343a40", boxShadow: "0 16px 34px rgba(0,0,0,.18)" },
   cardSoft: { padding: 22, borderRadius: 24, background: "#171a1d", border: "1px solid #2b3035" },
