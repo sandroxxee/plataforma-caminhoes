@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicHeader } from "@/components/PublicHeader";
 import { createClient } from "@/lib/supabase/server";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -173,10 +172,6 @@ function matchesTracao(truck: TruckCardData, tracao: string) {
   return text.includes(tracaoNormalizada);
 }
 
-function pluralize(count: number, singular: string, plural: string) {
-  return count === 1 ? singular : plural;
-}
-
 export default async function AnunciosPage({ searchParams }: PageProps) {
   const params = (await searchParams) || {};
   const busca = clean(params.busca);
@@ -228,10 +223,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   });
 
   const temFiltro = Boolean(busca || marca || perfil || tracao || implemento);
-  const total = trucks.length;
-  const stockCount = temFiltro
-    ? `${total} ${pluralize(total, "resultado encontrado", "resultados encontrados")}`
-    : `${total} ${pluralize(total, "anúncio disponível", "anúncios disponíveis")}`;
 
   return (
     <main className="market-page">
@@ -240,11 +231,9 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <section className="market-container stock-toolbar">
         <div className="stock-head">
           <div>
-            <span className="stock-eyebrow">{temFiltro ? "Resultado da busca" : "Estoque disponível"}</span>
+            <span className="stock-eyebrow">{temFiltro ? "Resultado da busca" : "Anúncios disponíveis"}</span>
             <h1>Caminhões à venda</h1>
-            <p className="stock-count">{stockCount}</p>
           </div>
-          <Link href="/anunciar">Anunciar caminhão</Link>
         </div>
 
         <SearchMarketplace
