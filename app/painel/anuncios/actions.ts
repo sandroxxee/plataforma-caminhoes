@@ -8,10 +8,6 @@ function tituloAutomatico(marca: string, modelo: string, tracao: string, ano: nu
   return `${marca} ${modelo} ${tracao} - Ano ${ano}`.replace(/\s+/g, " ").trim();
 }
 
-function tituloAutomaticoImplemento(marca: string, modelo: string, tipo: string, eixos: string, ano: number) {
-  return `${marca} ${modelo} ${tipo} ${eixos} - Ano ${ano}`.replace(/\s+/g, " ").trim();
-}
-
 function montarDescricaoImplemento(params: {
   descricao: string;
   tipo: string;
@@ -115,11 +111,10 @@ export async function criarAnuncio(formData: FormData) {
     const suspensao = String(formData.get("suspensao") || "").trim();
     const conservacao = String(formData.get("conservacao") || "").trim();
 
-    if (!tipoImplemento || !marca || !modelo || !ano || !numeroEixos || !pneus || !conservacao) {
-      redirect("/painel/anuncios/novo?erro=campos");
+    if (!tipoImplemento || !marca || !ano || !numeroEixos || !pneus || !conservacao) {
+      redirect("/painel/anuncios/novo/implemento?erro=campos");
     }
 
-    const titulo = tituloAutomaticoImplemento(marca, modelo, tipoImplemento, numeroEixos, ano);
     const descricaoCompleta = montarDescricaoImplemento({
       descricao,
       tipo: tipoImplemento,
@@ -130,42 +125,35 @@ export async function criarAnuncio(formData: FormData) {
       conservacao,
     });
 
-    const { data: truck, error } = await supabase
-      .from("trucks")
+    const { error } = await supabase
+      .from("implements")
       .insert({
         user_id: user.id,
-        titulo,
+        tipo: tipoImplemento,
         marca,
         modelo,
-        ano_fabricacao: ano,
-        ano_modelo: ano,
-        preco,
+        ano,
+        valor: preco,
+        eixos: numeroEixos,
+        suspensao,
+        pneus,
+        conservacao,
         cidade,
         estado,
-        carroceria: `Implemento: ${tipoImplemento}`,
-        tracao: "Implemento",
-        quilometragem: "",
-        motor: "",
-        cambio: "",
-        combustivel: "",
-        cor: "",
-        descricao: descricaoCompleta,
         whatsapp,
+        descricao: descricaoCompleta,
         status: "pendente",
         destaque: false,
         vendido: false,
-      })
-      .select("id")
-      .single();
+      });
 
-    if (error || !truck) {
-      redirect("/painel/anuncios/novo?erro=banco");
+    if (error) {
+      console.error("Erro ao criar implemento:", error.message);
+      redirect("/painel/anuncios/novo/implemento?erro=banco");
     }
 
-    await enviarFotos(supabase, user.id, truck.id, formData);
-
     revalidatePath("/painel/anuncios");
-    revalidatePath("/admin/pendentes");
+    revalidatePath("/implementos");
 
     redirect("/painel/anuncios");
   }
