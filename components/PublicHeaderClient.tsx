@@ -174,6 +174,36 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
           }
         }
 
+        @media (min-width: 681px) and (max-width: 980px) {
+          .public-nav-shell > .public-theme-toggle {
+            display: inline-flex !important;
+          }
+
+          .public-menu {
+            position: static !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            width: 100%;
+            max-height: none !important;
+            overflow-x: auto;
+            overflow-y: hidden !important;
+            order: 4;
+            margin-left: 0;
+            padding: 2px 0 0 !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+          }
+
+          .public-menu a {
+            flex: 0 0 auto;
+            min-height: 42px;
+            justify-content: center;
+          }
+        }
+
         @media (max-width: 680px) {
           .public-brand {
             min-width: auto;
