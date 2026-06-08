@@ -15,7 +15,7 @@ export function HeroMarketplace() {
         .hero-image {
           width: 100%;
           min-height: 330px;
-          background-image: url("/hero-home.svg?v=1");
+          background-image: url("/hero-home.jpg?v=1");
           background-size: cover;
           background-position: center center;
           background-repeat: no-repeat;
