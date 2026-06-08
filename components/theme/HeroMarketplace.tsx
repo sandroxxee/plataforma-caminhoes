@@ -1,7 +1,11 @@
 export function HeroMarketplace() {
   return (
     <section className="market-container hero-clean" aria-label="Caminhões à Venda">
-      <div className="hero-image" aria-hidden="true" />
+      <img
+        src="/hero-home.jpg?v=1"
+        alt="Caminhões à Venda"
+        className="hero-image-real"
+      />
 
       <style>{`
         .hero-clean {
@@ -12,25 +16,24 @@ export function HeroMarketplace() {
           box-shadow: var(--shadow);
         }
 
-        .hero-image {
+        .hero-image-real {
+          display: block;
           width: 100%;
-          min-height: 330px;
-          background-image: url("/hero-home.jpg?v=1");
-          background-size: cover;
-          background-position: center center;
-          background-repeat: no-repeat;
-          background-color: #07111f;
+          height: 330px;
+          object-fit: cover;
+          object-position: center center;
+          background: #07111f;
         }
 
         @media (max-width: 760px) {
-          .hero-image {
-            min-height: 300px;
+          .hero-image-real {
+            height: 300px;
           }
         }
 
         @media (max-width: 560px) {
-          .hero-image {
-            min-height: 260px;
+          .hero-image-real {
+            height: 260px;
           }
         }
       `}</style>
