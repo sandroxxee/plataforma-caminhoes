@@ -134,15 +134,14 @@ export default async function AdminIaAnuncioPage({ params }: PageProps) {
 
   return (
     <AdminLayout
-      title="Pacote rápido do anúncio"
-      subtitle="Copie a descrição com Ctrl+A/Ctrl+C e use as fotos abaixo para WhatsApp, IA ou divulgação."
+      title="Central IA do anúncio"
+      subtitle="Copie a descrição e baixe todas as fotos em um botão para divulgar mais rápido."
       badge="Admin IA"
       actions={<Link href="/admin/anuncios" style={styles.topButton}>Voltar aos anúncios</Link>}
     >
       <section style={styles.card}>
-        <span style={styles.label}>Nome da pasta / título</span>
+        <span style={styles.label}>Título do anúncio</span>
         <h2 style={styles.folderName}>{title}</h2>
-        <p style={styles.help}>Use esse nome para criar a pasta no computador ou celular antes de salvar as fotos.</p>
       </section>
 
       <section style={styles.card}>
@@ -156,14 +155,15 @@ export default async function AdminIaAnuncioPage({ params }: PageProps) {
         <textarea readOnly value={description} style={styles.textarea} />
 
         <div style={styles.quickLinks}>
+          <a href={`/api/admin/ia-anuncios/${item.id}`} style={styles.downloadPhotosButton}>Baixar fotos</a>
           <a href={adUrl} target="_blank" rel="noreferrer" style={styles.linkButton}>Abrir anúncio no site</a>
           <a href={quickWhatsapp} target="_blank" rel="noreferrer" style={styles.whatsappButton}>Abrir WhatsApp rápido</a>
         </div>
       </section>
 
       <section style={styles.card}>
-        <span style={styles.label}>Fotos do anúncio</span>
-        <h3 style={styles.sectionTitle}>Abra a foto e salve no aparelho</h3>
+        <span style={styles.label}>Prévia das fotos</span>
+        <h3 style={styles.sectionTitle}>Confira antes de baixar</h3>
 
         <div style={styles.gallery}>
           {images.map((image, index) => (
@@ -190,6 +190,7 @@ const styles: Record<string, CSSProperties> = {
   sectionTitle: { margin: 0, color: "#f4f4f5", fontSize: 20, lineHeight: 1.2 },
   textarea: { width: "100%", minHeight: 360, resize: "vertical", borderRadius: 16, border: "1px solid #3f464d", background: "#101214", color: "#f4f4f5", padding: 16, fontSize: 16, lineHeight: 1.55, fontFamily: "Arial, sans-serif", outline: "none" },
   quickLinks: { display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 },
+  downloadPhotosButton: { padding: "12px 14px", borderRadius: 14, background: "#f59e0b", color: "#1f1300", textDecoration: "none", fontWeight: 900 },
   linkButton: { padding: "12px 14px", borderRadius: 14, background: "#1877f2", color: "#ffffff", textDecoration: "none", fontWeight: 900 },
   whatsappButton: { padding: "12px 14px", borderRadius: 14, background: "#22c55e", color: "#06140b", textDecoration: "none", fontWeight: 900 },
   gallery: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginTop: 12 },
