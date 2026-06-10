@@ -105,9 +105,9 @@ export default async function AdminAnunciosPage() {
                   <Link href={`/admin/divulgacao/${truck.id}`} style={styles.share}>Divulgar</Link>
                 )}
 
-                <a href={`/api/admin/ia-anuncios/${truck.id}`} style={styles.aiPackage}>
-                  Baixar Pacote IA
-                </a>
+                <Link href={`/admin/ia-anuncios/${truck.id}`} style={styles.aiPackage}>
+                  Central IA
+                </Link>
 
                 {truck.status !== "aprovado" && (
                   <form action={aprovarAnuncio} style={styles.formButton}>
