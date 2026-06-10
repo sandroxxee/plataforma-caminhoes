@@ -105,6 +105,10 @@ export default async function AdminAnunciosPage() {
                   <Link href={`/admin/divulgacao/${truck.id}`} style={styles.share}>Divulgar</Link>
                 )}
 
+                <a href={`/api/admin/ia-anuncios/${truck.id}`} style={styles.aiPackage}>
+                  Baixar Pacote IA
+                </a>
+
                 {truck.status !== "aprovado" && (
                   <form action={aprovarAnuncio} style={styles.formButton}>
                     <input type="hidden" name="id" value={truck.id} />
@@ -174,5 +178,6 @@ const styles: Record<string, CSSProperties> = {
   reject: { ...buttonBase, background: "#ef4444", color: "#ffffff" },
   edit: { ...buttonBase, background: "#2a2f34", color: "#e8eaed", border: "1px solid #343a40" },
   share: { ...buttonBase, background: "#1877f2", color: "#ffffff" },
+  aiPackage: { ...buttonBase, background: "#f59e0b", color: "#1f1300" },
   empty: { padding: 24, borderRadius: 18, background: "#1f2327", border: "1px solid #343a40", color: "#a7afb7", fontWeight: 800 },
 };
