@@ -18,49 +18,87 @@ export default async function NovoAnuncioPage() {
 
   return (
     <PanelLayout
-      title="Cadastrar novo anúncio"
-      subtitle="Escolha o tipo de anúncio antes de preencher. Caminhão e implemento agora ficam separados para evitar cadastro errado."
+      title="Novo anúncio"
+      subtitle="O que você quer anunciar?"
       badge="Novo anúncio"
-      actions={<Link href="/painel/anuncios" className="secondary-button">Voltar aos anúncios</Link>}
+      actions={<Link href="/painel/anuncios" className="nb-back">← Voltar</Link>}
     >
-      <section className="choose-wrap">
-        <Link href="/painel/anuncios/novo/caminhao" className="choose-card">
-          <span className="choose-badge">01</span>
-          <div>
-            <strong>Anunciar caminhão</strong>
-            <p>Cavalo mecânico, truck, toco, 3/4, basculante, baú, tanque, munck e outros caminhões.</p>
-            <small>Usa marca, modelo, ano, carroceria, tração, valor, cidade, WhatsApp, descrição e fotos.</small>
-          </div>
+      <div className="nb-wrap">
+        <Link href="/painel/anuncios/novo/caminhao" className="nb-btn">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <rect x="1" y="10" width="15" height="9" rx="2"/>
+            <path d="M16 13h3l3 3v3h-6v-6z"/>
+            <circle cx="5.5" cy="20.5" r="1.5"/>
+            <circle cx="18.5" cy="20.5" r="1.5"/>
+          </svg>
+          Caminhão
+          <small>Cavalo, truck, toco, 3/4, baú, tanque…</small>
         </Link>
 
-        <Link href="/painel/anuncios/novo/implemento" className="choose-card">
-          <span className="choose-badge">02</span>
-          <div>
-            <strong>Anunciar implemento</strong>
-            <p>Carreta, caçamba, bi-caçamba, bitrem, prancha, tanque, baú, sider, dolly e outros implementos.</p>
-            <small>Usa tipo, marca, modelo, ano, eixos, composição, pneus, suspensão, conservação, valor e fotos.</small>
-          </div>
+        <Link href="/painel/anuncios/novo/implemento" className="nb-btn">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <rect x="2" y="8" width="20" height="10" rx="2"/>
+            <circle cx="6" cy="20" r="2"/>
+            <circle cx="18" cy="20" r="2"/>
+            <path d="M6 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Implemento
+          <small>Carreta, caçamba, prancha, sider, dolly…</small>
         </Link>
-      </section>
-
-      <div className="safe-note">
-        <strong>Importante:</strong>
-        <span>Depois de enviado, o anúncio continua pendente até aprovação do administrador.</span>
       </div>
 
       <style>{`
-        .secondary-button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border-radius: 14px; border: 1px solid #343a40; background: #2a2f34; color: #e8eaed; text-decoration: none; font-weight: 900; }
-        .choose-wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-        .choose-card { min-height: 220px; padding: 24px; border-radius: 24px; background: #1f2327; border: 1px solid #343a40; box-shadow: 0 16px 34px rgba(0,0,0,.18); color: #e8eaed; text-decoration: none; display: grid; gap: 18px; align-content: start; transition: transform .18s ease, border-color .18s ease, background .18s ease; }
-        .choose-card:hover { transform: translateY(-2px); border-color: #22c55e; background: #20272b; }
-        .choose-badge { width: 44px; height: 44px; border-radius: 15px; display: grid; place-items: center; background: #22c55e; color: #06140b; font-weight: 950; }
-        .choose-card strong { display: block; margin-bottom: 10px; color: #f4f4f5; font-size: 25px; line-height: 1.05; letter-spacing: -.04em; }
-        .choose-card p { margin: 0 0 14px; color: #cbd5df; line-height: 1.5; font-weight: 800; }
-        .choose-card small { display: block; color: #8f99a3; line-height: 1.5; font-weight: 750; }
-        .safe-note { margin-top: 18px; padding: 16px 18px; border-radius: 20px; background: #15181b; border: 1px solid #343a40; color: #a7afb7; display: flex; gap: 8px; flex-wrap: wrap; }
-        .safe-note strong { color: #22c55e; }
-        @media (max-width: 860px) { .choose-wrap { grid-template-columns: 1fr; } .choose-card { min-height: auto; } }
-        @media (max-width: 560px) { .choose-card { padding: 20px; border-radius: 22px; } .choose-card strong { font-size: 22px; } .secondary-button { width: 100%; } }
+        .nb-back {
+          min-height: 40px; display: inline-flex; align-items: center;
+          padding: 0 14px; border-radius: 12px;
+          border: 1px solid #343a40; background: #2a2f34;
+          color: #a7afb7; text-decoration: none; font-weight: 800; font-size: 13px;
+          transition: color .15s;
+        }
+        .nb-back:hover { color: #e8eaed; }
+
+        .nb-wrap {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+
+        .nb-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+          padding: 28px 24px;
+          border-radius: 20px;
+          background: #1f2327;
+          border: 1.5px solid #343a40;
+          color: #f4f4f5;
+          text-decoration: none;
+          font-size: 22px;
+          font-weight: 950;
+          letter-spacing: -.035em;
+          line-height: 1.1;
+          transition: border-color .16s, background .16s, transform .16s;
+        }
+        .nb-btn:hover {
+          border-color: #22c55e;
+          background: #1a2420;
+          transform: translateY(-2px);
+        }
+        .nb-btn svg { color: #22c55e; flex-shrink: 0; }
+        .nb-btn small {
+          display: block;
+          font-size: 13px;
+          font-weight: 750;
+          color: #8f99a3;
+          letter-spacing: 0;
+          line-height: 1.45;
+        }
+
+        @media (max-width: 600px) {
+          .nb-wrap { grid-template-columns: 1fr; }
+          .nb-btn { padding: 22px 18px; font-size: 20px; }
+        }
       `}</style>
     </PanelLayout>
   );
