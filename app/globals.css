@@ -25,6 +25,8 @@ body {
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* Melhoria 5: remove highlight azul no toque em celular */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body.public-theme-dark {
@@ -266,10 +268,29 @@ body.public-theme-dark .hero-3d-lines span { background: #26354d; }
 .market-section-head a, .stock-head a { min-height: 42px; padding: 0 15px; border-radius: 999px; background: var(--blue); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 950; }
 .market-grid, .stock-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 
-.truck-card { overflow: hidden; display: flex; flex-direction: column; min-height: 100%; transition: .18s ease; }
+/* Cards */
+.truck-card { overflow: hidden; display: flex; flex-direction: column; min-height: 100%; transition: .18s ease; cursor: pointer; }
 .truck-card:hover { transform: translateY(-2px); box-shadow: var(--shadow2); }
-.truck-card-photo { aspect-ratio: 1 / 1; width: 100%; display: grid; place-items: center; background: var(--soft); overflow: hidden; color: var(--muted); font-weight: 950; }
-.truck-card-photo img { width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; padding: 8px; background: var(--soft); }
+.truck-card-photo {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  background: var(--soft);
+  overflow: hidden;
+  color: var(--muted);
+  font-weight: 950;
+}
+/* Melhoria 1: cover + escala no hover */
+.truck-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  transition: transform .32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.truck-card:hover .truck-card-photo img { transform: scale(1.05); }
 .truck-card-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
 .truck-card-price { display: block; font-size: 21px; line-height: 1.1; letter-spacing: -.025em; margin-bottom: 7px; }
 .truck-card-title { display: block; font-size: 16px; font-weight: 950; line-height: 1.18; letter-spacing: -.02em; }
@@ -454,6 +475,8 @@ body.public-theme-dark .hero-3d-lines span { background: #26354d; }
   .truck-card-meta { font-size: 14px; }
   .truck-card-actions { grid-template-columns: 1fr; gap: 9px; }
   .truck-card-actions a { min-height: 46px; font-size: 14px; border-radius: 12px; }
+  /* Melhoria 4: feedback de toque no celular */
+  .truck-card:active { transform: scale(0.98); transition: transform .12s ease; }
   .detail-whatsapp { min-height: 54px; font-size: 15px; text-align: center; padding: 0 12px; }
   .detail-specs div { padding: 11px; }
   .detail-description h2 { font-size: 20px; }

@@ -106,6 +106,33 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       <style>{`
         .truck-card-hover-detail {
           position: relative;
+          cursor: pointer;
+        }
+
+        /* Melhoria 1: foto ocupa 100% sem espaço vazio (cover) + escala suave no hover */
+        .truck-card-hover-detail .truck-card-photo img {
+          object-fit: cover;
+          object-position: center center;
+          transition: transform .32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Melhoria 3: escala suave na foto ao hover */
+        .truck-card-hover-detail:hover .truck-card-photo img {
+          transform: scale(1.05);
+        }
+
+        /* Placeholder quando sem foto */
+        .truck-card-no-photo {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 800;
         }
 
         .truck-card-hover-detail .truck-card-actions {
@@ -147,6 +174,14 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           transform: translateY(0);
         }
 
+        /* Melhoria 4: feedback de toque no celular */
+        @media (hover: none) {
+          .truck-card-hover-detail:active {
+            transform: scale(0.98);
+            transition: transform .12s ease;
+          }
+        }
+
         @media (hover: none), (max-width: 760px) {
           .truck-card-hover-detail .truck-card-actions {
             position: static;
@@ -167,8 +202,28 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           }
         }
       `}</style>
+
+      {/* Melhoria 2: lazy load + decoding async nas imagens */}
       <Link className="truck-card-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
-        {image ? <img src={image} alt={title} /> : <span>Sem foto</span>}
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            width={400}
+            height={400}
+          />
+        ) : (
+          <span className="truck-card-no-photo">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <rect x="2" y="7" width="20" height="13" rx="2"/>
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
+            Sem foto
+          </span>
+        )}
       </Link>
 
       <div className="truck-card-body">
