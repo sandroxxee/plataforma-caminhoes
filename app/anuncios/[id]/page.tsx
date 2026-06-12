@@ -63,7 +63,6 @@ function getSeoTitle(truck: Truck) {
   const cidade = cleanText(truck.cidade);
   const uf = cleanText(truck.estado);
   const partes = [marca, modelo, ano, cidade, uf].filter(Boolean);
-
   return partes.length ? partes.join(" ") : getTitle(truck);
 }
 
@@ -85,7 +84,6 @@ async function getApprovedTruck(parametro: string) {
       .eq("status", "aprovado")
       .eq("vendido", false)
       .maybeSingle();
-
     if (error || !data) return null;
     return data as Truck;
   }
@@ -98,7 +96,6 @@ async function getApprovedTruck(parametro: string) {
     .limit(5000);
 
   if (error || !data) return null;
-
   const truck = data.find((item) => String(item.id).toLowerCase().startsWith(parsed.valor));
   return truck ? truck as Truck : null;
 }
@@ -216,9 +213,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   if (!truck) notFound();
 
   const canonicalPath = getCanonicalPath(truck);
-  if (`/anuncios/${id}` !== canonicalPath) {
-    redirect(canonicalPath);
-  }
+  if (`/anuncios/${id}` !== canonicalPath) redirect(canonicalPath);
 
   const title = getTitle(truck);
   const location = getLocation(truck);
@@ -226,6 +221,18 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const structuredData = getStructuredData(truck, title, location, whatsappLink);
   const shareYear = truck.ano_modelo || truck.ano_fabricacao;
   const shareText = `🚛 ${getCardTitle(truck)}${shareYear ? ` ${shareYear}` : ""}`;
+  const photoCount = (truck.truck_images || []).length;
+
+  // Specs: apenas campos com valor
+  const specs = [
+    { label: "Marca", value: truck.marca },
+    { label: "Modelo", value: truck.modelo },
+    { label: "Ano/modelo", value: truck.ano_modelo || truck.ano_fabricacao },
+    { label: "Quilometragem", value: formatKm(truck.quilometragem || truck.km) === "Não informado" ? null : formatKm(truck.quilometragem || truck.km) },
+    { label: "Tração", value: truck.tracao },
+    { label: "Carroceria", value: truck.carroceria },
+    { label: "Cidade", value: location },
+  ].filter((s) => s.value);
 
   return (
     <main className="market-page">
@@ -235,48 +242,289 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       />
       <PublicHeader />
 
-      <section className="market-container detail-layout">
-        <div className="detail-card">
-          <div className="detail-title">
-            <Link href="/anuncios" className="detail-eyebrow">← Voltar ao estoque</Link>
-            <h1>{title}</h1>
-            <p>{location || "Localização não informada"}</p>
+      <div className="market-container detail-layout">
+
+        {/* ===== COLUNA ESQUERDA ===== */}
+        <div>
+
+          {/* Breadcrumb */}
+          <nav className="detail-breadcrumb" aria-label="Navegação">
+            <Link href="/">Início</Link>
+            <span aria-hidden="true">›</span>
+            <Link href="/anuncios">Caminhões</Link>
+            <span aria-hidden="true">›</span>
+            <span>{truck.marca || "Anúncio"}</span>
+          </nav>
+
+          {/* Título mobile (aparece antes da galeria no mobile) */}
+          <div className="detail-card detail-mobile-title">
+            <h1 className="detail-h1">{title}</h1>
+            {location && <p className="detail-location">📍 {location}</p>}
+            <strong className="detail-price-mobile">{formatMoney(truck.preco)}</strong>
           </div>
 
-          <AdGallery title={title} images={truck.truck_images || []} />
+          {/* Galeria */}
+          <div className="detail-card detail-gallery-card">
+            {photoCount > 0 && (
+              <div className="detail-photo-count">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                {photoCount} {photoCount === 1 ? "foto" : "fotos"}
+              </div>
+            )}
+            <AdGallery title={title} images={truck.truck_images || []} />
+          </div>
 
-          <div className="detail-description">
-            <h2>Descrição do caminhão</h2>
-            <p>{truck.descricao?.trim() || "Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado do veículo, disponibilidade e condições de negociação."}</p>
+          {/* Descrição */}
+          <div className="detail-card detail-desc-card">
+            <h2 className="detail-section-title">Sobre este caminhão</h2>
+            <p className="detail-desc-text">
+              {truck.descricao?.trim() ||
+                "Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado do veículo, disponibilidade e condições de negociação."}
+            </p>
+          </div>
+
+          {/* Aviso de segurança */}
+          <div className="detail-card detail-safety">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <div>
+              <strong>Anúncio revisado</strong>
+              <p>Todos os anúncios passam por aprovação antes de aparecer no site. Sempre confira documentos e estado do veículo antes de fechar negócio.</p>
+            </div>
           </div>
         </div>
 
-        <aside className="detail-card">
-          <span className="detail-eyebrow">Anúncio disponível</span>
-          <strong className="detail-price">{formatMoney(truck.preco)}</strong>
-          <p className="stock-count">Fale direto pelo WhatsApp para confirmar disponibilidade, estado do caminhão e forma de negociação.</p>
+        {/* ===== COLUNA DIREITA (ASIDE sticky) ===== */}
+        <aside className="detail-aside">
 
-          <div className="detail-specs">
-            <div><span>Marca</span><b>{truck.marca || "-"}</b></div>
-            <div><span>Modelo</span><b>{truck.modelo || "-"}</b></div>
-            <div><span>Ano/modelo</span><b>{truck.ano_modelo || truck.ano_fabricacao || "-"}</b></div>
-            <div><span>Km</span><b>{formatKm(truck.quilometragem || truck.km)}</b></div>
-            <div><span>Tração</span><b>{truck.tracao || "-"}</b></div>
-            <div><span>Carroceria</span><b>{truck.carroceria || "-"}</b></div>
-            <div><span>Cidade</span><b>{location || "-"}</b></div>
+          {/* Título + preço (desktop) */}
+          <div className="detail-card detail-aside-header">
+            <span className="detail-status-badge">✅ Disponível</span>
+            <h1 className="detail-h1 detail-h1-aside">{title}</h1>
+            {location && <p className="detail-location">📍 {location}</p>}
+            <strong className="detail-price">{formatMoney(truck.preco)}</strong>
+            <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
+
+            {/* Botão WhatsApp */}
+            {whatsappLink ? (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="detail-whatsapp"
+                data-whatsapp-click
+                data-truck-id={truck.id}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                  <path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.563 4.14 1.546 5.877L.057 23.886l6.187-1.621A11.932 11.932 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.81 9.81 0 01-5.045-1.393l-.361-.215-3.735.979.995-3.638-.235-.374A9.818 9.818 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+                </svg>
+                Tenho interesse neste caminhão
+              </a>
+            ) : null}
+
+            <ShareAdButton title={title} text={shareText} />
           </div>
 
-          {whatsappLink ? <a href={whatsappLink} target="_blank" rel="noreferrer" className="detail-whatsapp" data-whatsapp-click data-truck-id={truck.id}>Tenho interesse neste caminhão</a> : null}
-          <ShareAdButton title={title} text={shareText} />
-
-          <div className="detail-description">
-            <h2>Contato e negociação</h2>
-            <p>Anúncio revisado antes de aparecer no site. O contato é direto pelo WhatsApp para facilitar a conversa com o interessado.</p>
-          </div>
+          {/* Ficha técnica */}
+          {specs.length > 0 && (
+            <div className="detail-card detail-specs-card">
+              <h2 className="detail-section-title">Ficha técnica</h2>
+              <dl className="detail-specs-dl">
+                {specs.map((spec) => (
+                  <div key={spec.label} className="detail-spec-row">
+                    <dt>{spec.label}</dt>
+                    <dd>{spec.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
         </aside>
-      </section>
+      </div>
 
       <SiteFooter />
+
+      <style>{`
+        /* Breadcrumb */
+        .detail-breadcrumb {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 800;
+          color: var(--muted);
+          padding: 14px 0 8px;
+        }
+        .detail-breadcrumb a:hover { color: var(--blue); }
+        .detail-breadcrumb span[aria-hidden] { color: var(--line); }
+        .detail-breadcrumb span:last-child { color: var(--text); }
+
+        /* Cards do layout */
+        .detail-gallery-card { padding: 14px; margin-bottom: 14px; }
+        .detail-desc-card { padding: 22px; margin-bottom: 14px; }
+        .detail-aside-header { padding: 22px; margin-bottom: 14px; }
+        .detail-specs-card { padding: 22px; }
+
+        /* Título mobile */
+        .detail-mobile-title { padding: 18px 20px 14px; margin-bottom: 14px; display: none; }
+
+        /* Contador de fotos */
+        .detail-photo-count {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 26px;
+          padding: 0 10px;
+          border-radius: 999px;
+          background: var(--blueSoft);
+          color: var(--blue);
+          font-size: 12px;
+          font-weight: 950;
+          margin-bottom: 10px;
+        }
+
+        /* Título */
+        .detail-h1 {
+          margin: 10px 0 6px;
+          font-size: clamp(22px, 2.8vw, 34px);
+          line-height: 1.1;
+          letter-spacing: -.04em;
+        }
+        .detail-h1-aside { font-size: clamp(18px, 2vw, 26px); }
+        .detail-location {
+          margin: 0 0 10px;
+          color: var(--muted);
+          font-size: 14px;
+          font-weight: 750;
+        }
+        .detail-status-badge {
+          display: inline-flex;
+          height: 26px;
+          align-items: center;
+          padding: 0 10px;
+          border-radius: 999px;
+          background: #dcfce7;
+          color: #15803d;
+          font-size: 12px;
+          font-weight: 950;
+          letter-spacing: .03em;
+        }
+        body.public-theme-dark .detail-status-badge { background: #14532d; color: #86efac; }
+
+        /* Preço desktop (aside) */
+        .detail-price {
+          display: block;
+          color: var(--blue);
+          font-size: clamp(28px, 3.5vw, 40px);
+          line-height: 1;
+          letter-spacing: -.05em;
+          margin: 4px 0 10px;
+        }
+        /* Preço mobile */
+        .detail-price-mobile {
+          display: block;
+          color: var(--blue);
+          font-size: 28px;
+          letter-spacing: -.04em;
+          line-height: 1;
+          margin-top: 8px;
+        }
+        .detail-aside-hint {
+          margin: 0 0 16px;
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: 750;
+          line-height: 1.5;
+        }
+
+        /* WhatsApp */
+        .detail-whatsapp {
+          min-height: 52px;
+          border-radius: 14px;
+          background: #25d366;
+          color: #073b1d;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          font-weight: 950;
+          font-size: 15px;
+          margin-bottom: 10px;
+          box-shadow: 0 8px 20px rgba(37,211,102,.28);
+          transition: transform .18s, box-shadow .18s;
+        }
+        .detail-whatsapp:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 28px rgba(37,211,102,.36);
+        }
+        .detail-whatsapp:active { transform: scale(.97); }
+
+        /* Ficha técnica */
+        .detail-section-title {
+          margin: 0 0 16px;
+          font-size: 16px;
+          font-weight: 950;
+          letter-spacing: -.02em;
+        }
+        .detail-specs-dl { display: grid; gap: 0; }
+        .detail-spec-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 11px 0;
+          border-bottom: 1px solid var(--line);
+          font-size: 14px;
+        }
+        .detail-spec-row:last-child { border-bottom: 0; }
+        .detail-spec-row dt { color: var(--muted); font-weight: 800; }
+        .detail-spec-row dd { font-weight: 950; text-align: right; }
+
+        /* Descrição */
+        .detail-desc-text {
+          margin: 0;
+          color: var(--muted);
+          font-weight: 700;
+          line-height: 1.7;
+          white-space: pre-wrap;
+        }
+
+        /* Aviso de segurança */
+        .detail-safety {
+          display: flex;
+          gap: 14px;
+          align-items: flex-start;
+          padding: 18px 20px;
+          color: var(--muted);
+          margin-top: 0;
+        }
+        .detail-safety svg { flex-shrink: 0; margin-top: 2px; color: var(--blue); }
+        .detail-safety strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 4px; }
+        .detail-safety p { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.5; }
+
+        /* Aside sticky */
+        .detail-aside { position: sticky; top: 80px; align-self: start; }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+          .detail-aside { position: static; }
+          .detail-aside-header .detail-h1,
+          .detail-aside-header .detail-location,
+          .detail-aside-header .detail-status-badge,
+          .detail-aside-header .detail-price { display: none; }
+          .detail-mobile-title { display: block; }
+        }
+        @media (max-width: 560px) {
+          .detail-gallery-card, .detail-desc-card, .detail-aside-header, .detail-specs-card, .detail-safety { padding: 16px; }
+          .detail-whatsapp { min-height: 56px; font-size: 16px; }
+        }
+      `}</style>
     </main>
   );
 }
