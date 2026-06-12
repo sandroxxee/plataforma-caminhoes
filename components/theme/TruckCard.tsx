@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { gerarSlugComId } from "@/lib/slug";
@@ -112,7 +114,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
   return (
     <article className="tc">
-      {/* FOTO */}
       <Link className="tc-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
           isSupabaseUrl(image) ? (
@@ -139,29 +140,24 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
             </svg>
           </span>
         )}
-
-        {/* Overlay: preço + local */}
         <div className="tc-overlay">
           <span className="tc-price">{formatMoney(truck.preco)}</span>
           {location && <span className="tc-loc">📍 {location}</span>}
         </div>
-
-        {/* Botão WA flutuante */}
-        {waLink && (
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="tc-wa"
-            aria-label="WhatsApp"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <WaIcon />
-          </a>
-        )}
       </Link>
 
-      {/* CORPO */}
+      {waLink && (
+        <a
+          href={waLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="tc-wa"
+          aria-label="WhatsApp"
+        >
+          <WaIcon />
+        </a>
+      )}
+
       <div className="tc-body">
         <p className="tc-name">{cardTitle}</p>
         {meta && <p className="tc-meta">{meta}</p>}
@@ -169,132 +165,23 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       </div>
 
       <style>{`
-        .tc {
-          background: var(--surface);
-          border-radius: 18px;
-          overflow: hidden;
-          border: 1px solid var(--line);
-          display: flex;
-          flex-direction: column;
-          transition: box-shadow .2s, transform .2s;
-        }
-        .tc:hover { box-shadow: var(--shadow2); transform: translateY(-3px); }
-
-        .tc-photo {
-          display: block;
-          position: relative;
-          overflow: hidden;
-          background: var(--soft);
-          aspect-ratio: 16/9;
-          flex-shrink: 0;
-        }
-        .tc-photo > img,
-        .tc-photo > span.tc-no-photo { display: block; width: 100%; height: 100%; }
-        .tc:hover .tc-photo img { transform: scale(1.04); transition: transform .4s ease; }
-
-        .tc-no-photo {
-          display: flex; align-items: center; justify-content: center;
-          color: var(--muted); opacity: .4;
-        }
-
-        /* gradiente bottom na foto */
-        .tc-overlay {
-          position: absolute;
-          inset: auto 0 0 0;
-          padding: 32px 12px 10px;
-          background: linear-gradient(to top, rgba(0,0,0,.72) 0%, transparent 100%);
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          gap: 6px;
-          pointer-events: none;
-        }
-        .tc-price {
-          font-size: 17px;
-          font-weight: 950;
-          color: #fff;
-          letter-spacing: -.03em;
-          line-height: 1;
-          text-shadow: 0 1px 4px rgba(0,0,0,.5);
-        }
-        .tc-loc {
-          font-size: 11px;
-          font-weight: 700;
-          color: rgba(255,255,255,.82);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 50%;
-        }
-
-        /* botão WA na foto */
-        .tc-wa {
-          position: absolute;
-          top: 9px;
-          right: 9px;
-          width: 34px;
-          height: 34px;
-          border-radius: 50%;
-          background: #25d366;
-          color: #fff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 4px 12px rgba(0,0,0,.28);
-          transition: transform .16s, box-shadow .16s;
-          pointer-events: all;
-        }
-        .tc-wa:hover { transform: scale(1.12); box-shadow: 0 6px 18px rgba(37,211,102,.45); }
-
-        /* corpo */
-        .tc-body {
-          padding: 12px 14px 14px;
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-          flex: 1;
-        }
-        .tc-name {
-          margin: 0;
-          font-size: 14px;
-          font-weight: 800;
-          color: var(--text);
-          line-height: 1.3;
-          letter-spacing: -.02em;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .tc-meta {
-          margin: 0 0 8px;
-          font-size: 11px;
-          color: var(--muted);
-          font-weight: 700;
-        }
-        .tc-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 38px;
-          border-radius: 10px;
-          background: var(--blue);
-          color: #fff;
-          font-weight: 800;
-          font-size: 13px;
-          text-decoration: none;
-          margin-top: auto;
-          transition: background .14s;
-        }
-        .tc-btn:hover { background: var(--blue2); }
-
-        @media (max-width: 560px) {
-          .tc-price { font-size: 15px; }
-          .tc-name { font-size: 13px; }
-          .tc-body { padding: 10px 11px 12px; }
-          .tc-btn { height: 34px; font-size: 12px; }
-          .tc-loc { display: none; }
-        }
+        .tc { background:var(--surface); border-radius:18px; overflow:hidden; border:1px solid var(--line); display:flex; flex-direction:column; transition:box-shadow .2s,transform .2s; position:relative; }
+        .tc:hover { box-shadow:var(--shadow2); transform:translateY(-3px); }
+        .tc-photo { display:block; position:relative; overflow:hidden; background:var(--soft); aspect-ratio:16/9; flex-shrink:0; }
+        .tc-photo img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
+        .tc:hover .tc-photo img { transform:scale(1.04); }
+        .tc-no-photo { display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:var(--muted); opacity:.4; }
+        .tc-overlay { position:absolute; inset:auto 0 0 0; padding:32px 12px 10px; background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%); display:flex; align-items:flex-end; justify-content:space-between; gap:6px; pointer-events:none; }
+        .tc-price { font-size:17px; font-weight:950; color:#fff; letter-spacing:-.03em; line-height:1; text-shadow:0 1px 4px rgba(0,0,0,.5); }
+        .tc-loc { font-size:11px; font-weight:700; color:rgba(255,255,255,.82); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:50%; }
+        .tc-wa { position:absolute; top:9px; right:9px; width:34px; height:34px; border-radius:50%; background:#25d366; color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.28); transition:transform .16s,box-shadow .16s; z-index:2; }
+        .tc-wa:hover { transform:scale(1.12); box-shadow:0 6px 18px rgba(37,211,102,.45); }
+        .tc-body { padding:12px 14px 14px; display:flex; flex-direction:column; gap:3px; flex:1; }
+        .tc-name { margin:0; font-size:14px; font-weight:800; color:var(--text); line-height:1.3; letter-spacing:-.02em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .tc-meta { margin:0 0 8px; font-size:11px; color:var(--muted); font-weight:700; }
+        .tc-btn { display:flex; align-items:center; justify-content:center; height:38px; border-radius:10px; background:var(--blue); color:#fff; font-weight:800; font-size:13px; text-decoration:none; margin-top:auto; transition:background .14s; }
+        .tc-btn:hover { background:var(--blue2); }
+        @media(max-width:560px) { .tc-price{font-size:15px} .tc-name{font-size:13px} .tc-body{padding:10px 11px 12px} .tc-btn{height:34px;font-size:12px} .tc-loc{display:none} }
       `}</style>
     </article>
   );
