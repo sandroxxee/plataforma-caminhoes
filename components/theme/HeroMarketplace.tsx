@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SearchMarketplace } from "./SearchMarketplace";
 
 export function HeroMarketplace() {
   return (
@@ -13,7 +12,7 @@ export function HeroMarketplace() {
         aria-hidden="true"
       />
 
-      {/* Overlay escuro para legibilidade */}
+      {/* Overlay escuro */}
       <div className="hero-overlay" />
 
       {/* Conteúdo sobre a foto */}
@@ -27,10 +26,17 @@ export function HeroMarketplace() {
           Anúncios reais, fotos verdadeiras e negociação direto pelo WhatsApp.
         </p>
 
-        {/* Busca rápida */}
-        <div className="hero-search-wrap">
-          <SearchMarketplace compact />
-        </div>
+        {/* Busca simples: apenas texto + botão */}
+        <form className="hero-search-form" action="/anuncios" method="get">
+          <input
+            name="busca"
+            type="search"
+            placeholder="Modelo, marca, cidade ou ano…"
+            className="hero-search-input"
+            aria-label="Buscar caminhões"
+          />
+          <button type="submit" className="hero-search-btn">Buscar</button>
+        </form>
 
         {/* CTAs secundários */}
         <div className="hero-actions">
@@ -62,9 +68,9 @@ export function HeroMarketplace() {
           inset: 0;
           background: linear-gradient(
             to bottom,
-            rgba(7,17,31,.22) 0%,
-            rgba(7,17,31,.62) 55%,
-            rgba(7,17,31,.88) 100%
+            rgba(7,17,31,.18) 0%,
+            rgba(7,17,31,.60) 50%,
+            rgba(7,17,31,.90) 100%
           );
         }
         .hero-content {
@@ -74,7 +80,6 @@ export function HeroMarketplace() {
           flex-direction: column;
           justify-content: flex-end;
           padding: clamp(20px, 3vw, 40px);
-          gap: 0;
         }
         .hero-eyebrow {
           display: inline-flex;
@@ -101,38 +106,56 @@ export function HeroMarketplace() {
           color: #fff;
           max-width: 780px;
         }
-        .hero-title em {
-          font-style: normal;
-          color: #60a5fa;
-        }
+        .hero-title em { font-style: normal; color: #60a5fa; }
         .hero-sub {
-          margin: 0 0 20px;
+          margin: 0 0 18px;
           color: rgba(255,255,255,.72);
           font-size: clamp(14px, 1.4vw, 17px);
           font-weight: 700;
           max-width: 560px;
           line-height: 1.5;
         }
-        .hero-search-wrap {
-          max-width: 740px;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.14);
-          backdrop-filter: blur(12px);
-          border-radius: 16px;
-          padding: 12px;
+
+        /* Barra de busca simples */
+        .hero-search-form {
+          display: flex;
+          gap: 0;
+          max-width: 580px;
           margin-bottom: 14px;
+          border-radius: 14px;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,.18);
+          backdrop-filter: blur(12px);
+          background: rgba(255,255,255,.08);
         }
-        .hero-search-wrap .market-search-compact {
+        .hero-search-input {
+          flex: 1;
+          min-width: 0;
+          height: 50px;
+          border: 0;
           background: transparent;
-        }
-        .hero-search-wrap .market-field input,
-        .hero-search-wrap .market-field select {
-          background: rgba(255,255,255,.12);
-          border-color: rgba(255,255,255,.18);
           color: #fff;
+          padding: 0 16px;
+          font-size: 15px;
+          font-weight: 700;
+          outline: 0;
         }
-        .hero-search-wrap .market-field label { color: rgba(255,255,255,.6); }
-        .hero-search-wrap .market-field input::placeholder { color: rgba(255,255,255,.45); }
+        .hero-search-input::placeholder { color: rgba(255,255,255,.45); }
+        .hero-search-btn {
+          flex-shrink: 0;
+          height: 50px;
+          padding: 0 22px;
+          background: var(--blue);
+          color: #fff;
+          font-weight: 950;
+          font-size: 14px;
+          border: 0;
+          cursor: pointer;
+          transition: background .18s;
+        }
+        .hero-search-btn:hover { background: var(--blue2); }
+
+        /* Links secundários */
         .hero-actions {
           display: flex;
           flex-wrap: wrap;
@@ -155,14 +178,18 @@ export function HeroMarketplace() {
           background: rgba(255,255,255,.18);
           border-color: rgba(255,255,255,.38);
         }
+
         @media (max-width: 760px) {
           .hero-image-real { height: 420px; }
+          .hero-search-form { max-width: 100%; }
         }
         @media (max-width: 560px) {
           .hero-image-real { height: 520px; }
           .hero-content { padding: 18px 16px; }
           .hero-actions { display: grid; grid-template-columns: 1fr 1fr; }
           .hero-btn-ghost { justify-content: center; font-size: 12px; padding: 0 10px; }
+          .hero-search-input { font-size: 14px; }
+          .hero-search-btn { padding: 0 16px; font-size: 13px; }
         }
       `}</style>
     </section>
