@@ -3,7 +3,7 @@ import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { getCardTitle, getLocation, formatMoney, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
+import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -37,11 +37,6 @@ const FAIXAS = [
   { label: "R$200k–400k", min: 200_000, max: 400_000 },
   { label: "Acima R$400k", min: 400_000, max: Infinity },
 ];
-
-function getMainImage(truck: Truck) {
-  const imgs = truck.truck_images || [];
-  return imgs.find((i) => i.principal)?.image_url || imgs[0]?.image_url || "";
-}
 
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
@@ -96,51 +91,35 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
         {/* Filtros */}
         <div className="al-filters-wrap">
-
-          {/* Marca */}
           <div className="al-filter-group">
             <span className="al-filter-label">Marca</span>
             <div className="al-filter-row">
               {MARCAS.map((m) => {
-                const isActive = m === "Todas" ? !marcaFiltro : marcaFiltro === m;
+                const active = m === "Todas" ? !marcaFiltro : marcaFiltro === m;
                 const href = m === "Todas" ? buildHref({ marca: undefined }) : buildHref({ marca: m });
-                return (
-                  <Link key={m} href={href} className={`al-filter-btn${isActive ? " active" : ""}`}>
-                    {m}
-                  </Link>
-                );
+                return <Link key={m} href={href} className={`al-filter-btn${active ? " active" : ""}`}>{m}</Link>;
               })}
             </div>
           </div>
 
-          {/* Estado */}
           <div className="al-filter-group">
             <span className="al-filter-label">Estado</span>
             <div className="al-filter-row">
               {ESTADOS.map((e) => {
-                const isActive = estadoFiltro === e.value;
+                const active = estadoFiltro === e.value;
                 const href = buildHref({ estado: e.value || undefined });
-                return (
-                  <Link key={e.value || "todos"} href={href} className={`al-filter-btn${isActive ? " active" : ""}`}>
-                    {e.label}
-                  </Link>
-                );
+                return <Link key={e.value || "todos"} href={href} className={`al-filter-btn${active ? " active" : ""}`}>{e.label}</Link>;
               })}
             </div>
           </div>
 
-          {/* Preço */}
           <div className="al-filter-group">
             <span className="al-filter-label">Preço</span>
             <div className="al-filter-row">
               {FAIXAS.map((f, idx) => {
-                const isActive = faixaIdx === idx;
+                const active = faixaIdx === idx;
                 const href = buildHref({ faixa: idx === 0 ? undefined : idx });
-                return (
-                  <Link key={idx} href={href} className={`al-filter-btn${isActive ? " active" : ""}`}>
-                    {f.label}
-                  </Link>
-                );
+                return <Link key={idx} href={href} className={`al-filter-btn${active ? " active" : ""}`}>{f.label}</Link>;
               })}
             </div>
           </div>
@@ -151,36 +130,16 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         </div>
 
         <Suspense fallback={null}>
-          <section className="al-grid">
-            {trucks.map((truck) => {
-              const image = getMainImage(truck);
-              const title = getCardTitle(truck);
-              const location = getLocation(truck);
-              const year = truck.ano_modelo || truck.ano_fabricacao;
-
-              return (
-                <Link key={truck.id} href={`/anuncios/${truck.id}`} className="al-card">
-                  <div className="al-photo">
-                    {image ? (
-                      <img src={image} alt={title} loading="lazy" decoding="async" />
-                    ) : (
-                      <div className="al-photo-empty">🚛</div>
-                    )}
-                  </div>
-                  <div className="al-body">
-                    <strong className="al-car-title">{title}</strong>
-                    {year && <span className="al-year">{year}</span>}
-                    <span className="al-location">📍 {location}</span>
-                    <strong className="al-price">{formatMoney(truck.preco)}</strong>
-                  </div>
-                </Link>
-              );
-            })}
+          <section className="stock-grid">
+            {trucks.map((truck) => (
+              <TruckCard key={truck.id} truck={truck} />
+            ))}
 
             {trucks.length === 0 && (
-              <div className="al-empty">
-                <p>Nenhum anúncio encontrado com esses filtros.</p>
-                <Link href="/anuncios" className="al-empty-link">Ver todos</Link>
+              <div className="market-empty">
+                <strong>Nenhum anúncio encontrado</strong>
+                <p>Tente outros filtros ou veja todos os caminhões.</p>
+                <Link href="/anuncios" style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}>Ver todos</Link>
               </div>
             )}
           </section>
@@ -203,30 +162,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         .al-filter-btn.active { border-color: var(--blue); background: var(--blueSoft); color: var(--blue); }
         .al-clear-btn { display: inline-flex; align-self: start; align-items: center; height: 32px; padding: 0 14px; border-radius: 999px; border: 1.5px solid rgba(239,68,68,.35); background: rgba(239,68,68,.07); color: #f87171; font-size: 12px; font-weight: 800; text-decoration: none; transition: background .15s; }
         .al-clear-btn:hover { background: rgba(239,68,68,.14); }
-
-        .al-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
-        .al-card { border-radius: 18px; border: 1.5px solid var(--line); background: var(--card); text-decoration: none; overflow: hidden; display: flex; flex-direction: column; transition: border-color .18s, box-shadow .18s, transform .18s; }
-        .al-card:hover { border-color: var(--blue); box-shadow: 0 10px 32px rgba(0,0,0,.1); transform: translateY(-2px); }
-        .al-photo { height: 180px; background: var(--soft); overflow: hidden; }
-        .al-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s; }
-        .al-card:hover .al-photo img { transform: scale(1.05); }
-        .al-photo-empty { width: 100%; height: 100%; display: grid; place-items: center; font-size: 40px; opacity: .3; }
-        .al-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-        .al-car-title { font-size: 15px; font-weight: 950; color: var(--text); line-height: 1.2; letter-spacing: -.02em; }
-        .al-year { font-size: 12px; color: var(--muted); font-weight: 750; }
-        .al-location { font-size: 12px; color: var(--muted); font-weight: 750; margin-top: 2px; }
-        .al-price { font-size: 18px; font-weight: 950; color: var(--blue); letter-spacing: -.03em; margin-top: auto; padding-top: 8px; }
-        .al-empty { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted); }
-        .al-empty-link { display: inline-flex; margin-top: 12px; padding: 10px 20px; border-radius: 10px; background: var(--blue); color: #fff; font-weight: 800; text-decoration: none; }
-
-        @media (max-width: 560px) {
-          .al-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-          .al-photo { height: 130px; }
-          .al-body { padding: 10px 12px; }
-          .al-car-title { font-size: 13px; }
-          .al-price { font-size: 15px; }
-          .al-filter-btn { height: 30px; padding: 0 10px; font-size: 11px; }
-        }
       `}</style>
     </main>
   );
