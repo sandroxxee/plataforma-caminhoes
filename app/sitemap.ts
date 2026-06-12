@@ -1,40 +1,32 @@
-import type { MetadataRoute } from "next";
+import { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { gerarSlugComId } from "@/lib/slug";
 
-const siteUrl = "https://caminhoesavenda.com";
-
-const staticPages: MetadataRoute.Sitemap = [
-  { url: siteUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
-  { url: `${siteUrl}/anuncios`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
-  { url: `${siteUrl}/implementos`, lastModified: new Date(), changeFrequency: "daily", priority: 0.85 },
-  { url: `${siteUrl}/parceiros`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-  { url: `${siteUrl}/planos`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-  { url: `${siteUrl}/sobre`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
-  { url: `${siteUrl}/anunciar`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.75 },
-  { url: `${siteUrl}/politica-de-privacidade`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.4 },
-];
+const BASE = "https://www.caminhoesvenda.com.br";
+const MARCAS = ["mercedes-benz","scania","volvo","volkswagen","ford","iveco","daf"];
+const ESTADOS = ["sc","pr","rs","sp","rj","mg","es","ba","go","ms","mt","df","pe","ce","pa"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
-
-  const { data: trucks, error } = await supabase
+  const { data: trucks } = await supabase
     .from("trucks")
-    .select("id,marca,modelo,ano_modelo,ano_fabricacao,cidade,estado,updated_at,created_at")
+    .select("id, updated_at")
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .limit(5000);
+    .order("updated_at", { ascending: false })
+    .limit(1000);
 
-  if (error || !trucks) return staticPages;
-
-  const approvedTruckPages: MetadataRoute.Sitemap = trucks.map((truck) => ({
-    url: `${siteUrl}/anuncios/${gerarSlugComId(truck)}`,
-    lastModified: truck.updated_at || truck.created_at
-      ? new Date(truck.updated_at || truck.created_at)
-      : new Date(),
+  const anuncioUrls: MetadataRoute.Sitemap = (trucks || []).map((t) => ({
+    url: `${BASE}/anuncios/${t.id}`,
+    lastModified: t.updated_at,
     changeFrequency: "weekly",
-    priority: 0.85,
+    priority: 0.8,
   }));
 
-  return [...staticPages, ...approvedTruckPages];
+  return [
+    { url: BASE, changeFrequency: "daily", priority: 1.0 },
+    { url: `${BASE}/anuncios`, changeFrequency: "daily", priority: 0.95 },
+    ...MARCAS.map((m) => ({ url: `${BASE}/anuncios/${m}`, changeFrequency: "daily" as const, priority: 0.9 })),
+    ...ESTADOS.map((uf) => ({ url: `${BASE}/anuncios/estado/${uf}`, changeFrequency: "daily" as const, priority: 0.85 })),
+    ...anuncioUrls,
+  ];
 }
