@@ -115,6 +115,12 @@ export default async function NovoCaminhaoPage() {
                 </label>
 
                 <TruckConfigurationFields />
+
+                <label>
+                  Quilometragem <span className="optional-tag">(opcional)</span>
+                  <input name="quilometragem" type="number" placeholder="Ex: 450000" />
+                  <small>Em km. Deixe em branco se não souber.</small>
+                </label>
               </div>
             </section>
 

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { excluirMeuAnuncio, marcarComoVendido } from "./actions";
+import { gerarSlugComId } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +12,15 @@ type TruckImage = { image_url: string | null; principal: boolean | null; ordem: 
 type Truck = {
   id: string;
   titulo: string | null;
+  marca: string | null;
+  modelo: string | null;
+  ano_modelo: number | null;
+  ano_fabricacao: number | null;
+  cidade: string | null;
+  estado: string | null;
   status: string | null;
   vendido: boolean | null;
   preco: number | null;
-  cidade: string | null;
-  estado: string | null;
   views: number | null;
   truck_images?: TruckImage[];
 };
@@ -49,7 +54,7 @@ export default async function MeusAnunciosPage() {
 
   const { data } = await supabase
     .from("trucks")
-    .select(`id, titulo, status, vendido, preco, cidade, estado, views, truck_images(image_url, principal, ordem)`)
+    .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, cidade, estado, status, vendido, preco, views, truck_images(image_url, principal, ordem)`)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -143,6 +148,7 @@ export default async function MeusAnunciosPage() {
           const hasPrice = truck.preco && truck.preco > 0;
           const isSold = status.className === "sold";
           const views = truck.views ?? 0;
+          const slug = gerarSlugComId(truck);
 
           return (
             <article key={truck.id} className={`ml-card${isSold ? " is-sold" : ""}`}>
@@ -176,7 +182,7 @@ export default async function MeusAnunciosPage() {
 
               <div className="ml-actions">
                 {status.className === "approved" && (
-                  <Link href={`/anuncios/${truck.id}`} className="ml-view" target="_blank">Ver no site</Link>
+                  <Link href={`/anuncios/${slug}`} className="ml-view" target="_blank">Ver no site</Link>
                 )}
                 {!isSold && (
                   <form action={marcarComoVendido}>

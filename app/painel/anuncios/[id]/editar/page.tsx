@@ -29,7 +29,7 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
 
   let query = supabase
     .from("trucks")
-    .select("id, user_id, marca, modelo, ano_modelo, preco, cidade, estado, carroceria, tracao, whatsapp, descricao, status")
+    .select("id, user_id, marca, modelo, ano_modelo, preco, quilometragem, cidade, estado, carroceria, tracao, whatsapp, descricao, status")
     .eq("id", id);
 
   if (!isAdmin) {
@@ -74,8 +74,13 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
           </div>
 
           <div style={styles.field}>
-            <label style={styles.label}>Cidade *</label>
-            <input style={styles.input} name="cidade" defaultValue={truck.cidade || ""} required />
+            <label style={styles.label}>Quilometragem <span style={styles.optionalTag}>(opcional)</span></label>
+            <input style={styles.input} name="quilometragem" type="number" defaultValue={(truck as any).quilometragem || ""} placeholder="Ex: 450000" />
+          </div>
+
+          <div style={styles.field}>
+            <label style={styles.label}>Cidade <span style={styles.optionalTag}>(opcional)</span></label>
+            <input style={styles.input} name="cidade" defaultValue={truck.cidade || ""} />
           </div>
 
           <div style={styles.field}>
@@ -152,6 +157,7 @@ const styles: Record<string, CSSProperties> = {
   formGrid: { display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 16 },
   field: { display: "grid", gap: 8 },
   label: { color: "#cbd5df", fontWeight: 900, fontSize: 13 },
+  optionalTag: { color: "#8f99a3", fontWeight: 700, fontSize: 11, marginLeft: 4 },
   input: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px solid #343a40", background: "#15181b", color: "#e8eaed", outline: "none", boxSizing: "border-box" },
   fileInput: { width: "100%", padding: "13px 14px", borderRadius: 14, border: "1px dashed #22c55e", background: "#15181b", color: "#cbd5df", outline: "none", boxSizing: "border-box" },
   uploadBox: { padding: 20, borderRadius: 18, background: "#181b1e", border: "1px solid #343a40" },
