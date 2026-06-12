@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { gerarSlugComId } from "@/lib/slug";
 
 export type TruckImage = {
@@ -85,6 +86,10 @@ export function getTruckUrl(truck: TruckCardData) {
   })}`;
 }
 
+function isSupabaseUrl(url: string) {
+  return url.includes(".supabase.co/storage/v1/object/public/");
+}
+
 export function TruckCard({ truck }: { truck: TruckCardData }) {
   const title = getTitle(truck);
   const cardTitle = getCardTitle(truck);
@@ -98,7 +103,20 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
     <article className="truck-card">
       <Link className="truck-card-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
-          <img src={image} alt={title} loading="lazy" decoding="async" width={400} height={400} />
+          isSupabaseUrl(image) ? (
+            <Image
+              src={image}
+              alt={title}
+              width={400}
+              height={300}
+              loading="lazy"
+              decoding="async"
+              style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          ) : (
+            <img src={image} alt={title} loading="lazy" decoding="async" width={400} height={300} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+          )
         ) : (
           <span className="truck-card-no-photo">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">

@@ -3,10 +3,22 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+    formats: ["image/webp"],
+    deviceSizes: [400, 800, 1200],
+    imageSizes: [200, 400],
+  },
+
   async headers() {
     return [
       {
-        // Nunca cacheia HTML das páginas
         source: "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
         headers: [
           { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
