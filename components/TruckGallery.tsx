@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 
 type TruckImage = {
@@ -13,6 +14,10 @@ type Props = {
   title: string;
   images: TruckImage[];
 };
+
+function isSupabaseUrl(url: string) {
+  return url.includes(".supabase.co/storage/v1/object/public/");
+}
 
 export function TruckGallery({ title, images }: Props) {
   const validImages = [...images]
@@ -30,7 +35,18 @@ export function TruckGallery({ title, images }: Props) {
     <div style={styles.gallery}>
       <div style={styles.mainImageWrap}>
         {selected ? (
-          <img src={selected} alt={title} style={styles.mainImage} />
+          isSupabaseUrl(selected) ? (
+            <Image
+              src={selected}
+              alt={title}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 70vw"
+              style={{ objectFit: "contain", objectPosition: "center", padding: 10 }}
+            />
+          ) : (
+            <img src={selected} alt={title} style={styles.mainImage} />
+          )
         ) : (
           <div style={styles.noImage}>Sem foto</div>
         )}
@@ -40,12 +56,13 @@ export function TruckGallery({ title, images }: Props) {
         <div style={styles.thumbGrid}>
           {validImages.map((image, index) => {
             const active = image.image_url === selected;
+            const url = image.image_url || "";
 
             return (
               <button
-                key={`${image.image_url}-${index}`}
+                key={`${url}-${index}`}
                 type="button"
-                onClick={() => setSelected(image.image_url || "")}
+                onClick={() => setSelected(url)}
                 style={{
                   ...styles.thumbButton,
                   border: active
@@ -54,11 +71,22 @@ export function TruckGallery({ title, images }: Props) {
                 }}
                 title={`Ver foto ${index + 1}`}
               >
-                <img
-                  src={image.image_url || ""}
-                  alt={`${title} - foto ${index + 1}`}
-                  style={styles.thumb}
-                />
+                {isSupabaseUrl(url) ? (
+                  <Image
+                    src={url}
+                    alt={`${title} - foto ${index + 1}`}
+                    width={200}
+                    height={110}
+                    loading="lazy"
+                    style={{ objectFit: "contain", width: "100%", height: "100%", padding: 5, boxSizing: "border-box" }}
+                  />
+                ) : (
+                  <img
+                    src={url}
+                    alt={`${title} - foto ${index + 1}`}
+                    style={styles.thumb}
+                  />
+                )}
               </button>
             );
           })}
@@ -77,6 +105,7 @@ const styles: Record<string, CSSProperties> = {
     gap: 16,
   },
   mainImageWrap: {
+    position: "relative",
     height: 520,
     borderRadius: 28,
     overflow: "hidden",

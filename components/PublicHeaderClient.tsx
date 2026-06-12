@@ -24,7 +24,6 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
     { href: "/anuncios", label: "Caminhões", icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Truck },
     { href: "/parceiros", label: "Parceiros", icon: Handshake },
-    { href: "/como-funciona", label: "Como funciona", icon: Search },
     isLoggedIn
       ? { href: "/painel", label: "Painel", icon: LayoutDashboard }
       : { href: "/login", label: "Entrar", icon: LogIn },
