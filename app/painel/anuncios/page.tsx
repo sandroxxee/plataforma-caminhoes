@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
-import { excluirMeuAnuncio, marcarComoVendido } from "./actions";
+import { excluirMeuAnuncio, marcarComoVendido, reanunciarAnuncio } from "./actions";
 import { gerarSlugComId } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
@@ -11,17 +11,11 @@ export const dynamic = "force-dynamic";
 type TruckImage = { image_url: string | null; principal: boolean | null; ordem: number | null };
 type Truck = {
   id: string;
-  titulo: string | null;
-  marca: string | null;
-  modelo: string | null;
-  ano_modelo: number | null;
-  ano_fabricacao: number | null;
-  cidade: string | null;
-  estado: string | null;
-  status: string | null;
-  vendido: boolean | null;
-  preco: number | null;
-  views: number | null;
+  titulo: string | null; marca: string | null; modelo: string | null;
+  ano_modelo: number | null; ano_fabricacao: number | null;
+  cidade: string | null; estado: string | null;
+  status: string | null; vendido: boolean | null;
+  preco: number | null; views: number | null;
   truck_images?: TruckImage[];
 };
 
@@ -48,7 +42,6 @@ function normalizeStatus(status: string | null, vendido: boolean | null) {
 
 export default async function MeusAnunciosPage() {
   const supabase = await createClient();
-
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
@@ -105,28 +98,21 @@ export default async function MeusAnunciosPage() {
         .ml-view:hover{background:rgba(34,197,94,.18)}
         .ml-sold-btn{min-height:42px;display:inline-flex;align-items:center;justify-content:center;padding:0 14px;border-radius:13px;background:rgba(250,204,21,.08);border:1px solid rgba(250,204,21,.25);color:#fbbf24;font-weight:950;font-size:12px;white-space:nowrap;cursor:pointer;transition:background .18s}
         .ml-sold-btn:hover{background:rgba(250,204,21,.16)}
+        .ml-reanunciar-btn{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;border-radius:13px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;font-weight:950;font-size:12px;white-space:nowrap;cursor:pointer;transition:background .18s}
+        .ml-reanunciar-btn:hover{background:rgba(99,102,241,.2)}
         .ml-empty{grid-column:1/-1;padding:40px 24px;border-radius:22px;background:#1f2327;border:1px solid #343a40;text-align:center}
         .ml-empty-icon{font-size:48px;margin-bottom:14px}
         .ml-empty h2{margin:0 0 8px;font-size:24px;color:#f4f4f5}
         .ml-empty p{margin:0 auto 20px;color:#a7afb7;max-width:480px;line-height:1.6}
         .ml-empty a{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:0 20px;border-radius:14px;background:#22c55e;color:#06140b;text-decoration:none;font-weight:950}
-        @media(max-width:900px){
-          .ml-grid{grid-template-columns:1fr}
-          .ml-photo{height:260px}
-        }
+        @media(max-width:900px){.ml-grid{grid-template-columns:1fr}.ml-photo{height:260px}}
         @media(max-width:560px){
-          .ml-summary{gap:8px}
-          .ml-summary-item{font-size:12px;padding:6px 10px}
-          .ml-grid{gap:12px}
-          .ml-card{flex-direction:row;border-radius:18px;height:110px}
-          .ml-photo{width:110px;height:110px;flex-shrink:0;border-radius:0}
-          .ml-photo img{border-radius:0}
-          .ml-status{top:8px;left:8px;font-size:10px;padding:3px 8px}
-          .ml-photo-count{display:none}
+          .ml-summary{gap:8px}.ml-summary-item{font-size:12px;padding:6px 10px}
+          .ml-grid{gap:12px}.ml-card{flex-direction:row;border-radius:18px;height:110px}
+          .ml-photo{width:110px;height:110px;flex-shrink:0;border-radius:0}.ml-photo img{border-radius:0}
+          .ml-status{top:8px;left:8px;font-size:10px;padding:3px 8px}.ml-photo-count{display:none}
           .ml-body{padding:12px 14px;gap:4px;justify-content:center}
-          .ml-title{font-size:15px}
-          .ml-location{font-size:11px}
-          .ml-price{font-size:17px;margin-top:4px}
+          .ml-title{font-size:15px}.ml-location{font-size:11px}.ml-price{font-size:17px;margin-top:4px}
           .ml-actions{display:none}
         }
       `}</style>
@@ -147,6 +133,7 @@ export default async function MeusAnunciosPage() {
           const photoCount = truck.truck_images?.length ?? 0;
           const hasPrice = truck.preco && truck.preco > 0;
           const isSold = status.className === "sold";
+          const isRejected = status.className === "rejected";
           const views = truck.views ?? 0;
           const slug = gerarSlugComId(truck);
 
@@ -156,10 +143,7 @@ export default async function MeusAnunciosPage() {
                 {image ? (
                   <img src={image} alt={truck.titulo || "Caminhão"} loading="lazy" decoding="async" />
                 ) : (
-                  <div className="ml-photo-empty">
-                    <span>🚛</span>
-                    <p>Sem foto</p>
-                  </div>
+                  <div className="ml-photo-empty"><span>🚛</span><p>Sem foto</p></div>
                 )}
                 <em className={`ml-status ${status.className}`}>{status.emoji} {status.label}</em>
                 {photoCount > 0 && <span className="ml-photo-count">📷 {photoCount}</span>}
@@ -188,6 +172,15 @@ export default async function MeusAnunciosPage() {
                   <form action={marcarComoVendido}>
                     <input type="hidden" name="id" value={truck.id} />
                     <button type="submit" className="ml-sold-btn" title="Marcar como vendido">🤝 Vendido</button>
+                  </form>
+                )}
+                {/* Botão Reanunciar: aparece para vendidos e rejeitados */}
+                {(isSold || isRejected) && (
+                  <form action={reanunciarAnuncio}>
+                    <input type="hidden" name="id" value={truck.id} />
+                    <button type="submit" className="ml-reanunciar-btn" title="Criar novo anúncio com os mesmos dados">
+                      🔄 Reanunciar
+                    </button>
                   </form>
                 )}
                 <Link href={`/painel/anuncios/${truck.id}/editar`} className="ml-edit">Editar</Link>
