@@ -115,7 +115,7 @@ function getStructuredData(truck: Truck, title: string, location: string, whatsa
   const price = getNumericPrice(truck.preco);
   const description = truck.descricao?.trim() || `${title}${location ? ` em ${location}` : ""}. Anúncio revisado com contato direto pelo WhatsApp.`;
 
-  return {
+  const vehicle = {
     "@context": "https://schema.org",
     "@type": "Vehicle",
     name: title,
@@ -151,6 +151,19 @@ function getStructuredData(truck: Truck, title: string, location: string, whatsa
       name: "Contato pelo WhatsApp",
     } : undefined,
   };
+
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Caminhões", item: `${siteUrl}/anuncios` },
+      { "@type": "ListItem", position: 3, name: truck.marca || "Anúncio", item: `${siteUrl}/anuncios?marca=${encodeURIComponent(truck.marca || "")}` },
+      { "@type": "ListItem", position: 4, name: title, item: url },
+    ],
+  };
+
+  return { vehicle, breadcrumb };
 }
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -220,13 +233,12 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const title = getTitle(truck);
   const location = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
-  const structuredData = getStructuredData(truck, title, location, whatsappLink);
+  const { vehicle: structuredData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
   const shareYear = truck.ano_modelo || truck.ano_fabricacao;
   const shareText = `🚛 ${getCardTitle(truck)}${shareYear ? ` ${shareYear}` : ""}`;
   const photoCount = (truck.truck_images || []).length;
   const initialViews = truck.views ?? 0;
 
-  // Specs: apenas campos com valor
   const specs = [
     { label: "Marca", value: truck.marca },
     { label: "Modelo", value: truck.modelo },
@@ -242,6 +254,10 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
       />
       <PublicHeader />
 
@@ -316,7 +332,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
 
-            {/* Botão WhatsApp */}
             {whatsappLink ? (
               <a
                 href={whatsappLink}
@@ -337,7 +352,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <ShareAdButton title={title} text={shareText} />
           </div>
 
-          {/* Ficha técnica */}
           {specs.length > 0 && (
             <div className="detail-card detail-specs-card">
               <h2 className="detail-section-title">Ficha técnica</h2>
@@ -357,7 +371,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       <SiteFooter />
 
       <style>{`
-        /* Breadcrumb */
         .detail-breadcrumb {
           display: flex;
           align-items: center;
@@ -371,16 +384,13 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-breadcrumb span[aria-hidden] { color: var(--line); }
         .detail-breadcrumb span:last-child { color: var(--text); }
 
-        /* Cards do layout */
         .detail-gallery-card { padding: 14px; margin-bottom: 14px; }
         .detail-desc-card { padding: 22px; margin-bottom: 14px; }
         .detail-aside-header { padding: 22px; margin-bottom: 14px; }
         .detail-specs-card { padding: 22px; }
 
-        /* Título mobile */
         .detail-mobile-title { padding: 18px 20px 14px; margin-bottom: 14px; display: none; }
 
-        /* Meta da galeria (fotos + views) */
         .detail-gallery-meta {
           display: flex;
           align-items: center;
@@ -389,7 +399,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           margin-bottom: 10px;
         }
 
-        /* Contador de fotos */
         .detail-photo-count {
           display: inline-flex;
           align-items: center;
@@ -403,7 +412,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           font-weight: 950;
         }
 
-        /* Contador de visualizações */
         .detail-views-badge {
           display: inline-flex;
           align-items: center;
@@ -418,7 +426,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           border: 1px solid var(--line);
         }
 
-        /* Título */
         .detail-h1 {
           margin: 10px 0 6px;
           font-size: clamp(22px, 2.8vw, 34px);
@@ -446,7 +453,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         }
         body.public-theme-dark .detail-status-badge { background: #14532d; color: #86efac; }
 
-        /* Preço desktop (aside) */
         .detail-price {
           display: block;
           color: var(--blue);
@@ -455,7 +461,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           letter-spacing: -.05em;
           margin: 4px 0 10px;
         }
-        /* Preço mobile */
         .detail-price-mobile {
           display: block;
           color: var(--blue);
@@ -472,7 +477,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           line-height: 1.5;
         }
 
-        /* WhatsApp */
         .detail-whatsapp {
           min-height: 52px;
           border-radius: 14px;
@@ -494,7 +498,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         }
         .detail-whatsapp:active { transform: scale(.97); }
 
-        /* Ficha técnica */
         .detail-section-title {
           margin: 0 0 16px;
           font-size: 16px;
@@ -515,7 +518,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-spec-row dt { color: var(--muted); font-weight: 800; }
         .detail-spec-row dd { font-weight: 950; text-align: right; }
 
-        /* Descrição */
         .detail-desc-text {
           margin: 0;
           color: var(--muted);
@@ -524,7 +526,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           white-space: pre-wrap;
         }
 
-        /* Aviso de segurança */
         .detail-safety {
           display: flex;
           gap: 14px;
@@ -537,10 +538,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-safety strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 4px; }
         .detail-safety p { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.5; }
 
-        /* Aside sticky */
         .detail-aside { position: sticky; top: 80px; align-self: start; }
 
-        /* Mobile */
         @media (max-width: 900px) {
           .detail-aside { position: static; }
           .detail-aside-header .detail-h1,
