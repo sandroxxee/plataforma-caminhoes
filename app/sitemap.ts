@@ -25,18 +25,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const staticPages: MetadataRoute.Sitemap = [
+  return [
     { url: BASE, changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/anuncios`, changeFrequency: "daily", priority: 0.95 },
     { url: `${BASE}/sobre`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/contato`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/parceiros`, changeFrequency: "weekly", priority: 0.7 },
-  ];
-
-  return [
-    ...staticPages,
-    // URLs corretas de marca e estado
-    ...MARCAS.map((m) => ({ url: `${BASE}/caminhoes/${m}`, changeFrequency: "daily" as const, priority: 0.9 })),
+    ...MARCAS.map((m) => ({ url: `${BASE}/caminhoes/marca/${m}`, changeFrequency: "daily" as const, priority: 0.9 })),
     ...ESTADOS.map((uf) => ({ url: `${BASE}/caminhoes/estado/${uf}`, changeFrequency: "daily" as const, priority: 0.85 })),
     ...anuncioUrls,
   ];
