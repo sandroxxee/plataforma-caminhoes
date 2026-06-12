@@ -7,7 +7,7 @@ import { ShareAdButton } from "@/components/ShareAdButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdGallery } from "@/components/theme/AdGallery";
 import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
-import { extrairIdDoParametroAnuncio, gerarSlugComId } from "@/lib/slug";
+import { gerarSlugComId } from "@/lib/slug";
 import { ViewCounter } from "@/components/ViewCounter";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +16,9 @@ export const revalidate = 0;
 const siteUrl = "https://caminhoesavenda.com";
 const defaultOgImage = "/og-caminhoes-a-venda.jpg";
 const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
+
+const UUID_REGEX = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const SHORT_ID_REGEX = /-([a-f0-9]{8})$/;
 
 type Truck = TruckCardData & {
   descricao: string | null;
@@ -74,15 +77,16 @@ function getSeoDescription(truck: Truck, title: string, location: string, price:
   return `${title}. ${detalhes ? `${detalhes}. ` : ""}Veja fotos, detalhes do anúncio e contato direto pelo WhatsApp no Caminhões à Venda.`;
 }
 
-async function getApprovedTruck(parametro: string) {
+async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
-  const parsed = extrairIdDoParametroAnuncio(parametro);
+  const value = parametro.trim().toLowerCase();
 
-  if (parsed.tipo === "uuid") {
+  // 1. UUID puro → busca direta e rápida
+  if (UUID_REGEX.test(value)) {
     const { data, error } = await supabase
       .from("trucks")
       .select(truckSelect)
-      .eq("id", parsed.valor)
+      .eq("id", value)
       .eq("status", "aprovado")
       .eq("vendido", false)
       .maybeSingle();
@@ -90,38 +94,26 @@ async function getApprovedTruck(parametro: string) {
     return data as Truck;
   }
 
-  if (parsed.tipo === "short") {
-    // short ID = primeiros 8 chars hex do UUID (sem hifens)
-    // UUID formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    // Busca via ilike nos primeiros 8 chars antes do primeiro hífen
+  // 2. Slug com shortId no final (ex: scania-r450-2022-sc-a1b2c3d4)
+  // Pega os 8 chars hex do final e busca pelo início do UUID
+  const shortIdMatch = value.match(SHORT_ID_REGEX);
+  if (shortIdMatch) {
+    const shortId = shortIdMatch[1];
     const { data, error } = await supabase
       .from("trucks")
       .select(truckSelect)
       .eq("status", "aprovado")
       .eq("vendido", false)
-      .ilike("id", `${parsed.valor}%`);
-    if (error || !data || data.length === 0) return null;
-    return data[0] as Truck;
+      .ilike("id", `${shortId}%`);
+    if (!error && data && data.length > 0) return data[0] as Truck;
   }
 
-  // fallback: busca por slug completo em todos os campos
-  const { data, error } = await supabase
-    .from("trucks")
-    .select(truckSelect)
-    .eq("status", "aprovado")
-    .eq("vendido", false)
-    .limit(2000);
-
-  if (error || !data) return null;
-  const truck = data.find((item) =>
-    String(item.id).replace(/-/g, "").toLowerCase().startsWith(parsed.valor.replace(/-/g, ""))
-  );
-  return truck ? truck as Truck : null;
+  return null;
 }
 
 function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
-  const main = images.find((image) => image.principal)?.image_url || images[0]?.image_url;
+  const main = images.find((img) => img.principal)?.image_url || images[0]?.image_url;
   return main || defaultOgImage;
 }
 
@@ -142,12 +134,6 @@ function getStructuredData(truck: Truck, title: string, location: string, whatsa
     brand: truck.marca ? { "@type": "Brand", name: truck.marca } : undefined,
     model: truck.modelo || undefined,
     vehicleModelDate: truck.ano_modelo ? String(truck.ano_modelo) : undefined,
-    mileageFromOdometer: truck.quilometragem || truck.km ? {
-      "@type": "QuantitativeValue",
-      value: truck.quilometragem || truck.km,
-      unitCode: "KMT",
-    } : undefined,
-    vehicleConfiguration: [truck.tracao, truck.carroceria].filter(Boolean).join(" - ") || undefined,
     offers: {
       "@type": "Offer",
       url,
@@ -155,18 +141,10 @@ function getStructuredData(truck: Truck, title: string, location: string, whatsa
       price,
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
-      seller: {
-        "@type": "Organization",
-        name: "Caminhões à Venda",
-        url: siteUrl,
-      },
+      seller: { "@type": "Organization", name: "Caminhões à Venda", url: siteUrl },
     },
     areaServed: location || undefined,
-    potentialAction: whatsappLink ? {
-      "@type": "ContactAction",
-      target: whatsappLink,
-      name: "Contato pelo WhatsApp",
-    } : undefined,
+    potentialAction: whatsappLink ? { "@type": "ContactAction", target: whatsappLink, name: "Contato pelo WhatsApp" } : undefined,
   };
 
   const breadcrumb = {
@@ -188,13 +166,7 @@ type PageProps = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const truck = await getApprovedTruck(id);
-
-  if (!truck) {
-    return {
-      title: "Anúncio não encontrado",
-      robots: { index: false, follow: false },
-    };
-  }
+  if (!truck) return { title: "Anúncio não encontrado", robots: { index: false, follow: false } };
 
   const title = getTitle(truck);
   const seoTitle = getSeoTitle(truck);
@@ -209,32 +181,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: seoTitle,
     description,
     alternates: { canonical: url },
-    openGraph: {
-      type: "website",
-      locale: "pt_BR",
-      url,
-      siteName: "Caminhões à Venda",
-      title: `${seoTitle} | Caminhões à Venda`,
-      description,
-      images: [{ url: image, width: 1200, height: 630, alt: seoTitle }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${seoTitle} | Caminhões à Venda`,
-      description,
-      images: [image],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-        "max-video-preview": -1,
-      },
-    },
+    openGraph: { type: "website", locale: "pt_BR", url, siteName: "Caminhões à Venda", title: `${seoTitle} | Caminhões à Venda`, description, images: [{ url: image, width: 1200, height: 630, alt: seoTitle }] },
+    twitter: { card: "summary_large_image", title: `${seoTitle} | Caminhões à Venda`, description, images: [image] },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
   };
 }
 
@@ -245,9 +194,10 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   if (!truck) notFound();
 
   const canonicalPath = getCanonicalPath(truck);
-  // Só redireciona se o parâmetro for um UUID puro (sem slug) — evita loop
-  const isRawUuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id.toLowerCase());
-  if (isRawUuid && `/anuncios/${id}` !== canonicalPath) redirect(canonicalPath);
+  // Redireciona apenas UUID puro → slug (evita loop em slugs já corretos)
+  if (UUID_REGEX.test(id.toLowerCase()) && `/anuncios/${id}` !== canonicalPath) {
+    redirect(canonicalPath);
+  }
 
   const title = getTitle(truck);
   const location = getLocation(truck);
@@ -270,18 +220,11 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
   return (
     <main className="market-page">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }} />
       <PublicHeader />
 
       <div className="market-container detail-layout">
-
         <div>
           <nav className="detail-breadcrumb" aria-label="Navegação">
             <Link href="/">Início</Link>
@@ -317,8 +260,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           <div className="detail-card detail-desc-card">
             <h2 className="detail-section-title">Sobre este caminhão</h2>
             <p className="detail-desc-text">
-              {truck.descricao?.trim() ||
-                "Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado do veículo, disponibilidade e condições de negociação."}
+              {truck.descricao?.trim() || "Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado do veículo, disponibilidade e condições de negociação."}
             </p>
           </div>
 
@@ -340,7 +282,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             {location && <p className="detail-location">📍 {location}</p>}
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
-
             {whatsappLink ? (
               <a href={whatsappLink} target="_blank" rel="noreferrer" className="detail-whatsapp" data-whatsapp-click data-truck-id={truck.id}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -350,7 +291,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
                 Tenho interesse neste caminhão
               </a>
             ) : null}
-
             <ShareAdButton title={title} text={shareText} />
           </div>
 
