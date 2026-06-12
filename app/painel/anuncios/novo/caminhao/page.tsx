@@ -168,8 +168,8 @@ export default async function NovoCaminhaoPage() {
                 </label>
 
                 <label>
-                  Cidade *
-                  <input name="cidade" placeholder="Ex: Xanxerê" required />
+                  Cidade <span className="optional-tag">(opcional)</span>
+                  <input name="cidade" placeholder="Ex: Xanxerê" />
                 </label>
 
                 <label>
@@ -214,6 +214,7 @@ export default async function NovoCaminhaoPage() {
 
       <style>{`
         .secondary-button { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 12px; border: 1px solid #343a40; background: #2a2f34; color: #e8eaed; text-decoration: none; font-weight: 900; font-size: 13px; }
+        .optional-tag { color: #8f99a3; font-weight: 700; font-size: 11px; margin-left: 4px; }
         .truck-form { display: grid; gap: 14px; }
         .form-shell { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 14px; align-items: start; }
         .steps-panel { position: sticky; top: 14px; border-radius: 18px; background: #1f2327; border: 1px solid #343a40; box-shadow: 0 10px 22px rgba(0,0,0,.14); padding: 12px; }

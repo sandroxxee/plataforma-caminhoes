@@ -147,7 +147,7 @@ export default async function NovoImplementoPage() {
             </label>
 
             <label>
-              Cidade *
+              Cidade <span className="optional-tag">(opcional)</span>
               <input name="cidade" placeholder="Ex: Xanxerê" />
             </label>
 
@@ -213,6 +213,7 @@ export default async function NovoImplementoPage() {
 
       <style>{`
         .secondary-button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border-radius: 14px; border: 1px solid #343a40; background: #2a2f34; color: #e8eaed; text-decoration: none; font-weight: 900; }
+        .optional-tag { color: #8f99a3; font-weight: 700; font-size: 11px; margin-left: 4px; }
         .truck-form { display: grid; gap: 18px; }
         .form-section, .preview-box, .form-footer { border-radius: 24px; background: #1f2327; border: 1px solid #343a40; box-shadow: 0 16px 34px rgba(0,0,0,.18); }
         .implemento-section, .upload-section { background: #1f2327; }
