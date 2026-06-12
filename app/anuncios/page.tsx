@@ -8,13 +8,30 @@ import { getCardTitle, getLocation, formatMoney, type TruckCardData, type TruckI
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
-  description: "Veja todos os caminhões e implementos disponíveis. Filtre por faixa de preço e fale direto pelo WhatsApp.",
+  description: "Veja todos os caminhões e implementos disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
 };
 
 type Truck = TruckCardData & { truck_images?: TruckImage[] };
 
+const MARCAS = ["Todas", "Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
+
+const ESTADOS = [
+  { label: "Todos", value: "" },
+  { label: "SC", value: "SC" },
+  { label: "PR", value: "PR" },
+  { label: "RS", value: "RS" },
+  { label: "SP", value: "SP" },
+  { label: "MG", value: "MG" },
+  { label: "MS", value: "MS" },
+  { label: "MT", value: "MT" },
+  { label: "GO", value: "GO" },
+  { label: "BA", value: "BA" },
+  { label: "RJ", value: "RJ" },
+  { label: "ES", value: "ES" },
+];
+
 const FAIXAS = [
-  { label: "Todos", min: 0, max: Infinity },
+  { label: "Todos os preços", min: 0, max: Infinity },
   { label: "Até R$100k", min: 0, max: 100_000 },
   { label: "R$100k–200k", min: 100_000, max: 200_000 },
   { label: "R$200k–400k", min: 200_000, max: 400_000 },
@@ -26,12 +43,15 @@ function getMainImage(truck: Truck) {
   return imgs.find((i) => i.principal)?.image_url || imgs[0]?.image_url || "";
 }
 
-type PageProps = { searchParams: Promise<{ faixa?: string }> };
+type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
-  const { faixa } = await searchParams;
+  const { faixa, marca, estado } = await searchParams;
+
   const faixaIdx = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
   const { min, max } = FAIXAS[faixaIdx];
+  const marcaFiltro = MARCAS.includes(marca || "") && marca !== "Todas" ? marca : "";
+  const estadoFiltro = ESTADOS.find((e) => e.value === estado)?.value || "";
 
   const supabase = await createClient();
   let query = supabase
@@ -43,9 +63,26 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   if (min > 0) query = query.gte("preco", min) as typeof query;
   if (max !== Infinity) query = query.lte("preco", max) as typeof query;
+  if (marcaFiltro) query = query.eq("marca", marcaFiltro) as typeof query;
+  if (estadoFiltro) query = query.eq("estado", estadoFiltro) as typeof query;
 
   const { data } = await query;
   const trucks = (data || []) as Truck[];
+
+  function buildHref(overrides: Record<string, string | number | undefined>) {
+    const params: Record<string, string> = {};
+    if (faixaIdx > 0) params.faixa = String(faixaIdx);
+    if (marcaFiltro) params.marca = marcaFiltro;
+    if (estadoFiltro) params.estado = estadoFiltro;
+    Object.entries(overrides).forEach(([k, v]) => {
+      if (v === undefined || v === "" || v === 0) delete params[k];
+      else params[k] = String(v);
+    });
+    const qs = new URLSearchParams(params).toString();
+    return qs ? `/anuncios?${qs}` : "/anuncios";
+  }
+
+  const hasFilters = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
   return (
     <main className="market-page">
@@ -57,17 +94,60 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio encontrado" : "anúncios encontrados"}</p>
         </div>
 
-        {/* Filtro de faixa de preço */}
-        <div className="al-filters">
-          {FAIXAS.map((f, idx) => (
-            <Link
-              key={idx}
-              href={idx === 0 ? "/anuncios" : `/anuncios?faixa=${idx}`}
-              className={`al-filter-btn${faixaIdx === idx ? " active" : ""}`}
-            >
-              {f.label}
-            </Link>
-          ))}
+        {/* Filtros */}
+        <div className="al-filters-wrap">
+
+          {/* Marca */}
+          <div className="al-filter-group">
+            <span className="al-filter-label">Marca</span>
+            <div className="al-filter-row">
+              {MARCAS.map((m) => {
+                const isActive = m === "Todas" ? !marcaFiltro : marcaFiltro === m;
+                const href = m === "Todas" ? buildHref({ marca: undefined }) : buildHref({ marca: m });
+                return (
+                  <Link key={m} href={href} className={`al-filter-btn${isActive ? " active" : ""}`}>
+                    {m}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Estado */}
+          <div className="al-filter-group">
+            <span className="al-filter-label">Estado</span>
+            <div className="al-filter-row">
+              {ESTADOS.map((e) => {
+                const isActive = estadoFiltro === e.value;
+                const href = buildHref({ estado: e.value || undefined });
+                return (
+                  <Link key={e.value || "todos"} href={href} className={`al-filter-btn${isActive ? " active" : ""}`}>
+                    {e.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Preço */}
+          <div className="al-filter-group">
+            <span className="al-filter-label">Preço</span>
+            <div className="al-filter-row">
+              {FAIXAS.map((f, idx) => {
+                const isActive = faixaIdx === idx;
+                const href = buildHref({ faixa: idx === 0 ? undefined : idx });
+                return (
+                  <Link key={idx} href={href} className={`al-filter-btn${isActive ? " active" : ""}`}>
+                    {f.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {hasFilters && (
+            <Link href="/anuncios" className="al-clear-btn">✕ Limpar filtros</Link>
+          )}
         </div>
 
         <Suspense fallback={null}>
@@ -99,7 +179,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
             {trucks.length === 0 && (
               <div className="al-empty">
-                <p>Nenhum anúncio nesta faixa de preço.</p>
+                <p>Nenhum anúncio encontrado com esses filtros.</p>
                 <Link href="/anuncios" className="al-empty-link">Ver todos</Link>
               </div>
             )}
@@ -114,56 +194,19 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         .al-title { margin: 0 0 4px; font-size: clamp(26px, 4vw, 38px); letter-spacing: -.04em; line-height: 1; }
         .al-subtitle { margin: 0; color: var(--muted); font-size: 14px; font-weight: 750; }
 
-        /* Filtros */
-        .al-filters {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin-bottom: 24px;
-          padding-bottom: 20px;
-          border-bottom: 1px solid var(--line);
-        }
-        .al-filter-btn {
-          display: inline-flex;
-          align-items: center;
-          height: 36px;
-          padding: 0 16px;
-          border-radius: 999px;
-          border: 1.5px solid var(--line);
-          background: var(--soft);
-          color: var(--muted);
-          font-size: 13px;
-          font-weight: 800;
-          text-decoration: none;
-          transition: border-color .15s, color .15s, background .15s;
-          white-space: nowrap;
-        }
+        .al-filters-wrap { display: grid; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+        .al-filter-group { display: grid; gap: 7px; }
+        .al-filter-label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+        .al-filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .al-filter-btn { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--soft); color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; transition: border-color .15s, color .15s, background .15s; white-space: nowrap; }
         .al-filter-btn:hover { border-color: var(--blue); color: var(--blue); }
         .al-filter-btn.active { border-color: var(--blue); background: var(--blueSoft); color: var(--blue); }
+        .al-clear-btn { display: inline-flex; align-self: start; align-items: center; height: 32px; padding: 0 14px; border-radius: 999px; border: 1.5px solid rgba(239,68,68,.35); background: rgba(239,68,68,.07); color: #f87171; font-size: 12px; font-weight: 800; text-decoration: none; transition: background .15s; }
+        .al-clear-btn:hover { background: rgba(239,68,68,.14); }
 
-        /* Grid */
-        .al-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: 18px;
-        }
-
-        /* Card */
-        .al-card {
-          border-radius: 18px;
-          border: 1.5px solid var(--line);
-          background: var(--card);
-          text-decoration: none;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          transition: border-color .18s, box-shadow .18s, transform .18s;
-        }
-        .al-card:hover {
-          border-color: var(--blue);
-          box-shadow: 0 10px 32px rgba(0,0,0,.1);
-          transform: translateY(-2px);
-        }
+        .al-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+        .al-card { border-radius: 18px; border: 1.5px solid var(--line); background: var(--card); text-decoration: none; overflow: hidden; display: flex; flex-direction: column; transition: border-color .18s, box-shadow .18s, transform .18s; }
+        .al-card:hover { border-color: var(--blue); box-shadow: 0 10px 32px rgba(0,0,0,.1); transform: translateY(-2px); }
         .al-photo { height: 180px; background: var(--soft); overflow: hidden; }
         .al-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s; }
         .al-card:hover .al-photo img { transform: scale(1.05); }
@@ -173,8 +216,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         .al-year { font-size: 12px; color: var(--muted); font-weight: 750; }
         .al-location { font-size: 12px; color: var(--muted); font-weight: 750; margin-top: 2px; }
         .al-price { font-size: 18px; font-weight: 950; color: var(--blue); letter-spacing: -.03em; margin-top: auto; padding-top: 8px; }
-
-        /* Empty */
         .al-empty { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted); }
         .al-empty-link { display: inline-flex; margin-top: 12px; padding: 10px 20px; border-radius: 10px; background: var(--blue); color: #fff; font-weight: 800; text-decoration: none; }
 
@@ -184,8 +225,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           .al-body { padding: 10px 12px; }
           .al-car-title { font-size: 13px; }
           .al-price { font-size: 15px; }
-          .al-filters { gap: 6px; margin-bottom: 16px; }
-          .al-filter-btn { height: 32px; padding: 0 12px; font-size: 12px; }
+          .al-filter-btn { height: 30px; padding: 0 10px; font-size: 11px; }
         }
       `}</style>
     </main>

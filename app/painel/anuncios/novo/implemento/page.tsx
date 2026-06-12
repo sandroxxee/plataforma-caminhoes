@@ -128,6 +128,12 @@ export default async function NovoImplementoPage() {
                 ))}
               </select>
             </label>
+
+            <label>
+              Quilometragem <span className="optional-tag">(opcional)</span>
+              <input name="quilometragem" type="number" placeholder="Ex: 380000" />
+              <small>Em km. Deixe em branco se não souber.</small>
+            </label>
           </div>
         </section>
 
@@ -193,7 +199,7 @@ export default async function NovoImplementoPage() {
             <span>04</span>
             <div>
               <h2>Fotos do implemento</h2>
-              <p>As fotos serão preparadas com a marca d’água www.caminhoesavenda.com antes do envio.</p>
+              <p>As fotos serão preparadas com a marca d'água www.caminhoesavenda.com antes do envio.</p>
             </div>
           </div>
 
