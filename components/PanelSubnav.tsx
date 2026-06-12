@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { sair } from "@/app/logout/actions";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 function isActive(pathname: string, href: string) {
   if (href === "/painel/anuncios") return pathname === href;
@@ -11,6 +11,13 @@ function isActive(pathname: string, href: string) {
 
 export function PanelSubnav() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  }
 
   return (
     <div className="psnav-wrap">
@@ -24,58 +31,29 @@ export function PanelSubnav() {
           </Link>
         </nav>
 
-        <form action={sair} style={{ margin: 0 }}>
-          <button type="submit" className="psnav-logout">Sair</button>
-        </form>
+        <button type="button" onClick={handleLogout} className="psnav-logout">Sair</button>
       </div>
 
       <style>{`
-        .psnav-wrap {
-          border-bottom: 1px solid var(--line);
-          background: var(--surface);
-        }
+        .psnav-wrap { border-bottom: 1px solid var(--line); background: var(--surface); }
         .psnav-inner {
           width: min(1280px, calc(100vw - 32px));
-          margin: 0 auto;
-          height: 44px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
+          margin: 0 auto; height: 44px;
+          display: flex; align-items: center; justify-content: space-between; gap: 12px;
         }
-        .psnav {
-          display: flex;
-          align-items: center;
-          gap: 2px;
-        }
+        .psnav { display: flex; align-items: center; gap: 2px; }
         .psnav-link {
-          display: inline-flex;
-          align-items: center;
-          height: 36px;
-          padding: 0 14px;
-          border-radius: 8px;
-          font-size: 13px;
-          font-weight: 800;
-          color: var(--muted);
-          text-decoration: none;
+          display: inline-flex; align-items: center; height: 36px; padding: 0 14px;
+          border-radius: 8px; font-size: 13px; font-weight: 800;
+          color: var(--muted); text-decoration: none;
           transition: background .14s, color .14s;
         }
         .psnav-link:hover { background: var(--blueSoft); color: var(--blue); }
-        .psnav-link.active {
-          background: var(--blueSoft);
-          color: var(--blue);
-          font-weight: 900;
-        }
+        .psnav-link.active { background: var(--blueSoft); color: var(--blue); font-weight: 900; }
         .psnav-logout {
-          height: 30px;
-          padding: 0 12px;
-          border-radius: 8px;
-          border: 1px solid rgba(239,68,68,.3);
-          background: rgba(239,68,68,.07);
-          color: #f87171;
-          font-size: 12px;
-          font-weight: 800;
-          cursor: pointer;
+          height: 30px; padding: 0 12px; border-radius: 8px;
+          border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.07);
+          color: #f87171; font-size: 12px; font-weight: 800; cursor: pointer;
           transition: background .14s;
         }
         .psnav-logout:hover { background: rgba(239,68,68,.15); }
