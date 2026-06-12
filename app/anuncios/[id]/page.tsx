@@ -8,18 +8,20 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { AdGallery } from "@/components/theme/AdGallery";
 import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { extrairIdDoParametroAnuncio, gerarSlugComId } from "@/lib/slug";
+import { ViewCounter } from "@/components/ViewCounter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const siteUrl = "https://caminhoesavenda.com";
 const defaultOgImage = "/og-caminhoes-a-venda.jpg";
-const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,truck_images(image_url,principal,ordem)`;
+const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
 
 type Truck = TruckCardData & {
   descricao: string | null;
   quilometragem?: number | null;
   km?: number | null;
+  views?: number | null;
   truck_images?: TruckImage[];
 };
 
@@ -222,6 +224,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const shareYear = truck.ano_modelo || truck.ano_fabricacao;
   const shareText = `🚛 ${getCardTitle(truck)}${shareYear ? ` ${shareYear}` : ""}`;
   const photoCount = (truck.truck_images || []).length;
+  const initialViews = truck.views ?? 0;
 
   // Specs: apenas campos com valor
   const specs = [
@@ -265,16 +268,19 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
           {/* Galeria */}
           <div className="detail-card detail-gallery-card">
-            {photoCount > 0 && (
-              <div className="detail-photo-count">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="3"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <polyline points="21 15 16 10 5 21"/>
-                </svg>
-                {photoCount} {photoCount === 1 ? "foto" : "fotos"}
-              </div>
-            )}
+            <div className="detail-gallery-meta">
+              {photoCount > 0 && (
+                <div className="detail-photo-count">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  {photoCount} {photoCount === 1 ? "foto" : "fotos"}
+                </div>
+              )}
+              <ViewCounter truckId={truck.id} initialViews={initialViews} />
+            </div>
             <AdGallery title={title} images={truck.truck_images || []} />
           </div>
 
@@ -374,6 +380,15 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         /* Título mobile */
         .detail-mobile-title { padding: 18px 20px 14px; margin-bottom: 14px; display: none; }
 
+        /* Meta da galeria (fotos + views) */
+        .detail-gallery-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 10px;
+        }
+
         /* Contador de fotos */
         .detail-photo-count {
           display: inline-flex;
@@ -386,7 +401,21 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           color: var(--blue);
           font-size: 12px;
           font-weight: 950;
-          margin-bottom: 10px;
+        }
+
+        /* Contador de visualizações */
+        .detail-views-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 26px;
+          padding: 0 10px;
+          border-radius: 999px;
+          background: var(--soft);
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 950;
+          border: 1px solid var(--line);
         }
 
         /* Título */
