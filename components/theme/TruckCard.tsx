@@ -25,17 +25,12 @@ export type TruckCardData = {
 
 export function formatMoney(value: number | null) {
   if (!value) return "Sob consulta";
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
 export function normalizeCity(city: string | null) {
   const value = (city || "").trim();
   if (!value) return "Cidade";
-
   const normalized = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   if (normalized === "xanxere") return "Xanxerê";
   if (normalized === "florianopolis") return "Florianópolis";
@@ -55,12 +50,10 @@ export function getCardTitle(truck: TruckCardData) {
   const title = getTitle(truck);
   const ano = truck.ano_modelo || truck.ano_fabricacao;
   if (!ano) return title;
-
   return title
     .replace(new RegExp(`\\s*[-–—]?\\s*ano\\s*${ano}\\b`, "i"), "")
     .replace(new RegExp(`\\s*[-–—]\\s*${ano}\\b`, "i"), "")
-    .replace(/\s{2,}/g, " ")
-    .trim() || title;
+    .replace(/\s{2,}/g, " ").trim() || title;
 }
 
 export function getTruckImage(truck: TruckCardData) {
@@ -71,7 +64,6 @@ export function getTruckImage(truck: TruckCardData) {
       if (!a.principal && b.principal) return 1;
       return (a.ordem || 0) - (b.ordem || 0);
     });
-
   return images[0]?.image_url || "";
 }
 
@@ -97,123 +89,16 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const title = getTitle(truck);
   const cardTitle = getCardTitle(truck);
   const image = getTruckImage(truck);
-  const year = truck.ano_modelo || truck.ano_fabricacao || "Ano não informado";
-  const type = truck.carroceria || truck.tracao || "Configuração não informada";
+  const year = truck.ano_modelo || truck.ano_fabricacao || null;
+  const type = truck.carroceria || truck.tracao || null;
   const truckUrl = getTruckUrl(truck);
+  const waLink = getWhatsappLink(truck);
 
   return (
-    <article className="truck-card truck-card-hover-detail">
-      <style>{`
-        .truck-card-hover-detail {
-          position: relative;
-          cursor: pointer;
-        }
-
-        /* Melhoria 1: foto ocupa 100% sem espaço vazio (cover) + escala suave no hover */
-        .truck-card-hover-detail .truck-card-photo img {
-          object-fit: cover;
-          object-position: center center;
-          transition: transform .32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        /* Melhoria 3: escala suave na foto ao hover */
-        .truck-card-hover-detail:hover .truck-card-photo img {
-          transform: scale(1.05);
-        }
-
-        /* Placeholder quando sem foto */
-        .truck-card-no-photo {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          color: var(--muted);
-          font-size: 13px;
-          font-weight: 800;
-        }
-
-        .truck-card-hover-detail .truck-card-actions {
-          position: absolute;
-          inset: 0;
-          z-index: 4;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-top: 0;
-          padding: 16px;
-          background: linear-gradient(180deg, rgba(15, 23, 42, .08), rgba(15, 23, 42, .56));
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity .18s ease;
-        }
-
-        .truck-card-hover-detail:hover .truck-card-actions,
-        .truck-card-hover-detail:focus-within .truck-card-actions {
-          opacity: 1;
-          pointer-events: auto;
-        }
-
-        .truck-card-hover-detail .truck-card-detail {
-          min-height: 46px;
-          padding: 0 18px;
-          border-radius: 999px;
-          border: 0;
-          background: var(--blue);
-          color: #fff;
-          box-shadow: 0 12px 24px rgba(15, 23, 42, .24);
-          font-size: 14px;
-          transform: translateY(6px);
-          transition: transform .18s ease;
-        }
-
-        .truck-card-hover-detail:hover .truck-card-detail,
-        .truck-card-hover-detail:focus-within .truck-card-detail {
-          transform: translateY(0);
-        }
-
-        /* Melhoria 4: feedback de toque no celular */
-        @media (hover: none) {
-          .truck-card-hover-detail:active {
-            transform: scale(0.98);
-            transition: transform .12s ease;
-          }
-        }
-
-        @media (hover: none), (max-width: 760px) {
-          .truck-card-hover-detail .truck-card-actions {
-            position: static;
-            display: grid;
-            grid-template-columns: 1fr;
-            opacity: 1;
-            pointer-events: auto;
-            padding: 0;
-            background: transparent;
-            margin-top: auto;
-          }
-
-          .truck-card-hover-detail .truck-card-detail {
-            width: 100%;
-            min-height: 46px;
-            border-radius: 12px;
-            transform: none;
-          }
-        }
-      `}</style>
-
-      {/* Melhoria 2: lazy load + decoding async nas imagens */}
+    <article className="truck-card">
       <Link className="truck-card-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
-          <img
-            src={image}
-            alt={title}
-            loading="lazy"
-            decoding="async"
-            width={400}
-            height={400}
-          />
+          <img src={image} alt={title} loading="lazy" decoding="async" width={400} height={300} />
         ) : (
           <span className="truck-card-no-photo">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -229,10 +114,20 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       <div className="truck-card-body">
         <strong className="truck-card-price">{formatMoney(truck.preco)}</strong>
         <Link className="truck-card-title" href={truckUrl}>{cardTitle}</Link>
-        <p className="truck-card-meta">{year} • {type} • {getLocation(truck)}</p>
-
+        <p className="truck-card-meta">
+          {[year, type, getLocation(truck)].filter(Boolean).join(" • ")}
+        </p>
         <div className="truck-card-actions">
           <Link className="truck-card-detail" href={truckUrl}>Ver detalhes</Link>
+          {waLink && (
+            <a className="truck-card-whatsapp" href={waLink} target="_blank" rel="noopener noreferrer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.532 5.856L.054 23.454a.5.5 0 0 0 .492.596.5.5 0 0 0 .13-.017l5.7-1.493A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.368l-.36-.214-3.73.978.996-3.642-.235-.374A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+              </svg>
+              WhatsApp
+            </a>
+          )}
         </div>
       </div>
     </article>

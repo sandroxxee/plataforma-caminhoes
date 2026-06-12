@@ -6,10 +6,10 @@ export function FeaturedAds({ trucks }: { trucks: TruckCardData[] }) {
     <section className="market-container market-section">
       <div className="market-section-head">
         <div>
-          <span>Anúncios recentes</span>
-          <h2>Estoque disponível</h2>
+          <span>An&uacute;ncios recentes</span>
+          <h2>Estoque dispon&iacute;vel</h2>
         </div>
-        <Link href="/anuncios">Ver todos →</Link>
+        <Link href="/anuncios">Ver todos &rarr;</Link>
       </div>
 
       {trucks.length > 0 ? (
@@ -19,54 +19,17 @@ export function FeaturedAds({ trucks }: { trucks: TruckCardData[] }) {
           ))}
         </div>
       ) : (
-        <div className="market-empty featured-empty">
-          <div className="featured-empty-icon">🚛</div>
-          <strong>Nenhum caminhão disponível agora</strong>
-          <p>Novos anúncios aparecem aqui assim que aprovados.</p>
-          <Link href="/cadastro" className="featured-empty-cta">Anunciar meu caminhão</Link>
+        <div className="market-empty">
+          <div style={{ fontSize: 40, lineHeight: 1 }}>&#x1F69B;</div>
+          <strong>Nenhum caminh&atilde;o dispon&iacute;vel agora</strong>
+          <p>Novos an&uacute;ncios aparecem aqui assim que aprovados.</p>
+          <Link href="/cadastro" style={{
+            marginTop: 8, minHeight: 44, padding: "0 20px", borderRadius: 999,
+            background: "var(--blue)", color: "#fff", fontWeight: 900,
+            display: "inline-flex", alignItems: "center", justifyContent: "center"
+          }}>Anunciar meu caminh&atilde;o</Link>
         </div>
       )}
-
-      <style>{`
-        .featured-empty {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 56px 24px;
-          text-align: center;
-          color: var(--muted);
-        }
-        .featured-empty-icon {
-          font-size: 40px;
-          line-height: 1;
-          margin-bottom: 4px;
-        }
-        .featured-empty strong {
-          font-size: 18px;
-          color: var(--text);
-          letter-spacing: -.02em;
-        }
-        .featured-empty p {
-          margin: 0;
-          font-size: 14px;
-          font-weight: 700;
-          max-width: 36ch;
-        }
-        .featured-empty-cta {
-          margin-top: 8px;
-          min-height: 44px;
-          padding: 0 20px;
-          border-radius: 999px;
-          background: var(--blue);
-          color: #fff;
-          font-weight: 950;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-      `}</style>
     </section>
   );
 }
