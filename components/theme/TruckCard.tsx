@@ -98,7 +98,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
     <article className="truck-card">
       <Link className="truck-card-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
-          <img src={image} alt={title} loading="lazy" decoding="async" width={400} height={300} />
+          <img src={image} alt={title} loading="lazy" decoding="async" width={400} height={400} />
         ) : (
           <span className="truck-card-no-photo">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
