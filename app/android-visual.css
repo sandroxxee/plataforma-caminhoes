@@ -103,8 +103,9 @@
     border-bottom: 1px solid var(--line);
   }
 
+  /* REMOVIDO: padding: 6px que quebrava a proporção da imagem */
   .truck-card-photo img {
-    padding: 6px;
+    padding: 0;
   }
 
   .truck-card-price {
@@ -199,11 +200,11 @@
   }
 
   .truck-card-price {
-    font-size: 23px;
+    font-size: 20px;
   }
 
   .truck-card-title {
-    font-size: 17px;
+    font-size: 14px;
   }
 
   .truck-card-meta {
@@ -249,7 +250,7 @@
 
   .truck-card-price,
   .detail-price {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .site-footer nav {
