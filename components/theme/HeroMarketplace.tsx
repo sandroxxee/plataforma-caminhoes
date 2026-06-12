@@ -2,196 +2,180 @@ import Link from "next/link";
 
 export function HeroMarketplace() {
   return (
-    <section className="market-container hero-clean" aria-label="Caminhões à Venda">
-
-      {/* Foto de fundo */}
-      <img
-        src="/hero-home.jpg?v=1"
-        alt=""
-        className="hero-image-real"
-        aria-hidden="true"
-      />
-
-      {/* Overlay escuro */}
+    <div className="hero-wrap">
+      <img src="/hero-home.jpg?v=2" alt="" className="hero-img" aria-hidden="true" />
       <div className="hero-overlay" />
 
-      {/* Conteúdo sobre a foto */}
-      <div className="hero-content">
-        <span className="hero-eyebrow">🚛 Marketplace de caminhões</span>
-        <h1 className="hero-title">
+      <div className="hero-body">
+        <p className="hero-eyebrow">🚛 Marketplace de caminhões</p>
+        <h1 className="hero-h1">
           Compre e venda caminhões<br />
           <em>com contato direto.</em>
         </h1>
-        <p className="hero-sub">
+        <p className="hero-desc">
           Anúncios reais, fotos verdadeiras e negociação direto pelo WhatsApp.
         </p>
 
-        {/* Busca simples: apenas texto + botão */}
-        <form className="hero-search-form" action="/anuncios" method="get">
+        <form className="hero-form" action="/anuncios" method="get">
           <input
             name="busca"
             type="search"
             placeholder="Modelo, marca, cidade ou ano…"
-            className="hero-search-input"
+            className="hero-input"
             aria-label="Buscar caminhões"
           />
-          <button type="submit" className="hero-search-btn">Buscar</button>
+          <button type="submit" className="hero-submit">Buscar</button>
         </form>
 
-        {/* CTAs secundários */}
-        <div className="hero-actions">
-          <Link href="/anuncios" className="hero-btn-ghost">Ver todos os anúncios</Link>
-          <Link href="/cadastro" className="hero-btn-ghost">Anunciar meu caminhão</Link>
+        <div className="hero-links">
+          <Link href="/anuncios" className="hero-link">Ver todos os anúncios</Link>
+          <Link href="/cadastro" className="hero-link">Anunciar meu caminhão</Link>
         </div>
       </div>
 
       <style>{`
-        .hero-clean {
+        .hero-wrap {
           position: relative;
-          overflow: hidden;
+          width: 100%;
           border-radius: var(--radius);
+          overflow: hidden;
           background: #07111f;
           box-shadow: var(--shadow2);
+          min-height: 460px;
         }
-        .hero-image-real {
-          display: block;
+        .hero-img {
+          position: absolute;
+          inset: 0;
           width: 100%;
-          height: 480px;
+          height: 100%;
           object-fit: cover;
-          object-position: center center;
-          background: #07111f;
+          object-position: center;
+          display: block;
           transition: transform 8s ease;
         }
-        .hero-clean:hover .hero-image-real { transform: scale(1.03); }
+        .hero-wrap:hover .hero-img { transform: scale(1.04); }
         .hero-overlay {
           position: absolute;
           inset: 0;
           background: linear-gradient(
             to bottom,
-            rgba(7,17,31,.18) 0%,
-            rgba(7,17,31,.60) 50%,
-            rgba(7,17,31,.90) 100%
+            rgba(7,17,31,.1) 0%,
+            rgba(7,17,31,.55) 45%,
+            rgba(7,17,31,.92) 100%
           );
         }
-        .hero-content {
-          position: absolute;
-          inset: 0;
+        .hero-body {
+          position: relative;
+          z-index: 2;
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
-          padding: clamp(20px, 3vw, 40px);
+          min-height: 460px;
+          padding: clamp(22px, 3vw, 44px);
+          gap: 0;
         }
         .hero-eyebrow {
+          margin: 0 0 14px;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          width: fit-content;
           height: 28px;
           padding: 0 12px;
           border-radius: 999px;
           background: rgba(24,119,242,.22);
-          border: 1px solid rgba(96,165,250,.32);
+          border: 1px solid rgba(96,165,250,.3);
           color: #93c5fd;
           font-size: 12px;
           font-weight: 950;
           letter-spacing: .05em;
           text-transform: uppercase;
-          width: fit-content;
-          margin-bottom: 14px;
         }
-        .hero-title {
+        .hero-h1 {
           margin: 0 0 10px;
-          font-size: clamp(30px, 4.2vw, 58px);
+          font-size: clamp(28px, 4vw, 56px);
           line-height: 1.04;
           letter-spacing: -.05em;
           color: #fff;
-          max-width: 780px;
+          max-width: 760px;
         }
-        .hero-title em { font-style: normal; color: #60a5fa; }
-        .hero-sub {
-          margin: 0 0 18px;
+        .hero-h1 em {
+          font-style: normal;
+          color: #60a5fa;
+        }
+        .hero-desc {
+          margin: 0 0 20px;
           color: rgba(255,255,255,.72);
-          font-size: clamp(14px, 1.4vw, 17px);
+          font-size: clamp(14px, 1.4vw, 16px);
           font-weight: 700;
-          max-width: 560px;
+          max-width: 520px;
           line-height: 1.5;
         }
-
-        /* Barra de busca simples */
-        .hero-search-form {
+        .hero-form {
           display: flex;
-          gap: 0;
-          max-width: 580px;
+          max-width: 540px;
           margin-bottom: 14px;
           border-radius: 14px;
           overflow: hidden;
+          background: rgba(255,255,255,.1);
           border: 1px solid rgba(255,255,255,.18);
-          backdrop-filter: blur(12px);
-          background: rgba(255,255,255,.08);
+          backdrop-filter: blur(10px);
         }
-        .hero-search-input {
+        .hero-input {
           flex: 1;
           min-width: 0;
           height: 50px;
-          border: 0;
           background: transparent;
+          border: 0;
+          outline: 0;
           color: #fff;
           padding: 0 16px;
           font-size: 15px;
           font-weight: 700;
-          outline: 0;
         }
-        .hero-search-input::placeholder { color: rgba(255,255,255,.45); }
-        .hero-search-btn {
+        .hero-input::placeholder { color: rgba(255,255,255,.42); }
+        .hero-submit {
           flex-shrink: 0;
           height: 50px;
           padding: 0 22px;
           background: var(--blue);
           color: #fff;
+          border: 0;
           font-weight: 950;
           font-size: 14px;
-          border: 0;
           cursor: pointer;
-          transition: background .18s;
+          transition: background .16s;
+          white-space: nowrap;
         }
-        .hero-search-btn:hover { background: var(--blue2); }
-
-        /* Links secundários */
-        .hero-actions {
+        .hero-submit:hover { background: var(--blue2); }
+        .hero-links {
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
         }
-        .hero-btn-ghost {
-          min-height: 38px;
+        .hero-link {
+          display: inline-flex;
+          align-items: center;
+          height: 38px;
           padding: 0 16px;
           border-radius: 999px;
           background: rgba(255,255,255,.1);
-          border: 1px solid rgba(255,255,255,.22);
+          border: 1px solid rgba(255,255,255,.2);
           color: rgba(255,255,255,.9);
           font-size: 13px;
           font-weight: 950;
-          display: inline-flex;
-          align-items: center;
-          transition: background .18s, border-color .18s;
+          transition: background .16s;
         }
-        .hero-btn-ghost:hover {
+        .hero-link:hover {
           background: rgba(255,255,255,.18);
-          border-color: rgba(255,255,255,.38);
-        }
-
-        @media (max-width: 760px) {
-          .hero-image-real { height: 420px; }
-          .hero-search-form { max-width: 100%; }
         }
         @media (max-width: 560px) {
-          .hero-image-real { height: 520px; }
-          .hero-content { padding: 18px 16px; }
-          .hero-actions { display: grid; grid-template-columns: 1fr 1fr; }
-          .hero-btn-ghost { justify-content: center; font-size: 12px; padding: 0 10px; }
-          .hero-search-input { font-size: 14px; }
-          .hero-search-btn { padding: 0 16px; font-size: 13px; }
+          .hero-wrap, .hero-body { min-height: 500px; }
+          .hero-form { max-width: 100%; }
+          .hero-links { display: grid; grid-template-columns: 1fr 1fr; }
+          .hero-link { justify-content: center; font-size: 12px; }
+          .hero-submit { padding: 0 14px; font-size: 13px; }
         }
       `}</style>
-    </section>
+    </div>
   );
 }
