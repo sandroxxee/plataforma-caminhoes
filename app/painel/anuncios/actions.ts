@@ -32,13 +32,8 @@ function montarDescricaoImplemento(params: {
 
 async function getLoggedUser() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-
   return { supabase, user };
 }
 
@@ -63,15 +58,9 @@ async function enviarFotos(supabase: Awaited<ReturnType<typeof createClient>>, u
 
     const { error: uploadError } = await supabase.storage
       .from("truck-images")
-      .upload(nomeArquivo, item.file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+      .upload(nomeArquivo, item.file, { cacheControl: "3600", upsert: false });
 
-    if (uploadError) {
-      console.error("Erro no upload:", uploadError.message);
-      continue;
-    }
+    if (uploadError) { console.error("Erro no upload:", uploadError.message); continue; }
 
     const { data: publicUrlData } = supabase.storage.from("truck-images").getPublicUrl(nomeArquivo);
 
@@ -96,9 +85,7 @@ export async function criarAnuncio(formData: FormData) {
   const whatsapp = String(formData.get("whatsapp") || "").trim();
   const descricao = String(formData.get("descricao") || "").trim();
 
-  if (!preco || !cidade || !estado || !whatsapp) {
-    redirect("/painel/anuncios/novo?erro=campos");
-  }
+  if (!preco || !cidade || !estado || !whatsapp) redirect("/painel/anuncios/novo?erro=campos");
 
   if (tipoAnuncio === "Implemento") {
     const tipoImplemento = String(formData.get("tipo_implemento") || "").trim();
@@ -115,46 +102,18 @@ export async function criarAnuncio(formData: FormData) {
       redirect("/painel/anuncios/novo/implemento?erro=campos");
     }
 
-    const descricaoCompleta = montarDescricaoImplemento({
-      descricao,
-      tipo: tipoImplemento,
-      eixos: numeroEixos,
-      composicao,
-      pneus,
-      suspensao,
-      conservacao,
+    const descricaoCompleta = montarDescricaoImplemento({ descricao, tipo: tipoImplemento, eixos: numeroEixos, composicao, pneus, suspensao, conservacao });
+
+    const { error } = await supabase.from("implements").insert({
+      user_id: user.id, tipo: tipoImplemento, marca, modelo, ano, valor: preco,
+      eixos: numeroEixos, suspensao, pneus, conservacao, cidade, estado, whatsapp,
+      descricao: descricaoCompleta, status: "pendente", destaque: false, vendido: false,
     });
 
-    const { error } = await supabase
-      .from("implements")
-      .insert({
-        user_id: user.id,
-        tipo: tipoImplemento,
-        marca,
-        modelo,
-        ano,
-        valor: preco,
-        eixos: numeroEixos,
-        suspensao,
-        pneus,
-        conservacao,
-        cidade,
-        estado,
-        whatsapp,
-        descricao: descricaoCompleta,
-        status: "pendente",
-        destaque: false,
-        vendido: false,
-      });
-
-    if (error) {
-      console.error("Erro ao criar implemento:", error.message);
-      redirect("/painel/anuncios/novo/implemento?erro=banco");
-    }
+    if (error) { console.error("Erro ao criar implemento:", error.message); redirect("/painel/anuncios/novo/implemento?erro=banco"); }
 
     revalidatePath("/painel/anuncios");
     revalidatePath("/implementos");
-
     redirect("/painel/anuncios");
   }
 
@@ -164,49 +123,28 @@ export async function criarAnuncio(formData: FormData) {
   const carroceria = String(formData.get("carroceria") || "").trim();
   const tracao = String(formData.get("tracao") || "").trim();
 
-  if (!marca || !modelo || !ano || !carroceria || !tracao) {
-    redirect("/painel/anuncios/novo?erro=campos");
-  }
+  if (!marca || !modelo || !ano || !carroceria || !tracao) redirect("/painel/anuncios/novo?erro=campos");
 
   const titulo = tituloAutomatico(marca, modelo, tracao, ano);
 
   const { data: truck, error } = await supabase
     .from("trucks")
     .insert({
-      user_id: user.id,
-      titulo,
-      marca,
-      modelo,
-      ano_fabricacao: ano,
-      ano_modelo: ano,
-      preco,
-      cidade,
-      estado,
-      carroceria,
-      tracao,
-      quilometragem: "",
-      motor: "",
-      cambio: "",
-      combustivel: "Diesel",
-      cor: "",
-      descricao,
-      whatsapp,
-      status: "pendente",
-      destaque: false,
-      vendido: false,
+      user_id: user.id, titulo, marca, modelo,
+      ano_fabricacao: ano, ano_modelo: ano, preco, cidade, estado,
+      carroceria, tracao, quilometragem: "", motor: "", cambio: "",
+      combustivel: "Diesel", cor: "", descricao, whatsapp,
+      status: "pendente", destaque: false, vendido: false,
     })
     .select("id")
     .single();
 
-  if (error || !truck) {
-    redirect("/painel/anuncios/novo?erro=banco");
-  }
+  if (error || !truck) redirect("/painel/anuncios/novo?erro=banco");
 
   await enviarFotos(supabase, user.id, truck.id, formData);
 
   revalidatePath("/painel/anuncios");
   revalidatePath("/admin/pendentes");
-
   redirect("/painel/anuncios");
 }
 
@@ -234,23 +172,12 @@ export async function editarAnuncio(formData: FormData) {
 
   const query = supabase.from("trucks").update({
     titulo: tituloAutomatico(marca, modelo, tracao, ano),
-    marca,
-    modelo,
-    ano_fabricacao: ano,
-    ano_modelo: ano,
-    preco,
-    cidade,
-    estado,
-    carroceria,
-    tracao,
-    descricao,
-    whatsapp,
+    marca, modelo, ano_fabricacao: ano, ano_modelo: ano,
+    preco, cidade, estado, carroceria, tracao, descricao, whatsapp,
     status: isAdmin ? String(formData.get("status") || "pendente") : "pendente",
   }).eq("id", id);
 
-  if (!isAdmin) {
-    query.eq("user_id", user.id);
-  }
+  if (!isAdmin) query.eq("user_id", user.id);
 
   await query;
   await enviarFotos(supabase, user.id, id, formData);
@@ -267,7 +194,6 @@ export async function editarAnuncio(formData: FormData) {
 export async function excluirMeuAnuncio(formData: FormData) {
   const { supabase, user } = await getLoggedUser();
   const id = String(formData.get("id") || "");
-
   if (!id) return;
 
   const { data: images } = await supabase
@@ -277,10 +203,7 @@ export async function excluirMeuAnuncio(formData: FormData) {
     .eq("user_id", user.id);
 
   const paths = (images || []).map((img) => img.storage_path).filter(Boolean);
-
-  if (paths.length > 0) {
-    await supabase.storage.from("truck-images").remove(paths);
-  }
+  if (paths.length > 0) await supabase.storage.from("truck-images").remove(paths);
 
   await supabase.from("truck_images").delete().eq("truck_id", id).eq("user_id", user.id);
   await supabase.from("trucks").delete().eq("id", id).eq("user_id", user.id);
@@ -289,4 +212,20 @@ export async function excluirMeuAnuncio(formData: FormData) {
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
   revalidatePath("/anuncios");
+}
+
+export async function marcarComoVendido(formData: FormData) {
+  const { supabase, user } = await getLoggedUser();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+
+  await supabase
+    .from("trucks")
+    .update({ vendido: true, status: "vendido" })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  revalidatePath("/painel/anuncios");
+  revalidatePath("/anuncios");
+  revalidatePath(`/anuncios/${id}`);
 }
