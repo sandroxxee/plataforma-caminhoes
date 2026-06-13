@@ -14,9 +14,7 @@ import {
   type TruckImage,
 } from "@/lib/truck-utils";
 
-// Re-exporta para compatibilidade com imports existentes
 export type { TruckCardData, TruckImage };
-export { formatMoney, getCardTitle, getLocation, getTitle, getTruckImage, getTruckUrl, getWhatsappLink };
 
 function isSupabaseUrl(url: string) {
   return url.includes(".supabase.co/storage/v1/object/public/");
