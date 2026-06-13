@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ShareAdButton } from "@/components/ShareAdButton";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AdGallery } from "@/components/theme/AdGallery";
-import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
+import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/lib/truck-utils";
 import { gerarSlugComId } from "@/lib/slug";
 import { ViewCounter } from "@/components/ViewCounter";
 
@@ -81,7 +81,6 @@ async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
   const value = parametro.trim().toLowerCase();
 
-  // 1. UUID puro → busca direta e rápida
   if (UUID_REGEX.test(value)) {
     const { data, error } = await supabase
       .from("trucks")
@@ -94,37 +93,14 @@ async function getApprovedTruck(parametro: string): Promise<Truck | null> {
     return data as Truck;
   }
 
-  // 2. Slug com shortId no final (ex: scania-r450-2022-sc-a1b2c3d4)
-  // Usa RPC para comparar o UUID sem hífens, evitando falha de matching
-  // causada pela posição variável dos hífens no UUID.
-  //
-  // SQL da função no Supabase (criar uma vez no SQL Editor):
-  // CREATE OR REPLACE FUNCTION find_truck_by_short_id(short_id text)
-  // RETURNS TABLE (
-  //   id uuid, titulo text, marca text, modelo text,
-  //   ano_modelo int, ano_fabricacao int, preco numeric,
-  //   cidade text, estado text, carroceria text, tracao text,
-  //   descricao text, whatsapp text, views int
-  // ) AS $$
-  //   SELECT id, titulo, marca, modelo, ano_modelo, ano_fabricacao,
-  //          preco, cidade, estado, carroceria, tracao,
-  //          descricao, whatsapp, views
-  //   FROM trucks
-  //   WHERE replace(id::text, '-', '') ILIKE short_id || '%'
-  //     AND status = 'aprovado'
-  //     AND vendido = false
-  //   LIMIT 1;
-  // $$ LANGUAGE sql STABLE SECURITY DEFINER;
   const shortIdMatch = value.match(SHORT_ID_REGEX);
   if (shortIdMatch) {
     const shortId = shortIdMatch[1];
 
-    // Tenta via RPC (requer função find_truck_by_short_id criada no Supabase)
     const { data: rpcData, error: rpcError } = await supabase
       .rpc("find_truck_by_short_id", { short_id: shortId });
 
     if (!rpcError && rpcData && rpcData.length > 0) {
-      // Busca as imagens separadamente pois a RPC retorna apenas colunas escalares
       const truckBase = rpcData[0] as Truck;
       const { data: images } = await supabase
         .from("truck_images")
@@ -134,7 +110,6 @@ async function getApprovedTruck(parametro: string): Promise<Truck | null> {
       return { ...truckBase, truck_images: (images || []) as TruckImage[] };
     }
 
-    // Fallback: busca por ILIKE no início do UUID (funciona quando shortId coincide com início do UUID)
     const { data: fallbackData, error: fallbackError } = await supabase
       .from("trucks")
       .select(truckSelect)
@@ -230,7 +205,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   if (!truck) notFound();
 
   const canonicalPath = getCanonicalPath(truck);
-  // Redireciona apenas UUID puro → slug (evita loop em slugs já corretos)
   if (UUID_REGEX.test(id.toLowerCase()) && `/anuncios/${id}` !== canonicalPath) {
     redirect(canonicalPath);
   }
