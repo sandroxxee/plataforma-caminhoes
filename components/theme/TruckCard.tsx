@@ -2,93 +2,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { gerarSlugComId } from "@/lib/slug";
+import {
+  formatMoney,
+  getCardTitle,
+  getLocation,
+  getTitle,
+  getTruckImage,
+  getTruckUrl,
+  getWhatsappLink,
+  type TruckCardData,
+  type TruckImage,
+} from "@/lib/truck-utils";
 
-export type TruckImage = {
-  image_url: string | null;
-  principal: boolean | null;
-  ordem: number | null;
-};
-
-export type TruckCardData = {
-  id: string;
-  titulo: string | null;
-  marca: string | null;
-  modelo: string | null;
-  ano_modelo: number | null;
-  ano_fabricacao: number | null;
-  preco: number | null;
-  cidade: string | null;
-  estado: string | null;
-  carroceria: string | null;
-  tracao: string | null;
-  whatsapp: string | null;
-  truck_images?: TruckImage[];
-};
-
-export function formatMoney(value: number | null) {
-  if (!value) return "Sob consulta";
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-}
-
-export function normalizeCity(city: string | null) {
-  const value = (city || "").trim();
-  if (!value) return "";
-  const normalized = value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  if (normalized === "xanxere") return "Xanxerê";
-  if (normalized === "florianopolis") return "Florianópolis";
-  return value;
-}
-
-export function getLocation(truck: TruckCardData) {
-  const city = normalizeCity(truck.cidade);
-  if (city && truck.estado) return `${city} • ${truck.estado}`;
-  if (truck.estado) return truck.estado;
-  return city || "";
-}
-
-export function getTitle(truck: TruckCardData) {
-  return truck.titulo || `${truck.marca || ""} ${truck.modelo || ""}`.trim() || "Caminhão anunciado";
-}
-
-export function getCardTitle(truck: TruckCardData) {
-  const title = getTitle(truck);
-  const ano = truck.ano_modelo || truck.ano_fabricacao;
-  if (!ano) return title;
-  return title
-    .replace(new RegExp(`\\s*[-–—]?\\s*ano\\s*${ano}\\b`, "i"), "")
-    .replace(new RegExp(`\\s*[-–—]\\s*${ano}\\b`, "i"), "")
-    .replace(/\s{2,}/g, " ").trim() || title;
-}
-
-export function getTruckImage(truck: TruckCardData) {
-  const images = [...(truck.truck_images || [])]
-    .filter((img) => img.image_url)
-    .sort((a, b) => {
-      if (a.principal && !b.principal) return -1;
-      if (!a.principal && b.principal) return 1;
-      return (a.ordem || 0) - (b.ordem || 0);
-    });
-  return images[0]?.image_url || "";
-}
-
-export function getWhatsappLink(truck: TruckCardData) {
-  const phone = (truck.whatsapp || "").replace(/\D/g, "");
-  const text = encodeURIComponent(`Olá, tenho interesse no caminhão ${getTitle(truck)}.`);
-  return phone ? `https://wa.me/${phone}?text=${text}` : "";
-}
-
-export function getTruckUrl(truck: TruckCardData) {
-  return `/anuncios/${gerarSlugComId({
-    id: truck.id,
-    marca: truck.marca,
-    modelo: truck.modelo,
-    ano_modelo: truck.ano_modelo,
-    ano_fabricacao: truck.ano_fabricacao,
-    cidade: truck.cidade,
-    estado: truck.estado,
-  })}`;
-}
+// Re-exporta para compatibilidade com imports existentes
+export type { TruckCardData, TruckImage };
+export { formatMoney, getCardTitle, getLocation, getTitle, getTruckImage, getTruckUrl, getWhatsappLink };
 
 function isSupabaseUrl(url: string) {
   return url.includes(".supabase.co/storage/v1/object/public/");
@@ -110,7 +38,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const location = getLocation(truck);
   const truckUrl = getTruckUrl(truck);
   const waLink = getWhatsappLink(truck);
-  const meta = [year, type].filter(Boolean).join(" • ");
+  const meta = [year, type].filter(Boolean).join(" \u2022 ");
 
   return (
     <article className="tc">
