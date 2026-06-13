@@ -18,13 +18,14 @@ export default async function PainelPage() {
 
   const { data: trucks } = await supabase
     .from("trucks")
-    .select("status")
+    .select("status,views")
     .eq("user_id", user!.id);
 
   const total = trucks?.length ?? 0;
   const ativos = trucks?.filter((a) => a.status === "aprovado").length ?? 0;
   const pendentes = trucks?.filter((a) => a.status === "pendente").length ?? 0;
   const rejeitados = trucks?.filter((a) => a.status === "rejeitado").length ?? 0;
+  const totalViews = trucks?.reduce((acc, a) => acc + (a.views ?? 0), 0) ?? 0;
 
   const nomeUsuario =
     user!.user_metadata?.name || user!.email?.split("@")[0] || "Anunciante";
@@ -42,8 +43,15 @@ export default async function PainelPage() {
         .painel-stat.green { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.06); }
         .painel-stat.yellow { border-color: rgba(234,179,8,.3); background: rgba(234,179,8,.06); }
         .painel-stat.red { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.06); }
+        .painel-stat.blue { border-color: rgba(24,119,242,.3); background: rgba(24,119,242,.06); }
         .painel-stat-num { font-size: 36px; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -.03em; }
         .painel-stat-label { font-size: 12px; color: var(--muted); font-weight: 700; }
+        .painel-views-section { margin-bottom: 28px; }
+        .painel-views-card { padding: 20px 22px; border-radius: 18px; background: var(--blueSoft); border: 1px solid rgba(24,119,242,.2); display: flex; align-items: center; gap: 18px; }
+        .painel-views-icon { font-size: 32px; flex-shrink: 0; }
+        .painel-views-info { flex: 1; }
+        .painel-views-num { font-size: 42px; font-weight: 900; color: var(--blue); line-height: 1; letter-spacing: -.04em; }
+        .painel-views-label { font-size: 13px; color: var(--muted); font-weight: 700; margin-top: 4px; }
         .painel-section-title { font-size: 11px; color: var(--muted); font-weight: 800; margin: 0 0 12px; letter-spacing: .07em; text-transform: uppercase; }
         .painel-actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
         .painel-card { padding: 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); color: var(--text); text-decoration: none; display: flex; flex-direction: column; gap: 10px; transition: border-color .18s, box-shadow .18s; }
@@ -60,6 +68,7 @@ export default async function PainelPage() {
           .painel-stats { grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 18px; }
           .painel-stat { padding: 14px 12px; border-radius: 12px; }
           .painel-stat-num { font-size: 28px; }
+          .painel-views-num { font-size: 32px; }
           .painel-actions { grid-template-columns: 1fr; gap: 10px; }
           .painel-card { flex-direction: row; align-items: center; padding: 14px 16px; }
           .painel-card-text { display: none; }
@@ -67,6 +76,18 @@ export default async function PainelPage() {
       `}</style>
 
       <p className="painel-greeting">Olá, <strong>{nomeUsuario}</strong> 👋</p>
+
+      {/* Card destaque de visualizações */}
+      <div className="painel-views-section">
+        <div className="painel-views-card">
+          <span className="painel-views-icon">👁️</span>
+          <div className="painel-views-info">
+            <div className="painel-views-num">{totalViews.toLocaleString("pt-BR")}</div>
+            <div className="painel-views-label">visualizações nos seus anúncios</div>
+          </div>
+          <Link href="/painel/anuncios" className="painel-card-btn">Ver detalhes</Link>
+        </div>
+      </div>
 
       <section className="painel-stats">
         <div className="painel-stat">
