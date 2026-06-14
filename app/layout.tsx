@@ -1,29 +1,32 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Inter, Manrope, Oswald } from "next/font/google";
-import { CopyProtection } from "@/components/CopyProtection";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { PwaRegister } from "@/components/PwaRegister";
-import { WhatsappClickTracker } from "@/components/WhatsappClickTracker";
+import { Manrope } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
-import "./android-visual.css";
-import "./typography.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
+const PwaRegister = dynamic(() => import("@/components/PwaRegister"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const WhatsappClickTracker = dynamic(() => import("@/components/WhatsappClickTracker"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const CopyProtection = dynamic(() => import("@/components/CopyProtection"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"), {
+  ssr: false,
+  loading: () => null,
 });
 
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
-  display: "swap",
-});
-
-const oswald = Oswald({
-  subsets: ["latin"],
-  variable: "--font-oswald",
   display: "swap",
 });
 
@@ -108,7 +111,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable} ${oswald.variable}`}>
+    <html lang="pt-BR" className={manrope.variable}>
       <body>
         <PwaRegister />
         <WhatsappClickTracker />
