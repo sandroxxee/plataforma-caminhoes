@@ -196,7 +196,8 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       </div>
 
       <style>{`
-        .tc { isolation: isolate; }
+        .tc { isolation: isolate; position: relative; z-index: 0; }
+        .tc:hover { z-index: 100; }
         .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
         .tc-badges {
           position: absolute; top: 9px; left: 9px;
