@@ -3,13 +3,14 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
+import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
 import Link from "next/link";
 
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Caminhões à Venda | Todos os anúncios",
-  description: "Veja todos os caminhões e implementos disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
+  title: "Caminh\u00f5es \u00e0 Venda | Todos os an\u00fancios",
+  description: "Veja todos os caminh\u00f5es e implementos dispon\u00edveis. Filtre por marca, estado ou faixa de pre\u00e7o e fale direto pelo WhatsApp.",
 };
 
 const FAIXAS = [
@@ -38,7 +39,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("trucks")
-    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,truck_images(image_url,principal,ordem)`)
+    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,created_at,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
@@ -56,8 +57,10 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <div className="market-container">
         <div className="al-header">
-          <h1 className="al-title">Caminhões à Venda</h1>
+          <h1 className="al-title">Caminh\u00f5es \u00e0 Venda</h1>
         </div>
+
+        <CategoryBrandsBar categoria="caminhoes" labelSingular="Caminh\u00f5es" />
 
         <AnunciosFilters
           faixaIdx={faixaIdx}
@@ -67,14 +70,14 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           total={trucks.length}
         />
 
-        <section className="stock-grid" aria-label="Lista de anúncios">
+        <section className="stock-grid" aria-label="Lista de an\u00fancios">
           {trucks.map((truck) => (
             <TruckCard key={truck.id} truck={truck} />
           ))}
           {trucks.length === 0 && (
             <div className="market-empty">
-              <strong>Nenhum anúncio encontrado</strong>
-              <p>Tente outros filtros ou veja todos os caminhões.</p>
+              <strong>Nenhum an\u00fancio encontrado</strong>
+              <p>Tente outros filtros ou veja todos os caminh\u00f5es.</p>
               <Link
                 href="/anuncios"
                 style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}
@@ -89,7 +92,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <SiteFooter />
 
       <style>{`
-        .al-header { padding: 28px 0 4px; }
+        .al-header { padding: 28px 0 16px; }
         .al-title {
           margin: 0; font-size: clamp(26px,4vw,38px);
           letter-spacing: -.04em; line-height: 1;

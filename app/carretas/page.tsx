@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
+import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Carretas à Venda | Caminhões à Venda",
-  description: "Veja carretas e semirreboques à venda: graneleiras, porta-containers, pranchas, frigoríficas, tanques e muito mais. Negociação direta pelo WhatsApp.",
+  title: "Carretas \u00e0 Venda | Caminh\u00f5es \u00e0 Venda",
+  description: "Veja carretas e semirreboque \u00e0 venda: graneleiras, porta-containers, pranchas, frigor\u00edficas, tanques e muito mais. Negocia\u00e7\u00e3o direta pelo WhatsApp.",
   alternates: { canonical: "/carretas" },
 };
 
@@ -17,7 +19,7 @@ export default async function CarretasPage() {
 
   const { data } = await supabase
     .from("trucks")
-    .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, truck_images(image_url, principal, ordem)`)
+    .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, destaque, created_at, truck_images(image_url, principal, ordem)`)
     .eq("status", "aprovado")
     .eq("perfil", "Carretas")
     .order("created_at", { ascending: false })
@@ -29,13 +31,12 @@ export default async function CarretasPage() {
     <div className="car-page">
       <PublicHeader />
 
-      {/* CTA BANNER */}
       <div className="car-cta">
         <div className="car-cta-inner">
           <div>
-            <span className="car-eyebrow">🚛 Carretas e semirreboques</span>
-            <h1 className="car-title">Carretas à Venda</h1>
-            <p className="car-sub">Graneleiras, porta-containers, pranchas, frigoríficas, tanques e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
+            <span className="car-eyebrow">&#x1F69B; Carretas e semirreboque</span>
+            <h1 className="car-title">Carretas \u00e0 Venda</h1>
+            <p className="car-sub">Graneleiras, porta-containers, pranchas, frigor\u00edficas, tanques e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
           </div>
           <Link href="/painel/anuncios/novo/carreta" className="car-anuncie">
             + Anuncie sua carreta aqui
@@ -43,20 +44,19 @@ export default async function CarretasPage() {
         </div>
       </div>
 
-      {/* GRID */}
       <div className="car-container">
+        <CategoryBrandsBar categoria="carretas" labelSingular="Carretas" />
+
         {carretas.length > 0 ? (
           <>
             <p className="car-count">{carretas.length} carreta{carretas.length !== 1 ? "s" : ""} encontrada{carretas.length !== 1 ? "s" : ""}</p>
             <div className="car-grid">
-              {carretas.map((item) => (
-                <TruckCard key={item.id} truck={item} />
-              ))}
+              {carretas.map((item) => <TruckCard key={item.id} truck={item} />)}
             </div>
           </>
         ) : (
           <div className="car-empty">
-            <span>🚛</span>
+            <span>&#x1F69B;</span>
             <strong>Nenhuma carreta publicada ainda</strong>
             <p>Seja o primeiro a anunciar sua carreta aqui.</p>
             <Link href="/painel/anuncios/novo/carreta" className="car-anuncie">Anunciar agora</Link>
@@ -84,17 +84,12 @@ export default async function CarretasPage() {
           min-height: 52px; padding: 0 28px; border-radius: 14px;
           background: var(--blue); color: #fff;
           font-weight: 900; font-size: 15px; white-space: nowrap;
-          text-decoration: none; flex-shrink: 0;
-          transition: background .14s;
+          text-decoration: none; flex-shrink: 0; transition: background .14s;
         }
         .car-anuncie:hover { background: var(--blue2); }
         .car-container { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; padding-top: 28px; }
         .car-count { margin: 0 0 16px; font-size: 13px; color: var(--muted); font-weight: 700; }
-        .car-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: 18px;
-        }
+        .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
         .car-empty {
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           gap: 10px; padding: 72px 24px; text-align: center; color: var(--muted);
