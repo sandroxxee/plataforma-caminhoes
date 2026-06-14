@@ -11,8 +11,8 @@ import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
 export const revalidate = 30;
 
 export const metadata = {
-  title: "Caminh\u00f5es \u00e0 Venda | Todos os an\u00fancios",
-  description: "Veja todos os caminh\u00f5es dispon\u00edveis. Filtre por marca, estado ou faixa de pre\u00e7o e fale direto pelo WhatsApp.",
+  title: "Caminhões à Venda | Todos os anúncios",
+  description: "Veja todos os caminhões disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
 };
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
@@ -35,7 +35,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)")
     .order("created_at", { ascending: false })
     .limit(24);
 
@@ -52,8 +51,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .from("trucks")
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
-    .eq("vendido", false)
-    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)");
+    .eq("vendido", false);
   if (marcaFiltro)      countQ = countQ.ilike("marca", marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
@@ -80,7 +78,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           />
           {trucks.length === 0 ? (
             <div className="market-empty">
-              <strong>Nenhum an\u00fancio encontrado</strong>
+              <strong>Nenhum anúncio encontrado</strong>
               <p>Tente outros filtros ou veja todos.</p>
               <Link href="/anuncios" style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}>Ver todos</Link>
             </div>
