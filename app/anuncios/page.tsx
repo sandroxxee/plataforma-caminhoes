@@ -9,8 +9,8 @@ import Link from "next/link";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Caminh\u00f5es \u00e0 Venda | Todos os an\u00fancios",
-  description: "Veja todos os caminh\u00f5es e implementos dispon\u00edveis. Filtre por marca, estado ou faixa de pre\u00e7o e fale direto pelo WhatsApp.",
+  title: "Caminhões à Venda | Todos os anúncios",
+  description: "Veja todos os caminhões e implementos disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
 };
 
 const FAIXAS = [
@@ -57,10 +57,10 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <div className="market-container">
         <div className="al-header">
-          <h1 className="al-title">Caminh\u00f5es \u00e0 Venda</h1>
+          <h1 className="al-title">Caminhões à Venda</h1>
         </div>
 
-        <CategoryBrandsBar categoria="caminhoes" labelSingular="Caminh\u00f5es" />
+        <CategoryBrandsBar categoria="caminhoes" labelSingular="Caminhões" />
 
         <AnunciosFilters
           faixaIdx={faixaIdx}
@@ -70,14 +70,14 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           total={trucks.length}
         />
 
-        <section className="stock-grid" aria-label="Lista de an\u00fancios">
+        <section className="stock-grid" aria-label="Lista de anúncios">
           {trucks.map((truck) => (
             <TruckCard key={truck.id} truck={truck} />
           ))}
           {trucks.length === 0 && (
             <div className="market-empty">
-              <strong>Nenhum an\u00fancio encontrado</strong>
-              <p>Tente outros filtros ou veja todos os caminh\u00f5es.</p>
+              <strong>Nenhum anúncio encontrado</strong>
+              <p>Tente outros filtros ou veja todos os caminhões.</p>
               <Link
                 href="/anuncios"
                 style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}
