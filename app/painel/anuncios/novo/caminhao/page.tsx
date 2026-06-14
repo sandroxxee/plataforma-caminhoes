@@ -1,13 +1,13 @@
+"use client";
+
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { useRef, useState } from "react";
 import { PanelLayout } from "@/components/PanelLayout";
 import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
 import { TruckConfigurationFields } from "@/components/TruckConfigurationFields";
 import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
+import { ImportarOLX } from "@/components/ImportarOLX";
 import { criarAnuncio } from "../../actions";
-
-export const dynamic = "force-dynamic";
 
 const marcas = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
 const carrocerias = [
@@ -33,15 +33,38 @@ const etapas = [
   { href: "#revisao-envio", numero: "4", titulo: "Enviar", texto: "Aprovação" },
 ];
 
-export default async function NovoCaminhaoPage() {
-  const supabase = await createClient();
+export default function NovoCaminhaoPage() {
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [campos, setCampos] = useState({
+    modelo: "",
+    preco: "",
+    cidade: "",
+    estado: "SC",
+    descricao: "",
+  });
 
-  if (!user) {
-    redirect("/login");
+  function handleImportar(dados: {
+    titulo: string;
+    preco: number | null;
+    descricao: string;
+    cidade: string;
+    estado: string;
+    imagens: string[];
+  }) {
+    // Tenta extrair modelo do título (ex: "Volvo FH 460 6x4 2021")
+    const modeloExtraido = dados.titulo
+      .replace(/mercedes[-\s]?benz|scania|volvo|volkswagen|ford|iveco|daf/gi, "")
+      .replace(/\d{4}/, "") // remove ano
+      .trim();
+
+    setCampos({
+      modelo: modeloExtraido || campos.modelo,
+      preco: dados.preco ? String(dados.preco) : campos.preco,
+      cidade: dados.cidade || campos.cidade,
+      estado: dados.estado || campos.estado,
+      descricao: dados.descricao || campos.descricao,
+    });
   }
 
   return (
@@ -50,7 +73,16 @@ export default async function NovoCaminhaoPage() {
       subtitle="Cadastre o caminhão com dados claros, fotos e contato do anunciante."
       actions={<Link href="/painel/anuncios/novo" className="secondary-button">Trocar tipo</Link>}
     >
-      <form action={criarAnuncio} className="truck-form" encType="multipart/form-data">
+      {/* Banner de importação OLX */}
+      <div className="olx-banner">
+        <div className="olx-banner-text">
+          <strong>Já tem anúncio na OLX?</strong>
+          <span>Importe tudo automaticamente — fotos, descrição, preço e local.</span>
+        </div>
+        <ImportarOLX onImportar={handleImportar} />
+      </div>
+
+      <form ref={formRef} action={criarAnuncio} className="truck-form" encType="multipart/form-data">
         <input type="hidden" name="tipo_anuncio" value="Caminhão" />
 
         <div className="form-shell">
@@ -96,7 +128,13 @@ export default async function NovoCaminhaoPage() {
 
                 <label>
                   Modelo do caminhão *
-                  <input name="modelo" placeholder="Ex: 113, P420, FH 540" required />
+                  <input
+                    name="modelo"
+                    placeholder="Ex: 113, P420, FH 540"
+                    required
+                    value={campos.modelo}
+                    onChange={(e) => setCampos({ ...campos, modelo: e.target.value })}
+                  />
                 </label>
 
                 <label>
@@ -170,17 +208,34 @@ export default async function NovoCaminhaoPage() {
               <div className="form-grid three">
                 <label>
                   Valor *
-                  <input name="preco" type="number" placeholder="Ex: 180000" required />
+                  <input
+                    name="preco"
+                    type="number"
+                    placeholder="Ex: 180000"
+                    required
+                    value={campos.preco}
+                    onChange={(e) => setCampos({ ...campos, preco: e.target.value })}
+                  />
                 </label>
 
                 <label>
                   Cidade <span className="optional-tag">(opcional)</span>
-                  <input name="cidade" placeholder="Ex: Xanxerê" />
+                  <input
+                    name="cidade"
+                    placeholder="Ex: Xanxerê"
+                    value={campos.cidade}
+                    onChange={(e) => setCampos({ ...campos, cidade: e.target.value })}
+                  />
                 </label>
 
                 <label>
                   Estado *
-                  <select name="estado" defaultValue="SC" required>
+                  <select
+                    name="estado"
+                    value={campos.estado}
+                    onChange={(e) => setCampos({ ...campos, estado: e.target.value })}
+                    required
+                  >
                     {estados.map((estado) => (
                       <option key={estado} value={estado}>{estado}</option>
                     ))}
@@ -198,6 +253,8 @@ export default async function NovoCaminhaoPage() {
                   <textarea
                     name="descricao"
                     placeholder="Ex: Mecânica em dia, pronto para trabalhar, pneus bons, documentação em dia."
+                    value={campos.descricao}
+                    onChange={(e) => setCampos({ ...campos, descricao: e.target.value })}
                   />
                 </label>
               </div>
@@ -219,6 +276,32 @@ export default async function NovoCaminhaoPage() {
       </form>
 
       <style>{`
+        .olx-banner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          padding: 14px 18px;
+          background: #1a2535;
+          border: 1.5px solid #2563eb44;
+          border-radius: 14px;
+          margin-bottom: 4px;
+          flex-wrap: wrap;
+        }
+        .olx-banner-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .olx-banner-text strong {
+          color: #93c5fd;
+          font-size: 14px;
+          font-weight: 800;
+        }
+        .olx-banner-text span {
+          color: #6b7280;
+          font-size: 13px;
+        }
         .secondary-button { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 12px; border: 1px solid #343a40; background: #2a2f34; color: #e8eaed; text-decoration: none; font-weight: 900; font-size: 13px; }
         .optional-tag { color: #8f99a3; font-weight: 700; font-size: 11px; margin-left: 4px; }
         .truck-form { display: grid; gap: 14px; }
@@ -270,6 +353,7 @@ export default async function NovoCaminhaoPage() {
           .steps-nav a { min-width: 132px; scroll-snap-align: start; }
           .form-grid.three, .form-grid.two, .ai-grid { grid-template-columns: 1fr; }
           .description-field { grid-column: auto; }
+          .olx-banner { flex-direction: column; align-items: flex-start; }
         }
         @media (max-width: 560px) {
           .truck-form, .form-main { gap: 12px; }
