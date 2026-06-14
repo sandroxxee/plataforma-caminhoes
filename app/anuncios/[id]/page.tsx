@@ -6,11 +6,11 @@ import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MapPin, CheckCircle, ShieldCheck } from "lucide-react";
 import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
-import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
   type Truck,
   truckSelect,
   UUID_REGEX,
+  SHORT_ID_REGEX,
   siteUrl,
   getCanonicalPath,
   getMainImage,
@@ -31,17 +31,40 @@ type PageProps = { params: Promise<{ id: string }> };
 
 async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
-  const { tipo, valor } = extrairIdDoParametroAnuncio(parametro);
+  const value = parametro.trim().toLowerCase();
 
-  if (tipo === "uuid") {
-    const { data } = await supabase
+  if (UUID_REGEX.test(value)) {
+    const { data, error } = await supabase
       .from("trucks")
       .select(truckSelect)
-      .eq("id", valor)
+      .eq("id", value)
       .eq("status", "aprovado")
       .eq("vendido", false)
       .maybeSingle();
-    return (data as Truck) ?? null;
+    if (error || !data) return null;
+    return data as Truck;
+  }
+
+  const shortIdMatch = value.match(SHORT_ID_REGEX);
+  if (shortIdMatch) {
+    const shortId = shortIdMatch[1];
+    const { data: rpcData, error: rpcError } = await supabase.rpc("find_truck_by_short_id", { short_id: shortId });
+    if (!rpcError && rpcData?.length > 0) {
+      const truckBase = rpcData[0] as Truck;
+      const { data: images } = await supabase
+        .from("truck_images")
+        .select("image_url, principal, ordem")
+        .eq("truck_id", truckBase.id)
+        .order("ordem", { ascending: true });
+      return { ...truckBase, truck_images: (images || []) as Truck["truck_images"] };
+    }
+    const { data: fallback } = await supabase
+      .from("trucks")
+      .select(truckSelect)
+      .eq("status", "aprovado")
+      .eq("vendido", false)
+      .ilike("id", `${shortId}%`);
+    if (fallback?.length) return fallback[0] as Truck;
   }
 
   return null;
@@ -99,11 +122,9 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const location     = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
   const textos       = getPerfilTextos(truck.perfil);
-  const { vehicle: structuredData, product: productData, breadcrumb: breadcrumbData } =
-    getStructuredData(truck, title, location, whatsappLink);
+  const { vehicle: structuredData, product: productData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
   const shareYear    = truck.ano_modelo || truck.ano_fabricacao;
-  const shareLine1   = `${textos.emoji} ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}`;
-  const shareText    = `${shareLine1}\n${formatMoney(truck.preco)}`;
+  const shareText    = `${textos.emoji} ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
   const specs        = getSpecs(truck);
   const initialViews = truck.views ?? 0;
 
@@ -145,10 +166,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           <div className="detail-card detail-desc-card">
             <h2 className="detail-section-title">{textos.sobre}</h2>
             <p className="detail-desc-text">
-              {truck.descricao?.trim() ||
-                `Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${
-                  textos.veiculo === "peça" ? "da" : "do"
-                } ${textos.veiculo}, disponibilidade e condições de negociação.`}
+              {truck.descricao?.trim() || `Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
             </p>
           </div>
 
@@ -156,9 +174,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <ShieldCheck size={18} strokeWidth={1.8} className="detail-safety-icon" aria-hidden="true" />
             <div>
               <strong>Anúncio revisado</strong>
-              <p>Todos os anúncios passam por aprovação antes de aparecer no site. Sempre confira documentos e estado {
-                textos.veiculo === "peça" ? "da peça" : `do ${textos.veiculo}`
-              } antes de fechar negócio.</p>
+              <p>Todos os anúncios passam por aprovação antes de aparecer no site. Sempre confira documentos e estado {textos.veiculo === "peça" ? "da peça" : `do ${textos.veiculo}`} antes de fechar negócio.</p>
             </div>
           </div>
         </div>
