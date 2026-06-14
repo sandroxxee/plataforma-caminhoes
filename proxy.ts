@@ -1,54 +1,32 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED_ROUTES = ["/painel", "/conta", "/anunciar", "/admin"];
 const AUTH_ROUTES = ["/login", "/cadastro"];
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  // Renova a sessão a cada request — essencial para mobile
-  const { data: { user } } = await supabase.auth.getUser();
-
   const pathname = request.nextUrl.pathname;
 
-  // Redireciona usuário não logado que tenta acessar rotas protegidas
+  // Le o cookie de sessao do Supabase
+  const cookieHeader = request.headers.get("cookie") || "";
+  const hasSession =
+    cookieHeader.includes("sb-") ||
+    cookieHeader.includes("supabase-auth-token");
+
+  // Redireciona usuario nao logado para /login
   const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
-  if (!user && isProtected) {
+  if (!hasSession && isProtected) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redireciona usuário já logado que tenta acessar login ou cadastro
+  // Redireciona usuario ja logado para /painel
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
-  if (user && isAuthRoute) {
+  if (hasSession && isAuthRoute) {
     return NextResponse.redirect(new URL("/painel", request.url));
   }
 
-  return supabaseResponse;
+  return NextResponse.next();
 }
 
 export const config = {
