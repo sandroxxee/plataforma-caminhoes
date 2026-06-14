@@ -10,7 +10,7 @@ const manrope = Manrope({
   display: "swap",
 });
 
-const siteUrl = "https://caminhoesavenda.com";
+const siteUrl = "https://www.caminhoesavenda.com";
 const ogImage = "/og-caminhoes-a-venda.jpg";
 
 export const metadata: Metadata = {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Caminhões à Venda" }],
   creator: "Caminhões à Venda",
   publisher: "Caminhões à Venda",
-  alternates: { canonical: "/" },
+  alternates: { canonical: siteUrl },
   openGraph: {
     type: "website",
     locale: "pt_BR",
@@ -46,14 +46,7 @@ export const metadata: Metadata = {
     siteName: "Caminhões à Venda",
     title: "Caminhões à Venda | Anúncios de caminhões e implementos",
     description: "Anuncie caminhões e implementos, veja ofertas aprovadas e fale direto pelo WhatsApp com segurança e organização.",
-    images: [
-      {
-        url: ogImage,
-        width: 1200,
-        height: 630,
-        alt: "Caminhões à Venda - anúncios de caminhões e implementos",
-      },
-    ],
+    images: [{ url: ogImage, width: 1200, height: 630, alt: "Caminhões à Venda - anúncios de caminhões e implementos" }],
   },
   twitter: {
     card: "summary_large_image",
