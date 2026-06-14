@@ -18,18 +18,19 @@ function m(nome: string, slug: string): Marca {
 }
 
 export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
-  // Fabricantes de caminhões (cavalo mecânico)
+  // Fabricantes reais de caminhões (cavalo mecânico)
   caminhoes: [
+    m("Mercedes-Benz", "mercedes-benz"),
     m("Scania", "scania"),
     m("Volvo", "volvo"),
-    m("Mercedes-Benz", "mercedes-benz"),
+    m("Volkswagen", "volkswagen"),
+    m("Ford", "ford"),
+    m("Iveco", "iveco"),
     m("DAF", "daf"),
     m("MAN", "man"),
-    m("Iveco", "iveco"),
-    m("Ford", "ford"),
-    m("Volkswagen", "volkswagen"),
+    m("Agrale", "agrale"),
   ],
-  // Fabricantes de carretas e semirreboque
+  // Fabricantes de carretas e semirreboques
   carretas: [
     m("Randon", "randon"),
     m("Guerra", "guerra"),
@@ -53,13 +54,13 @@ export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
   ],
   // Peças: por marca de chassis/motor
   pecas: [
+    m("Mercedes-Benz", "mercedes-benz"),
     m("Scania", "scania"),
     m("Volvo", "volvo"),
-    m("Mercedes-Benz", "mercedes-benz"),
+    m("Volkswagen", "volkswagen"),
     m("MAN", "man"),
     m("DAF", "daf"),
     m("Iveco", "iveco"),
-    m("Volkswagen", "volkswagen"),
     m("Ford", "ford"),
   ],
   // Máquinas pesadas
