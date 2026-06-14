@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Camera } from "lucide-react";
+import { useState, useRef } from "react";
+import { MapPin, Camera, MessageCircle } from "lucide-react";
 import {
   formatMoney,
   getCardTitle,
@@ -40,26 +41,97 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const meta       = [year, type].filter(Boolean).join(" \u2022 ");
   const photoCount = (truck.truck_images || []).length;
 
+  const [preview, setPreview] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function openPreview() {
+    timerRef.current = setTimeout(() => setPreview(true), 320);
+  }
+  function closePreview() {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setPreview(false);
+  }
+
+  const specs = [
+    year     && { label: "Ano",   value: String(year) },
+    type     && { label: "Tipo",  value: type },
+    location && { label: "Local", value: location },
+  ].filter(Boolean) as { label: string; value: string }[];
+
   return (
-    <article className="tc">
+    <article
+      className="tc"
+      onMouseEnter={openPreview}
+      onMouseLeave={closePreview}
+      onFocus={openPreview}
+      onBlur={closePreview}
+    >
+      {/* ---- Popover de pr\u00e9-visualiza\u00e7\u00e3o (desktop only) ---- */}
+      {preview && (
+        <div className="tc-preview" role="tooltip" aria-label={`Pr\u00e9-visualiza\u00e7\u00e3o: ${title}`}>
+          <div className="tc-preview-photo">
+            {image ? (
+              isSupabaseUrl(image) ? (
+                <Image src={image} alt={title} width={340} height={200}
+                  style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
+              ) : (
+                <img src={image} alt={title}
+                  style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
+              )
+            ) : (
+              <div className="tc-preview-no-photo"><Camera size={28} strokeWidth={1.5} /></div>
+            )}
+            {photoCount > 1 && (
+              <span className="tc-preview-count">
+                <Camera size={12} strokeWidth={2.5} /> {photoCount} fotos
+              </span>
+            )}
+          </div>
+
+          <div className="tc-preview-body">
+            <p className="tc-preview-title">{cardTitle}</p>
+            <strong className="tc-preview-price">{formatMoney(truck.preco)}</strong>
+
+            {specs.length > 0 && (
+              <div className="tc-preview-specs">
+                {specs.map((s) => (
+                  <div key={s.label} className="tc-preview-spec">
+                    <span>{s.label}</span>
+                    <strong>{s.value}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="tc-preview-actions">
+              <Link href={truckUrl} className="tc-preview-btn-detail" onClick={closePreview}>
+                Ver detalhes
+              </Link>
+              {waLink && (
+                <a href={waLink} target="_blank" rel="noopener noreferrer"
+                  className="tc-preview-btn-wa" onClick={closePreview}>
+                  <MessageCircle size={15} strokeWidth={2} />
+                  WhatsApp
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div className="tc-preview-arrow" aria-hidden="true" />
+        </div>
+      )}
+
+      {/* ---- Card normal ---- */}
       <Link className="tc-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
           isSupabaseUrl(image) ? (
-            <Image
-              src={image}
-              alt={title}
-              width={480}
-              height={270}
-              loading="lazy"
-              decoding="async"
+            <Image src={image} alt={title} width={480} height={270}
+              loading="lazy" decoding="async"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }}
-            />
+              style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
           ) : (
-            <img
-              src={image} alt={title} loading="lazy" decoding="async"
-              style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }}
-            />
+            <img src={image} alt={title} loading="lazy" decoding="async"
+              style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
           )
         ) : (
           <span className="tc-no-photo">
@@ -100,6 +172,101 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         {meta && <p className="tc-meta">{meta}</p>}
         <Link className="tc-btn" href={truckUrl}>Ver detalhes</Link>
       </div>
+
+      <style>{`
+        .tc { isolation: isolate; }
+
+        /* Popover */
+        .tc-preview {
+          position: absolute;
+          bottom: calc(100% + 12px);
+          left: 50%; transform: translateX(-50%);
+          width: 320px;
+          background: var(--surface);
+          border: 1px solid var(--line);
+          border-radius: 18px;
+          box-shadow: var(--shadow3);
+          z-index: 200;
+          overflow: visible;
+          animation: tc-pop .18s ease;
+          pointer-events: auto;
+        }
+        @keyframes tc-pop {
+          from { opacity:0; transform:translateX(-50%) translateY(6px) scale(.97); }
+          to   { opacity:1; transform:translateX(-50%) translateY(0)   scale(1); }
+        }
+        .tc-preview-photo {
+          position: relative; width: 100%; height: 180px;
+          background: var(--soft); overflow: hidden;
+          border-radius: 18px 18px 0 0;
+        }
+        .tc-preview-no-photo {
+          width:100%; height:100%;
+          display:flex; align-items:center; justify-content:center;
+          color:var(--muted); opacity:.4;
+        }
+        .tc-preview-count {
+          position:absolute; bottom:8px; left:10px;
+          display:inline-flex; align-items:center; gap:4px;
+          height:22px; padding:0 9px; border-radius:999px;
+          background:rgba(0,0,0,.55); color:#fff;
+          font-size:11px; font-weight:800;
+          backdrop-filter:blur(4px);
+        }
+        .tc-preview-body { padding: 14px 16px 16px; }
+        .tc-preview-title {
+          margin:0 0 4px;
+          font-size:14px; font-weight:800; color:var(--text);
+          line-height:1.3; letter-spacing:-.02em;
+          display:-webkit-box; -webkit-line-clamp:2;
+          -webkit-box-orient:vertical; overflow:hidden;
+        }
+        .tc-preview-price {
+          display:block;
+          font-size:22px; font-weight:950;
+          color:var(--blue); letter-spacing:-.04em;
+          line-height:1; margin-bottom:12px;
+        }
+        .tc-preview-specs { display:grid; gap:5px; margin-bottom:14px; }
+        .tc-preview-spec {
+          display:flex; justify-content:space-between; align-items:center; gap:8px;
+          font-size:12px; padding:6px 10px;
+          background:var(--soft); border-radius:8px;
+        }
+        .tc-preview-spec span   { color:var(--muted); font-weight:700; }
+        .tc-preview-spec strong { font-weight:900; color:var(--text); }
+        .tc-preview-actions { display:flex; gap:8px; }
+        .tc-preview-btn-detail {
+          flex:1; height:38px; border-radius:10px;
+          background:var(--blue); color:#fff;
+          display:flex; align-items:center; justify-content:center;
+          font-size:13px; font-weight:800;
+          text-decoration:none; transition:background .14s;
+        }
+        .tc-preview-btn-detail:hover { background:var(--blue2); }
+        .tc-preview-btn-wa {
+          display:inline-flex; align-items:center; gap:6px;
+          height:38px; padding:0 13px; border-radius:10px;
+          background:rgba(37,211,102,.12);
+          border:1.5px solid rgba(37,211,102,.3);
+          color:#16a34a; font-size:13px; font-weight:800;
+          text-decoration:none; white-space:nowrap;
+          transition:background .14s; flex-shrink:0;
+        }
+        .tc-preview-btn-wa:hover { background:rgba(37,211,102,.22); }
+        body.public-theme-dark .tc-preview-btn-wa { color:#4ade80; }
+        /* Setinha */
+        .tc-preview-arrow {
+          position:absolute; bottom:-7px; left:50%;
+          transform:translateX(-50%) rotate(45deg);
+          width:14px; height:14px;
+          background:var(--surface);
+          border-right:1px solid var(--line);
+          border-bottom:1px solid var(--line);
+        }
+        /* Esconde no mobile/tablet */
+        @media (max-width:900px) { .tc-preview { display:none; } }
+      `}</style>
     </article>
   );
 }
