@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Truck, Wrench, Handshake, LayoutDashboard, LogIn,
-  Search, X, Menu,
+  Search, X, Menu, Map,
 } from "lucide-react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
@@ -24,6 +24,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
   const navItems = [
     { href: "/anuncios",    label: "Caminhões",  icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Wrench },
+    { href: "/mapa",        label: "Mapa",        icon: Map },
     { href: "/parceiros",   label: "Parceiros",   icon: Handshake },
     isLoggedIn
       ? { href: "/painel", label: "Painel", icon: LayoutDashboard }
@@ -49,8 +50,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           border-bottom-color: rgba(255,255,255,.07);
           box-shadow: 0 1px 0 rgba(0,0,0,.2), 0 4px 20px rgba(0,0,0,.3);
         }
-
-        /* Logo */
         .ph-logo {
           display: flex; align-items: center; gap: 10px;
           text-decoration: none; flex-shrink: 0;
@@ -67,8 +66,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           color: var(--text); line-height: 1.2;
         }
         .ph-logo-text span { color: #1877f2; }
-
-        /* Search pill */
         .ph-search {
           flex: 1; max-width: 420px; position: relative;
         }
@@ -92,8 +89,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           transform: translateY(-50%);
           color: var(--muted); pointer-events: none;
         }
-
-        /* Nav */
         .ph-nav {
           display: flex; align-items: center;
           gap: 2px; margin-left: auto;
@@ -115,8 +110,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           height: 2px; border-radius: 2px;
           background: var(--blue);
         }
-
-        /* Toggle e hamburger */
         .ph-toggle-btn {
           width: 38px; height: 38px; border-radius: 50%;
           border: 1.5px solid var(--line);
@@ -134,8 +127,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           align-items: center; justify-content: center;
           color: var(--text); flex-shrink: 0;
         }
-
-        /* Menu mobile */
         .ph-menu-mobile {
           display: none;
           position: fixed; left: 12px; right: 12px; top: 72px;
@@ -158,7 +149,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           z-index: 90; background: rgba(0,0,0,.18);
         }
         .ph-backdrop.open { display: block; }
-
         @media (max-width: 900px) {
           .ph-nav { display: none; }
           .ph-hamburger { display: flex; }
@@ -170,7 +160,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
       `}</style>
 
       <header className="ph-root">
-        {/* Logo */}
         <Link href="/" className="ph-logo" aria-label="Caminhões à Venda">
           <div className="ph-logo-icon">
             <Truck size={20} color="white" strokeWidth={2} aria-hidden="true" />
@@ -180,7 +169,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           </div>
         </Link>
 
-        {/* Search pill */}
         <div className="ph-search">
           <input
             type="search"
@@ -196,7 +184,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           <Search size={16} className="ph-search-icon" aria-hidden="true" />
         </div>
 
-        {/* Nav desktop */}
         <nav className="ph-nav" aria-label="Menu principal">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -216,7 +203,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           <ThemeTogglePublic />
         </nav>
 
-        {/* Hamburger mobile */}
         <button
           className="ph-hamburger"
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
@@ -227,7 +213,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         </button>
       </header>
 
-      {/* Menu mobile dropdown */}
       <nav className={`ph-menu-mobile${menuOpen ? " open" : ""}`} aria-label="Menu mobile">
         {navItems.map((item) => {
           const Icon = item.icon;

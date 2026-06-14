@@ -3,8 +3,10 @@
 import { usePathname } from "next/navigation";
 
 const menuItems = [
-  { href: "/painel/anuncios", icon: "▤", label: "Meus anúncios", helper: "Editar e acompanhar" },
-  { href: "/painel/anuncios/novo", icon: "+", label: "Anunciar", helper: "Cadastrar anúncio" },
+  { href: "/painel/anuncios",      icon: "▤",  label: "Meus anúncios",  helper: "Editar e acompanhar" },
+  { href: "/painel/anuncios/novo", icon: "+",  label: "Anunciar",        helper: "Cadastrar anúncio" },
+  { href: "/painel/alertas",       icon: "🔔", label: "Alertas",         helper: "Buscas salvas" },
+  { href: "/mapa",                 icon: "🗺️", label: "Mapa",           helper: "Ver no mapa" },
 ];
 
 function isActive(pathname: string, href: string) {
