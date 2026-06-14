@@ -1,101 +1,84 @@
 import Link from "next/link";
+import Image from "next/image";
+import marcasData from "@/public/marcas.json";
 
-type Marca = { nome: string; slug: string; svg: string | null };
+type MarcaJson = { nome: string; slug: string; categoria: string; logo: string };
 
-const SVG: Record<string, string> = {
-  scania:          "https://upload.wikimedia.org/wikipedia/commons/2/24/Scania_logo.svg",
-  volvo:           "https://upload.wikimedia.org/wikipedia/commons/5/58/Volvo-PB.svg",
-  "mercedes-benz": "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
-  daf:             "https://upload.wikimedia.org/wikipedia/commons/2/21/DAF_Logo.svg",
-  man:             "https://upload.wikimedia.org/wikipedia/commons/8/89/MAN_Logo.svg",
-  iveco:           "https://upload.wikimedia.org/wikipedia/commons/4/45/Iveco_Logo.svg",
-  ford:            "https://upload.wikimedia.org/wikipedia/commons/a/a0/Ford_Motor_Company_Logo.svg",
-  volkswagen:      "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg",
+const TODAS = marcasData as MarcaJson[];
+
+// mapa categoria do JSON -> categoria da page
+const CATEGORIA_MAP: Record<string, string> = {
+  caminhoes:   "caminhoes",
+  implementos: "carretas",
+  maquinas:    "maquinas",
 };
 
-function m(nome: string, slug: string): Marca {
-  return { nome, slug, svg: SVG[slug] ?? null };
+// href do chip por categoria
+function chipHref(categoria: string, nome: string, slug: string): string {
+  switch (categoria) {
+    case "caminhoes":   return `/anuncios?marca=${encodeURIComponent(nome)}`;
+    case "carretas":    return `/carretas?marca=${encodeURIComponent(nome)}`;
+    case "implementos": return `/implementos?tipo=${encodeURIComponent(nome)}`;
+    case "maquinas":    return `/maquinas?marca=${encodeURIComponent(nome)}`;
+    case "pecas":       return `/pecas?marca=${encodeURIComponent(nome)}`;
+    default:            return `/anuncios?marca=${encodeURIComponent(nome)}`;
+  }
 }
-
-export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
-  caminhoes: [
-    m("Mercedes-Benz", "mercedes-benz"),
-    m("Scania", "scania"),
-    m("Volvo", "volvo"),
-    m("Volkswagen", "volkswagen"),
-    m("Ford", "ford"),
-    m("Iveco", "iveco"),
-    m("DAF", "daf"),
-    m("MAN", "man"),
-    m("Agrale", "agrale"),
-  ],
-  carretas: [
-    m("Randon", "randon"),
-    m("Guerra", "guerra"),
-    m("Librelato", "librelato"),
-    m("Facchini", "facchini"),
-    m("Rodotec", "rodotec"),
-    m("Noma", "noma"),
-    m("Paquet\u00e1", "paqueta"),
-  ],
-  pecas: [
-    m("Mercedes-Benz", "mercedes-benz"),
-    m("Scania", "scania"),
-    m("Volvo", "volvo"),
-    m("Volkswagen", "volkswagen"),
-    m("MAN", "man"),
-    m("DAF", "daf"),
-    m("Iveco", "iveco"),
-    m("Ford", "ford"),
-  ],
-  maquinas: [
-    m("Caterpillar", "caterpillar"),
-    m("Volvo", "volvo"),
-    m("Komatsu", "komatsu"),
-    m("Case", "case"),
-    m("John Deere", "john-deere"),
-    m("Liebherr", "liebherr"),
-    m("Terex", "terex"),
-    m("Bobcat", "bobcat"),
-  ],
-};
 
 export function CategoryBrandsBar({
   categoria,
   labelSingular,
 }: {
-  categoria: keyof typeof MARCAS_POR_CATEGORIA;
+  categoria: string;
   labelSingular: string;
 }) {
-  const marcas = MARCAS_POR_CATEGORIA[categoria] ?? [];
-  if (!marcas.length) return null;
+  // filtra marcas do JSON pela categoria correspondente
+  const catJson = CATEGORIA_MAP[categoria] ?? categoria;
+  const marcas = TODAS.filter((m) => m.categoria === catJson);
+
+  // fallback: se nao ha marcas no JSON para a categoria, usa lista hardcoded
+  const lista = marcas.length > 0 ? marcas : [
+    { nome: "Mercedes-Benz", slug: "mercedes-benz", categoria, logo: "/logos/mercedes-benz.svg" },
+    { nome: "Scania",        slug: "scania",        categoria, logo: "/logos/scania.svg" },
+    { nome: "Volvo",         slug: "volvo",         categoria, logo: "/logos/volvo.svg" },
+    { nome: "Volkswagen",    slug: "volkswagen",    categoria, logo: "/logos/volkswagen.svg" },
+    { nome: "Ford",          slug: "ford",          categoria, logo: "/logos/ford.svg" },
+    { nome: "Iveco",         slug: "iveco",         categoria, logo: "/logos/iveco.svg" },
+    { nome: "DAF",           slug: "daf",           categoria, logo: "/logos/daf.svg" },
+    { nome: "MAN",           slug: "man",           categoria, logo: "/logos/man.svg" },
+    { nome: "Agrale",        slug: "agrale",        categoria, logo: "/logos/agrale.svg" },
+  ];
+
+  if (!lista.length) return null;
 
   return (
     <div className="cbb-wrap">
       <div className="cbb-grid">
-        {marcas.map((marca) => (
+        {lista.map((marca) => (
           <Link
             key={marca.slug}
-            href={`/anuncios?marca=${encodeURIComponent(marca.nome)}`}
+            href={chipHref(categoria, marca.nome, marca.slug)}
             className="cbb-chip"
             title={`${labelSingular} ${marca.nome}`}
           >
-            {marca.svg ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={marca.svg} alt={marca.nome} width={48} height={28} loading="lazy" className="cbb-logo" />
-            ) : (
-              <span className="cbb-initial">{marca.nome.slice(0, 2).toUpperCase()}</span>
-            )}
+            <Image
+              src={marca.logo}
+              alt={marca.nome}
+              width={48}
+              height={28}
+              className="cbb-logo"
+            />
             <span className="cbb-name">{marca.nome}</span>
           </Link>
         ))}
       </div>
+
       <style>{`
         .cbb-wrap { margin-bottom: 20px; }
         .cbb-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .cbb-chip {
           display: inline-flex; align-items: center; gap: 8px;
-          height: 38px; padding: 0 14px 0 10px;
+          height: 40px; padding: 0 14px 0 10px;
           background: var(--surface); border: 1.5px solid var(--line);
           border-radius: 999px; text-decoration: none;
           transition: border-color .14s, box-shadow .14s, transform .14s;
@@ -106,26 +89,18 @@ export function CategoryBrandsBar({
           transform: translateY(-1px);
         }
         .cbb-logo {
-          width: 34px; height: 20px;
+          width: 36px !important; height: 22px !important;
           object-fit: contain; object-position: center;
-          filter: grayscale(1) opacity(.6);
-          transition: filter .14s; flex-shrink: 0;
+          border-radius: 4px;
+          transition: opacity .14s; flex-shrink: 0;
         }
-        .cbb-chip:hover .cbb-logo { filter: grayscale(0) opacity(1); }
-        .cbb-initial {
-          width: 26px; height: 20px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 10px; font-weight: 900; color: var(--muted);
-          background: var(--soft); border-radius: 5px; transition: color .14s;
-        }
-        .cbb-chip:hover .cbb-initial { color: var(--blue); }
         .cbb-name {
           font-size: 12px; font-weight: 800; color: var(--text); white-space: nowrap;
         }
         .cbb-chip:hover .cbb-name { color: var(--blue); }
         @media (max-width: 480px) {
-          .cbb-chip { height: 34px; padding: 0 10px 0 8px; }
-          .cbb-logo { width: 26px; height: 16px; }
+          .cbb-chip { height: 36px; padding: 0 10px 0 8px; }
+          .cbb-logo { width: 28px !important; height: 18px !important; }
           .cbb-name { font-size: 11px; }
         }
       `}</style>
