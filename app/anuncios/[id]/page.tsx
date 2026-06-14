@@ -19,6 +19,7 @@ import {
   getWhatsappLink,
   getStructuredData,
   getSpecs,
+  getPerfilTextos,
 } from "./anuncio-utils";
 import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
 import { ChatWidget } from "@/components/ChatWidget";
@@ -119,19 +120,17 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const title        = getTitle(truck);
   const location     = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
+  const textos       = getPerfilTextos(truck.perfil);
   const { vehicle: structuredData, product: productData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
   const shareYear    = truck.ano_modelo || truck.ano_fabricacao;
-  const shareText    = `🚛 ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
+  const shareText    = `${textos.emoji} ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
   const specs        = getSpecs(truck);
   const initialViews = truck.views ?? 0;
 
   return (
     <main className="market-page">
-      {/* Vehicle schema — Google Rich Results */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      {/* Product schema — Google Shopping / Merchant Center */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productData) }} />
-      {/* BreadcrumbList */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }} />
       <PublicHeader />
 
@@ -142,9 +141,9 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           <nav className="detail-breadcrumb" aria-label="Navegação">
             <Link href="/">Início</Link>
             <span aria-hidden="true">›</span>
-            <Link href="/anuncios">Caminhões</Link>
+            <Link href="/anuncios">Anúncios</Link>
             <span aria-hidden="true">›</span>
-            <span>{truck.marca || "Anúncio"}</span>
+            <span>{truck.marca || truck.perfil || "Anúncio"}</span>
           </nav>
 
           <AnuncioGaleria
@@ -166,9 +165,9 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           </div>
 
           <div className="detail-card detail-desc-card">
-            <h2 className="detail-section-title">Sobre este caminhão</h2>
+            <h2 className="detail-section-title">{textos.sobre}</h2>
             <p className="detail-desc-text">
-              {truck.descricao?.trim() || "Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado do veículo, disponibilidade e condições de negociação."}
+              {truck.descricao?.trim() || `Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
             </p>
           </div>
 
@@ -176,7 +175,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <ShieldCheck size={18} strokeWidth={1.8} className="detail-safety-icon" aria-hidden="true" />
             <div>
               <strong>Anúncio revisado</strong>
-              <p>Todos os anúncios passam por aprovação antes de aparecer no site. Sempre confira documentos e estado do veículo antes de fechar negócio.</p>
+              <p>Todos os anúncios passam por aprovação antes de aparecer no site. Sempre confira documentos e estado {textos.veiculo === "peça" ? "da peça" : `do ${textos.veiculo}`} antes de fechar negócio.</p>
             </div>
           </div>
         </div>
@@ -203,12 +202,13 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               title={title}
               whatsappLink={whatsappLink}
               shareText={shareText}
+              whatsappLabel={textos.whatsapp}
             />
           </div>
 
           {specs.length > 0 && (
             <div className="detail-card detail-specs-card">
-              <h2 className="detail-section-title">Ficha técnica</h2>
+              <h2 className="detail-section-title">{textos.ficha}</h2>
               <dl className="detail-specs-dl">
                 {specs.map((spec) => (
                   <div key={spec.label} className="detail-spec-row">
