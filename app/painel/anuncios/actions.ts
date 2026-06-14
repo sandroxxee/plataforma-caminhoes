@@ -23,6 +23,17 @@ function montarDescricaoImplemento(params: {
   return [params.descricao, ficha.join("\n")].filter(Boolean).join("\n\n");
 }
 
+function montarDescricaoGenerica(params: {
+  descricao: string; tipo: string; conservacao: string; eixos?: string;
+}) {
+  const ficha = [
+    params.tipo ? `Tipo: ${params.tipo}` : "",
+    params.eixos ? `Eixos: ${params.eixos}` : "",
+    params.conservacao ? `Conservação: ${params.conservacao}` : "",
+  ].filter(Boolean);
+  return [params.descricao, ficha.join("\n")].filter(Boolean).join("\n\n");
+}
+
 async function getLoggedUser() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -58,7 +69,9 @@ export async function criarAnuncio(formData: FormData) {
   const estado = String(formData.get("estado") || "SC").trim();
   const whatsapp = String(formData.get("whatsapp") || "").trim();
   const descricao = String(formData.get("descricao") || "").trim();
-  if (!preco || !cidade || !estado || !whatsapp) redirect("/painel/anuncios/novo?erro=campos");
+  if (!preco || !estado || !whatsapp) redirect("/painel/anuncios/novo?erro=campos");
+
+  // ── Implemento (tabela implements) ────────────────────────────────────────
   if (tipoAnuncio === "Implemento") {
     const tipoImplemento = String(formData.get("tipo_implemento") || "").trim();
     const marca = String(formData.get("implemento_marca") || "").trim();
@@ -81,6 +94,64 @@ export async function criarAnuncio(formData: FormData) {
     revalidatePath("/implementos");
     redirect("/painel/anuncios");
   }
+
+  // ── Máquinas, Peças ou Carretas (tabela trucks com campo perfil) ──────────
+  const PERFIS_EXTRAS = ["Máquinas", "Peças", "Carretas"];
+  if (PERFIS_EXTRAS.includes(tipoAnuncio)) {
+    const slugErro: Record<string, string> = {
+      "Máquinas": "maquina",
+      "Peças": "peca",
+      "Carretas": "carreta",
+    };
+    const tipo = String(formData.get("tipo_implemento") || "").trim();
+    const marca = String(formData.get("implemento_marca") || "").trim();
+    const modelo = String(formData.get("implemento_modelo") || "").trim();
+    const ano = Number(formData.get("implemento_ano") || 0);
+    const conservacao = String(formData.get("conservacao") || "").trim();
+    const numeroEixos = String(formData.get("numero_eixos") || "").trim();
+    const quilometragem = String(formData.get("quilometragem") || "").trim();
+    if (!tipo || !marca || !conservacao) redirect(`/painel/anuncios/novo/${slugErro[tipoAnuncio]}?erro=campos`);
+    const titulo = `${marca} ${modelo} ${tipo} - Ano ${ano || ""}`.replace(/\s+/g, " ").trim();
+    const descricaoCompleta = montarDescricaoGenerica({ descricao, tipo, conservacao, eixos: numeroEixos || undefined });
+    const { data: truck, error } = await supabase
+      .from("trucks")
+      .insert({
+        user_id: user.id,
+        titulo,
+        marca,
+        modelo,
+        ano_fabricacao: ano || null,
+        ano_modelo: ano || null,
+        preco,
+        cidade: cidade || "",
+        estado,
+        carroceria: tipo,
+        tracao: "",
+        quilometragem: quilometragem || "",
+        motor: "",
+        cambio: "",
+        combustivel: "",
+        cor: "",
+        descricao: descricaoCompleta,
+        whatsapp,
+        status: "pendente",
+        destaque: false,
+        vendido: false,
+        perfil: tipoAnuncio,
+      })
+      .select("id").single();
+    if (error || !truck) {
+      console.error("Erro ao criar anúncio:", error?.message);
+      redirect(`/painel/anuncios/novo/${slugErro[tipoAnuncio]}?erro=banco`);
+    }
+    await enviarFotos(supabase, user.id, truck.id, formData);
+    revalidatePath("/painel/anuncios");
+    revalidatePath("/admin/pendentes");
+    revalidatePath(`/${slugErro[tipoAnuncio]}s`);
+    redirect("/painel/anuncios");
+  }
+
+  // ── Caminhão (comportamento original) ─────────────────────────────────────
   const marca = String(formData.get("marca") || "").trim();
   const modelo = String(formData.get("modelo") || "").trim();
   const ano = Number(formData.get("ano") || 0);
@@ -163,26 +234,17 @@ export async function marcarComoVendido(formData: FormData) {
   revalidatePath(`/anuncios/${id}`);
 }
 
-/**
- * Reanunciar: cria uma cópia do anúncio com novo ID, status pendente, views zeradas.
- * As fotos existentes são copiadas para o novo registro (sem re-upload).
- */
 export async function reanunciarAnuncio(formData: FormData) {
   const { supabase, user } = await getLoggedUser();
   const id = String(formData.get("id") || "");
   if (!id) return;
-
-  // Busca dados do anúncio original
   const { data: original } = await supabase
     .from("trucks")
-    .select("titulo,marca,modelo,ano_fabricacao,ano_modelo,preco,cidade,estado,carroceria,tracao,quilometragem,motor,cambio,combustivel,cor,descricao,whatsapp")
+    .select("titulo,marca,modelo,ano_fabricacao,ano_modelo,preco,cidade,estado,carroceria,tracao,quilometragem,motor,cambio,combustivel,cor,descricao,whatsapp,perfil")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
-
   if (!original) redirect("/painel/anuncios");
-
-  // Cria novo registro com novo UUID automático
   const { data: novo, error } = await supabase
     .from("trucks")
     .insert({
@@ -194,16 +256,12 @@ export async function reanunciarAnuncio(formData: FormData) {
       views: 0,
     })
     .select("id").single();
-
   if (error || !novo) redirect("/painel/anuncios");
-
-  // Copia referências das imagens (mesmas URLs, novo truck_id)
   const { data: fotos } = await supabase
     .from("truck_images")
     .select("image_url,storage_path,principal,ordem")
     .eq("truck_id", id)
     .eq("user_id", user.id);
-
   if (fotos && fotos.length > 0) {
     await supabase.from("truck_images").insert(
       fotos.map((f) => ({
@@ -216,7 +274,6 @@ export async function reanunciarAnuncio(formData: FormData) {
       }))
     );
   }
-
   revalidatePath("/painel/anuncios");
   revalidatePath("/admin/pendentes");
   redirect("/painel/anuncios?reanunciado=1");
