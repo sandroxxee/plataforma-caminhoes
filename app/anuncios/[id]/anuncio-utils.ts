@@ -2,7 +2,7 @@
 import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/lib/truck-utils";
 import { gerarSlugComId } from "@/lib/slug";
 
-export const revalidate = 300;
+// revalidate pertence ao page.tsx — não exportar aqui
 
 export const siteUrl = "https://www.caminhoesavenda.com";
 export const defaultOgImage = "/og-caminhoes-a-venda.jpg";
@@ -39,12 +39,12 @@ export function getCanonicalPath(truck: Truck) {
   })}`;
 }
 
-export function formatKm(value?: number | null) {
+export function formatKm(value?: number | null): string | null {
   if (!value) return null;
   return `${value.toLocaleString("pt-BR")} km`;
 }
 
-export function getNumericPrice(value?: number | string | null) {
+export function getNumericPrice(value?: number | string | null): number | undefined {
   if (value === null || value === undefined || value === "") return undefined;
   const price =
     typeof value === "number"
@@ -125,6 +125,7 @@ export function getStructuredData(truck: Truck, title: string, location: string,
 }
 
 export function getSpecs(truck: Truck) {
+  // usa getLocation centralizado — mesma função usada no page.tsx
   return [
     { label: "Marca",         value: truck.marca },
     { label: "Modelo",        value: truck.modelo },

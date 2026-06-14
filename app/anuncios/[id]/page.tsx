@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MapPin, CheckCircle, ShieldCheck } from "lucide-react";
-import { formatMoney, getTitle } from "@/lib/truck-utils";
+import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
 import {
   type Truck,
   truckSelect,
@@ -20,8 +20,9 @@ import {
   getStructuredData,
   getSpecs,
 } from "./anuncio-utils";
-import { AnuncioDetalheClient } from "./AnuncioDetalheClient";
+import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
 
+// ✅ revalidate aqui — único lugar válido
 export const revalidate = 300;
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -72,14 +73,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const truck = await getApprovedTruck(id);
   if (!truck) return { title: "Anúncio não encontrado", robots: { index: false, follow: false } };
 
-  const title    = getTitle(truck);
-  const seoTitle = getSeoTitle(truck);
-  const location = String(truck.cidade && truck.estado ? `${truck.cidade}, ${truck.estado}` : truck.cidade || truck.estado || "");
-  const price    = formatMoney(truck.preco);
-  const description   = getSeoDescription(truck, title, location, price);
-  const canonicalPath = getCanonicalPath(truck);
-  const url   = `${siteUrl}${canonicalPath}`;
-  const image = getMainImage(truck);
+  const title       = getTitle(truck);
+  const seoTitle    = getSeoTitle(truck);
+  const location    = getLocation(truck); // ✅ função centralizada
+  const price       = formatMoney(truck.preco);
+  const description = getSeoDescription(truck, title, location, price);
+  const canonical   = getCanonicalPath(truck);
+  const url         = `${siteUrl}${canonical}`;
+  const image       = getMainImage(truck);
 
   return {
     title: seoTitle,
@@ -116,12 +117,12 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   }
 
   const title        = getTitle(truck);
-  const location     = String(truck.cidade && truck.estado ? `${truck.cidade}, ${truck.estado}` : truck.cidade || truck.estado || "");
+  const location     = getLocation(truck); // ✅ função centralizada — mesma do generateMetadata e getSpecs
   const whatsappLink = getWhatsappLink(truck, title);
   const { vehicle: structuredData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
-  const shareYear   = truck.ano_modelo || truck.ano_fabricacao;
-  const shareText   = `🚛 ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
-  const specs       = getSpecs(truck);
+  const shareYear    = truck.ano_modelo || truck.ano_fabricacao;
+  const shareText    = `🚛 ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
+  const specs        = getSpecs(truck);
   const initialViews = truck.views ?? 0;
 
   return (
@@ -142,13 +143,11 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <span>{truck.marca || "Anúncio"}</span>
           </nav>
 
-          {/* Galeria + WhatsApp + Share (client) */}
-          <AnuncioDetalheClient
+          {/* Galeria + contador (client) */}
+          <AnuncioGaleria
             truckId={truck.id}
             title={title}
             images={truck.truck_images || []}
-            whatsappLink={whatsappLink}
-            shareText={shareText}
             initialViews={initialViews}
           />
 
@@ -198,6 +197,14 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             )}
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
+
+            {/* ✅ Botões de ação dentro do aside — onde devem estar */}
+            <AnuncioAsideActions
+              truckId={truck.id}
+              title={title}
+              whatsappLink={whatsappLink}
+              shareText={shareText}
+            />
           </div>
 
           {specs.length > 0 && (
