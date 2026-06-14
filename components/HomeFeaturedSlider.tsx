@@ -24,7 +24,7 @@ export function HomeFeaturedSlider({ trucks }: HomeFeaturedSliderProps) {
 
     const interval = window.setInterval(() => {
       setCurrent((value) => (value + 1) % trucks.length);
-    }, 5000);
+    }, 5000);  // Mudado de 3000ms para 5000ms
 
     return () => window.clearInterval(interval);
   }, [trucks.length]);
@@ -54,9 +54,8 @@ export function HomeFeaturedSlider({ trucks }: HomeFeaturedSliderProps) {
           <article className="featuredCard" key={truck.id}>
             <Link href={`/anuncios/${truck.id}`} className="featuredImage">
               {truck.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={truck.image}
+                <img 
+                  src={truck.image} 
                   alt={truck.title}
                   fetchPriority={truckIndex === 0 ? "high" : "auto"}
                   loading={truckIndex === 0 ? "eager" : "lazy"}
