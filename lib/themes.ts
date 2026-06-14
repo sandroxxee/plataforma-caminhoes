@@ -1,10 +1,8 @@
-/**
- * SISTEMA DE TEMAS
- * Para adicionar um novo tema:
- * 1. Crie um objeto ThemeTokens abaixo
- * 2. Adicione à lista THEMES
- * 3. Pronto — ThemeProvider aplica automaticamente
- */
+// SISTEMA DE TEMAS
+// Para adicionar um novo tema:
+// 1. Crie um objeto ThemeTokens abaixo
+// 2. Adicione a lista THEMES
+// 3. Pronto - ThemeProvider aplica automaticamente
 
 export type ThemeKey = "light" | "dark" | string;
 
@@ -12,7 +10,6 @@ export interface ThemeTokens {
   key: ThemeKey;
   label: string;
   colorScheme: "light" | "dark";
-  /** Tokens CSS — mapeiam 1:1 com as vars do globals.css */
   tokens: {
     bg: string;
     surface: string;
@@ -29,92 +26,79 @@ export interface ThemeTokens {
     shadow3: string;
     radius: string;
     radiusSm: string;
-    /** Tokens extras opcionais */
     accent?: string;
     accentSoft?: string;
     header?: string;
   };
 }
 
-// ─── TEMA: LIGHT (padrão) ─────────────────────────────────────────────────
 export const THEME_LIGHT: ThemeTokens = {
   key: "light",
   label: "Claro",
   colorScheme: "light",
   tokens: {
-    bg:        "#f0f2f5",
-    surface:   "#ffffff",
-    soft:      "#e8ebef",
-    text:      "#0d1117",
-    muted:     "#4b5563",
-    blue:      "#1877f2",
-    blue2:     "#0f5fc8",
-    blueSoft:  "#dbeafe",
-    wa:        "#25d366",
-    line:      "#d1d5db",
-    shadow:    "0 2px 12px rgba(0,0,0,.07)",
-    shadow2:   "0 8px 32px rgba(0,0,0,.12)",
-    shadow3:   "0 16px 48px rgba(0,0,0,.16)",
-    radius:    "20px",
-    radiusSm:  "12px",
-    header:    "#ffffff",
+    bg:       "#f0f2f5",
+    surface:  "#ffffff",
+    soft:     "#e8ebef",
+    text:     "#0d1117",
+    muted:    "#4b5563",
+    blue:     "#1877f2",
+    blue2:    "#0f5fc8",
+    blueSoft: "#dbeafe",
+    wa:       "#25d366",
+    line:     "#d1d5db",
+    shadow:   "0 2px 12px rgba(0,0,0,.07)",
+    shadow2:  "0 8px 32px rgba(0,0,0,.12)",
+    shadow3:  "0 16px 48px rgba(0,0,0,.16)",
+    radius:   "20px",
+    radiusSm: "12px",
+    header:   "#ffffff",
   },
 };
 
-// ─── TEMA: DARK ───────────────────────────────────────────────────────────
 export const THEME_DARK: ThemeTokens = {
   key: "dark",
   label: "Escuro",
   colorScheme: "dark",
   tokens: {
-    bg:        "#0a0f1a",
-    surface:   "#131c2e",
-    soft:      "#1a2336",
-    text:      "#f0f4f8",
-    muted:     "#a0aec0",
-    blue:      "#4d9fff",
-    blue2:     "#3b82f6",
-    blueSoft:  "rgba(77,159,255,.18)",
-    wa:        "#25d366",
-    line:      "rgba(160,174,192,.18)",
-    shadow:    "0 2px 12px rgba(0,0,0,.35)",
-    shadow2:   "0 8px 32px rgba(0,0,0,.48)",
-    shadow3:   "0 16px 48px rgba(0,0,0,.6)",
-    radius:    "20px",
-    radiusSm:  "12px",
-    header:    "#131c2e",
+    bg:       "#0a0f1a",
+    surface:  "#131c2e",
+    soft:     "#1a2336",
+    text:     "#f0f4f8",
+    muted:    "#a0aec0",
+    blue:     "#4d9fff",
+    blue2:    "#3b82f6",
+    blueSoft: "rgba(77,159,255,.18)",
+    wa:       "#25d366",
+    line:     "rgba(160,174,192,.18)",
+    shadow:   "0 2px 12px rgba(0,0,0,.35)",
+    shadow2:  "0 8px 32px rgba(0,0,0,.48)",
+    shadow3:  "0 16px 48px rgba(0,0,0,.6)",
+    radius:   "20px",
+    radiusSm: "12px",
+    header:   "#131c2e",
   },
 };
 
-// ─── TEMA: LARANJA (exemplo — ative quando quiser) ────────────────────────
+// Para ativar um novo tema, descomente e adicione a THEMES:
 // export const THEME_ORANGE: ThemeTokens = {
 //   key: "orange",
 //   label: "Laranja",
 //   colorScheme: "light",
-//   tokens: {
-//     ...THEME_LIGHT.tokens,
-//     blue:     "#f97316",
-//     blue2:    "#ea6c0a",
-//     blueSoft: "#ffedd5",
-//     header:   "#fff7ed",
-//   },
+//   tokens: { ...THEME_LIGHT.tokens, blue: "#f97316", blue2: "#ea6c0a", blueSoft: "#ffedd5", header: "#fff7ed" },
 // };
 
-// ─── REGISTRO DE TEMAS DISPONÍVEIS ───────────────────────────────────────
 export const THEMES: ThemeTokens[] = [
   THEME_LIGHT,
   THEME_DARK,
-  // THEME_ORANGE,  // descomente para ativar
 ];
 
 export const DEFAULT_THEME: ThemeKey = "light";
 
-/** Retorna o ThemeTokens pelo key, fallback para light */
 export function getTheme(key: ThemeKey): ThemeTokens {
   return THEMES.find((t) => t.key === key) ?? THEME_LIGHT;
 }
 
-/** Converte tokens para string de CSS vars inline */
 export function themeToVars(tokens: ThemeTokens["tokens"]): string {
   const m: Record<string, string> = {
     "--bg":        tokens.bg,
@@ -133,8 +117,8 @@ export function themeToVars(tokens: ThemeTokens["tokens"]): string {
     "--radius":    tokens.radius,
     "--radius-sm": tokens.radiusSm,
   };
-  if (tokens.accent)     m["--accent"]      = tokens.accent;
-  if (tokens.accentSoft) m["--accent-soft"]  = tokens.accentSoft;
-  if (tokens.header)     m["--header-bg"]    = tokens.header;
+  if (tokens.accent)     m["--accent"]     = tokens.accent;
+  if (tokens.accentSoft) m["--accent-soft"] = tokens.accentSoft;
+  if (tokens.header)     m["--header-bg"]   = tokens.header;
   return Object.entries(m).map(([k, v]) => `${k}:${v}`).join(";");
 }
