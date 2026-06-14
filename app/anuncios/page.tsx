@@ -6,7 +6,7 @@ import Link from "next/link";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { BrandFilter } from "@/components/BrandFilter";
 
-// Cache de 60 segundos — reduz reads no Supabase sem perder dados relevantes
+// Cache de 60s funciona porque os filtros sao aplicados em JS, nao via searchParams no Supabase
 export const revalidate = 60;
 
 export const metadata = {
@@ -38,6 +38,22 @@ const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford"
 
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
+function buildHref(
+  base: { faixaIdx: number; marcaFiltro: string; estadoFiltro: string },
+  overrides: Record<string, string | number | undefined>
+) {
+  const params: Record<string, string> = {};
+  if (base.faixaIdx > 0) params.faixa = String(base.faixaIdx);
+  if (base.marcaFiltro) params.marca = base.marcaFiltro;
+  if (base.estadoFiltro) params.estado = base.estadoFiltro;
+  Object.entries(overrides).forEach(([k, v]) => {
+    if (v === undefined || v === "" || v === 0) delete params[k];
+    else params[k] = String(v);
+  });
+  const qs = new URLSearchParams(params).toString();
+  return qs ? `/anuncios?${qs}` : "/anuncios";
+}
+
 export default async function AnunciosPage({ searchParams }: PageProps) {
   const { faixa, marca, estado } = await searchParams;
 
@@ -46,39 +62,24 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const marcaFiltro = MARCAS_VALIDAS.includes(marca || "") ? marca! : "";
   const estadoFiltro = ESTADOS.find((e) => e.value === estado)?.value || "";
 
+  // Busca todos aprovados de uma vez — filtros aplicados em JS para o cache funcionar
   const supabase = await createClient();
-  let query = supabase
+  const { data } = await supabase
     .from("trucks")
     .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, truck_images(image_url, principal, ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(300);
 
-  if (min > 0) query = query.gte("preco", min) as typeof query;
-  if (max !== Infinity) query = query.lte("preco", max) as typeof query;
-  if (marcaFiltro) query = query.eq("marca", marcaFiltro) as typeof query;
-  if (estadoFiltro) query = query.eq("estado", estadoFiltro) as typeof query;
+  // Filtragem em JS (nao bate no banco de novo)
+  let trucks = (data || []) as Truck[];
+  if (min > 0) trucks = trucks.filter((t) => (t.preco ?? 0) >= min);
+  if (max !== Infinity) trucks = trucks.filter((t) => (t.preco ?? 0) <= max);
+  if (marcaFiltro) trucks = trucks.filter((t) => t.marca === marcaFiltro);
+  if (estadoFiltro) trucks = trucks.filter((t) => t.estado === estadoFiltro);
 
-  const { data } = await query;
-  const trucks = (data || []) as Truck[];
-
-  function buildHref(overrides: Record<string, string | number | undefined>) {
-    const params: Record<string, string> = {};
-    if (faixaIdx > 0) params.faixa = String(faixaIdx);
-    if (marcaFiltro) params.marca = marcaFiltro;
-    if (estadoFiltro) params.estado = estadoFiltro;
-    Object.entries(overrides).forEach(([k, v]) => {
-      if (v === undefined || v === "" || v === 0) delete params[k];
-      else params[k] = String(v);
-    });
-    const qs = new URLSearchParams(params).toString();
-    return qs ? `/anuncios?${qs}` : "/anuncios";
-  }
-
-  function buildMarcaHref(m: string | undefined) {
-    return buildHref({ marca: m });
-  }
-
+  const base = { faixaIdx, marcaFiltro, estadoFiltro };
   const hasFilters = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
   return (
@@ -91,20 +92,22 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio encontrado" : "anúncios encontrados"}</p>
         </div>
 
-        {/* Marcas com logos 3D */}
         <div className="al-brand-section">
           <span className="al-filter-label">Marca</span>
-          <BrandFilter marcaAtiva={marcaFiltro} buildHref={buildMarcaHref} />
+          <BrandFilter marcaAtiva={marcaFiltro} buildHref={(m) => buildHref(base, { marca: m })} />
         </div>
 
-        {/* Estado + Preço */}
         <div className="al-filters-wrap">
           <div className="al-filter-group">
             <span className="al-filter-label">Estado</span>
             <div className="al-filter-row">
               {ESTADOS.map((e) => {
                 const active = estadoFiltro === e.value;
-                return <Link key={e.value || "todos"} href={buildHref({ estado: e.value || undefined })} className={`al-filter-btn${active ? " active" : ""}`}>{e.label}</Link>;
+                return (
+                  <Link key={e.value || "todos"} href={buildHref(base, { estado: e.value || undefined })} className={`al-filter-btn${active ? " active" : ""}`}>
+                    {e.label}
+                  </Link>
+                );
               })}
             </div>
           </div>
@@ -113,7 +116,9 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             <span className="al-filter-label">Preço</span>
             <div className="al-filter-row">
               {FAIXAS.map((f, idx) => (
-                <Link key={idx} href={buildHref({ faixa: idx === 0 ? undefined : idx })} className={`al-filter-btn${faixaIdx === idx ? " active" : ""}`}>{f.label}</Link>
+                <Link key={idx} href={buildHref(base, { faixa: idx === 0 ? undefined : idx })} className={`al-filter-btn${faixaIdx === idx ? " active" : ""}`}>
+                  {f.label}
+                </Link>
               ))}
             </div>
           </div>
@@ -121,18 +126,16 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           {hasFilters && <Link href="/anuncios" className="al-clear-btn">✕ Limpar filtros</Link>}
         </div>
 
-        <Suspense fallback={null}>
-          <section className="stock-grid">
-            {trucks.map((truck) => <TruckCard key={truck.id} truck={truck} />)}
-            {trucks.length === 0 && (
-              <div className="market-empty">
-                <strong>Nenhum anúncio encontrado</strong>
-                <p>Tente outros filtros ou veja todos os caminhões.</p>
-                <Link href="/anuncios" style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}>Ver todos</Link>
-              </div>
-            )}
-          </section>
-        </Suspense>
+        <section className="stock-grid">
+          {trucks.map((truck) => <TruckCard key={truck.id} truck={truck} />)}
+          {trucks.length === 0 && (
+            <div className="market-empty">
+              <strong>Nenhum anúncio encontrado</strong>
+              <p>Tente outros filtros ou veja todos os caminhões.</p>
+              <Link href="/anuncios" style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}>Ver todos</Link>
+            </div>
+          )}
+        </section>
       </div>
 
       <SiteFooter />
