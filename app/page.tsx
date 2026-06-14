@@ -5,16 +5,15 @@ import { createClient } from "@/lib/supabase/server";
 import { FeaturedAds } from "@/components/theme/FeaturedAds";
 import { HeroMarketplace } from "@/components/theme/HeroMarketplace";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { BrandsSection } from "@/components/theme/BrandsSection";
 import type { TruckCardData } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Caminh\u00f5es \u00e0 Venda | An\u00fancios de caminh\u00f5es e implementos",
+  title: "Caminhões à Venda | Anúncios de caminhões e implementos",
   description:
-    "Veja caminh\u00f5es usados, seminovos e implementos anunciados no Caminh\u00f5es \u00e0 Venda. Plataforma para comprar, vender e anunciar com contato direto pelo WhatsApp.",
+    "Veja caminhões usados, seminovos e implementos anunciados no Caminhões à Venda. Plataforma para comprar, vender e anunciar com contato direto pelo WhatsApp.",
   alternates: { canonical: "/" },
 };
 
@@ -58,10 +57,7 @@ export default async function HomePage() {
       <div className="market-main">
         <HeroMarketplace />
 
-        {/* Marcas */}
-        <BrandsSection />
-
-        {/* Grid de an\u00fancios recentes */}
+        {/* Grid de anúncios recentes */}
         <FeaturedAds trucks={trucks} />
 
         {/* Como funciona */}
