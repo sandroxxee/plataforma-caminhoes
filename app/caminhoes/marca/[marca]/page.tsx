@@ -10,19 +10,25 @@ import Link from "next/link";
 
 export const revalidate = 3600;
 
-const MARCAS_VALIDAS = ["mercedes-benz","scania","volvo","volkswagen","ford","iveco","daf"];
+// ✅ sincronizado com sitemap.ts
 const MARCA_DISPLAY: Record<string, string> = {
   "mercedes-benz": "Mercedes-Benz",
-  scania: "Scania",
-  volvo: "Volvo",
-  volkswagen: "Volkswagen",
-  ford: "Ford",
-  iveco: "Iveco",
-  daf: "DAF",
+  scania:          "Scania",
+  volvo:           "Volvo",
+  volkswagen:      "Volkswagen",
+  ford:            "Ford",
+  iveco:           "Iveco",
+  daf:             "DAF",
+  man:             "MAN",
+  randon:          "Randon",
+  agrale:          "Agrale",
+  liebherr:        "Liebherr",
+  paqueta:         "Paquetá",
+  guerra:          "Guerra",
 };
 
 export async function generateStaticParams() {
-  return MARCAS_VALIDAS.map((m) => ({ marca: m }));
+  return Object.keys(MARCA_DISPLAY).map((m) => ({ marca: m }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ marca: string }> }): Promise<Metadata> {

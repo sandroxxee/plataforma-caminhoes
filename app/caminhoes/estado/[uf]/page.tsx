@@ -10,16 +10,47 @@ import Link from "next/link";
 
 export const revalidate = 3600;
 
+// ✅ todos os 27 estados — sincronizado com sitemap.ts
 const ESTADOS: Record<string, string> = {
-  sc: "Santa Catarina", pr: "Paraná", rs: "Rio Grande do Sul",
-  sp: "São Paulo", rj: "Rio de Janeiro", mg: "Minas Gerais",
-  es: "Espírito Santo", ba: "Bahia", go: "Goiás",
-  ms: "Mato Grosso do Sul", mt: "Mato Grosso", df: "Distrito Federal",
-  pe: "Pernambuco", ce: "Ceará", pa: "Pará",
+  ac: "Acre",
+  al: "Alagoas",
+  am: "Amazonas",
+  ap: "Amapá",
+  ba: "Bahia",
+  ce: "Ceará",
+  df: "Distrito Federal",
+  es: "Espírito Santo",
+  go: "Goiás",
+  ma: "Maranhão",
+  mg: "Minas Gerais",
+  ms: "Mato Grosso do Sul",
+  mt: "Mato Grosso",
+  pa: "Pará",
+  pb: "Paraíba",
+  pe: "Pernambuco",
+  pi: "Piauí",
+  pr: "Paraná",
+  rj: "Rio de Janeiro",
+  rn: "Rio Grande do Norte",
+  ro: "Rondônia",
+  rr: "Roraima",
+  rs: "Rio Grande do Sul",
+  sc: "Santa Catarina",
+  se: "Sergipe",
+  sp: "São Paulo",
+  to: "Tocantins",
 };
 
-const MARCAS_LINK = ["mercedes-benz","scania","volvo","volkswagen","ford","iveco"];
-const MARCA_DISPLAY: Record<string,string> = { "mercedes-benz":"Mercedes-Benz",scania:"Scania",volvo:"Volvo",volkswagen:"Volkswagen",ford:"Ford",iveco:"Iveco" };
+const MARCAS_LINK: Record<string, string> = {
+  "mercedes-benz": "Mercedes-Benz",
+  scania:          "Scania",
+  volvo:           "Volvo",
+  volkswagen:      "Volkswagen",
+  ford:            "Ford",
+  iveco:           "Iveco",
+  man:             "MAN",
+  randon:          "Randon",
+};
 
 export async function generateStaticParams() {
   return Object.keys(ESTADOS).map((uf) => ({ uf }));
@@ -73,18 +104,15 @@ export default async function EstadoPage({ params }: { params: Promise<{ uf: str
           <h1 className="al-title">Caminhões à Venda em {estado}</h1>
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio" : "anúncios"} encontrados</p>
         </div>
-
         <div className="seo-marca-nav">
           {Object.entries(ESTADOS).map(([slug, nome]) => (
             <Link key={slug} href={`/caminhoes/estado/${slug}`} className={slug === uf ? "active" : ""}>{nome}</Link>
           ))}
         </div>
-
         <div className="seo-alerta-row">
           <span className="seo-alerta-hint">🔔 Quer ser avisado quando sair um caminhão novo em {estado}?</span>
           <AlertaBusca estadoInicial={uf.toUpperCase()} />
         </div>
-
         <Suspense fallback={null}>
           <section className="stock-grid">
             {trucks.map((truck) => <TruckCard key={truck.id} truck={truck} />)}
@@ -97,12 +125,11 @@ export default async function EstadoPage({ params }: { params: Promise<{ uf: str
             )}
           </section>
         </Suspense>
-
         <div className="seo-internal-links">
           <p className="seo-internal-title">Buscar por marca em {estado}:</p>
           <div className="seo-internal-row">
-            {MARCAS_LINK.map((slug) => (
-              <Link key={slug} href={`/caminhoes/${slug}`}>{MARCA_DISPLAY[slug]} {uf.toUpperCase()}</Link>
+            {Object.entries(MARCAS_LINK).map(([slug, nome]) => (
+              <Link key={slug} href={`/caminhoes/marca/${slug}`}>{nome} {uf.toUpperCase()}</Link>
             ))}
           </div>
         </div>
