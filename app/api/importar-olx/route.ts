@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Busca o HTML da página da OLX
     const response = await fetch(url, {
       headers: {
         "User-Agent":
@@ -31,8 +30,9 @@ export async function POST(req: NextRequest) {
     const html = await response.text();
 
     // Extrai dados do JSON embutido na página (OLX usa __NEXT_DATA__)
-    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s);
-    
+    // Usa [\s\S]*? no lugar do flag /s para compatibilidade com targets antigos
+    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+
     let titulo = "";
     let preco = "";
     let descricao = "";
@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fallback: extração por regex se JSON não funcionou
     if (!titulo) {
       const tituloMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/);
       titulo = tituloMatch?.[1]?.trim() || "";
