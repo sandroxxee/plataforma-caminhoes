@@ -17,7 +17,6 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="footer-inner">
 
-        {/* Sobre */}
         <section className="footer-section footer-about">
           <strong className="footer-brand">Caminhões à Venda</strong>
           <p>Plataforma para comprar e anunciar caminhões, carretas e implementos com contato direto pelo WhatsApp.</p>
@@ -26,7 +25,6 @@ export function SiteFooter() {
           </p>
         </section>
 
-        {/* Categorias */}
         <section className="footer-section">
           <strong>Categorias</strong>
           <Link style={linkStyle} href="/anuncios">Caminhões à venda</Link>
@@ -36,7 +34,6 @@ export function SiteFooter() {
           <Link style={linkStyle} href="/maquinas">Máquinas pesadas</Link>
         </section>
 
-        {/* Marcas */}
         <section className="footer-section">
           <strong>Marcas</strong>
           <Link style={linkStyle} href="/anuncios?marca=Scania">Scania à venda</Link>
@@ -47,9 +44,9 @@ export function SiteFooter() {
           <Link style={linkStyle} href="/anuncios?marca=MAN">MAN à venda</Link>
           <Link style={linkStyle} href="/anuncios?marca=DAF">DAF à venda</Link>
           <Link style={linkStyle} href="/anuncios?marca=Ford">Ford à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=Agrale">Agrale à venda</Link>
         </section>
 
-        {/* Anunciar */}
         <section className="footer-section">
           <strong>Anunciar</strong>
           <Link style={linkStyle} href="/anunciar">Anunciar caminhão</Link>
@@ -58,7 +55,6 @@ export function SiteFooter() {
           <Link style={linkStyle} href="/painel">Painel do anunciante</Link>
         </section>
 
-        {/* Atendimento */}
         <section className="footer-section">
           <strong>Atendimento</strong>
           <a style={linkStyle} href="https://wa.me/5549999362681" target="_blank" rel="noreferrer">
@@ -133,7 +129,8 @@ export function SiteFooter() {
         }
         @media (max-width: 480px) {
           .footer-inner { grid-template-columns: 1fr 1fr; gap: 20px; }
-          .site-footer { padding: 32px 0 80px; }
+          /* Removido padding-bottom excessivo — o MobileBottomNav ja adiciona no body */
+          .site-footer { padding: 32px 0 24px; }
         }
       `}</style>
     </footer>

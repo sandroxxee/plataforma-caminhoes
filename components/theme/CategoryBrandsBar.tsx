@@ -18,7 +18,6 @@ function m(nome: string, slug: string): Marca {
 }
 
 export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
-  // Fabricantes reais de caminhões (cavalo mecânico)
   caminhoes: [
     m("Mercedes-Benz", "mercedes-benz"),
     m("Scania", "scania"),
@@ -30,7 +29,6 @@ export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
     m("MAN", "man"),
     m("Agrale", "agrale"),
   ],
-  // Fabricantes de carretas e semirreboques
   carretas: [
     m("Randon", "randon"),
     m("Guerra", "guerra"),
@@ -39,20 +37,7 @@ export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
     m("Rodotec", "rodotec"),
     m("Noma", "noma"),
     m("Paquetá", "paqueta"),
-    m("Carezia", "carezia"),
   ],
-  // Fabricantes de implementos rodoviários
-  implementos: [
-    m("Randon", "randon"),
-    m("Guerra", "guerra"),
-    m("Librelato", "librelato"),
-    m("Facchini", "facchini"),
-    m("Rodotec", "rodotec"),
-    m("Noma", "noma"),
-    m("Paquetá", "paqueta"),
-    m("Carezia", "carezia"),
-  ],
-  // Peças: por marca de chassis/motor
   pecas: [
     m("Mercedes-Benz", "mercedes-benz"),
     m("Scania", "scania"),
@@ -63,7 +48,6 @@ export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
     m("Iveco", "iveco"),
     m("Ford", "ford"),
   ],
-  // Máquinas pesadas
   maquinas: [
     m("Caterpillar", "caterpillar"),
     m("Volvo", "volvo"),
@@ -93,7 +77,7 @@ export function CategoryBrandsBar({
         {marcas.map((marca) => (
           <Link
             key={marca.slug}
-            href={`/caminhoes/marca/${marca.slug}`}
+            href={`/anuncios?marca=${encodeURIComponent(marca.nome)}`}
             className="cbb-chip"
             title={`${labelSingular} ${marca.nome}`}
           >

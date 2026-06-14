@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
 import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
+import { LoadMore } from "./LoadMore";
 import Link from "next/link";
 
 export const revalidate = 60;
@@ -21,11 +22,8 @@ const FAIXAS = [
   { min: 400_000, max: Infinity },
 ];
 
-const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF", "MAN"];
+const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF", "MAN", "Agrale"];
 const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES"];
-
-// Perfis que são caminhoes (cavalos mecânicos)
-const PERFIS_CAMINHAO = ["Caminhões", "Caminhao", "Caminhão", null, undefined, ""];
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
@@ -40,20 +38,30 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const hasFilters   = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
   const supabase = await createClient();
+
+  const { count: total } = await supabase
+    .from("trucks")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "aprovado")
+    .eq("vendido", false)
+    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)");
+
   const { data } = await supabase
     .from("trucks")
-    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,created_at,perfil,truck_images(image_url,principal,ordem)`)
+    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
     .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
     .order("created_at", { ascending: false })
-    .limit(300);
+    .limit(24);
 
   let trucks = (data || []) as Truck[];
   if (min > 0)          trucks = trucks.filter((t) => (t.preco ?? 0) >= min);
   if (max !== Infinity) trucks = trucks.filter((t) => (t.preco ?? 0) <= max);
   if (marcaFiltro)      trucks = trucks.filter((t) => t.marca  === marcaFiltro);
   if (estadoFiltro)     trucks = trucks.filter((t) => t.estado === estadoFiltro);
+
+  const totalFiltered = trucks.length;
 
   return (
     <main className="market-page">
@@ -71,7 +79,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           marcaFiltro={marcaFiltro}
           estadoFiltro={estadoFiltro}
           hasFilters={hasFilters}
-          total={trucks.length}
+          total={totalFiltered}
         />
 
         <section className="stock-grid" aria-label="Lista de anúncios">
@@ -91,6 +99,10 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             </div>
           )}
         </section>
+
+        {!hasFilters && (total ?? 0) > 24 && (
+          <LoadMore initialTrucks={trucks} total={total ?? 0} pageSize={24} />
+        )}
       </div>
 
       <SiteFooter />
