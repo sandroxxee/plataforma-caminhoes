@@ -1,6 +1,5 @@
 import Link from "next/link";
-
-type Marca = { nome: string; slug: string; svg: string | null };
+import marcas from "@/public/marcas.json";
 
 const SVG: Record<string, string> = {
   scania:          "https://upload.wikimedia.org/wikipedia/commons/2/24/Scania_logo.svg",
@@ -13,82 +12,40 @@ const SVG: Record<string, string> = {
   volkswagen:      "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg",
 };
 
-function m(nome: string, slug: string): Marca {
-  return { nome, slug, svg: SVG[slug] ?? null };
-}
-
-export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
-  caminhoes: [
-    m("Mercedes-Benz", "mercedes-benz"),
-    m("Scania", "scania"),
-    m("Volvo", "volvo"),
-    m("Volkswagen", "volkswagen"),
-    m("Ford", "ford"),
-    m("Iveco", "iveco"),
-    m("DAF", "daf"),
-    m("MAN", "man"),
-    m("Agrale", "agrale"),
-  ],
-  carretas: [
-    m("Randon", "randon"),
-    m("Guerra", "guerra"),
-    m("Librelato", "librelato"),
-    m("Facchini", "facchini"),
-    m("Rodotec", "rodotec"),
-    m("Noma", "noma"),
-    m("Paquet\u00e1", "paqueta"),
-  ],
-  pecas: [
-    m("Mercedes-Benz", "mercedes-benz"),
-    m("Scania", "scania"),
-    m("Volvo", "volvo"),
-    m("Volkswagen", "volkswagen"),
-    m("MAN", "man"),
-    m("DAF", "daf"),
-    m("Iveco", "iveco"),
-    m("Ford", "ford"),
-  ],
-  maquinas: [
-    m("Caterpillar", "caterpillar"),
-    m("Volvo", "volvo"),
-    m("Komatsu", "komatsu"),
-    m("Case", "case"),
-    m("John Deere", "john-deere"),
-    m("Liebherr", "liebherr"),
-    m("Terex", "terex"),
-    m("Bobcat", "bobcat"),
-  ],
-};
-
 export function CategoryBrandsBar({
   categoria,
   labelSingular,
 }: {
-  categoria: keyof typeof MARCAS_POR_CATEGORIA;
+  categoria: string;
   labelSingular: string;
 }) {
-  const marcas = MARCAS_POR_CATEGORIA[categoria] ?? [];
-  if (!marcas.length) return null;
+  const lista = (marcas as { nome: string; slug: string; categoria: string }[])
+    .filter((m) => m.categoria === categoria);
+
+  if (!lista.length) return null;
 
   return (
     <div className="cbb-wrap">
       <div className="cbb-grid">
-        {marcas.map((marca) => (
-          <Link
-            key={marca.slug}
-            href={`/anuncios?marca=${encodeURIComponent(marca.nome)}`}
-            className="cbb-chip"
-            title={`${labelSingular} ${marca.nome}`}
-          >
-            {marca.svg ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={marca.svg} alt={marca.nome} width={48} height={28} loading="lazy" className="cbb-logo" />
-            ) : (
-              <span className="cbb-initial">{marca.nome.slice(0, 2).toUpperCase()}</span>
-            )}
-            <span className="cbb-name">{marca.nome}</span>
-          </Link>
-        ))}
+        {lista.map((marca) => {
+          const svg = SVG[marca.slug] ?? null;
+          return (
+            <Link
+              key={marca.slug}
+              href={`/anuncios?marca=${encodeURIComponent(marca.nome)}`}
+              className="cbb-chip"
+              title={`${labelSingular} ${marca.nome}`}
+            >
+              {svg ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={svg} alt={marca.nome} width={48} height={28} loading="lazy" className="cbb-logo" />
+              ) : (
+                <span className="cbb-initial">{marca.nome.slice(0, 2).toUpperCase()}</span>
+              )}
+              <span className="cbb-name">{marca.nome}</span>
+            </Link>
+          );
+        })}
       </div>
       <style>{`
         .cbb-wrap { margin-bottom: 20px; }
@@ -101,27 +58,12 @@ export function CategoryBrandsBar({
           transition: border-color .14s, box-shadow .14s, transform .14s;
           box-shadow: var(--shadow);
         }
-        .cbb-chip:hover {
-          border-color: var(--blue); box-shadow: var(--shadow2);
-          transform: translateY(-1px);
-        }
-        .cbb-logo {
-          width: 34px; height: 20px;
-          object-fit: contain; object-position: center;
-          filter: grayscale(1) opacity(.6);
-          transition: filter .14s; flex-shrink: 0;
-        }
+        .cbb-chip:hover { border-color: var(--blue); box-shadow: var(--shadow2); transform: translateY(-1px); }
+        .cbb-logo { width: 34px; height: 20px; object-fit: contain; filter: grayscale(1) opacity(.6); transition: filter .14s; flex-shrink: 0; }
         .cbb-chip:hover .cbb-logo { filter: grayscale(0) opacity(1); }
-        .cbb-initial {
-          width: 26px; height: 20px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 10px; font-weight: 900; color: var(--muted);
-          background: var(--soft); border-radius: 5px; transition: color .14s;
-        }
+        .cbb-initial { width: 26px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: var(--muted); background: var(--soft); border-radius: 5px; }
         .cbb-chip:hover .cbb-initial { color: var(--blue); }
-        .cbb-name {
-          font-size: 12px; font-weight: 800; color: var(--text); white-space: nowrap;
-        }
+        .cbb-name { font-size: 12px; font-weight: 800; color: var(--text); white-space: nowrap; }
         .cbb-chip:hover .cbb-name { color: var(--blue); }
         @media (max-width: 480px) {
           .cbb-chip { height: 34px; padding: 0 10px 0 8px; }
