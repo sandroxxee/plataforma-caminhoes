@@ -6,11 +6,11 @@ import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MapPin, CheckCircle, ShieldCheck } from "lucide-react";
 import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
+import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
   type Truck,
   truckSelect,
   UUID_REGEX,
-  SHORT_ID_REGEX,
   siteUrl,
   getCanonicalPath,
   getMainImage,
@@ -31,40 +31,18 @@ type PageProps = { params: Promise<{ id: string }> };
 
 async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
-  const value = parametro.trim().toLowerCase();
+  const { tipo, valor } = extrairIdDoParametroAnuncio(parametro);
 
-  if (UUID_REGEX.test(value)) {
+  if (tipo === "uuid") {
     const { data, error } = await supabase
       .from("trucks")
       .select(truckSelect)
-      .eq("id", value)
+      .eq("id", valor)
       .eq("status", "aprovado")
       .eq("vendido", false)
       .maybeSingle();
     if (error || !data) return null;
     return data as Truck;
-  }
-
-  const shortIdMatch = value.match(SHORT_ID_REGEX);
-  if (shortIdMatch) {
-    const shortId = shortIdMatch[1];
-    const { data: rpcData, error: rpcError } = await supabase.rpc("find_truck_by_short_id", { short_id: shortId });
-    if (!rpcError && rpcData?.length > 0) {
-      const truckBase = rpcData[0] as Truck;
-      const { data: images } = await supabase
-        .from("truck_images")
-        .select("image_url, principal, ordem")
-        .eq("truck_id", truckBase.id)
-        .order("ordem", { ascending: true });
-      return { ...truckBase, truck_images: (images || []) as Truck["truck_images"] };
-    }
-    const { data: fallback } = await supabase
-      .from("trucks")
-      .select(truckSelect)
-      .eq("status", "aprovado")
-      .eq("vendido", false)
-      .ilike("id", `${shortId}%`);
-    if (fallback?.length) return fallback[0] as Truck;
   }
 
   return null;
