@@ -8,24 +8,24 @@ import { ThemeTogglePublic } from "./ThemeTogglePublic";
 import { SearchBar } from "./SearchBar";
 
 function isActive(pathname: string, href: string) {
-  const cleanHref = href.split("?")[0].split("#")[0];
-  if (cleanHref === "/") return pathname === "/";
-  return pathname === cleanHref || pathname.startsWith(`${cleanHref}/`);
+  const clean = href.split("?")[0].split("#")[0];
+  if (clean === "/") return pathname === "/";
+  return pathname === clean || pathname.startsWith(`${clean}/`);
 }
 
-type PublicHeaderClientProps = { isLoggedIn: boolean };
+type Props = { isLoggedIn: boolean };
 
-export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
+export function PublicHeaderClient({ isLoggedIn }: Props) {
   const pathname = usePathname();
   const searchTarget = pathname.startsWith("/implementos") ? "/implementos" : "/anuncios";
 
   const navItems = [
-    { href: "/anuncios", label: "Caminhões", icon: Truck },
+    { href: "/anuncios",    label: "Caminhões",  icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Truck },
-    { href: "/parceiros", label: "Parceiros", icon: Handshake },
+    { href: "/parceiros",   label: "Parceiros",   icon: Handshake },
     isLoggedIn
-      ? { href: "/painel", label: "Painel", icon: LayoutDashboard }
-      : { href: "/login", label: "Entrar", icon: LogIn },
+      ? { href: "/painel", label: "Painel",  icon: LayoutDashboard }
+      : { href: "/login",  label: "Entrar",  icon: LogIn },
   ];
 
   return (
@@ -33,20 +33,30 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
       <header className="public-header">
         <div className="public-nav-shell">
           <Link href="/" className="public-brand" aria-label="Caminhões à Venda">
-            <span className="brand-mark"><Truck size={22} aria-hidden="true" /></span>
+            <span className="brand-mark">
+              <Truck size={20} aria-hidden="true" />
+            </span>
             <span className="brand-text">
-              <Image src="/logo-horizontal-web.png" alt="Caminhões à Venda" width={230} height={84} priority />
+              <Image src="/logo-horizontal-web.png" alt="Caminhões à Venda"
+                width={230} height={84} priority
+                style={{ width: 150, height: 36, objectFit: "contain" }}
+              />
             </span>
           </Link>
 
-          <SearchBar target={searchTarget} />
+          {/* SearchBar some em mobile — MobileBottomNav tem botão Buscar */}
+          <div className="ph-search">
+            <SearchBar target={searchTarget} />
+          </div>
 
-          <nav className="public-menu" id="menu" aria-label="Menu principal">
+          <nav className="public-menu" aria-label="Menu principal">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(pathname, item.href);
               return (
-                <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={active ? "active" : ""}>
+                <Link key={item.href} href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={active ? "active" : ""}>
                   <Icon size={15} aria-hidden="true" />
                   <span>{item.label}</span>
                 </Link>
@@ -59,66 +69,88 @@ export function PublicHeaderClient({ isLoggedIn }: PublicHeaderClientProps) {
       </header>
 
       <style>{`
+        /* === BASE === */
         .public-header {
-          background: rgba(255,255,255,.94);
-          backdrop-filter: blur(16px) saturate(140%);
-          -webkit-backdrop-filter: blur(16px) saturate(140%);
-          border-bottom: 1px solid rgba(217,221,227,.86);
-          box-shadow: 0 1px 0 rgba(15,23,42,.04), 0 10px 26px rgba(15,23,42,.06);
+          position: sticky; top: 0; z-index: 80;
+          background: rgba(255,255,255,.95);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-bottom: 1px solid var(--line);
+          box-shadow: 0 1px 0 rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.05);
         }
         body.public-theme-dark .public-header {
-          background: rgba(16,25,43,.92);
-          border-bottom-color: rgba(148,163,184,.18);
-          box-shadow: 0 1px 0 rgba(148,163,184,.10), 0 12px 30px rgba(0,0,0,.24);
+          background: rgba(16,25,43,.95);
+          border-bottom-color: rgba(148,163,184,.15);
         }
-        .public-nav-shell { min-height: 76px; gap: 12px; }
-        .public-brand { min-width: 178px; }
-        .brand-mark { width: 48px; height: 48px; box-shadow: 0 10px 22px rgba(24,119,242,.24); }
-        .brand-text img { width: 150px; height: 36px; object-fit: contain; }
+
+        .public-nav-shell {
+          min-height: 64px;
+          display: flex; align-items: center; gap: 10px;
+        }
+
+        .public-brand {
+          display: flex; align-items: center; gap: 10px;
+          flex-shrink: 0; text-decoration: none;
+        }
+        .brand-mark {
+          width: 40px; height: 40px; border-radius: 12px;
+          display: grid; place-items: center;
+          background: var(--blue); color: #fff; flex-shrink: 0;
+        }
+        .brand-text img { display: block; }
+
+        .ph-search {
+          flex: 1; max-width: 460px;
+        }
         .search-top {
-          height: 48px; background: #f3f4f6;
-          border: 1px solid rgba(217,221,227,.72);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
-          border-radius: 999px;
+          height: 44px; border-radius: 999px;
+          background: var(--soft); border: 1.5px solid transparent;
+          display: flex; align-items: center; gap: 8px; padding: 0 16px;
+          color: var(--muted); transition: border-color .16s, background .16s;
         }
-        body.public-theme-dark .search-top {
-          background: rgba(255,255,255,.06);
-          border-color: rgba(148,163,184,.20);
+        .search-top:focus-within {
+          background: #fff; border-color: var(--blue);
+          box-shadow: 0 0 0 3px rgba(24,119,242,.10);
         }
-        .search-top input::placeholder { color: var(--muted); }
-        .public-menu { gap: 6px; }
+        body.public-theme-dark .search-top:focus-within { background: var(--surface); }
+        .search-top input {
+          width: 100%; border: 0; outline: 0; background: transparent;
+          color: var(--text); font-weight: 600; font-size: 14px;
+        }
+
+        .public-menu {
+          display: flex; align-items: center; gap: 2px;
+          overflow-x: auto; scrollbar-width: none;
+        }
+        .public-menu::-webkit-scrollbar { display: none; }
         .public-menu a {
-          min-height: 42px; padding: 0 13px; border-radius: 999px;
-          border: 1px solid transparent; color: #30343b; background: transparent;
-          transition: background .16s, border-color .16s, color .16s, transform .16s;
+          min-height: 40px; display: inline-flex; align-items: center;
+          justify-content: center; gap: 6px; padding: 0 12px;
+          border-radius: 10px; color: var(--muted);
+          font-weight: 700; font-size: 14px; white-space: nowrap;
+          text-decoration: none; flex-shrink: 0;
+          transition: background .14s, color .14s;
         }
-        body.public-theme-dark .public-menu a { color: #dbe5f3; }
+        body.public-theme-dark .public-menu a { color: #94a3b8; }
         .public-menu a:hover, .public-menu a.active {
-          background: rgba(24,119,242,.10); border-color: rgba(24,119,242,.18);
-          color: var(--blue); transform: translateY(-1px);
+          background: var(--blueSoft); color: var(--blue);
         }
-        .public-theme-toggle { min-height: 44px; border-radius: 14px; background: var(--soft); }
-        @media (max-width: 1120px) {
-          .public-nav-shell { flex-wrap: wrap; padding: 10px 0; }
-          .sb-wrap { order: 3; max-width: none; width: 100%; }
-          .public-menu { margin-left: auto; overflow-x: auto; scrollbar-width: none; }
-          .public-menu::-webkit-scrollbar { display: none; }
+
+        /* === TABLET (ate 900px): search desce, menu continua inline === */
+        @media (max-width: 900px) {
+          .public-nav-shell { flex-wrap: wrap; padding: 8px 0; min-height: auto; }
+          .ph-search { order: 3; max-width: 100%; width: 100%; flex-basis: 100%; }
+          .public-menu { margin-left: auto; }
         }
-        @media (min-width: 681px) and (max-width: 980px) {
-          .public-menu {
-            position: static !important; display: flex !important; flex-direction: row !important;
-            align-items: center !important; width: 100%; order: 4; margin-left: 0;
-            padding: 2px 0 0 !important; background: transparent !important;
-            border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
-          }
-          .public-menu a { flex: 0 0 auto; }
-        }
+
+        /* === MOBILE (ate 680px): logo menor, menu scroll horizontal, search oculto === */
         @media (max-width: 680px) {
-          .public-brand { min-width: auto; }
-          .brand-text img { width: 118px; height: 30px; }
-          .brand-mark { width: 42px; height: 42px; }
-          .public-menu { width: 100%; order: 4; justify-content: flex-start; padding-bottom: 2px; }
-          .public-menu a { min-height: 38px; padding: 0 11px; font-size: 12px; flex: 0 0 auto; }
+          .public-nav-shell { gap: 8px; }
+          .brand-mark { width: 36px; height: 36px; border-radius: 10px; }
+          .brand-text img { width: 120px !important; height: 30px !important; }
+          .ph-search { display: none; }
+          .public-menu { order: unset; margin-left: 0; flex: 1; justify-content: flex-end; }
+          .public-menu a { min-height: 38px; padding: 0 10px; font-size: 13px; }
         }
       `}</style>
     </>
