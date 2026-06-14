@@ -8,7 +8,7 @@ type Props = {
   initialTrucks: TruckCardData[];
   total:         number;
   pageSize?:     number;
-  // filtros ativos — repassados para a API
+  q?:            string;
   marca?:        string;
   estado?:       string;
   faixa?:        number;
@@ -18,11 +18,12 @@ export function LoadMore({
   initialTrucks,
   total,
   pageSize = 24,
+  q      = "",
   marca  = "",
   estado = "",
   faixa  = 0,
 }: Props) {
-  const [trucks, setTrucks]     = useState(initialTrucks);
+  const [trucks, setTrucks]          = useState(initialTrucks);
   const [isPending, startTransition] = useTransition();
 
   const hasMore = trucks.length < total;
@@ -31,6 +32,7 @@ export function LoadMore({
     startTransition(async () => {
       const offset = trucks.length;
       const params = new URLSearchParams({ offset: String(offset), limit: String(pageSize) });
+      if (q)       params.set("q",      q);
       if (marca)   params.set("marca",  marca);
       if (estado)  params.set("estado", estado);
       if (faixa > 0) params.set("faixa", String(faixa));
@@ -44,24 +46,17 @@ export function LoadMore({
 
   return (
     <>
-      {/* cards já carregados */}
       <div className="stock-grid">
         {trucks.map((truck) => (
           <TruckCard key={truck.id} truck={truck} />
         ))}
       </div>
 
-      {/* skeleton durante carregamento */}
       {isPending && <TruckGridSkeleton count={pageSize} />}
 
-      {/* botão carregar mais */}
       {hasMore && !isPending && (
         <div className="lm-wrap">
-          <button
-            className="lm-btn"
-            onClick={loadMore}
-            aria-busy={isPending}
-          >
+          <button className="lm-btn" onClick={loadMore} aria-busy={isPending}>
             Carregar mais
             <span className="lm-count">{total - trucks.length} restantes</span>
           </button>

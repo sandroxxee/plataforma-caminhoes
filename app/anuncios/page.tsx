@@ -16,20 +16,21 @@ export const metadata = {
 };
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
-type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
+type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string; q?: string }> };
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
-  const { faixa, marca, estado } = await searchParams;
+  const { faixa, marca, estado, q } = await searchParams;
 
   const faixaIdx     = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
   const { min, max } = FAIXAS[faixaIdx];
   const marcaFiltro  = MARCAS_VALIDAS.includes(marca   || "") ? marca!  : "";
   const estadoFiltro = ESTADOS_VALIDOS.includes(estado || "") ? estado! : "";
-  const hasFilters   = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
+  const busca        = (q || "").trim().slice(0, 100);
+  const hasFilters   = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro || !!busca;
 
   const supabase = await createClient();
 
-  let q = supabase
+  let query = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
@@ -38,12 +39,13 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .order("created_at", { ascending: false })
     .limit(24);
 
-  if (marcaFiltro)      q = q.ilike("marca",  marcaFiltro);
-  if (estadoFiltro)     q = q.eq("estado", estadoFiltro);
-  if (min > 0)          q = q.gte("preco", min);
-  if (max !== Infinity) q = q.lte("preco", max);
+  if (marcaFiltro)      query = query.ilike("marca",  marcaFiltro);
+  if (estadoFiltro)     query = query.eq("estado", estadoFiltro);
+  if (min > 0)          query = query.gte("preco", min);
+  if (max !== Infinity) query = query.lte("preco", max);
+  if (busca)            query = query.or(`titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`);
 
-  const { data } = await q;
+  const { data } = await query;
   const trucks = (data || []) as Truck[];
 
   let countQ = supabase
@@ -56,6 +58,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
   if (max !== Infinity) countQ = countQ.lte("preco", max);
+  if (busca)            countQ = countQ.or(`titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`);
   const { count: total } = await countQ;
 
   return (
@@ -67,6 +70,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         </div>
         <CategoryBrandsBar categoria="caminhoes" labelSingular="Caminhões" />
         <AnunciosFilters
+          q={busca}
           faixaIdx={faixaIdx}
           marcaFiltro={marcaFiltro}
           estadoFiltro={estadoFiltro}
@@ -81,10 +85,11 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           </div>
         ) : (
           <LoadMore
-            key={`${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
+            key={`${busca}-${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
             initialTrucks={trucks}
             total={total ?? trucks.length}
             pageSize={24}
+            q={busca}
             marca={marcaFiltro}
             estado={estadoFiltro}
             faixa={faixaIdx}

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { SlidersHorizontal, X, ChevronDown, Search } from "lucide-react";
 import { SalvarBusca } from "@/components/SalvarBusca";
 import { MARCAS_VALIDAS } from "@/lib/constants";
 
@@ -24,8 +25,15 @@ const FAIXAS = [
   { label: "Acima R$400k",   min: 400_000, max: Infinity },
 ];
 
-function buildHref(faixaIdx: number, marcaFiltro: string, estadoFiltro: string, overrides: Record<string, string | number | undefined>) {
+function buildHref(
+  q: string,
+  faixaIdx: number,
+  marcaFiltro: string,
+  estadoFiltro: string,
+  overrides: Record<string, string | number | undefined>
+) {
   const params: Record<string, string> = {};
+  if (q)             params.q      = q;
   if (faixaIdx > 0)  params.faixa  = String(faixaIdx);
   if (marcaFiltro)   params.marca  = marcaFiltro;
   if (estadoFiltro)  params.estado = estadoFiltro;
@@ -38,6 +46,7 @@ function buildHref(faixaIdx: number, marcaFiltro: string, estadoFiltro: string, 
 }
 
 type Props = {
+  q:            string;
   faixaIdx:     number;
   marcaFiltro:  string;
   estadoFiltro: string;
@@ -45,9 +54,23 @@ type Props = {
   total:        number;
 };
 
-export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilters, total }: Props) {
-  const [open, setOpen] = useState(false);
-  const activeCount = (faixaIdx > 0 ? 1 : 0) + (marcaFiltro ? 1 : 0) + (estadoFiltro ? 1 : 0);
+export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFilters, total }: Props) {
+  const [open, setOpen]       = useState(false);
+  const [search, setSearch]   = useState(q);
+  const router                = useRouter();
+  const debounceRef           = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeCount = (faixaIdx > 0 ? 1 : 0) + (marcaFiltro ? 1 : 0) + (estadoFiltro ? 1 : 0) + (q ? 1 : 0);
+
+  useEffect(() => { setSearch(q); }, [q]);
+
+  function handleSearch(value: string) {
+    setSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const href = buildHref(value.trim(), faixaIdx, marcaFiltro, estadoFiltro, {});
+      router.push(href);
+    }, 500);
+  }
 
   const precoMaxAtivo = faixaIdx > 0 && FAIXAS[faixaIdx].max !== Infinity
     ? FAIXAS[faixaIdx].max
@@ -55,6 +78,29 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
 
   return (
     <div className="af-root">
+
+      {/* Barra de busca por texto */}
+      <div className="af-search-wrap">
+        <Search size={16} className="af-search-icon" />
+        <input
+          type="search"
+          className="af-search"
+          placeholder="Buscar por modelo, marca ou cidade..."
+          value={search}
+          onChange={(e) => handleSearch(e.target.value)}
+          aria-label="Buscar anúncios"
+        />
+        {search && (
+          <button
+            className="af-search-clear"
+            onClick={() => handleSearch("")}
+            aria-label="Limpar busca"
+          >
+            <X size={14} />
+          </button>
+        )}
+      </div>
+
       <div className="af-topbar">
         <p className="af-count">
           <strong>{total}</strong> {total === 1 ? "anúncio" : "anúncios"}
@@ -94,7 +140,7 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
                 return (
                   <Link
                     key={m}
-                    href={buildHref(faixaIdx, marcaFiltro, estadoFiltro, { marca: val || undefined })}
+                    href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: val || undefined })}
                     className={`af-btn${active ? " active" : ""}`}
                     onClick={() => setOpen(false)}
                   >
@@ -113,7 +159,7 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
                 return (
                   <Link
                     key={e.value || "todos"}
-                    href={buildHref(faixaIdx, marcaFiltro, estadoFiltro, { estado: e.value || undefined })}
+                    href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { estado: e.value || undefined })}
                     className={`af-btn${active ? " active" : ""}`}
                     onClick={() => setOpen(false)}
                   >
@@ -130,7 +176,7 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
               {FAIXAS.map((f, idx) => (
                 <Link
                   key={idx}
-                  href={buildHref(faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })}
+                  href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })}
                   className={`af-btn${faixaIdx === idx ? " active" : ""}`}
                   onClick={() => setOpen(false)}
                 >
@@ -153,6 +199,39 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
 
       <style>{`
         .af-root { margin-bottom: 24px; }
+        .af-search-wrap {
+          position: relative;
+          display: flex; align-items: center;
+          margin-bottom: 10px;
+        }
+        .af-search-icon {
+          position: absolute; left: 14px;
+          color: var(--muted); pointer-events: none; flex-shrink: 0;
+        }
+        .af-search {
+          width: 100%;
+          height: 46px;
+          padding: 0 44px 0 42px;
+          border-radius: 14px;
+          border: 1.5px solid var(--line);
+          background: var(--surface);
+          color: var(--text);
+          font-size: 14px;
+          font-weight: 700;
+          outline: none;
+          transition: border-color .15s;
+        }
+        .af-search::placeholder { color: var(--muted); font-weight: 600; }
+        .af-search:focus { border-color: var(--blue); }
+        .af-search-clear {
+          position: absolute; right: 12px;
+          display: flex; align-items: center; justify-content: center;
+          width: 24px; height: 24px; border-radius: 999px;
+          border: none; background: var(--soft);
+          color: var(--muted); cursor: pointer;
+          transition: background .14s, color .14s;
+        }
+        .af-search-clear:hover { background: var(--line); color: var(--text); }
         .af-topbar {
           display: flex; align-items: center;
           justify-content: space-between; gap: 12px;
