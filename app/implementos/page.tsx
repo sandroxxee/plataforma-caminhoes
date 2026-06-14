@@ -8,22 +8,22 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Implementos à Venda | Caminhões à Venda",
-  description: "Veja implementos rodoviários à venda: caçambas, munks, pranchas, baús, tanques, plataformas e muito mais. Negociação direta pelo WhatsApp.",
+  title: "Implementos \u00e0 Venda | Caminh\u00f5es \u00e0 Venda",
+  description: "Veja implementos rodovi\u00e1rios \u00e0 venda: ca\u00e7ambas, munks, pranchas, ba\u00fas, tanques, plataformas e muito mais. Negocia\u00e7\u00e3o direta pelo WhatsApp.",
   alternates: { canonical: "/implementos" },
 };
 
 const TIPOS = [
-  { label: "Caçamba",        slug: "cacamba",        emoji: "🟧" },
-  { label: "Munk",           slug: "munk",           emoji: "🏷️" },
-  { label: "Prancha",        slug: "prancha",        emoji: "⬛" },
-  { label: "Baú Frigorífico",slug: "bau-frigorifico",emoji: "❄️" },
-  { label: "Baú Seco",       slug: "bau-seco",       emoji: "📦" },
-  { label: "Tanque",         slug: "tanque",         emoji: "🔵" },
-  { label: "Plataforma",     slug: "plataforma",     emoji: "🟦" },
-  { label: "Caçamba Agrícola",slug: "cacamba-agricola",emoji: "🌾" },
-  { label: "Betoneira",      slug: "betoneira",      emoji: "�️" },
-  { label: "Graneleiro",     slug: "graneleiro",     emoji: "🌾" },
+  { label: "Ca\u00e7amba",         slug: "cacamba",         emoji: "\uD83D\uDFE7" },
+  { label: "Munk",            slug: "munk",            emoji: "\uD83C\uDFF7\uFE0F" },
+  { label: "Prancha",         slug: "prancha",         emoji: "\u2B1B" },
+  { label: "Ba\u00fa Frigor\u00edfico", slug: "bau-frigorifico", emoji: "\u2744\uFE0F" },
+  { label: "Ba\u00fa Seco",        slug: "bau-seco",        emoji: "\uD83D\uDCE6" },
+  { label: "Tanque",          slug: "tanque",          emoji: "\uD83D\uDD35" },
+  { label: "Plataforma",      slug: "plataforma",      emoji: "\uD83D\uDFE6" },
+  { label: "Ca\u00e7amba Agr\u00edcola", slug: "cacamba-agricola", emoji: "\uD83C\uDF3E" },
+  { label: "Betoneira",       slug: "betoneira",       emoji: "\uD83D\uDD04" },
+  { label: "Graneleiro",      slug: "graneleiro",      emoji: "\uD83C\uDF3E" },
 ];
 
 export default async function ImplementosPage() {
@@ -31,7 +31,7 @@ export default async function ImplementosPage() {
 
   const { data } = await supabase
     .from("trucks")
-    .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, destaque, created_at, truck_images(image_url, principal, ordem)`)
+    .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, destaque, views, created_at, truck_images(image_url, principal, ordem)`)
     .eq("status", "aprovado")
     .eq("perfil", "Implementos")
     .order("created_at", { ascending: false })
@@ -46,45 +46,41 @@ export default async function ImplementosPage() {
       <div className="impl-cta">
         <div className="impl-cta-inner">
           <div>
-            <span className="impl-eyebrow">🚚 Implementos rodoviários</span>
-            <h1 className="impl-title">Implementos à Venda</h1>
-            <p className="impl-sub">Caçambas, munks, pranchas, baús frigoríficos, tanques, plataformas e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
+            <h1 className="impl-title">Implementos \u00e0 Venda</h1>
+            <p className="impl-sub">Ca\u00e7ambas, munks, pranchas, ba\u00fas, tanques e muito mais. Contato direto pelo WhatsApp.</p>
           </div>
           <Link href="/painel/anuncios/novo/implemento" className="impl-anuncie">
-            + Anuncie seu implemento aqui
+            + Anunciar implemento
           </Link>
         </div>
       </div>
 
       <div className="impl-container">
 
-        {/* Filtro por tipo */}
-        <div className="impl-tipos-wrap">
-          <p className="impl-tipos-label">Filtrar por tipo</p>
-          <div className="impl-tipos-grid">
-            {TIPOS.map((tipo) => (
-              <Link
-                key={tipo.slug}
-                href={`/implementos?tipo=${tipo.slug}`}
-                className="impl-tipo-chip"
-              >
-                <span className="impl-tipo-emoji">{tipo.emoji}</span>
-                <span className="impl-tipo-name">{tipo.label}</span>
-              </Link>
-            ))}
-          </div>
+        {/* Chips de tipo — sem label redundante */}
+        <div className="impl-tipos-grid">
+          {TIPOS.map((tipo) => (
+            <Link
+              key={tipo.slug}
+              href={`/implementos?tipo=${tipo.slug}`}
+              className="impl-tipo-chip"
+            >
+              <span className="impl-tipo-emoji">{tipo.emoji}</span>
+              <span className="impl-tipo-name">{tipo.label}</span>
+            </Link>
+          ))}
         </div>
 
         {implementos.length > 0 ? (
           <>
-            <p className="impl-count">{implementos.length} implemento{implementos.length !== 1 ? "s" : ""} encontrado{implementos.length !== 1 ? "s" : ""}</p>
+            <p className="impl-count">{implementos.length} implemento{implementos.length !== 1 ? "s" : ""} dispon\u00edve{implementos.length !== 1 ? "is" : "l"}</p>
             <div className="impl-grid">
               {implementos.map((item) => <TruckCard key={item.id} truck={item} />)}
             </div>
           </>
         ) : (
           <div className="impl-empty">
-            <span>🚚</span>
+            <span>\uD83D\uDE9A</span>
             <strong>Nenhum implemento publicado ainda</strong>
             <p>Seja o primeiro a anunciar seu implemento aqui.</p>
             <Link href="/painel/anuncios/novo/implemento" className="impl-anuncie">Anunciar agora</Link>
@@ -97,36 +93,26 @@ export default async function ImplementosPage() {
         .impl-cta { background: var(--surface); border-bottom: 1px solid var(--line); }
         .impl-cta-inner {
           width: min(1280px, calc(100vw - 32px)); margin: 0 auto;
-          padding: 32px 0 28px;
+          padding: 28px 0 24px;
           display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
         }
-        .impl-eyebrow {
-          display: inline-flex; padding: 4px 12px; border-radius: 999px;
-          background: var(--blueSoft); color: var(--blue);
-          font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px;
-        }
-        .impl-title { margin: 0 0 6px; font-size: clamp(26px, 3.5vw, 40px); letter-spacing: -.04em; line-height: 1.05; }
-        .impl-sub { margin: 0; color: var(--muted); font-size: 15px; font-weight: 600; max-width: 54ch; line-height: 1.55; }
+        .impl-title { margin: 0 0 4px; font-size: clamp(24px, 3.5vw, 38px); letter-spacing: -.04em; line-height: 1.05; }
+        .impl-sub { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; max-width: 54ch; line-height: 1.5; }
         .impl-anuncie {
           display: inline-flex; align-items: center; justify-content: center;
-          min-height: 52px; padding: 0 28px; border-radius: 14px;
+          min-height: 48px; padding: 0 24px; border-radius: 12px;
           background: var(--blue); color: #fff;
-          font-weight: 900; font-size: 15px; white-space: nowrap;
+          font-weight: 900; font-size: 14px; white-space: nowrap;
           text-decoration: none; flex-shrink: 0; transition: background .14s;
         }
         .impl-anuncie:hover { background: var(--blue2); }
-        .impl-container { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; padding-top: 28px; }
+        .impl-container { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; padding-top: 20px; }
 
-        /* Tipos */
-        .impl-tipos-wrap { margin-bottom: 24px; }
-        .impl-tipos-label {
-          margin: 0 0 10px; font-size: 12px; font-weight: 800;
-          color: var(--muted); letter-spacing: .04em; text-transform: uppercase;
-        }
-        .impl-tipos-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        /* Tipos — sem label acima */
+        .impl-tipos-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .impl-tipo-chip {
           display: inline-flex; align-items: center; gap: 7px;
-          height: 38px; padding: 0 14px 0 10px;
+          height: 36px; padding: 0 14px 0 10px;
           background: var(--surface); border: 1.5px solid var(--line);
           border-radius: 999px; text-decoration: none;
           transition: border-color .14s, box-shadow .14s, transform .14s;
@@ -136,13 +122,11 @@ export default async function ImplementosPage() {
           border-color: var(--blue); box-shadow: var(--shadow2);
           transform: translateY(-1px);
         }
-        .impl-tipo-emoji { font-size: 16px; line-height: 1; }
-        .impl-tipo-name {
-          font-size: 12px; font-weight: 800; color: var(--text); white-space: nowrap;
-        }
+        .impl-tipo-emoji { font-size: 15px; line-height: 1; }
+        .impl-tipo-name { font-size: 12px; font-weight: 800; color: var(--text); white-space: nowrap; }
         .impl-tipo-chip:hover .impl-tipo-name { color: var(--blue); }
 
-        .impl-count { margin: 0 0 16px; font-size: 13px; color: var(--muted); font-weight: 700; }
+        .impl-count { margin: 0 0 14px; font-size: 13px; color: var(--muted); font-weight: 700; }
         .impl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
         .impl-empty {
           display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -153,7 +137,7 @@ export default async function ImplementosPage() {
         .impl-empty strong { font-size: 18px; color: var(--text); }
         .impl-empty p { margin: 0; font-size: 14px; max-width: 36ch; }
         @media (max-width: 680px) {
-          .impl-cta-inner { flex-direction: column; align-items: flex-start; padding: 22px 0 20px; }
+          .impl-cta-inner { flex-direction: column; align-items: flex-start; padding: 20px 0 18px; }
           .impl-anuncie { width: 100%; }
           .impl-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         }

@@ -36,7 +36,7 @@ export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
     m("Facchini", "facchini"),
     m("Rodotec", "rodotec"),
     m("Noma", "noma"),
-    m("Paquetá", "paqueta"),
+    m("Paquet\u00e1", "paqueta"),
   ],
   pecas: [
     m("Mercedes-Benz", "mercedes-benz"),
@@ -72,7 +72,6 @@ export function CategoryBrandsBar({
 
   return (
     <div className="cbb-wrap">
-      <p className="cbb-label">Filtrar por marca</p>
       <div className="cbb-grid">
         {marcas.map((marca) => (
           <Link
@@ -92,15 +91,11 @@ export function CategoryBrandsBar({
         ))}
       </div>
       <style>{`
-        .cbb-wrap { margin-bottom: 22px; }
-        .cbb-label {
-          margin: 0 0 10px; font-size: 12px; font-weight: 800;
-          color: var(--muted); letter-spacing: .04em; text-transform: uppercase;
-        }
+        .cbb-wrap { margin-bottom: 20px; }
         .cbb-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .cbb-chip {
           display: inline-flex; align-items: center; gap: 8px;
-          height: 40px; padding: 0 14px 0 10px;
+          height: 38px; padding: 0 14px 0 10px;
           background: var(--surface); border: 1.5px solid var(--line);
           border-radius: 999px; text-decoration: none;
           transition: border-color .14s, box-shadow .14s, transform .14s;
@@ -111,17 +106,17 @@ export function CategoryBrandsBar({
           transform: translateY(-1px);
         }
         .cbb-logo {
-          width: 36px; height: 22px;
+          width: 34px; height: 20px;
           object-fit: contain; object-position: center;
           filter: grayscale(1) opacity(.6);
           transition: filter .14s; flex-shrink: 0;
         }
         .cbb-chip:hover .cbb-logo { filter: grayscale(0) opacity(1); }
         .cbb-initial {
-          width: 28px; height: 22px; flex-shrink: 0;
+          width: 26px; height: 20px; flex-shrink: 0;
           display: flex; align-items: center; justify-content: center;
-          font-size: 11px; font-weight: 900; color: var(--muted);
-          background: var(--soft); border-radius: 6px; transition: color .14s;
+          font-size: 10px; font-weight: 900; color: var(--muted);
+          background: var(--soft); border-radius: 5px; transition: color .14s;
         }
         .cbb-chip:hover .cbb-initial { color: var(--blue); }
         .cbb-name {
@@ -129,8 +124,8 @@ export function CategoryBrandsBar({
         }
         .cbb-chip:hover .cbb-name { color: var(--blue); }
         @media (max-width: 480px) {
-          .cbb-chip { height: 36px; padding: 0 10px 0 8px; }
-          .cbb-logo { width: 28px; height: 18px; }
+          .cbb-chip { height: 34px; padding: 0 10px 0 8px; }
+          .cbb-logo { width: 26px; height: 16px; }
           .cbb-name { font-size: 11px; }
         }
       `}</style>
