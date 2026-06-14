@@ -6,7 +6,9 @@ import Link from "next/link";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { BrandFilter } from "@/components/BrandFilter";
 
-export const dynamic = "force-dynamic";
+// Cache de 60 segundos — reduz reads no Supabase sem perder dados relevantes
+export const revalidate = 60;
+
 export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
   description: "Veja todos os caminhões e implementos disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",

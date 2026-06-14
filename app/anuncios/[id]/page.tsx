@@ -10,8 +10,8 @@ import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, t
 import { gerarSlugComId } from "@/lib/slug";
 import { ViewCounter } from "@/components/ViewCounter";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Cache de 5 minutos — ViewCounter é client-side, não é afetado
+export const revalidate = 300;
 
 const siteUrl = "https://caminhoesavenda.com";
 const defaultOgImage = "/og-caminhoes-a-venda.jpg";
