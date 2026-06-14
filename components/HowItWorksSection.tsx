@@ -3,30 +3,29 @@ export function HowItWorksSection() {
     {
       icon: "🔍",
       title: "Busque",
-      desc: "Filtre por marca, modelo, ano, tração e localidade. Resultados em segundos.",
+      desc: "Filtre por marca, modelo, ano, tração e localidade.",
     },
     {
       icon: "📋",
       title: "Compare",
-      desc: "Veja fotos, ficha técnica completa e histórico do veículo antes de decidir.",
+      desc: "Veja fotos e ficha técnica completa antes de decidir.",
     },
     {
       icon: "💬",
       title: "Negocie",
-      desc: "Fale diretamente com o vendedor pelo WhatsApp. Sem intermediários.",
+      desc: "Fale direto com o vendedor pelo WhatsApp. Sem intermediários.",
     },
     {
       icon: "🤝",
       title: "Feche",
-      desc: "Acerte os detalhes, confirme documentação e finalize com segurança.",
+      desc: "Confirme a documentação e finalize com segurança.",
     },
   ];
 
   return (
     <section className="how-section">
       <div className="how-header">
-        <span className="how-eyebrow">Como funciona</span>
-        <h2 className="how-title">Simples assim</h2>
+        <h2 className="how-title">Como funciona</h2>
       </div>
       <div className="how-grid">
         {steps.map((step, i) => (
@@ -39,21 +38,14 @@ export function HowItWorksSection() {
         ))}
       </div>
       <style>{`
-        .how-section {
-          padding: 40px 0 8px;
-        }
-        .how-header {
-          display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;
-        }
-        .how-eyebrow {
-          display: inline-flex; height: 24px; align-items: center;
-          padding: 0 10px; border-radius: 999px;
-          background: var(--blueSoft); color: var(--blue);
-          font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
-          width: fit-content;
-        }
+        .how-section { padding: 40px 0 8px; }
+        .how-header { margin-bottom: 20px; }
         .how-title {
-          font-size: clamp(22px,2.6vw,32px); letter-spacing: -.04em; margin: 0;
+          font-size: clamp(22px,2.6vw,30px);
+          font-weight: 800;
+          letter-spacing: -.03em;
+          margin: 0;
+          color: var(--text);
         }
         .how-grid {
           display: grid;
@@ -74,11 +66,11 @@ export function HowItWorksSection() {
         }
         .how-icon { font-size: 28px; line-height: 1; display: block; }
         .how-card-title {
-          font-size: 16px; font-weight: 950; letter-spacing: -.03em;
+          font-size: 16px; font-weight: 800; letter-spacing: -.02em;
           color: var(--text);
         }
         .how-card-desc {
-          margin: 0; font-size: 13px; font-weight: 700;
+          margin: 0; font-size: 13px; font-weight: 600;
           color: var(--muted); line-height: 1.6;
         }
         @media (max-width: 900px) {
