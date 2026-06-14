@@ -28,17 +28,17 @@ export async function GET(req: NextRequest) {
 
   const supabase = await createClient();
 
+  // sem filtro de perfil — a página de caminhões mostra todos aprovados
   let q = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`, { count: "exact" })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .or("perfil.is.null,perfil.eq.Caminh\u00f5es")
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (marca)  q = q.eq("marca", marca);
-  if (estado) q = q.eq("estado", estado);
+  if (marca)            q = q.eq("marca",  marca);
+  if (estado)           q = q.eq("estado", estado);
   if (min > 0)          q = q.gte("preco", min);
   if (max !== Infinity) q = q.lte("preco", max);
 

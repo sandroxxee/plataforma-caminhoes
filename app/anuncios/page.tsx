@@ -25,10 +25,6 @@ const FAIXAS = [
 const MARCAS_VALIDAS  = ["Mercedes-Benz","Scania","Volvo","Volkswagen","Ford","Iveco","DAF","MAN","Agrale"];
 const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
 
-// Caminhoes = perfil IS NULL ou perfil = 'Caminhões'
-// Usando or() para evitar que .not(...in...) exclua nulls
-const PERFIL_CAMINHOES = "perfil.is.null,perfil.eq.Caminh%C3%B5es";
-
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
@@ -48,8 +44,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .from("trucks")
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
-    .eq("vendido", false)
-    .or("perfil.is.null,perfil.eq.Caminh\u00f5es");
+    .eq("vendido", false);
   if (marcaFiltro)      countQ = countQ.eq("marca",  marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
@@ -62,7 +57,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .or("perfil.is.null,perfil.eq.Caminh\u00f5es")
     .order("created_at", { ascending: false })
     .limit(24);
   if (marcaFiltro)      dataQ = dataQ.eq("marca",  marcaFiltro);
