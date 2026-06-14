@@ -246,6 +246,17 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
   pointer-events: none;
 }
 
+/* WhatsApp flutuante no canto da foto */
+.tc-wa {
+  position: absolute; top: 9px; right: 9px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #25d366; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.28);
+  transition: transform .16s, box-shadow .16s; z-index: 2;
+}
+.tc-wa:hover { transform: scale(1.12); box-shadow: 0 6px 18px rgba(37,211,102,.45); }
+
 /* Body */
 .tc-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 3px; flex: 1; }
 .tc-name {
@@ -254,28 +265,15 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .tc-meta { margin: 0 0 8px; font-size: 11px; color: var(--muted); font-weight: 700; }
-
-/* Acões: Ver detalhes + WhatsApp */
-.tc-actions { display: flex; gap: 8px; margin-top: auto; }
 .tc-btn {
-  flex: 1; display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   height: 40px; border-radius: 10px;
   background: var(--blue); color: #fff;
   font-weight: 800; font-size: 13px;
-  text-decoration: none; transition: background .14s;
+  text-decoration: none; margin-top: auto;
+  transition: background .14s;
 }
 .tc-btn:hover { background: var(--blue2); }
-.tc-wa-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  height: 40px; padding: 0 13px; border-radius: 10px;
-  background: rgba(37,211,102,.12); border: 1.5px solid rgba(37,211,102,.3);
-  color: #16a34a; font-size: 13px; font-weight: 800;
-  text-decoration: none; white-space: nowrap;
-  transition: background .14s, border-color .14s;
-  flex-shrink: 0;
-}
-.tc-wa-btn:hover { background: rgba(37,211,102,.22); border-color: rgba(37,211,102,.55); }
-body.public-theme-dark .tc-wa-btn { color: #4ade80; }
 
 /* === DETAIL === */
 .detail-layout {
@@ -385,48 +383,31 @@ body.public-theme-dark .tc-wa-btn { color: #4ade80; }
 }
 
 @media (max-width: 640px) {
-  /* containers */
   .market-container, .container, .public-nav-shell, .site-footer {
     width: calc(100vw - 20px);
   }
-  /* grids: 2 colunas */
   .stock-grid, .market-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
-  /* truck card mobile */
-  .tc-price    { font-size: 14px; }
-  .tc-name     { font-size: 12px; }
-  .tc-body     { padding: 9px 10px 11px; }
-  .tc-loc      { display: none; }
-  /* Mobile: WhatsApp vira CTA principal, "Ver detalhes" some */
-  .tc-btn      { display: none; }
-  .tc-wa-btn   {
-    flex: 1; height: 38px; border-radius: 10px;
-    background: #25d366; border-color: transparent;
-    color: #073b1d; justify-content: center;
-    font-size: 13px;
-  }
-  .tc-wa-btn:hover { background: #20c55e; border-color: transparent; }
-  .tc-wa-label { display: inline; }
-  /* inputs nao zoomam no iOS */
+  .tc-price  { font-size: 14px; }
+  .tc-name   { font-size: 12px; }
+  .tc-body   { padding: 9px 10px 11px; }
+  .tc-btn    { height: 36px; font-size: 12px; }
+  .tc-loc    { display: none; }
+  .tc-wa     { width: 32px; height: 32px; top: 7px; right: 7px; }
   .market-field input, .market-field select, input, select, textarea { font-size: 16px; }
-  /* filtros */
   .market-search { padding: 14px; }
   .market-field { min-width: 100%; }
   .market-filter-actions { width: 100%; }
   .market-filter-actions button { flex: 1; min-height: 50px; }
-  /* detail */
   .detail-card { padding: 16px; }
   .detail-price { font-size: 30px; }
   .ad-gallery-main { border-radius: 14px; min-height: 220px; }
   .ad-gallery-thumbs button { width: 60px; height: 46px; }
-  /* section */
   .market-section { padding: 16px 12px; border-radius: 16px; }
   .market-section-head h2 { font-size: 20px; }
-  /* footer */
   .site-footer nav a { min-height: 44px; font-size: 13px; }
-  /* header */
   .brand-mark { width: 36px; height: 36px; }
   .brand-text img { width: min(130px, 44vw); height: 30px; }
 }
