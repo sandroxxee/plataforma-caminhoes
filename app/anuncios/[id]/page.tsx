@@ -10,7 +10,6 @@ import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
   type Truck,
   truckSelect,
-  UUID_REGEX,
   siteUrl,
   getCanonicalPath,
   getMainImage,
@@ -32,20 +31,18 @@ type PageProps = { params: Promise<{ id: string }> };
 async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
   const { tipo, valor } = extrairIdDoParametroAnuncio(parametro);
+  if (tipo !== "uuid") return null;
 
-  if (tipo === "uuid") {
-    const { data, error } = await supabase
-      .from("trucks")
-      .select(truckSelect)
-      .eq("id", valor)
-      .eq("status", "aprovado")
-      .eq("vendido", false)
-      .maybeSingle();
-    if (error || !data) return null;
-    return data as Truck;
-  }
+  const { data, error } = await supabase
+    .from("trucks")
+    .select(truckSelect)
+    .eq("id", valor)
+    .eq("status", "aprovado")
+    .eq("vendido", false)
+    .maybeSingle();
 
-  return null;
+  if (error || !data) return null;
+  return data as Truck;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -88,11 +85,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AnuncioDetalhePage({ params }: PageProps) {
   const { id } = await params;
+
+  // Extrai o UUID do parâmetro (aceita UUID puro OU slug-completo-terminando-em-uuid)
+  const { tipo, valor: uuid } = extrairIdDoParametroAnuncio(id);
+
+  // Parâmetro sem UUID reconhecível → 404 imediato
+  if (tipo !== "uuid") notFound();
+
   const truck = await getApprovedTruck(id);
   if (!truck) notFound();
 
+  // Garante que a URL seja sempre o slug canônico
+  // Ex: UUID puro → redireciona para slug completo
+  // Ex: slug antigo com UUID embutido mas diferente do canônico → redireciona
   const canonicalPath = getCanonicalPath(truck);
-  if (UUID_REGEX.test(id.toLowerCase()) && `/anuncios/${id}` !== canonicalPath) {
+  const currentPath   = `/anuncios/${id}`;
+  if (currentPath !== canonicalPath) {
     redirect(canonicalPath);
   }
 
