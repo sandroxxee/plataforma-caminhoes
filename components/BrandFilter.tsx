@@ -43,15 +43,15 @@ const brands: Brand[] = [
     slug: "Scania",
     logo: (
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="24" cy="24" rx="18" ry="18" stroke="url(#gSc)" strokeWidth="2" fill="none"/>
-        <path d="M16 20c0-4.4 3.6-8 8-8s8 3.6 8 8c0 2.4-1.1 4.6-2.8 6.1L24 36l-5.2-9.9A7.97 7.97 0 0 1 16 20z" fill="url(#gScF)" fillOpacity="0.9"/>
-        <circle cx="24" cy="20" r="3" fill="#fff" fillOpacity="0.9"/>
+        <circle cx="24" cy="24" r="20" stroke="url(#gScBorder)" strokeWidth="2" fill="none"/>
+        <path d="M24 10 C16 10 10 16 10 24 C10 29 12.5 33.5 16.5 36 L24 28 L31.5 36 C35.5 33.5 38 29 38 24 C38 16 32 10 24 10Z" fill="url(#gScF)"/>
+        <circle cx="24" cy="22" r="4" fill="white" fillOpacity="0.95"/>
         <defs>
-          <linearGradient id="gSc" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+          <linearGradient id="gScBorder" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
             <stop stopColor="#fca5a5"/><stop offset="1" stopColor="#dc2626"/>
           </linearGradient>
-          <linearGradient id="gScF" x1="16" y1="12" x2="32" y2="36" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fca5a5"/><stop offset="1" stopColor="#b91c1c"/>
+          <linearGradient id="gScF" x1="10" y1="10" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#ef4444"/><stop offset="1" stopColor="#991b1b"/>
           </linearGradient>
         </defs>
       </svg>
@@ -62,15 +62,20 @@ const brands: Brand[] = [
     slug: "Volvo",
     logo: (
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="18" stroke="url(#gVo)" strokeWidth="2.2" fill="none"/>
-        <circle cx="24" cy="24" r="18" fill="url(#gVoF)" fillOpacity="0.1"/>
-        <path d="M32 16l3 3-11 11-11-11 3-3 8 8z" fill="url(#gVo)"/>
+        <circle cx="24" cy="24" r="18" stroke="url(#gVoBorder)" strokeWidth="2.5" fill="none"/>
+        <circle cx="24" cy="24" r="18" fill="url(#gVoF)" fillOpacity="0.12"/>
+        <path d="M24 13 L24 18" stroke="url(#gVoBorder)" strokeWidth="2.5" strokeLinecap="round"/>
+        <path d="M29 15.5 L26.5 19.5" stroke="url(#gVoBorder)" strokeWidth="2" strokeLinecap="round"/>
+        <text x="24" y="30" textAnchor="middle" fontFamily="Arial Black,sans-serif" fontSize="10" fontWeight="900" fill="url(#gVoText)" letterSpacing="0.5">VOLVO</text>
         <defs>
-          <linearGradient id="gVo" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+          <linearGradient id="gVoBorder" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
             <stop stopColor="#93c5fd"/><stop offset="1" stopColor="#1d4ed8"/>
           </linearGradient>
           <linearGradient id="gVoF" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
             <stop stopColor="#93c5fd"/><stop offset="1" stopColor="#1e40af"/>
+          </linearGradient>
+          <linearGradient id="gVoText" x1="6" y1="20" x2="42" y2="34" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#bfdbfe"/><stop offset="1" stopColor="#3b82f6"/>
           </linearGradient>
         </defs>
       </svg>
@@ -135,14 +140,64 @@ const brands: Brand[] = [
     slug: "DAF",
     logo: (
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 34V14l10-4h8l10 4v20H10z" stroke="url(#gDaf)" strokeWidth="2" fill="none" strokeLinejoin="round"/>
-        <text x="24" y="29" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="12" fontWeight="900" fill="url(#gDafF)" letterSpacing="1">DAF</text>
+        <circle cx="24" cy="24" r="20" stroke="url(#gDafB)" strokeWidth="2" fill="none"/>
+        <circle cx="24" cy="24" r="20" fill="url(#gDafBg)" fillOpacity="0.1"/>
+        <text x="24" y="20" textAnchor="middle" fontFamily="Arial Black,sans-serif" fontSize="11" fontWeight="900" fill="url(#gDafF)" letterSpacing="1">DAF</text>
+        <path d="M12 25 Q24 35 36 25" stroke="url(#gDafF)" strokeWidth="2" strokeLinecap="round" fill="none"/>
         <defs>
-          <linearGradient id="gDaf" x1="10" y1="10" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+          <linearGradient id="gDafB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
             <stop stopColor="#f9a8d4"/><stop offset="1" stopColor="#be185d"/>
           </linearGradient>
-          <linearGradient id="gDafF" x1="10" y1="20" x2="38" y2="32" gradientUnits="userSpaceOnUse">
+          <linearGradient id="gDafBg" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#f9a8d4"/><stop offset="1" stopColor="#be185d"/>
+          </linearGradient>
+          <linearGradient id="gDafF" x1="10" y1="14" x2="38" y2="34" gradientUnits="userSpaceOnUse">
             <stop stopColor="#fce7f3"/><stop offset="1" stopColor="#ec4899"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+  },
+  {
+    name: "MAN",
+    slug: "MAN",
+    logo: (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="20" stroke="url(#gManB)" strokeWidth="2" fill="none"/>
+        <circle cx="24" cy="24" r="20" fill="url(#gManBg)" fillOpacity="0.1"/>
+        <path d="M12 32 L12 16 L24 28 L36 16 L36 32" stroke="url(#gManF)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        <defs>
+          <linearGradient id="gManB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#fbbf24"/><stop offset="1" stopColor="#b45309"/>
+          </linearGradient>
+          <linearGradient id="gManBg" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#fde68a"/><stop offset="1" stopColor="#d97706"/>
+          </linearGradient>
+          <linearGradient id="gManF" x1="10" y1="12" x2="38" y2="36" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#fef3c7"/><stop offset="1" stopColor="#f59e0b"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+  },
+  {
+    name: "Agrale",
+    slug: "Agrale",
+    logo: (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="20" stroke="url(#gAgrB)" strokeWidth="2" fill="none"/>
+        <circle cx="24" cy="24" r="20" fill="url(#gAgrBg)" fillOpacity="0.1"/>
+        <path d="M24 10 L34 34 L24 29 L14 34 Z" fill="url(#gAgrF)" fillOpacity="0.9"/>
+        <circle cx="24" cy="22" r="3" fill="white" fillOpacity="0.9"/>
+        <defs>
+          <linearGradient id="gAgrB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#86efac"/><stop offset="1" stopColor="#15803d"/>
+          </linearGradient>
+          <linearGradient id="gAgrBg" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#86efac"/><stop offset="1" stopColor="#166534"/>
+          </linearGradient>
+          <linearGradient id="gAgrF" x1="14" y1="10" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#bbf7d0"/><stop offset="1" stopColor="#16a34a"/>
           </linearGradient>
         </defs>
       </svg>
