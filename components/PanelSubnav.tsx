@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { LayoutDashboard, FileText, Plus, ClipboardList, Users, Palette, Megaphone, Bot, Radio, LogOut } from "lucide-react";
 
 type Props = { role?: "anunciante" | "admin" };
 
@@ -12,20 +13,20 @@ function isActive(pathname: string, href: string) {
 }
 
 const anuncianteLinks = [
-  { href: "/painel",              label: "Painel" },
-  { href: "/painel/anuncios",     label: "Meus anúncios" },
-  { href: "/painel/anuncios/novo",label: "+ Novo" },
+  { href: "/painel",               label: "Painel",       icon: LayoutDashboard },
+  { href: "/painel/anuncios",      label: "Meus anúncios", icon: FileText },
+  { href: "/painel/anuncios/novo", label: "Novo",          icon: Plus },
 ];
 
 const adminLinks = [
-  { href: "/admin",                    label: "Dashboard" },
-  { href: "/admin/pendentes",          label: "Pendentes" },
-  { href: "/admin/anuncios",           label: "Anúncios" },
-  { href: "/admin/usuarios",           label: "Usuários" },
-  { href: "/admin/aparencia",          label: "Aparência" },
-  { href: "/admin/divulgacao",         label: "Divulgação" },
-  { href: "/admin/ia-anuncios",        label: "IA" },
-  { href: "/admin/lista-transmissao",  label: "Lista" },
+  { href: "/admin",                   label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/pendentes",         label: "Pendentes",  icon: ClipboardList },
+  { href: "/admin/anuncios",          label: "Anúncios",   icon: FileText },
+  { href: "/admin/usuarios",          label: "Usuários",   icon: Users },
+  { href: "/admin/aparencia",         label: "Aparência",  icon: Palette },
+  { href: "/admin/divulgacao",        label: "Divulgação", icon: Megaphone },
+  { href: "/admin/ia-anuncios",       label: "IA",         icon: Bot },
+  { href: "/admin/lista-transmissao", label: "Lista",      icon: Radio },
 ];
 
 export function PanelSubnav({ role = "anunciante" }: Props) {
@@ -33,6 +34,9 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
   const router   = useRouter();
   const links    = role === "admin" ? adminLinks : anuncianteLinks;
   const isAdmin  = role === "admin";
+  const accent   = isAdmin ? "#818cf8" : "#22c55e";
+  const accentBg = isAdmin ? "rgba(129,140,248,.15)" : "rgba(34,197,94,.15)";
+  const accentTxt= isAdmin ? "#c7d2fe" : "#86efac";
 
   async function handleLogout() {
     const supabase = createClient();
@@ -41,28 +45,43 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
   }
 
   return (
-    <div className={`psnav-wrap${isAdmin ? " psnav-admin" : ""}`}>
+    <div className="psnav-wrap">
       <div className="psnav-inner">
         <nav className="psnav" aria-label="Navegação do painel">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href}
-              className={`psnav-link${isActive(pathname, link.href) ? " active" : ""}`}>
-              {link.label}
-            </Link>
-          ))}
+          {links.map((link) => {
+            const Icon = link.icon;
+            const active = isActive(pathname, link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`psnav-link${active ? " active" : ""}`}
+                style={active ? { background: accentBg, color: accentTxt } : undefined}
+              >
+                <Icon size={13} strokeWidth={2} aria-hidden="true" />
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-        <button type="button" onClick={handleLogout} className="psnav-logout">Sair</button>
+
+        <button type="button" onClick={handleLogout} className="psnav-logout">
+          <LogOut size={13} strokeWidth={2} aria-hidden="true" />
+          <span>Sair</span>
+        </button>
       </div>
 
       <style>{`
         .psnav-wrap {
-          background: #0a0f1a;
-          border-bottom: 1px solid rgba(255,255,255,.08);
+          background: rgba(10,15,26,.95);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-bottom: 1px solid rgba(255,255,255,.07);
           position: sticky; top: 0; z-index: 50;
         }
         .psnav-inner {
           width: min(1280px, calc(100vw - 32px));
-          margin: 0 auto; min-height: 46px;
+          margin: 0 auto; min-height: 48px;
           display: flex; align-items: center;
           justify-content: space-between; gap: 8px;
         }
@@ -72,31 +91,29 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
           scrollbar-width: none; flex: 1; min-width: 0;
         }
         .psnav::-webkit-scrollbar { display: none; }
-
         .psnav-link {
-          display: inline-flex; align-items: center;
-          min-height: 44px; padding: 0 12px;
-          border-radius: 8px; font-size: 13px; font-weight: 800;
-          white-space: nowrap; color: rgba(255,255,255,.5);
+          display: inline-flex; align-items: center; gap: 6px;
+          min-height: 36px; padding: 0 11px;
+          border-radius: 10px; font-size: 12.5px; font-weight: 800;
+          white-space: nowrap; color: rgba(255,255,255,.45);
           text-decoration: none; flex-shrink: 0;
           transition: background .14s, color .14s;
         }
-        .psnav-link:hover  { background: rgba(255,255,255,.07); color: #fff; }
-        .psnav-link.active { background: rgba(34,197,94,.15);   color: #86efac; }
-        .psnav-admin .psnav-link.active { background: rgba(129,140,248,.15); color: #c7d2fe; }
-
+        .psnav-link:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
         .psnav-logout {
-          flex-shrink: 0; min-height: 36px; padding: 0 12px; border-radius: 8px;
+          flex-shrink: 0;
+          display: inline-flex; align-items: center; gap: 5px;
+          min-height: 32px; padding: 0 12px; border-radius: 8px;
           border: 1px solid rgba(239,68,68,.3); background: transparent;
-          color: #f87171; font-size: 12px; font-weight: 800; cursor: pointer;
-          transition: background .14s; white-space: nowrap;
+          color: #f87171; font-size: 12px; font-weight: 800;
+          cursor: pointer; transition: background .14s; white-space: nowrap;
         }
         .psnav-logout:hover { background: rgba(239,68,68,.12); }
-
         @media (max-width: 560px) {
-          .psnav-inner { min-height: 52px; }
-          .psnav-link { font-size: 12px; padding: 0 10px; min-height: 40px; }
-          .psnav-logout { font-size: 11px; padding: 0 10px; }
+          .psnav-link span { display: none; }
+          .psnav-link { padding: 0 10px; min-height: 40px; }
+          .psnav-logout span { display: none; }
+          .psnav-logout { padding: 0 10px; }
         }
       `}</style>
     </div>
