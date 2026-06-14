@@ -14,18 +14,29 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pecas" },
 };
 
-export default async function PecasPage() {
+const ESTADOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
+
+type PageProps = { searchParams: Promise<{ estado?: string; marca?: string }> };
+
+export default async function PecasPage({ searchParams }: PageProps) {
+  const { estado, marca } = await searchParams;
+  const estadoFiltro = ESTADOS.includes(estado || "") ? estado! : "";
+
   const supabase = await createClient();
 
-  const { data } = await supabase
+  let query = supabase
     .from("trucks")
-    .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, destaque, created_at, truck_images(image_url, principal, ordem)`)
+    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("perfil", "Peças")
     .order("created_at", { ascending: false })
     .limit(48);
 
-  const pecas = (data || []) as TruckCardData[];
+  if (estadoFiltro) query = query.eq("estado", estadoFiltro);
+
+  const { data } = await query;
+  let pecas = (data || []) as TruckCardData[];
+  if (marca) pecas = pecas.filter(t => t.marca === marca);
 
   return (
     <div className="pec-page">
@@ -34,22 +45,29 @@ export default async function PecasPage() {
       <div className="pec-cta">
         <div className="pec-cta-inner">
           <div>
-            <span className="pec-eyebrow">🔧 Peças para caminhão</span>
             <h1 className="pec-title">Peças à Venda</h1>
-            <p className="pec-sub">Motores, câmbios, eixos, suspensão, freios, elétrica e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
+            <p className="pec-sub">Motores, câmbios, eixos, suspensão, freios e muito mais. Contato direto pelo WhatsApp.</p>
           </div>
-          <Link href="/painel/anuncios/novo/peca" className="pec-anuncie">
-            + Anuncie sua peça aqui
-          </Link>
+          <Link href="/painel/anuncios/novo/peca" className="pec-anuncie">+ Anunciar peça</Link>
         </div>
       </div>
 
       <div className="pec-container">
+
+        {/* Marcas — sem label */}
         <CategoryBrandsBar categoria="pecas" labelSingular="Peças" />
+
+        {/* Filtro estado */}
+        <div className="pec-estados">
+          <Link href="/pecas" className={`pec-est-chip${!estadoFiltro ? " pec-est-chip--active" : ""}`}>Todos</Link>
+          {ESTADOS.map(uf => (
+            <Link key={uf} href={`/pecas?estado=${uf}`} className={`pec-est-chip${estadoFiltro === uf ? " pec-est-chip--active" : ""}`}>{uf}</Link>
+          ))}
+        </div>
 
         {pecas.length > 0 ? (
           <>
-            <p className="pec-count">{pecas.length} peça{pecas.length !== 1 ? "s" : ""} encontrada{pecas.length !== 1 ? "s" : ""}</p>
+            <p className="pec-count">{pecas.length} peça{pecas.length !== 1 ? "s" : ""}</p>
             <div className="pec-grid">
               {pecas.map((item) => <TruckCard key={item.id} truck={item} />)}
             </div>
@@ -57,49 +75,57 @@ export default async function PecasPage() {
         ) : (
           <div className="pec-empty">
             <span>🔧</span>
-            <strong>Nenhuma peça publicada ainda</strong>
-            <p>Seja o primeiro a anunciar sua peça aqui.</p>
-            <Link href="/painel/anuncios/novo/peca" className="pec-anuncie">Anunciar agora</Link>
+            <strong>Nenhuma peça encontrada</strong>
+            <p>Tente outro filtro.</p>
+            <Link href="/pecas" className="pec-anuncie" style={{ marginTop: 8 }}>Ver todas</Link>
           </div>
         )}
       </div>
+
+      <SiteFooter />
 
       <style>{`
         .pec-page { min-height: 100vh; background: var(--bg); color: var(--text); padding-bottom: 64px; }
         .pec-cta { background: var(--surface); border-bottom: 1px solid var(--line); }
         .pec-cta-inner {
           width: min(1280px, calc(100vw - 32px)); margin: 0 auto;
-          padding: 32px 0 28px;
+          padding: 28px 0 24px;
           display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
         }
-        .pec-eyebrow {
-          display: inline-flex; padding: 4px 12px; border-radius: 999px;
-          background: var(--blueSoft); color: var(--blue);
-          font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px;
-        }
-        .pec-title { margin: 0 0 6px; font-size: clamp(26px, 3.5vw, 40px); letter-spacing: -.04em; line-height: 1.05; }
-        .pec-sub { margin: 0; color: var(--muted); font-size: 15px; font-weight: 600; max-width: 54ch; line-height: 1.55; }
+        .pec-title { margin: 0 0 4px; font-size: clamp(26px, 3.5vw, 38px); letter-spacing: -.04em; line-height: 1.05; }
+        .pec-sub { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; max-width: 54ch; }
         .pec-anuncie {
           display: inline-flex; align-items: center; justify-content: center;
-          min-height: 52px; padding: 0 28px; border-radius: 14px;
+          min-height: 44px; padding: 0 22px; border-radius: 12px;
           background: var(--blue); color: #fff;
-          font-weight: 900; font-size: 15px; white-space: nowrap;
+          font-weight: 900; font-size: 14px; white-space: nowrap;
           text-decoration: none; flex-shrink: 0; transition: background .14s;
         }
         .pec-anuncie:hover { background: var(--blue2); }
-        .pec-container { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; padding-top: 28px; }
-        .pec-count { margin: 0 0 16px; font-size: 13px; color: var(--muted); font-weight: 700; }
+        .pec-container { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; padding-top: 20px; }
+        .pec-estados { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+        .pec-est-chip {
+          display: inline-flex; align-items: center; justify-content: center;
+          height: 30px; padding: 0 12px;
+          border-radius: 999px; border: 1.5px solid var(--line);
+          background: var(--surface); color: var(--muted);
+          font-size: 12px; font-weight: 800; text-decoration: none;
+          transition: border-color .12s, color .12s;
+        }
+        .pec-est-chip:hover, .pec-est-chip--active {
+          border-color: var(--blue); color: var(--blue); background: var(--blueSoft);
+        }
+        .pec-count { margin: 0 0 14px; font-size: 13px; color: var(--muted); font-weight: 700; }
         .pec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
         .pec-empty {
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          display: flex; flex-direction: column; align-items: center;
           gap: 10px; padding: 72px 24px; text-align: center; color: var(--muted);
           background: var(--surface); border-radius: 20px; border: 1px solid var(--line);
         }
         .pec-empty span { font-size: 48px; }
         .pec-empty strong { font-size: 18px; color: var(--text); }
-        .pec-empty p { margin: 0; font-size: 14px; max-width: 36ch; }
         @media (max-width: 680px) {
-          .pec-cta-inner { flex-direction: column; align-items: flex-start; padding: 22px 0 20px; }
+          .pec-cta-inner { flex-direction: column; align-items: flex-start; }
           .pec-anuncie { width: 100%; }
           .pec-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         }
