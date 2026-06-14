@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import { FeaturedAds } from "@/components/theme/FeaturedAds";
 import { HeroMarketplace } from "@/components/theme/HeroMarketplace";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { HomeActiveCountBadge } from "@/components/HomeActiveCountBadge";
 import type { TruckCardData } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
@@ -54,11 +53,6 @@ export default async function HomePage() {
       <PublicHeader />
 
       <div className="market-main">
-        {/* Hero com badge dinâmico de anúncios ativos */}
-        <div className="market-container" style={{ paddingTop: 8 }}>
-          <HomeActiveCountBadge />
-        </div>
-
         <HeroMarketplace />
 
         {/* Grid de anúncios recentes */}
