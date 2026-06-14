@@ -10,6 +10,9 @@ type TruckSlugData = {
   estado?: string | null;
 };
 
+const UUID_REGEX = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const UUID_AT_END = /([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i;
+
 function limparTextoParaSlug(valor: string) {
   return valor
     .normalize("NFD")
@@ -21,53 +24,34 @@ function limparTextoParaSlug(valor: string) {
 }
 
 export function gerarSlug(truck: TruckSlugData) {
-  const uf = truck.uf || truck.estado;
+  const uf  = truck.uf || truck.estado;
   const ano = truck.ano || truck.ano_modelo || truck.ano_fabricacao;
 
-  const partes = [
-    truck.marca,
-    truck.modelo,
-    ano,
-    truck.cidade,
-    uf,
-  ]
+  const partes = [truck.marca, truck.modelo, ano, truck.cidade, uf]
     .filter(Boolean)
-    .map((parte) => String(parte));
+    .map((p) => String(p));
 
-  const slug = limparTextoParaSlug(partes.join(" "));
-
-  return slug || "caminhao-a-venda";
-}
-
-export function getShortTruckId(id?: string | null) {
-  return String(id || "").replace(/[^a-f0-9]/gi, "").slice(0, 8).toLowerCase();
+  return limparTextoParaSlug(partes.join(" ")) || "caminhao-a-venda";
 }
 
 export function gerarSlugComId(truck: TruckSlugData) {
   const slug = gerarSlug(truck);
-  const id = String(truck.id || "").trim().toLowerCase();
+  const id   = String(truck.id || "").trim().toLowerCase();
   return id ? `${slug}-${id}` : slug;
 }
 
+/** Extrai o UUID do parâmetro de rota. Aceita UUID puro ou UUID no final do slug. */
 export function extrairIdDoParametroAnuncio(parametro: string) {
   const value = String(parametro || "").trim().toLowerCase();
-  const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
-  if (uuidRegex.test(value)) {
+  if (UUID_REGEX.test(value)) {
     return { tipo: "uuid" as const, valor: value };
   }
 
-  // UUID completo no final do slug: qualquer-texto-uuid
-  const uuidAtEnd = value.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/);
-  if (uuidAtEnd) {
-    return { tipo: "uuid" as const, valor: uuidAtEnd[1] };
+  const match = value.match(UUID_AT_END);
+  if (match) {
+    return { tipo: "uuid" as const, valor: match[1] };
   }
 
-  const shortId = value.match(/-([a-f0-9]{8})$/)?.[1];
-
-  if (shortId) {
-    return { tipo: "short" as const, valor: shortId };
-  }
-
-  return { tipo: "slug" as const, valor: value };
+  return { tipo: "nao_encontrado" as const, valor: value };
 }
