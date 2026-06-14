@@ -1,23 +1,64 @@
+/* ============================================================
+   TOKENS BASE — TEMA CLARO (light)
+   Todos os componentes usam APENAS estas vars.
+   Para trocar o tema, basta sobrescrever as vars abaixo.
+   ============================================================ */
 :root {
-  --bg: #f0f2f5;
-  --surface: #ffffff;
-  --soft: #e8ebef;
-  --text: #0d1117;
-  --muted: #4b5563;
-  --blue: #1877f2;
-  --blue2: #0f5fc8;
-  --blueSoft: #dbeafe;
-  --wa: #25d366;
-  --line: #d1d5db;
-  --shadow: 0 2px 12px rgba(0,0,0,.07);
-  --shadow2: 0 8px 32px rgba(0,0,0,.12);
-  --shadow3: 0 16px 48px rgba(0,0,0,.16);
-  --radius: 20px;
+  --bg:        #f0f2f5;
+  --surface:   #ffffff;
+  --soft:      #e8ebef;
+  --text:      #0d1117;
+  --muted:     #4b5563;
+  --blue:      #1877f2;
+  --blue2:     #0f5fc8;
+  --blueSoft:  #dbeafe;
+  --wa:        #25d366;
+  --line:      #d1d5db;
+  --shadow:    0 2px 12px rgba(0,0,0,.07);
+  --shadow2:   0 8px 32px rgba(0,0,0,.12);
+  --shadow3:   0 16px 48px rgba(0,0,0,.16);
+  --radius:    20px;
   --radius-sm: 12px;
+  --header-bg: #ffffff;
+  /* tipografia */
   --font-display: var(--font-manrope), Arial, sans-serif;
-  --font-title: var(--font-manrope), Arial, sans-serif;
-  --font-body: var(--font-manrope), Arial, sans-serif;
+  --font-title:   var(--font-manrope), Arial, sans-serif;
+  --font-body:    var(--font-manrope), Arial, sans-serif;
 }
+
+/* ============================================================
+   TEMA ESCURO
+   ============================================================ */
+body.public-theme-dark {
+  --bg:       #0a0f1a;
+  --surface:  #131c2e;
+  --soft:     #1a2336;
+  --text:     #f0f4f8;
+  --muted:    #a0aec0;
+  --blue:     #4d9fff;
+  --blue2:    #3b82f6;
+  --blueSoft: rgba(77,159,255,.18);
+  --line:     rgba(160,174,192,.18);
+  --shadow:   0 2px 12px rgba(0,0,0,.35);
+  --shadow2:  0 8px 32px rgba(0,0,0,.48);
+  --shadow3:  0 16px 48px rgba(0,0,0,.6);
+  --header-bg:#131c2e;
+  color-scheme: dark;
+}
+
+/*
+  COMO ADICIONAR UM NOVO TEMA:
+  Crie uma classe .public-theme-NOMEDOTEMA e sobrescreva os tokens.
+  Ex:
+  body.public-theme-orange {
+    --blue:     #f97316;
+    --blue2:    #ea6c0a;
+    --blueSoft: #ffedd5;
+    --header-bg:#fff7ed;
+  }
+*/
+
+body.public-theme-light { color-scheme: light; }
 
 * { box-sizing: border-box; }
 html { background: var(--bg); scroll-behavior: smooth; }
@@ -31,19 +72,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-body.public-theme-dark {
-  --bg: #0a0f1a; --surface: #131c2e; --soft: #1a2336;
-  --text: #f0f4f8; --muted: #a0aec0;
-  --blue: #4d9fff; --blue2: #3b82f6;
-  --blueSoft: rgba(77,159,255,.18);
-  --line: rgba(160,174,192,.18);
-  --shadow: 0 2px 12px rgba(0,0,0,.35);
-  --shadow2: 0 8px 32px rgba(0,0,0,.48);
-  --shadow3: 0 16px 48px rgba(0,0,0,.6);
-  background: var(--bg); color: var(--text); color-scheme: dark;
-}
-body.public-theme-light { color-scheme: light; }
-
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 img, svg { max-width: 100%; }
@@ -52,10 +80,8 @@ img, svg { max-width: 100%; }
 h1, h2, h3, strong, button, .public-menu a {
   font-family: var(--font-manrope), Arial, sans-serif;
 }
-h1, h2 {
-  font-weight: 800; letter-spacing: -0.03em;
-}
-h3 { font-weight: 700; letter-spacing: -0.02em; }
+h1, h2 { font-weight: 800; letter-spacing: -0.03em; }
+h3      { font-weight: 700; letter-spacing: -0.02em; }
 
 /* === CONTAINERS === */
 .market-container, .container, .public-nav-shell, .site-footer {
@@ -67,13 +93,16 @@ h3 { font-weight: 700; letter-spacing: -0.02em; }
 .market-page { min-height: 100vh; background: var(--bg); color: var(--text); padding-bottom: 48px; }
 .market-main { display: flex; flex-direction: column; gap: 24px; padding-top: 24px; }
 
-/* === HEADER === */
+/* === HEADER ===
+   Usa --header-bg para que cada tema possa customizar
+   sem precisar de um seletor específico.
+   ============= */
 .public-header {
   position: sticky; top: 0; z-index: 80;
-  background: #fff; border-bottom: 1px solid var(--line);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--line);
   box-shadow: 0 1px 0 rgba(0,0,0,.05);
 }
-body.public-theme-dark .public-header { background: #131c2e; }
 .public-nav-shell { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .public-brand { display: flex; align-items: center; gap: 10px; min-width: max-content; }
 .brand-mark {
@@ -119,8 +148,7 @@ body.public-theme-dark .public-header { background: #131c2e; }
   display: flex; align-items: center; gap: 8px; padding: 0 16px;
   color: var(--muted); transition: border-color .16s, background .16s;
 }
-.search-top:focus-within { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,119,242,.10); }
-body.public-theme-dark .search-top:focus-within { background: var(--surface); }
+.search-top:focus-within { background: var(--surface); border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,119,242,.10); }
 .search-top input {
   width: 100%; min-width: 0; border: 0; outline: 0;
   background: transparent; color: var(--text); font-weight: 700; font-size: 14px;
@@ -141,8 +169,7 @@ body.public-theme-dark .search-top:focus-within { background: var(--surface); }
   background: var(--soft); color: var(--text); font-weight: 700; font-size: 14px;
   outline: 0; transition: border-color .14s, background .14s;
 }
-.market-field input:focus, .market-field select:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(24,119,242,.08); }
-body.public-theme-dark .market-field input:focus, body.public-theme-dark .market-field select:focus { background: var(--surface); }
+.market-field input:focus, .market-field select:focus { border-color: var(--blue); background: var(--surface); box-shadow: 0 0 0 3px rgba(24,119,242,.08); }
 .market-filter-actions { display: flex; gap: 8px; align-items: flex-end; }
 .market-filter-actions button {
   height: 44px; padding: 0 24px; border-radius: var(--radius-sm); border: 0;
@@ -344,7 +371,7 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
 }
 .site-footer nav a:hover { color: var(--blue); background: var(--blueSoft); }
 
-/* === PÁGINAS SEO (marca, estado) === */
+/* === PÁGINAS SEO === */
 .seo-breadcrumb {
   display: flex; gap: 6px; align-items: center;
   padding: 18px 0 0; font-size: 13px; color: var(--muted); font-weight: 800;
@@ -356,14 +383,9 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
 .al-subtitle { margin: 0; color: var(--muted); font-size: 14px; font-weight: 800; }
 
 .seo-text-block {
-  margin: 0 0 20px;
-  padding: 16px 20px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
+  margin: 0 0 20px; padding: 16px 20px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; font-size: 14px; line-height: 1.7; color: var(--text);
 }
 .seo-text-block p { margin: 0 0 8px; }
 .seo-text-block p:last-child { margin: 0; }
@@ -403,10 +425,9 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
 }
 .seo-internal-row a:hover { color: var(--blue); border-color: var(--blue); }
 
-/* ===================================================
+/* ============================================================
    MOBILE
-   =================================================== */
-
+   ============================================================ */
 @media (max-width: 900px) {
   html, body { max-width: 100%; overflow-x: hidden; }
   .market-page { overflow-x: hidden; }
@@ -428,13 +449,8 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
 }
 
 @media (max-width: 640px) {
-  .market-container, .container, .public-nav-shell, .site-footer {
-    width: calc(100vw - 20px);
-  }
-  .stock-grid, .market-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
+  .market-container, .container, .public-nav-shell, .site-footer { width: calc(100vw - 20px); }
+  .stock-grid, .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .tc-price  { font-size: 14px; }
   .tc-name   { font-size: 12px; }
   .tc-body   { padding: 9px 10px 11px; }
