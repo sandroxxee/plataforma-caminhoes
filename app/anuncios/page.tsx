@@ -39,14 +39,21 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const supabase = await createClient();
 
-  const { count: total } = await supabase
+  // Contagem total (com filtros aplicados no banco)
+  let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
     .eq("vendido", false)
     .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)");
+  if (marcaFiltro)  countQ = countQ.eq("marca", marcaFiltro);
+  if (estadoFiltro) countQ = countQ.eq("estado", estadoFiltro);
+  if (min > 0)      countQ = countQ.gte("preco", min);
+  if (max !== Infinity) countQ = countQ.lte("preco", max);
+  const { count: total } = await countQ;
 
-  const { data } = await supabase
+  // Primeiro batch — filtros aplicados no banco
+  let dataQ = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
@@ -54,14 +61,13 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
     .order("created_at", { ascending: false })
     .limit(24);
+  if (marcaFiltro)  dataQ = dataQ.eq("marca", marcaFiltro);
+  if (estadoFiltro) dataQ = dataQ.eq("estado", estadoFiltro);
+  if (min > 0)      dataQ = dataQ.gte("preco", min);
+  if (max !== Infinity) dataQ = dataQ.lte("preco", max);
 
-  let trucks = (data || []) as Truck[];
-  if (min > 0)          trucks = trucks.filter((t) => (t.preco ?? 0) >= min);
-  if (max !== Infinity) trucks = trucks.filter((t) => (t.preco ?? 0) <= max);
-  if (marcaFiltro)      trucks = trucks.filter((t) => t.marca  === marcaFiltro);
-  if (estadoFiltro)     trucks = trucks.filter((t) => t.estado === estadoFiltro);
-
-  const totalFiltered = trucks.length;
+  const { data } = await dataQ;
+  const trucks = (data || []) as Truck[];
 
   return (
     <main className="market-page">
@@ -79,7 +85,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           marcaFiltro={marcaFiltro}
           estadoFiltro={estadoFiltro}
           hasFilters={hasFilters}
-          total={totalFiltered}
+          total={total ?? 0}
         />
 
         <section className="stock-grid" aria-label="Lista de anúncios">
@@ -100,7 +106,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           )}
         </section>
 
-        {!hasFilters && (total ?? 0) > 24 && (
+        {(total ?? 0) > 24 && (
           <LoadMore initialTrucks={trucks} total={total ?? 0} pageSize={24} />
         )}
       </div>

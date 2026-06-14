@@ -23,7 +23,8 @@ const FAIXAS = [
   { label: "Acima R$400k",   min: 400_000, max: Infinity },
 ];
 
-const MARCAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
+// Lista completa e sincronizada com MARCAS_VALIDAS da page.tsx
+const MARCAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF", "MAN", "Agrale"];
 
 function buildHref(faixaIdx: number, marcaFiltro: string, estadoFiltro: string, overrides: Record<string, string | number | undefined>) {
   const params: Record<string, string> = {};
@@ -50,14 +51,12 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
   const [open, setOpen] = useState(false);
   const activeCount = (faixaIdx > 0 ? 1 : 0) + (marcaFiltro ? 1 : 0) + (estadoFiltro ? 1 : 0);
 
-  // Mapeia faixa ativa para precoMax
   const precoMaxAtivo = faixaIdx > 0 && FAIXAS[faixaIdx].max !== Infinity
     ? FAIXAS[faixaIdx].max
     : undefined;
 
   return (
     <div className="af-root">
-      {/* Barra superior: resultado + botão */}
       <div className="af-topbar">
         <p className="af-count">
           <strong>{total}</strong> {total === 1 ? "anúncio" : "anúncios"}
@@ -85,7 +84,6 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
         </div>
       </div>
 
-      {/* Painel colapsável */}
       <div id="af-panel" className={`af-panel${open ? " open" : ""}`} aria-hidden={!open}>
         <div className="af-panel-inner">
 
@@ -144,7 +142,6 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
             </div>
           </div>
 
-          {/* Salvar busca — só aparece quando há filtro ativo */}
           {hasFilters && (
             <SalvarBusca
               marca={marcaFiltro || undefined}
