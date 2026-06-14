@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { RelatedAds } from "@/components/theme/RelatedAds";
 import { MapPin, CheckCircle, ShieldCheck, ClipboardList } from "lucide-react";
 import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
 import {
@@ -135,8 +136,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       <PublicHeader />
 
       <div className="market-container detail-layout">
-
-        {/* Coluna principal */}
         <div>
           <nav className="detail-breadcrumb" aria-label="Navegação">
             <Link href="/">Início</Link>
@@ -180,7 +179,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Aside sticky */}
         <aside className="detail-aside">
           <div className="detail-card detail-aside-header">
             <span className="detail-status-badge">
@@ -196,7 +194,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             )}
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
-
             <AnuncioAsideActions
               truckId={truck.id}
               title={title}
@@ -206,7 +203,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             />
           </div>
 
-          {/* Ficha técnica */}
           {specs.length > 0 ? (
             <div className="detail-card detail-specs-card">
               <h2 className="detail-section-title">{textos.ficha}</h2>
@@ -228,6 +224,9 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           )}
         </aside>
       </div>
+
+      {/* Anúncios relacionados */}
+      <RelatedAds currentId={truck.id} marca={truck.marca} perfil={truck.perfil} />
 
       <SiteFooter />
 
@@ -271,21 +270,11 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-spec-row:last-child{border-bottom:0}
         .detail-spec-row dt{color:var(--muted);font-weight:800}
         .detail-spec-row dd{font-weight:950;text-align:right}
-        .detail-specs-empty{
-          padding:24px 20px;display:flex;flex-direction:column;align-items:center;
-          text-align:center;gap:6px;color:var(--muted);
-        }
+        .detail-specs-empty{padding:24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;color:var(--muted)}
         .detail-specs-empty-icon{color:var(--muted);opacity:.5;margin-bottom:4px}
         .detail-specs-empty p{margin:0;font-size:14px;font-weight:800;color:var(--text)}
         .detail-specs-empty span{font-size:13px;font-weight:700;line-height:1.5}
-        .detail-aside{
-          position: sticky;
-          top: 90px;
-          align-self: start;
-          max-height: calc(100vh - 110px);
-          overflow-y: auto;
-          scroll-margin-top: 90px;
-        }
+        .detail-aside{position:sticky;top:90px;align-self:start;max-height:calc(100vh - 110px);overflow-y:auto;scroll-margin-top:90px}
         .detail-aside::-webkit-scrollbar{width:0}
         @media(max-width:900px){
           .detail-aside{position:static;max-height:none;overflow-y:visible}

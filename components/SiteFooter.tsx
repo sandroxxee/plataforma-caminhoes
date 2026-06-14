@@ -8,89 +8,134 @@ export function SiteFooter() {
     fontSize: 14,
     fontWeight: 750,
     maxWidth: "100%",
-    overflowWrap: "anywhere",
-    wordBreak: "break-word",
-  } as const;
-
-  const sectionStyle = {
-    minWidth: 0,
-    maxWidth: "100%",
-    overflowWrap: "anywhere",
-  } as const;
+    overflowWrap: "anywhere" as const,
+    wordBreak: "break-word" as const,
+    textDecoration: "none",
+  };
 
   return (
     <footer className="site-footer">
-      <style>{`
-        html,
-        body {
-          max-width: 100%;
-          overflow-x: hidden;
-        }
+      <div className="footer-inner">
 
-        .market-page,
-        .site-footer,
-        .site-footer * {
-          max-width: 100%;
-          min-width: 0;
-        }
-
-        .site-footer {
-          overflow-x: hidden;
-        }
-      `}</style>
-
-      <div
-        className="footer-inner"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 190px), 1fr))",
-          gap: 20,
-          alignItems: "start",
-          maxWidth: "100%",
-          overflowX: "hidden",
-        }}
-      >
-        <section style={sectionStyle}>
-          <strong>Caminhões à Venda</strong>
-          <p>
-            Plataforma para comprar e anunciar caminhões, carretas e implementos
-            com mais clareza, praticidade e contato direto pelo WhatsApp.
-          </p>
-          <p style={{ marginTop: 10 }}>
-            O Caminhões à Venda divulga anúncios e presta apoio na análise de
-            informações. A negociação, vistoria, pagamento, documentação,
-            financiamento e transferência são responsabilidade do comprador e do
-            proprietário/vendedor do veículo.
+        {/* Sobre */}
+        <section className="footer-section footer-about">
+          <strong className="footer-brand">Caminhões à Venda</strong>
+          <p>Plataforma para comprar e anunciar caminhões, carretas e implementos com contato direto pelo WhatsApp.</p>
+          <p style={{ marginTop: 8, fontSize: 12 }}>
+            A negociação, vistoria, pagamento e transferência são responsabilidade do comprador e do vendedor.
           </p>
         </section>
 
-        <section style={sectionStyle}>
-          <strong>Comprar</strong>
-          <Link style={linkStyle} href="/anuncios">Ver anúncios</Link>
-          <Link style={linkStyle} href="/anuncios?perfil=Caminhao">Caminhões</Link>
-          <Link style={linkStyle} href="/anuncios?perfil=Implementos">Implementos</Link>
+        {/* Categorias */}
+        <section className="footer-section">
+          <strong>Categorias</strong>
+          <Link style={linkStyle} href="/anuncios">Caminhões à venda</Link>
+          <Link style={linkStyle} href="/carretas">Carretas à venda</Link>
+          <Link style={linkStyle} href="/implementos">Implementos à venda</Link>
+          <Link style={linkStyle} href="/pecas">Peças para caminhão</Link>
+          <Link style={linkStyle} href="/maquinas">Máquinas pesadas</Link>
         </section>
 
-        <section style={sectionStyle}>
+        {/* Marcas */}
+        <section className="footer-section">
+          <strong>Marcas</strong>
+          <Link style={linkStyle} href="/anuncios?marca=Scania">Scania à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=Volvo">Volvo à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=Mercedes-Benz">Mercedes-Benz à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=Volkswagen">Volkswagen à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=Iveco">Iveco à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=MAN">MAN à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=DAF">DAF à venda</Link>
+          <Link style={linkStyle} href="/anuncios?marca=Ford">Ford à venda</Link>
+        </section>
+
+        {/* Anunciar */}
+        <section className="footer-section">
           <strong>Anunciar</strong>
           <Link style={linkStyle} href="/anunciar">Anunciar caminhão</Link>
           <Link style={linkStyle} href="/como-funciona">Como funciona</Link>
-          <Link style={linkStyle} href="/cadastro">Criar conta</Link>
+          <Link style={linkStyle} href="/cadastro">Criar conta grátis</Link>
+          <Link style={linkStyle} href="/painel">Painel do anunciante</Link>
         </section>
 
-        <section style={sectionStyle}>
+        {/* Atendimento */}
+        <section className="footer-section">
           <strong>Atendimento</strong>
           <a style={linkStyle} href="https://wa.me/5549999362681" target="_blank" rel="noreferrer">
-            WhatsApp: 49 99936-2681
+            WhatsApp suporte
           </a>
           <Link style={linkStyle} href="/parceiros">Parceiros</Link>
           <Link style={linkStyle} href="/sobre">Segurança e confiança</Link>
+          <Link style={linkStyle} href="/privacidade">Privacidade</Link>
+          <Link style={linkStyle} href="/termos">Termos de uso</Link>
         </section>
+
       </div>
 
-      <p style={{ marginTop: 24, fontSize: 13, maxWidth: "100%", overflowWrap: "anywhere" }}>
+      <p className="footer-copy">
         © 2026 Caminhões à Venda. Todos os direitos reservados.
       </p>
+
+      <style>{`
+        .site-footer {
+          background: var(--surface);
+          border-top: 1px solid var(--line);
+          padding: 48px 0 28px;
+          overflow-x: hidden;
+        }
+        .footer-inner {
+          width: min(1280px, calc(100vw - 32px));
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 2fr repeat(4, 1fr);
+          gap: 32px;
+          align-items: start;
+        }
+        .footer-brand {
+          display: block;
+          font-size: 16px;
+          font-weight: 950;
+          letter-spacing: -.03em;
+          margin-bottom: 10px;
+          color: var(--text);
+        }
+        .footer-about p {
+          margin: 0;
+          font-size: 13px;
+          color: var(--muted);
+          font-weight: 700;
+          line-height: 1.55;
+        }
+        .footer-section strong {
+          display: block;
+          font-size: 13px;
+          font-weight: 950;
+          color: var(--text);
+          letter-spacing: .02em;
+          text-transform: uppercase;
+          margin-bottom: 4px;
+        }
+        .footer-section a:hover { color: var(--blue) !important; }
+        .footer-copy {
+          width: min(1280px, calc(100vw - 32px));
+          margin: 32px auto 0;
+          font-size: 12px;
+          color: var(--muted);
+          font-weight: 700;
+          border-top: 1px solid var(--line);
+          padding-top: 20px;
+        }
+        @media (max-width: 900px) {
+          .footer-inner {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .footer-about { grid-column: 1 / -1; }
+        }
+        @media (max-width: 480px) {
+          .footer-inner { grid-template-columns: 1fr 1fr; gap: 20px; }
+          .site-footer { padding: 32px 0 80px; }
+        }
+      `}</style>
     </footer>
   );
 }
