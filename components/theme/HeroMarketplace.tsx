@@ -14,11 +14,6 @@ export function HeroMarketplace() {
         />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <h1 className="hero-title">
-            Compre e venda<br />
-            caminhões com<br />
-            <span className="hero-title-accent">segurança</span>
-          </h1>
           <p className="hero-sub">
             Anúncios revisados, contato direto pelo WhatsApp,<br className="hero-br" />
             sem intermediários.
