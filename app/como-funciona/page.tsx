@@ -1,5 +1,2 @@
 import { redirect } from "next/navigation";
-
-export default function ComoFuncionaPage() {
-  redirect("/anuncios");
-}
+export default function Page() { redirect("/"); }
