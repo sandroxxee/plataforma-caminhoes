@@ -45,6 +45,34 @@ export default async function NovoAnuncioPage() {
           Implemento
           <small>Carreta, caçamba, prancha, sider, dolly…</small>
         </Link>
+
+        <Link href="/painel/anuncios/novo/carreta" className="nb-btn">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <rect x="1" y="9" width="22" height="9" rx="2"/>
+            <circle cx="5" cy="20" r="2"/>
+            <circle cx="12" cy="20" r="2"/>
+            <circle cx="19" cy="20" r="2"/>
+          </svg>
+          Carreta
+          <small>Graneleira, porta-contêiner, frigorífica, tanque…</small>
+        </Link>
+
+        <Link href="/painel/anuncios/novo/maquina" className="nb-btn">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+          Máquina
+          <small>Escavadeira, motoniveladora, pá carregadeira, trator…</small>
+        </Link>
+
+        <Link href="/painel/anuncios/novo/peca" className="nb-btn">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+          Peça
+          <small>Motor, câmbio, eixo, suspensão, elétrica…</small>
+        </Link>
       </div>
 
       <style>{`
