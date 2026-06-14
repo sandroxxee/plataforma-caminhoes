@@ -1,7 +1,7 @@
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
-import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
+import { type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
 import { AnunciosSidebar } from "./AnunciosSidebar";
 import { LoadMore } from "./LoadMore";
@@ -11,8 +11,8 @@ import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
 export const revalidate = 30;
 
 export const metadata = {
-  title: "Caminhões à Venda | Todos os anúncios",
-  description: "Veja todos os caminhões disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
+  title: "Caminh\u00f5es \u00e0 Venda | Todos os an\u00fancios",
+  description: "Veja todos os caminh\u00f5es dispon\u00edveis. Filtre por marca, estado ou faixa de pre\u00e7o e fale direto pelo WhatsApp.",
 };
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
@@ -35,11 +35,11 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Peças,Máquinas)")
+    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)")
     .order("created_at", { ascending: false })
     .limit(24);
 
-  if (marcaFiltro)      query = query.ilike("marca",  marcaFiltro);
+  if (marcaFiltro)      query = query.ilike("marca", marcaFiltro);
   if (estadoFiltro)     query = query.eq("estado", estadoFiltro);
   if (min > 0)          query = query.gte("preco", min);
   if (max !== Infinity) query = query.lte("preco", max);
@@ -53,8 +53,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Peças,Máquinas)");
-  if (marcaFiltro)      countQ = countQ.ilike("marca",  marcaFiltro);
+    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)");
+  if (marcaFiltro)      countQ = countQ.ilike("marca", marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
   if (max !== Infinity) countQ = countQ.lte("preco", max);
@@ -64,81 +64,42 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   return (
     <main className="market-page">
       <PublicHeader />
-
       <div className="mp-shell">
-        {/* ── SIDEBAR DESKTOP ── */}
         <aside className="mp-sidebar">
           <AnunciosSidebar
-            q={busca}
-            faixaIdx={faixaIdx}
-            marcaFiltro={marcaFiltro}
-            estadoFiltro={estadoFiltro}
-            hasFilters={hasFilters}
-            total={total ?? trucks.length}
-            categoriaAtiva="anuncios"
+            q={busca} faixaIdx={faixaIdx} marcaFiltro={marcaFiltro}
+            estadoFiltro={estadoFiltro} hasFilters={hasFilters}
+            total={total ?? trucks.length} categoriaAtiva="anuncios"
           />
         </aside>
-
-        {/* ── CONTEÚDO ── */}
         <section className="mp-main">
-          {/* topbar (busca + drawer mobile + contador desktop) */}
           <AnunciosFilters
-            q={busca}
-            faixaIdx={faixaIdx}
-            marcaFiltro={marcaFiltro}
-            estadoFiltro={estadoFiltro}
-            hasFilters={hasFilters}
-            total={total ?? trucks.length}
-            categoriaAtiva="anuncios"
+            q={busca} faixaIdx={faixaIdx} marcaFiltro={marcaFiltro}
+            estadoFiltro={estadoFiltro} hasFilters={hasFilters}
+            total={total ?? trucks.length} categoriaAtiva="anuncios"
           />
-
           {trucks.length === 0 ? (
             <div className="market-empty">
-              <strong>Nenhum anúncio encontrado</strong>
+              <strong>Nenhum an\u00fancio encontrado</strong>
               <p>Tente outros filtros ou veja todos.</p>
               <Link href="/anuncios" style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}>Ver todos</Link>
             </div>
           ) : (
             <LoadMore
               key={`${busca}-${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
-              initialTrucks={trucks}
-              total={total ?? trucks.length}
-              pageSize={24}
-              q={busca}
-              marca={marcaFiltro}
-              estado={estadoFiltro}
-              faixa={faixaIdx}
+              initialTrucks={trucks} total={total ?? trucks.length}
+              pageSize={24} q={busca} marca={marcaFiltro}
+              estado={estadoFiltro} faixa={faixaIdx}
             />
           )}
         </section>
       </div>
-
       <SiteFooter />
-
       <style>{`
-        .mp-shell {
-          width: min(1400px, calc(100vw - 32px));
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: 240px 1fr;
-          gap: 24px;
-          padding-top: 24px;
-          padding-bottom: 64px;
-          align-items: start;
-        }
-        .mp-sidebar {
-          position: sticky; top: 80px;
-          background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: 18px;
-          overflow: hidden;
-          box-shadow: var(--shadow);
-        }
-        .mp-main { min-width: 0; }
-        @media (max-width: 900px) {
-          .mp-shell { grid-template-columns: 1fr; }
-          .mp-sidebar { display: none; }
-        }
+        .mp-shell { width:min(1400px,calc(100vw - 32px)); margin:0 auto; display:grid; grid-template-columns:240px 1fr; gap:24px; padding-top:24px; padding-bottom:64px; align-items:start; }
+        .mp-sidebar { position:sticky; top:80px; background:var(--surface); border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); }
+        .mp-main { min-width:0; }
+        @media(max-width:900px){ .mp-shell{ grid-template-columns:1fr; } .mp-sidebar{ display:none; } }
       `}</style>
     </main>
   );

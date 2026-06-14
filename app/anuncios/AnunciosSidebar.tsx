@@ -6,15 +6,27 @@ import { Truck, Container, Wrench, Bus, Tractor, Package, X } from "lucide-react
 import { SalvarBusca } from "@/components/SalvarBusca";
 import { MARCAS_VALIDAS } from "@/lib/constants";
 
-const CATEGORIAS = [
-  { label: "Todos",       href: "/anuncios",    icon: <Truck size={15} /> },
-  { label: "Caminhões",   href: "/caminhoes",   icon: <Truck size={15} /> },
-  { label: "Carretas",    href: "/carretas",    icon: <Container size={15} /> },
-  { label: "Implementos", href: "/implementos", icon: <Wrench size={15} /> },
-  { label: "Ônibus",      href: "/onibus",      icon: <Bus size={15} /> },
-  { label: "Máquinas",    href: "/maquinas",    icon: <Tractor size={15} /> },
-  { label: "Peças",       href: "/pecas",       icon: <Package size={15} /> },
+type Categoria = { label: string; href: string; iconName: string };
+
+const CATEGORIAS: Categoria[] = [
+  { label: "Todos",       href: "/anuncios",    iconName: "truck" },
+  { label: "Caminh\u00f5es",   href: "/caminhoes",   iconName: "truck" },
+  { label: "Carretas",    href: "/carretas",    iconName: "container" },
+  { label: "Implementos", href: "/implementos", iconName: "wrench" },
+  { label: "\u00d4nibus",      href: "/onibus",      iconName: "bus" },
+  { label: "M\u00e1quinas",    href: "/maquinas",    iconName: "tractor" },
+  { label: "Pe\u00e7as",       href: "/pecas",       iconName: "package" },
 ];
+
+function CatIcon({ name }: { name: string }) {
+  const s = 15;
+  if (name === "container") return <Container size={s} />;
+  if (name === "wrench")    return <Wrench size={s} />;
+  if (name === "bus")       return <Bus size={s} />;
+  if (name === "tractor")   return <Tractor size={s} />;
+  if (name === "package")   return <Package size={s} />;
+  return <Truck size={s} />;
+}
 
 const MARCAS_LOGOS: Record<string, string> = {
   "Mercedes-Benz": "https://img.logo.dev/mercedes-benz.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
@@ -39,10 +51,10 @@ const ESTADOS = [
 ];
 
 const FAIXAS = [
-  { label: "Todos os preços", min: 0, max: Infinity },
-  { label: "Até R$100k",     min: 0,       max: 100_000 },
-  { label: "R$100k–200k",   min: 100_000, max: 200_000 },
-  { label: "R$200k–400k",   min: 200_000, max: 400_000 },
+  { label: "Todos os pre\u00e7os", min: 0, max: Infinity },
+  { label: "At\u00e9 R$100k",     min: 0,       max: 100_000 },
+  { label: "R$100k\u2013200k",   min: 100_000, max: 200_000 },
+  { label: "R$200k\u2013400k",   min: 200_000, max: 400_000 },
   { label: "Acima R$400k",  min: 400_000, max: Infinity },
 ];
 
@@ -71,16 +83,16 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
 
   return (
     <div className="asb-root">
-
       <div className="asb-section">
         <p className="asb-label">Categorias</p>
         <nav className="asb-list">
           {CATEGORIAS.map((c) => {
             const slug   = c.href.replace("/", "");
-            const active = slug === categoriaAtiva || (slug === "anuncios" && categoriaAtiva === "anuncios");
+            const active = slug === categoriaAtiva;
             return (
               <Link key={c.href} href={c.href} className={`asb-item${active ? " active" : ""}`}>
-                <span className="asb-ico">{c.icon}</span>{c.label}
+                <span className="asb-ico"><CatIcon name={c.iconName} /></span>
+                {c.label}
               </Link>
             );
           })}
@@ -93,7 +105,7 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
         <p className="asb-label">Marcas</p>
         <nav className="asb-list">
           <Link href={buildHref(q, faixaIdx, "", estadoFiltro, { marca: undefined })} className={`asb-item${!marcaFiltro ? " active" : ""}`}>
-            <span className="asb-ico asb-ico-star">★</span>Todas
+            <span className="asb-ico asb-ico-star">&#9733;</span>Todas
           </Link>
           {MARCAS_VALIDAS.map((m) => (
             <Link key={m} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: m })} className={`asb-item${marcaFiltro === m ? " active" : ""}`}>
@@ -123,7 +135,7 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
       <div className="asb-div" />
 
       <div className="asb-section">
-        <p className="asb-label">Faixa de preço</p>
+        <p className="asb-label">Faixa de pre\u00e7o</p>
         <nav className="asb-list">
           {FAIXAS.map((f, idx) => (
             <Link key={idx} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })} className={`asb-item asb-price${faixaIdx === idx ? " active" : ""}`}>
@@ -144,40 +156,25 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
       )}
 
       <style>{`
-        .asb-root { display: flex; flex-direction: column; }
-        .asb-section { padding: 14px 14px; }
-        .asb-div { height: 1px; background: var(--line); }
-        .asb-label { margin: 0 0 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-        .asb-list { display: flex; flex-direction: column; gap: 1px; }
-        .asb-item {
-          display: flex; align-items: center; gap: 9px;
-          height: 36px; padding: 0 8px; border-radius: 9px;
-          font-size: 13px; font-weight: 700; color: var(--text);
-          text-decoration: none; transition: background .12s, color .12s;
-        }
-        .asb-item:hover { background: var(--soft); color: var(--blue); }
-        .asb-item.active { background: var(--blueSoft); color: var(--blue); font-weight: 900; }
-        .asb-price { font-size: 12px; }
-        .asb-ico { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 5px; background: var(--soft); color: var(--muted); font-size: 11px; flex-shrink: 0; }
-        .asb-ico-star { font-size: 13px; }
-        .asb-item.active .asb-ico { background: var(--blueSoft); color: var(--blue); }
-        .asb-logo { border-radius: 4px; object-fit: contain; flex-shrink: 0; }
-        .asb-chips { display: flex; gap: 4px; flex-wrap: wrap; }
-        .asb-chip {
-          display: inline-flex; align-items: center; height: 26px; padding: 0 9px;
-          border-radius: 999px; border: 1.5px solid var(--line);
-          background: var(--soft); color: var(--muted);
-          font-size: 11px; font-weight: 800; text-decoration: none; transition: .12s;
-        }
-        .asb-chip:hover { border-color: var(--blue); color: var(--blue); }
-        .asb-chip.active { border-color: var(--blue); background: var(--blueSoft); color: var(--blue); }
-        .asb-clear {
-          display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
-          height: 32px; padding: 0 12px; border-radius: 999px;
-          border: 1.5px solid rgba(239,68,68,.3); background: rgba(239,68,68,.07);
-          color: #f87171; font-size: 12px; font-weight: 800; text-decoration: none; transition: .14s;
-        }
-        .asb-clear:hover { background: rgba(239,68,68,.14); }
+        .asb-root { display:flex; flex-direction:column; }
+        .asb-section { padding:14px; }
+        .asb-div { height:1px; background:var(--line); }
+        .asb-label { margin:0 0 8px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+        .asb-list { display:flex; flex-direction:column; gap:1px; }
+        .asb-item { display:flex; align-items:center; gap:9px; height:36px; padding:0 8px; border-radius:9px; font-size:13px; font-weight:700; color:var(--text); text-decoration:none; transition:background .12s,color .12s; }
+        .asb-item:hover { background:var(--soft); color:var(--blue); }
+        .asb-item.active { background:var(--blueSoft); color:var(--blue); font-weight:900; }
+        .asb-price { font-size:12px; }
+        .asb-ico { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:5px; background:var(--soft); color:var(--muted); font-size:11px; flex-shrink:0; }
+        .asb-ico-star { font-size:13px; }
+        .asb-item.active .asb-ico { background:var(--blueSoft); color:var(--blue); }
+        .asb-logo { border-radius:4px; object-fit:contain; flex-shrink:0; }
+        .asb-chips { display:flex; gap:4px; flex-wrap:wrap; }
+        .asb-chip { display:inline-flex; align-items:center; height:26px; padding:0 9px; border-radius:999px; border:1.5px solid var(--line); background:var(--soft); color:var(--muted); font-size:11px; font-weight:800; text-decoration:none; transition:.12s; }
+        .asb-chip:hover { border-color:var(--blue); color:var(--blue); }
+        .asb-chip.active { border-color:var(--blue); background:var(--blueSoft); color:var(--blue); }
+        .asb-clear { display:inline-flex; align-items:center; gap:5px; margin-top:8px; height:32px; padding:0 12px; border-radius:999px; border:1.5px solid rgba(239,68,68,.3); background:rgba(239,68,68,.07); color:#f87171; font-size:12px; font-weight:800; text-decoration:none; transition:.14s; }
+        .asb-clear:hover { background:rgba(239,68,68,.14); }
       `}</style>
     </div>
   );
