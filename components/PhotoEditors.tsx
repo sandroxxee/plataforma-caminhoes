@@ -19,6 +19,8 @@ import {
   applyBlurToFile,
 } from "@/lib/imageUtils";
 
+const NUDGE_STEP = 20;
+
 const EDITOR_STYLES = `
 .editor-backdrop{position:fixed;inset:0;z-index:9999;padding:18px;display:grid;place-items:center;background:rgba(0,0,0,.78);backdrop-filter:blur(10px)}
 .editor-panel{width:min(1040px,100%);max-height:96vh;overflow:auto;border-radius:22px;border:1px solid rgba(255,255,255,.16);background:#071014;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
@@ -28,9 +30,20 @@ const EDITOR_STYLES = `
 .editor-head p{margin:0;color:#cbd5e1;line-height:1.45}
 .editor-close,.editor-actions button{min-height:42px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.08);color:white;padding:0 14px;font-weight:900;cursor:pointer}
 .crop-canvas{width:100%;height:auto;border-radius:16px;border:1px solid rgba(255,255,255,.18);background:#f3f4f6;touch-action:none;cursor:grab;display:block;user-select:none}
+.crop-canvas.dragging{cursor:grabbing}
 .blur-canvas{width:100%;height:auto;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(2,6,23,.78);touch-action:none;cursor:crosshair;display:block;user-select:none}
 .zoom-control{display:grid;gap:8px;margin-top:14px;color:#e5e7eb;font-weight:900}
 .zoom-control input{width:100%}
+.nudge-controls{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:6px;margin-top:14px;justify-content:center}
+.nudge-btn{min-height:44px;width:44px;border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.1);color:white;font-size:20px;cursor:pointer;display:grid;place-items:center;transition:background .15s}
+.nudge-btn:hover{background:rgba(255,255,255,.22)}
+.nudge-btn:active{background:rgba(255,255,255,.32)}
+.nudge-center{grid-column:2;grid-row:2;font-size:14px}
+.nudge-up{grid-column:2;grid-row:1}
+.nudge-left{grid-column:1;grid-row:2}
+.nudge-right{grid-column:3;grid-row:2}
+.nudge-down{grid-column:2;grid-row:3}
+.nudge-label{text-align:center;color:#94a3b8;font-size:12px;margin-top:4px}
 .editor-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
 .editor-actions button:disabled{opacity:.45;cursor:not-allowed}
 .apply-blur{background:#22c55e!important;color:#052e16!important;border-color:transparent!important}
@@ -49,6 +62,7 @@ export function CropEditor({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const dragRef = useRef<Point | null>(null);
+  const isDraggingRef = useRef(false);
   const stateRef = useRef({ scale: 1, minScale: 1, offsetX: 0, offsetY: 0 });
   const [zoom, setZoom] = useState(1);
   const [status, setStatus] = useState("Arraste a foto para enquadrar o caminhão dentro da moldura 4:3.");
@@ -101,6 +115,8 @@ export function CropEditor({
     e.preventDefault();
     canvas.setPointerCapture(e.pointerId);
     dragRef.current = getPointerPosition(e, canvas);
+    isDraggingRef.current = true;
+    canvas.classList.add("dragging");
   }
 
   function moveDrag(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -120,6 +136,17 @@ export function CropEditor({
     if (!canvas) return;
     try { canvas.releasePointerCapture(e.pointerId); } catch {}
     dragRef.current = null;
+    isDraggingRef.current = false;
+    canvas.classList.remove("dragging");
+  }
+
+  function nudge(dx: number, dy: number) {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const scaleRatio = canvas.width / (canvasRef.current?.offsetWidth || canvas.width);
+    stateRef.current.offsetX += dx * scaleRatio;
+    stateRef.current.offsetY += dy * scaleRatio;
+    draw();
   }
 
   function changeZoom(value: number) {
@@ -184,8 +211,15 @@ export function CropEditor({
           Zoom
           <input type="range" min="1" max="2.8" step="0.01" value={zoom} onChange={(e) => changeZoom(Number(e.target.value))} />
         </label>
+        <div className="nudge-controls" aria-label="Mover foto com precisão">
+          <button type="button" className="nudge-btn nudge-up" onClick={() => nudge(0, -NUDGE_STEP)} aria-label="Mover para cima">↑</button>
+          <button type="button" className="nudge-btn nudge-left" onClick={() => nudge(-NUDGE_STEP, 0)} aria-label="Mover para esquerda">←</button>
+          <button type="button" className="nudge-btn nudge-center" onClick={() => imageRef.current && setupCanvas(imageRef.current)} aria-label="Centralizar">⊙</button>
+          <button type="button" className="nudge-btn nudge-right" onClick={() => nudge(NUDGE_STEP, 0)} aria-label="Mover para direita">→</button>
+          <button type="button" className="nudge-btn nudge-down" onClick={() => nudge(0, NUDGE_STEP)} aria-label="Mover para baixo">↓</button>
+        </div>
+        <p className="nudge-label">Use as setas para ajuste fino · ⊙ centraliza</p>
         <div className="editor-actions">
-          <button type="button" onClick={() => imageRef.current && setupCanvas(imageRef.current)}>Centralizar novamente</button>
           <button type="button" onClick={saveCrop} className="apply-blur">Salvar corte</button>
         </div>
       </div>
