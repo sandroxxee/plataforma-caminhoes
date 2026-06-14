@@ -24,7 +24,7 @@ export function HomeFeaturedSlider({ trucks }: HomeFeaturedSliderProps) {
 
     const interval = window.setInterval(() => {
       setCurrent((value) => (value + 1) % trucks.length);
-    }, 3000);
+    }, 5000);
 
     return () => window.clearInterval(interval);
   }, [trucks.length]);
@@ -50,10 +50,18 @@ export function HomeFeaturedSlider({ trucks }: HomeFeaturedSliderProps) {
   return (
     <section className="featuredSlider">
       <div className="featuredGrid">
-        {visibleTrucks.map((truck) => (
+        {visibleTrucks.map((truck, truckIndex) => (
           <article className="featuredCard" key={truck.id}>
             <Link href={`/anuncios/${truck.id}`} className="featuredImage">
-              {truck.image ? <img src={truck.image} alt={truck.title} /> : <span>Sem foto</span>}
+              {truck.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={truck.image}
+                  alt={truck.title}
+                  fetchPriority={truckIndex === 0 ? "high" : "auto"}
+                  loading={truckIndex === 0 ? "eager" : "lazy"}
+                />
+              ) : <span>Sem foto</span>}
             </Link>
 
             <div className="featuredInfo">

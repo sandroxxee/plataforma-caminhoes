@@ -1,28 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
-
-const PwaRegister = dynamic(() => import("@/components/PwaRegister"), {
-  ssr: false,
-  loading: () => null,
-});
-
-const WhatsappClickTracker = dynamic(() => import("@/components/WhatsappClickTracker"), {
-  ssr: false,
-  loading: () => null,
-});
-
-const CopyProtection = dynamic(() => import("@/components/CopyProtection"), {
-  ssr: false,
-  loading: () => null,
-});
-
-const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"), {
-  ssr: false,
-  loading: () => null,
-});
+import { ClientShell } from "@/components/ClientShell";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -113,11 +93,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="pt-BR" className={manrope.variable}>
       <body>
-        <PwaRegister />
-        <WhatsappClickTracker />
-        <CopyProtection />
+        <ClientShell />
         {children}
-        <MobileBottomNav />
       </body>
     </html>
   );
