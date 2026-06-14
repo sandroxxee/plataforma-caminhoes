@@ -37,6 +37,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const truckUrl = getTruckUrl(truck);
   const waLink = getWhatsappLink(truck);
   const meta = [year, type].filter(Boolean).join(" \u2022 ");
+  const photoCount = (truck.truck_images || []).length;
 
   return (
     <article className="tc">
@@ -66,10 +67,23 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
             </svg>
           </span>
         )}
+
         <div className="tc-overlay">
           <span className="tc-price">{formatMoney(truck.preco)}</span>
           {location && <span className="tc-loc">📍 {location}</span>}
         </div>
+
+        {/* Badge contador de fotos */}
+        {photoCount > 0 && (
+          <span className="tc-photo-badge" aria-label={`${photoCount} fotos`}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            {photoCount}
+          </span>
+        )}
       </Link>
 
       {waLink && (
