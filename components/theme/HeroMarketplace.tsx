@@ -1,6 +1,5 @@
 import "./HeroMarketplace.css";
 import Link from "next/link";
-import { HomeActiveCountBadge } from "@/components/HomeActiveCountBadge";
 
 export function HeroMarketplace() {
   return (
@@ -15,9 +14,6 @@ export function HeroMarketplace() {
         />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <div className="hero-badge-row">
-            <HomeActiveCountBadge />
-          </div>
           <h1 className="hero-title">
             Compre e venda<br />
             caminhões com<br />
