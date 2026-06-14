@@ -18,35 +18,60 @@ function m(nome: string, slug: string): Marca {
 }
 
 export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
-  // Apenas fabricantes de caminhões (cavalos mecânicos / trucks)
+  // Fabricantes de caminhões (cavalo mecânico)
   caminhoes: [
-    m("Scania", "scania"), m("Volvo", "volvo"), m("Mercedes-Benz", "mercedes-benz"),
-    m("DAF", "daf"), m("MAN", "man"), m("Iveco", "iveco"),
-    m("Ford", "ford"), m("Volkswagen", "volkswagen"),
+    m("Scania", "scania"),
+    m("Volvo", "volvo"),
+    m("Mercedes-Benz", "mercedes-benz"),
+    m("DAF", "daf"),
+    m("MAN", "man"),
+    m("Iveco", "iveco"),
+    m("Ford", "ford"),
+    m("Volkswagen", "volkswagen"),
   ],
-  // Fabricantes de carretas / semirreboque
+  // Fabricantes de carretas e semirreboque
   carretas: [
-    m("Randon", "randon"), m("Noma", "noma"), m("Guerra", "guerra"),
-    m("Rodotec", "rodotec"), m("Librelato", "librelato"), m("Facchini", "facchini"),
-    m("Paquetá", "paqueta"), m("Schwarzmüller", "schwarzmuller"),
+    m("Randon", "randon"),
+    m("Guerra", "guerra"),
+    m("Librelato", "librelato"),
+    m("Facchini", "facchini"),
+    m("Rodotec", "rodotec"),
+    m("Noma", "noma"),
+    m("Paquetá", "paqueta"),
+    m("Carezia", "carezia"),
   ],
   // Fabricantes de implementos rodoviários
   implementos: [
-    m("Randon", "randon"), m("Guerra", "guerra"), m("Librelato", "librelato"),
-    m("Facchini", "facchini"), m("Rodotec", "rodotec"), m("Noma", "noma"),
-    m("Paquetá", "paqueta"), m("Liebherr", "liebherr"),
+    m("Randon", "randon"),
+    m("Guerra", "guerra"),
+    m("Librelato", "librelato"),
+    m("Facchini", "facchini"),
+    m("Rodotec", "rodotec"),
+    m("Noma", "noma"),
+    m("Paquetá", "paqueta"),
+    m("Carezia", "carezia"),
   ],
-  // Peças: marcas dos motores/chassis
+  // Peças: por marca de chassis/motor
   pecas: [
-    m("Scania", "scania"), m("Volvo", "volvo"), m("Mercedes-Benz", "mercedes-benz"),
-    m("MAN", "man"), m("DAF", "daf"), m("Iveco", "iveco"),
-    m("Volkswagen", "volkswagen"), m("Ford", "ford"),
+    m("Scania", "scania"),
+    m("Volvo", "volvo"),
+    m("Mercedes-Benz", "mercedes-benz"),
+    m("MAN", "man"),
+    m("DAF", "daf"),
+    m("Iveco", "iveco"),
+    m("Volkswagen", "volkswagen"),
+    m("Ford", "ford"),
   ],
   // Máquinas pesadas
   maquinas: [
-    m("Caterpillar", "caterpillar"), m("Volvo", "volvo"), m("Komatsu", "komatsu"),
-    m("Case", "case"), m("John Deere", "john-deere"), m("Liebherr", "liebherr"),
-    m("Terex", "terex"), m("Bobcat", "bobcat"),
+    m("Caterpillar", "caterpillar"),
+    m("Volvo", "volvo"),
+    m("Komatsu", "komatsu"),
+    m("Case", "case"),
+    m("John Deere", "john-deere"),
+    m("Liebherr", "liebherr"),
+    m("Terex", "terex"),
+    m("Bobcat", "bobcat"),
   ],
 };
 
@@ -64,20 +89,20 @@ export function CategoryBrandsBar({
     <div className="cbb-wrap">
       <p className="cbb-label">Filtrar por marca</p>
       <div className="cbb-grid">
-        {marcas.map((m) => (
+        {marcas.map((marca) => (
           <Link
-            key={m.slug}
-            href={`/caminhoes/marca/${m.slug}`}
+            key={marca.slug}
+            href={`/caminhoes/marca/${marca.slug}`}
             className="cbb-chip"
-            title={`${labelSingular} ${m.nome}`}
+            title={`${labelSingular} ${marca.nome}`}
           >
-            {m.svg ? (
+            {marca.svg ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={m.svg} alt={m.nome} width={48} height={28} loading="lazy" className="cbb-logo" />
+              <img src={marca.svg} alt={marca.nome} width={48} height={28} loading="lazy" className="cbb-logo" />
             ) : (
-              <span className="cbb-initial">{m.nome.slice(0, 2).toUpperCase()}</span>
+              <span className="cbb-initial">{marca.nome.slice(0, 2).toUpperCase()}</span>
             )}
-            <span className="cbb-name">{m.nome}</span>
+            <span className="cbb-name">{marca.nome}</span>
           </Link>
         ))}
       </div>
