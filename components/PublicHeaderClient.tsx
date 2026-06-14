@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   Truck, Wrench, Handshake, LayoutDashboard, LogIn,
-  Search, X, Menu, Map, ChevronDown, Settings, Package,
+  Search, X, Menu, Map, Settings, Package,
 } from "lucide-react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
@@ -20,36 +20,18 @@ type Props = { isLoggedIn: boolean };
 export function PublicHeaderClient({ isLoggedIn }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [maisOpen, setMaisOpen] = useState(false);
-  const maisRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (maisRef.current && !maisRef.current.contains(e.target as Node)) {
-        setMaisOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
 
   const navItems = [
     { href: "/anuncios",    label: "Caminhões",  icon: Truck },
+    { href: "/carretas",    label: "Carretas",   icon: Truck },
     { href: "/implementos", label: "Implementos", icon: Wrench },
-    { href: "/mapa",        label: "Mapa",        icon: Map },
-    { href: "/parceiros",   label: "Parceiros",   icon: Handshake },
+    { href: "/maquinas",    label: "Máquinas",   icon: Settings },
+    { href: "/pecas",       label: "Peças",      icon: Package },
+    { href: "/parceiros",   label: "Parceiros",  icon: Handshake },
     isLoggedIn
       ? { href: "/painel", label: "Painel", icon: LayoutDashboard }
       : { href: "/login",  label: "Entrar", icon: LogIn },
   ];
-
-  const maisItems = [
-    { href: "/carretas",  label: "Carretas",  icon: Truck },
-    { href: "/maquinas",  label: "Máquinas",  icon: Settings },
-    { href: "/pecas",     label: "Peças",     icon: Package },
-  ];
-
-  const maisAtivo = maisItems.some((i) => isActive(pathname, i.href));
 
   return (
     <>
@@ -87,14 +69,14 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         }
         .ph-logo-text span { color: #1877f2; }
         .ph-search {
-          flex: 1; max-width: 420px; position: relative;
+          flex: 1; max-width: 340px; position: relative;
         }
         .ph-search input {
-          width: 100%; height: 44px; border-radius: 999px;
+          width: 100%; height: 40px; border-radius: 999px;
           border: 1.5px solid var(--line);
           background: var(--soft);
-          padding: 0 44px 0 18px;
-          font-size: 14px; font-weight: 600;
+          padding: 0 40px 0 16px;
+          font-size: 13px; font-weight: 600;
           color: var(--text); outline: none;
           transition: border-color .2s, box-shadow .2s;
         }
@@ -105,19 +87,19 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         }
         .ph-search input::placeholder { color: var(--muted); }
         .ph-search-icon {
-          position: absolute; right: 14px; top: 50%;
+          position: absolute; right: 12px; top: 50%;
           transform: translateY(-50%);
           color: var(--muted); pointer-events: none;
         }
         .ph-nav {
           display: flex; align-items: center;
-          gap: 2px; margin-left: auto;
+          gap: 1px; margin-left: auto;
         }
         .ph-nav-link {
-          display: flex; align-items: center; gap: 6px;
-          padding: 6px 10px; border-radius: 8px;
+          display: flex; align-items: center; gap: 5px;
+          padding: 5px 8px; border-radius: 8px;
           text-decoration: none; font-weight: 700;
-          font-size: 13.5px; color: var(--muted);
+          font-size: 12.5px; color: var(--muted);
           white-space: nowrap; position: relative;
           transition: color .15s;
         }
@@ -126,49 +108,12 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         .ph-nav-link.active::after {
           content: '';
           position: absolute; bottom: -2px;
-          left: 10px; right: 10px;
+          left: 8px; right: 8px;
           height: 2px; border-radius: 2px;
           background: var(--blue);
         }
-
-        /* Dropdown Mais */
-        .ph-mais-wrap { position: relative; }
-        .ph-mais-btn {
-          display: flex; align-items: center; gap: 5px;
-          padding: 6px 10px; border-radius: 8px;
-          border: none; background: none; cursor: pointer;
-          font-weight: 700; font-size: 13.5px; color: var(--muted);
-          white-space: nowrap; transition: color .15s;
-        }
-        .ph-mais-btn:hover, .ph-mais-btn.active { color: var(--blue); }
-        .ph-mais-btn.active::after {
-          content: '';
-          position: absolute; bottom: -2px;
-          left: 10px; right: 10px;
-          height: 2px; border-radius: 2px;
-          background: var(--blue);
-        }
-        .ph-mais-btn { position: relative; }
-        .ph-dropdown {
-          position: absolute; top: calc(100% + 10px); right: 0;
-          background: var(--surface); border: 1px solid var(--line);
-          border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,.14);
-          padding: 6px; min-width: 180px; z-index: 200;
-          display: none; flex-direction: column; gap: 2px;
-        }
-        .ph-dropdown.open { display: flex; }
-        .ph-dropdown a {
-          display: flex; align-items: center; gap: 10px;
-          padding: 10px 14px; border-radius: 10px;
-          color: var(--text); font-weight: 700; font-size: 14px;
-          text-decoration: none; transition: background .12s, color .12s;
-        }
-        .ph-dropdown a:hover, .ph-dropdown a.active {
-          background: var(--blueSoft); color: var(--blue);
-        }
-
         .ph-toggle-btn {
-          width: 38px; height: 38px; border-radius: 50%;
+          width: 36px; height: 36px; border-radius: 50%;
           border: 1.5px solid var(--line);
           background: var(--soft); cursor: pointer;
           display: flex; align-items: center; justify-content: center;
@@ -186,7 +131,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         }
         .ph-menu-mobile {
           display: none;
-          position: fixed; left: 12px; right: 12px; top: 72px;
+          position: fixed; left: 12px; right: 12px; top: 68px;
           background: var(--surface); border: 1px solid var(--line);
           border-radius: 20px; box-shadow: 0 16px 48px rgba(0,0,0,.14);
           flex-direction: column; padding: 8px; z-index: 100;
@@ -201,14 +146,14 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         .ph-menu-mobile a:hover, .ph-menu-mobile a.active {
           background: var(--blueSoft); color: var(--blue);
         }
-        .ph-menu-mobile .ph-divider {
-          height: 1px; background: var(--line); margin: 4px 0;
-        }
         .ph-backdrop {
           display: none; position: fixed; inset: 0;
           z-index: 90; background: rgba(0,0,0,.18);
         }
         .ph-backdrop.open { display: block; }
+        @media (max-width: 1100px) {
+          .ph-search { display: none; }
+        }
         @media (max-width: 900px) {
           .ph-nav { display: none; }
           .ph-hamburger { display: flex; }
@@ -232,7 +177,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         <div className="ph-search">
           <input
             type="search"
-            placeholder="Buscar caminhões, marca, modelo..."
+            placeholder="Buscar marca, modelo..."
             aria-label="Buscar"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -241,7 +186,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
               }
             }}
           />
-          <Search size={16} className="ph-search-icon" aria-hidden="true" />
+          <Search size={15} className="ph-search-icon" aria-hidden="true" />
         </div>
 
         <nav className="ph-nav" aria-label="Menu principal">
@@ -255,43 +200,11 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
                 className={`ph-nav-link${active ? " active" : ""}`}
                 aria-current={active ? "page" : undefined}
               >
-                <Icon size={15} strokeWidth={1.8} aria-hidden="true" />
+                <Icon size={14} strokeWidth={1.8} aria-hidden="true" />
                 <span>{item.label}</span>
               </Link>
             );
           })}
-
-          {/* Dropdown Mais */}
-          <div className="ph-mais-wrap" ref={maisRef}>
-            <button
-              className={`ph-mais-btn${maisAtivo ? " active" : ""}`}
-              onClick={() => setMaisOpen((v) => !v)}
-              aria-expanded={maisOpen}
-              aria-haspopup="true"
-            >
-              Mais
-              <ChevronDown size={14} strokeWidth={2.5} style={{ transition: "transform .2s", transform: maisOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
-            </button>
-            <div className={`ph-dropdown${maisOpen ? " open" : ""}`} role="menu">
-              {maisItems.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(pathname, item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={active ? "active" : ""}
-                    onClick={() => setMaisOpen(false)}
-                    role="menuitem"
-                  >
-                    <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
           <ThemeTogglePublic />
         </nav>
 
@@ -305,25 +218,8 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         </button>
       </header>
 
-      {/* Menu Mobile — todos os itens */}
       <nav className={`ph-menu-mobile${menuOpen ? " open" : ""}`} aria-label="Menu mobile">
         {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(pathname, item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={active ? "active" : ""}
-              onClick={() => setMenuOpen(false)}
-            >
-              <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
-              {item.label}
-            </Link>
-          );
-        })}
-        <div className="ph-divider" />
-        {maisItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
           return (
