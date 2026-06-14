@@ -7,139 +7,188 @@ export const dynamic = "force-dynamic";
 
 export default async function PainelPage() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const { data: trucks } = await supabase
     .from("trucks")
     .select("status,views")
-    .eq("user_id", user!.id);
+    .eq("user_id", user.id);
 
   const total = trucks?.length ?? 0;
   const ativos = trucks?.filter((a) => a.status === "aprovado").length ?? 0;
   const pendentes = trucks?.filter((a) => a.status === "pendente").length ?? 0;
   const rejeitados = trucks?.filter((a) => a.status === "rejeitado").length ?? 0;
   const totalViews = trucks?.reduce((acc, a) => acc + (a.views ?? 0), 0) ?? 0;
-
-  const nomeUsuario =
-    user!.user_metadata?.name || user!.email?.split("@")[0] || "Anunciante";
+  const nomeUsuario = user.user_metadata?.name || user.email?.split("@")[0] || "Anunciante";
 
   return (
-    <PanelLayout
-      title="Central do anunciante"
-      subtitle="Gerencie seus anúncios e cadastre novos veículos com segurança."
-      badge="Anunciante"
-    >
+    <PanelLayout userName={nomeUsuario} role="anunciante">
       <style>{`
-        .painel-greeting { font-size: 17px; color: var(--muted); margin-bottom: 20px; }
-        .painel-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
-        .painel-stat { padding: 18px 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
-        .painel-stat.green { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.06); }
-        .painel-stat.yellow { border-color: rgba(234,179,8,.3); background: rgba(234,179,8,.06); }
-        .painel-stat.red { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.06); }
-        .painel-stat.blue { border-color: rgba(24,119,242,.3); background: rgba(24,119,242,.06); }
-        .painel-stat-num { font-size: 36px; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -.03em; }
-        .painel-stat-label { font-size: 12px; color: var(--muted); font-weight: 700; }
-        .painel-views-section { margin-bottom: 28px; }
-        .painel-views-card { padding: 20px 22px; border-radius: 18px; background: var(--blueSoft); border: 1px solid rgba(24,119,242,.2); display: flex; align-items: center; gap: 18px; }
-        .painel-views-icon { font-size: 32px; flex-shrink: 0; }
-        .painel-views-info { flex: 1; }
-        .painel-views-num { font-size: 42px; font-weight: 900; color: var(--blue); line-height: 1; letter-spacing: -.04em; }
-        .painel-views-label { font-size: 13px; color: var(--muted); font-weight: 700; margin-top: 4px; }
-        .painel-section-title { font-size: 11px; color: var(--muted); font-weight: 800; margin: 0 0 12px; letter-spacing: .07em; text-transform: uppercase; }
-        .painel-actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
-        .painel-card { padding: 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); color: var(--text); text-decoration: none; display: flex; flex-direction: column; gap: 10px; transition: border-color .18s, box-shadow .18s; }
-        .painel-card:hover { border-color: var(--blue); box-shadow: var(--shadow2); }
-        .painel-card-icon { font-size: 22px; }
-        .painel-card-title { display: block; font-size: 17px; font-weight: 900; letter-spacing: -.03em; line-height: 1.1; }
-        .painel-card-text { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; flex: 1; }
-        .painel-card-btn { align-self: flex-start; display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; background: var(--blue); color: #fff; font-weight: 800; font-size: 13px; }
-        .painel-tip { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; border-radius: 14px; background: var(--blueSoft); border: 1px solid rgba(24,119,242,.2); margin-top: 4px; }
-        .painel-tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-        .painel-tip-text { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
-        @media (max-width: 900px) { .painel-stats { grid-template-columns: repeat(2,1fr); } .painel-actions { grid-template-columns: repeat(2,1fr); } }
-        @media (max-width: 560px) {
-          .painel-stats { grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 18px; }
-          .painel-stat { padding: 14px 12px; border-radius: 12px; }
-          .painel-stat-num { font-size: 28px; }
-          .painel-views-num { font-size: 32px; }
-          .painel-actions { grid-template-columns: 1fr; gap: 10px; }
-          .painel-card { flex-direction: row; align-items: center; padding: 14px 16px; }
-          .painel-card-text { display: none; }
+        /* Stats row */
+        .ps-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-bottom: 28px;
+        }
+        .ps-stat {
+          border-radius: 16px;
+          padding: 16px 14px;
+          display: flex; flex-direction: column; gap: 4px;
+          border: 1px solid rgba(255,255,255,.07);
+          background: var(--surface);
+        }
+        .ps-stat-num { font-size: 32px; font-weight: 900; line-height: 1; letter-spacing: -.04em; color: #fff; }
+        .ps-stat-label { font-size: 11px; font-weight: 800; color: var(--muted); }
+        .ps-stat.green .ps-stat-num { color: #4ade80; }
+        .ps-stat.yellow .ps-stat-num { color: #facc15; }
+        .ps-stat.red .ps-stat-num { color: #f87171; }
+        .ps-stat.blue .ps-stat-num { color: #60a5fa; }
+
+        /* Views destaque */
+        .ps-views {
+          border-radius: 20px;
+          padding: 20px 22px;
+          margin-bottom: 24px;
+          background: linear-gradient(135deg, rgba(34,197,94,.12), rgba(16,185,129,.06));
+          border: 1px solid rgba(34,197,94,.2);
+          display: flex; align-items: center; gap: 16px;
+        }
+        .ps-views-num { font-size: 44px; font-weight: 900; color: #4ade80; letter-spacing: -.05em; line-height: 1; }
+        .ps-views-label { font-size: 13px; color: var(--muted); font-weight: 700; margin-top: 4px; }
+        .ps-views-btn {
+          margin-left: auto; flex-shrink: 0;
+          height: 36px; padding: 0 16px; border-radius: 10px;
+          background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.3);
+          color: #86efac; font-size: 13px; font-weight: 800;
+          white-space: nowrap;
+        }
+
+        /* Ações */
+        .ps-section-label {
+          font-size: 11px; font-weight: 900; letter-spacing: .08em;
+          text-transform: uppercase; color: var(--muted);
+          margin: 0 0 12px;
+        }
+        .ps-actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+        .ps-action {
+          border-radius: 20px; padding: 20px 16px;
+          display: flex; flex-direction: column; gap: 10px;
+          border: 1px solid rgba(255,255,255,.08);
+          background: var(--surface);
+          text-decoration: none; color: var(--text);
+          transition: transform .18s, border-color .18s, box-shadow .18s;
+          position: relative; overflow: hidden;
+        }
+        .ps-action::before {
+          content: ""; position: absolute; inset: 0;
+          opacity: 0; transition: opacity .18s;
+        }
+        .ps-action:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
+        .ps-action.primary { border-color: rgba(34,197,94,.3); background: linear-gradient(135deg, rgba(34,197,94,.1), rgba(16,185,129,.05)); }
+        .ps-action.primary:hover { border-color: rgba(34,197,94,.5); }
+        .ps-action-icon { font-size: 28px; line-height: 1; }
+        .ps-action-title { font-size: 15px; font-weight: 900; letter-spacing: -.03em; line-height: 1.2; color: #fff; }
+        .ps-action-desc { font-size: 12px; color: var(--muted); line-height: 1.5; flex: 1; }
+        .ps-action-arrow {
+          align-self: flex-start;
+          display: inline-flex; align-items: center; height: 28px; padding: 0 10px;
+          border-radius: 8px; font-size: 12px; font-weight: 900;
+          background: rgba(255,255,255,.07); color: rgba(255,255,255,.7);
+        }
+        .ps-action.primary .ps-action-arrow { background: rgba(34,197,94,.2); color: #86efac; }
+
+        /* Alerta */
+        .ps-alert {
+          border-radius: 16px; padding: 14px 18px;
+          display: flex; gap: 12px; align-items: flex-start;
+          border: 1px solid rgba(250,204,21,.2);
+          background: rgba(250,204,21,.06);
+          margin-top: 8px;
+        }
+        .ps-alert-icon { font-size: 18px; flex-shrink: 0; }
+        .ps-alert-text { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; font-weight: 700; }
+        .ps-alert.success { border-color: rgba(34,197,94,.2); background: rgba(34,197,94,.06); }
+
+        @media (max-width: 640px) {
+          .ps-stats { grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 20px; }
+          .ps-stat { padding: 14px 12px; border-radius: 14px; }
+          .ps-stat-num { font-size: 26px; }
+          .ps-views { padding: 16px; border-radius: 16px; }
+          .ps-views-num { font-size: 36px; }
+          .ps-actions { grid-template-columns: 1fr; gap: 10px; }
+          .ps-action { flex-direction: row; align-items: center; padding: 16px; border-radius: 16px; gap: 14px; }
+          .ps-action-desc { display: none; }
+          .ps-action-arrow { margin-left: auto; flex-shrink: 0; }
         }
       `}</style>
 
-      <p className="painel-greeting">Olá, <strong>{nomeUsuario}</strong> 👋</p>
-
-      {/* Card destaque de visualizações */}
-      <div className="painel-views-section">
-        <div className="painel-views-card">
-          <span className="painel-views-icon">👁️</span>
-          <div className="painel-views-info">
-            <div className="painel-views-num">{totalViews.toLocaleString("pt-BR")}</div>
-            <div className="painel-views-label">visualizações nos seus anúncios</div>
-          </div>
-          <Link href="/painel/anuncios" className="painel-card-btn">Ver detalhes</Link>
+      {/* Views destaque */}
+      <div className="ps-views">
+        <div>
+          <div className="ps-views-num">{totalViews.toLocaleString("pt-BR")}</div>
+          <div className="ps-views-label">visualizações totais nos seus anúncios</div>
         </div>
+        <Link href="/painel/anuncios" className="ps-views-btn">Ver detalhes →</Link>
       </div>
 
-      <section className="painel-stats">
-        <div className="painel-stat">
-          <span className="painel-stat-num">{total}</span>
-          <span className="painel-stat-label">Total de anúncios</span>
+      {/* Stats */}
+      <section className="ps-stats">
+        <div className="ps-stat">
+          <span className="ps-stat-num">{total}</span>
+          <span className="ps-stat-label">Total</span>
         </div>
-        <div className="painel-stat green">
-          <span className="painel-stat-num">{ativos}</span>
-          <span className="painel-stat-label">✅ Publicados</span>
+        <div className="ps-stat green">
+          <span className="ps-stat-num">{ativos}</span>
+          <span className="ps-stat-label">Publicados</span>
         </div>
-        <div className="painel-stat yellow">
-          <span className="painel-stat-num">{pendentes}</span>
-          <span className="painel-stat-label">⏳ Aguardando</span>
+        <div className="ps-stat yellow">
+          <span className="ps-stat-num">{pendentes}</span>
+          <span className="ps-stat-label">Aguardando</span>
         </div>
-        <div className="painel-stat red">
-          <span className="painel-stat-num">{rejeitados}</span>
-          <span className="painel-stat-label">❌ Rejeitados</span>
+        <div className="ps-stat red">
+          <span className="ps-stat-num">{rejeitados}</span>
+          <span className="ps-stat-label">Rejeitados</span>
         </div>
       </section>
 
-      <h2 className="painel-section-title">O que deseja fazer?</h2>
-      <section className="painel-actions">
-        <Link href="/painel/anuncios" className="painel-card">
-          <span className="painel-card-icon">🚛</span>
-          <strong className="painel-card-title">Meus anúncios</strong>
-          <p className="painel-card-text">Acompanhe seus anúncios, status de aprovação e publicação.</p>
-          <span className="painel-card-btn">Ver anúncios</span>
+      {/* Ações */}
+      <p className="ps-section-label">Ações rápidas</p>
+      <section className="ps-actions">
+        <Link href="/painel/anuncios" className="ps-action">
+          <span className="ps-action-icon">📄</span>
+          <strong className="ps-action-title">Meus anúncios</strong>
+          <p className="ps-action-desc">Veja status, visualizações e gerencie cada anúncio.</p>
+          <span className="ps-action-arrow">Ver →</span>
         </Link>
-        <Link href="/painel/anuncios/novo/caminhao" className="painel-card">
-          <span className="painel-card-icon">➕</span>
-          <strong className="painel-card-title">Anunciar caminhão</strong>
-          <p className="painel-card-text">Cadastre um caminhão com dados, fotos, localização e contato.</p>
-          <span className="painel-card-btn">Cadastrar</span>
+        <Link href="/painel/anuncios/novo/caminhao" className="ps-action primary">
+          <span className="ps-action-icon">🚛</span>
+          <strong className="ps-action-title">Anunciar caminhão</strong>
+          <p className="ps-action-desc">Cadastre com fotos, dados técnicos e contato WhatsApp.</p>
+          <span className="ps-action-arrow">Cadastrar →</span>
         </Link>
-        <Link href="/painel/anuncios/novo/implemento" className="painel-card">
-          <span className="painel-card-icon">🛥</span>
-          <strong className="painel-card-title">Anunciar implemento</strong>
-          <p className="painel-card-text">Cadastre carreta, caçamba, prancha, baú, tanque ou outro implemento.</p>
-          <span className="painel-card-btn">Cadastrar</span>
+        <Link href="/painel/anuncios/novo/implemento" className="ps-action">
+          <span className="ps-action-icon">🛥</span>
+          <strong className="ps-action-title">Anunciar implemento</strong>
+          <p className="ps-action-desc">Carreta, caçamba, prancha, baú, tanque e mais.</p>
+          <span className="ps-action-arrow">Cadastrar →</span>
         </Link>
       </section>
 
+      {/* Alertas */}
       {pendentes > 0 && (
-        <div className="painel-tip">
-          <span className="painel-tip-icon">💡</span>
-          <p className="painel-tip-text">Você tem <strong>{pendentes} anúncio{pendentes > 1 ? "s" : ""}</strong> aguardando aprovação. Assim que aprovado, aparecerá no site.</p>
+        <div className="ps-alert">
+          <span className="ps-alert-icon">⏳</span>
+          <p className="ps-alert-text">
+            Você tem <strong>{pendentes} anúncio{pendentes > 1 ? "s" : ""}</strong> aguardando aprovação. Assim que aprovado, aparecerá no site.
+          </p>
         </div>
       )}
       {total === 0 && (
-        <div className="painel-tip">
-          <span className="painel-tip-icon">🚀</span>
-          <p className="painel-tip-text">Você ainda não tem anúncios. Cadastre seu primeiro caminhão ou implemento agora!</p>
+        <div className="ps-alert success">
+          <span className="ps-alert-icon">🚀</span>
+          <p className="ps-alert-text">Cadastre seu primeiro caminhão ou implemento agora e comece a receber contatos!</p>
         </div>
       )}
     </PanelLayout>
