@@ -6,8 +6,10 @@ import { createClient } from "@/lib/supabase/client";
 
 type Mensagem = {
   id: string;
+  truck_id: string;
   content: string;
   sender_id: string;
+  receiver_id?: string;
   created_at: string;
 };
 
@@ -65,7 +67,7 @@ export function ChatWidget({ truckId, truckTitulo, vendedorId, compradorId }: Pr
       .eq("truck_id", truckId)
       .or(`and(sender_id.eq.${parteA},receiver_id.eq.${parteB}),and(sender_id.eq.${parteB},receiver_id.eq.${parteA})`)
       .order("created_at", { ascending: true });
-    setMensagens(data ?? []);
+    setMensagens((data as Mensagem[]) ?? []);
     setNaoLidas(0);
   }
 
@@ -83,11 +85,10 @@ export function ChatWidget({ truckId, truckTitulo, vendedorId, compradorId }: Pr
     setEnviando(false);
   }
 
-  if (!userId || userId === vendedorId && !compradorId) return null;
+  if (!userId || (userId === vendedorId && !compradorId)) return null;
 
   return (
     <>
-      {/* Botão flutuante */}
       {!aberto && (
         <button className="chat-fab" onClick={() => setAberto(true)} aria-label="Abrir chat">
           <MessageCircle size={22} />
@@ -95,7 +96,6 @@ export function ChatWidget({ truckId, truckTitulo, vendedorId, compradorId }: Pr
         </button>
       )}
 
-      {/* Janela do chat */}
       {aberto && (
         <div className="chat-window">
           <div className="chat-header">
@@ -142,151 +142,83 @@ export function ChatWidget({ truckId, truckTitulo, vendedorId, compradorId }: Pr
 
       <style>{`
         .chat-fab {
-          position: fixed;
-          bottom: 80px;
-          right: 20px;
-          width: 52px;
-          height: 52px;
-          border-radius: 50%;
-          background: #2563eb;
-          color: #fff;
-          border: none;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
+          position: fixed; bottom: 80px; right: 20px;
+          width: 52px; height: 52px; border-radius: 50%;
+          background: #2563eb; color: #fff; border: none;
+          cursor: pointer; display: flex; align-items: center;
           justify-content: center;
           box-shadow: 0 4px 16px rgba(37,99,235,.4);
-          z-index: 900;
-          transition: background 0.15s;
+          z-index: 900; transition: background 0.15s;
         }
         .chat-fab:hover { background: #1d4ed8; }
         .chat-badge {
-          position: absolute;
-          top: -4px;
-          right: -4px;
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: #ef4444;
-          color: #fff;
-          font-size: 10px;
-          font-weight: 800;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          position: absolute; top: -4px; right: -4px;
+          width: 18px; height: 18px; border-radius: 50%;
+          background: #ef4444; color: #fff;
+          font-size: 10px; font-weight: 800;
+          display: flex; align-items: center; justify-content: center;
         }
         .chat-window {
-          position: fixed;
-          bottom: 80px;
-          right: 20px;
-          width: 320px;
-          height: 420px;
-          border-radius: 16px;
-          background: #1f2327;
-          border: 1px solid #343a40;
+          position: fixed; bottom: 80px; right: 20px;
+          width: 320px; height: 420px; border-radius: 16px;
+          background: #1f2327; border: 1px solid #343a40;
           box-shadow: 0 16px 48px rgba(0,0,0,.4);
-          display: flex;
-          flex-direction: column;
-          z-index: 900;
-          overflow: hidden;
+          display: flex; flex-direction: column;
+          z-index: 900; overflow: hidden;
         }
         .chat-header {
-          display: flex;
-          align-items: center;
+          display: flex; align-items: center;
           justify-content: space-between;
-          padding: 12px 14px;
-          background: #2563eb;
-          color: #fff;
+          padding: 12px 14px; background: #2563eb; color: #fff;
         }
         .chat-header-info {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 13px;
-          font-weight: 700;
+          display: flex; align-items: center;
+          gap: 8px; font-size: 13px; font-weight: 700;
         }
         .chat-close {
-          background: rgba(255,255,255,.15);
-          border: none;
-          border-radius: 6px;
-          padding: 4px;
-          cursor: pointer;
-          color: #fff;
-          display: flex;
-          align-items: center;
+          background: rgba(255,255,255,.15); border: none;
+          border-radius: 6px; padding: 4px; cursor: pointer;
+          color: #fff; display: flex; align-items: center;
         }
         .chat-body {
-          flex: 1;
-          overflow-y: auto;
-          padding: 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
+          flex: 1; overflow-y: auto; padding: 12px;
+          display: flex; flex-direction: column; gap: 8px;
         }
         .chat-empty {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          color: #6b7280;
-          font-size: 13px;
-          text-align: center;
-          padding: 20px;
+          flex: 1; display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          gap: 10px; color: #6b7280; font-size: 13px;
+          text-align: center; padding: 20px;
         }
         .chat-msg {
-          max-width: 80%;
-          padding: 8px 12px;
-          border-radius: 12px;
-          font-size: 13px;
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
+          max-width: 80%; padding: 8px 12px; border-radius: 12px;
+          font-size: 13px; display: flex; flex-direction: column; gap: 3px;
         }
         .chat-msg.minha {
-          align-self: flex-end;
-          background: #2563eb;
-          color: #fff;
-          border-bottom-right-radius: 4px;
+          align-self: flex-end; background: #2563eb;
+          color: #fff; border-bottom-right-radius: 4px;
         }
         .chat-msg.dele {
-          align-self: flex-start;
-          background: #2a2f34;
-          color: #e8eaed;
-          border-bottom-left-radius: 4px;
+          align-self: flex-start; background: #2a2f34;
+          color: #e8eaed; border-bottom-left-radius: 4px;
         }
         .chat-msg small { font-size: 10px; opacity: 0.7; }
         .chat-footer {
-          display: flex;
-          gap: 8px;
-          padding: 10px 12px;
-          border-top: 1px solid #343a40;
+          display: flex; gap: 8px;
+          padding: 10px 12px; border-top: 1px solid #343a40;
         }
         .chat-input {
-          flex: 1;
-          height: 38px;
-          border-radius: 10px;
-          border: 1px solid #343a40;
-          background: #15181b;
-          color: #e8eaed;
-          padding: 0 10px;
-          font-size: 13px;
-          outline: none;
+          flex: 1; height: 38px; border-radius: 10px;
+          border: 1px solid #343a40; background: #15181b;
+          color: #e8eaed; padding: 0 10px;
+          font-size: 13px; outline: none;
         }
         .chat-input:focus { border-color: #2563eb; }
         .chat-send {
-          width: 38px;
-          height: 38px;
-          border-radius: 10px;
-          background: #2563eb;
-          color: #fff;
-          border: none;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
+          width: 38px; height: 38px; border-radius: 10px;
+          background: #2563eb; color: #fff; border: none;
+          cursor: pointer; display: flex; align-items: center;
+          justify-content: center; flex-shrink: 0;
         }
         .chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
         .spin { animation: spin 0.8s linear infinite; }
