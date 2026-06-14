@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { TruckImage } from "./TruckCard";
+
+const AUTOPLAY_INTERVAL = 3500;
 
 type Props = {
   title: string;
@@ -17,17 +19,42 @@ export function AdGallery({ title, images }: Props) {
       return (a.ordem || 0) - (b.ordem || 0);
     });
 
-  const firstImage = validImages[0]?.image_url || "";
-  const [selected, setSelected] = useState(firstImage);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [paused, setPaused]           = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hasMultiple = validImages.length > 1;
 
+  const goTo = useCallback((idx: number) => {
+    setSelectedIdx(idx);
+  }, []);
+
+  // Autoplay
+  useEffect(() => {
+    if (!hasMultiple || paused) return;
+    intervalRef.current = setInterval(() => {
+      setSelectedIdx((i) => (i + 1) % validImages.length);
+    }, AUTOPLAY_INTERVAL);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [hasMultiple, paused, validImages.length]);
+
+  const pause  = () => setPaused(true);
+  const resume = () => setPaused(false);
+
+  const selected = validImages[selectedIdx]?.image_url || "";
+
   return (
-    <div className="ad-gallery">
+    <div
+      className="ad-gallery"
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onTouchStart={pause}
+      onTouchEnd={resume}
+    >
       <div className="ad-gallery-main">
         {selected ? (
           <img
             src={selected}
-            alt={title}
+            alt={`${title} - foto ${selectedIdx + 1}`}
             loading="eager"
             decoding="async"
             fetchPriority="high"
@@ -42,17 +69,27 @@ export function AdGallery({ title, images }: Props) {
             Sem foto
           </span>
         )}
+
+        {/* Indicadores de ponto */}
+        {hasMultiple && (
+          <div className="ad-gallery-dots" aria-hidden="true">
+            {validImages.map((_, i) => (
+              <span key={i} className={`ad-dot${i === selectedIdx ? " active" : ""}`} />
+            ))}
+          </div>
+        )}
       </div>
 
       {hasMultiple && (
-        <div className="ad-gallery-thumbs">
+        <div className="ad-gallery-thumbs" role="list">
           {validImages.map((image, index) => {
-            const active = image.image_url === selected;
+            const active = index === selectedIdx;
             return (
               <button
                 key={`${image.image_url}-${index}`}
                 type="button"
-                onClick={() => setSelected(image.image_url || "")}
+                role="listitem"
+                onClick={() => { goTo(index); pause(); }}
                 className={active ? "active" : ""}
                 aria-label={`Ver foto ${index + 1}`}
                 aria-pressed={active}
@@ -71,9 +108,9 @@ export function AdGallery({ title, images }: Props) {
 
       <style>{`
         .ad-gallery { display: grid; gap: 10px; }
+
         .ad-gallery-main {
-          border-radius: 16px;
-          overflow: hidden;
+          border-radius: 16px; overflow: hidden;
           background: var(--soft);
           aspect-ratio: 16/10;
           position: relative;
@@ -81,7 +118,7 @@ export function AdGallery({ title, images }: Props) {
         .ad-gallery-main img {
           width: 100%; height: 100%;
           object-fit: cover; display: block;
-          transition: opacity .2s;
+          transition: opacity .25s;
         }
         .ad-gallery-empty {
           width: 100%; height: 100%;
@@ -90,6 +127,25 @@ export function AdGallery({ title, images }: Props) {
           gap: 10px; color: var(--muted);
           font-size: 13px; font-weight: 700;
         }
+
+        /* Dots */
+        .ad-gallery-dots {
+          position: absolute; bottom: 12px; left: 50%;
+          transform: translateX(-50%);
+          display: flex; gap: 5px; align-items: center;
+        }
+        .ad-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: rgba(255,255,255,.5);
+          transition: background .2s, width .2s;
+          flex-shrink: 0;
+        }
+        .ad-dot.active {
+          background: #fff;
+          width: 18px; border-radius: 3px;
+        }
+
+        /* Thumbs */
         .ad-gallery-thumbs {
           display: flex; gap: 8px; flex-wrap: wrap;
         }
@@ -101,10 +157,11 @@ export function AdGallery({ title, images }: Props) {
           transition: border-color .14s, opacity .14s;
           flex-shrink: 0;
         }
-        .ad-gallery-thumbs button:not(.active) { opacity: .65; }
+        .ad-gallery-thumbs button:not(.active) { opacity: .6; }
         .ad-gallery-thumbs button.active,
         .ad-gallery-thumbs button:hover { border-color: var(--blue); opacity: 1; }
         .ad-gallery-thumbs button img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         @media (max-width: 560px) {
           .ad-gallery-thumbs button { width: 60px; height: 46px; }
         }
