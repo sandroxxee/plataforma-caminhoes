@@ -119,7 +119,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const title        = getTitle(truck);
   const location     = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
-  const { vehicle: structuredData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
+  const { vehicle: structuredData, product: productData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
   const shareYear    = truck.ano_modelo || truck.ano_fabricacao;
   const shareText    = `🚛 ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
   const specs        = getSpecs(truck);
@@ -127,7 +127,11 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
   return (
     <main className="market-page">
+      {/* Vehicle schema — Google Rich Results */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      {/* Product schema — Google Shopping / Merchant Center */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productData) }} />
+      {/* BreadcrumbList */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }} />
       <PublicHeader />
 
@@ -220,7 +224,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
       <SiteFooter />
 
-      {/* Chat flutuante — só aparece para usuários logados que não são o vendedor */}
       <ChatWidget
         truckId={truck.id}
         truckTitulo={title}

@@ -4,7 +4,7 @@ import { gerarSlugComId } from "@/lib/slug";
 
 export const siteUrl = "https://www.caminhoesavenda.com";
 export const defaultOgImage = "/og-caminhoes-a-venda.jpg";
-export const truckSelect = `id,user_id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
+export const truckSelect = `id,user_id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,quilometragem,motor,cambio,combustivel,cor,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
 
 export const UUID_REGEX = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export const SHORT_ID_REGEX = /-([a-f0-9]{8})$/;
@@ -14,6 +14,10 @@ export type Truck = TruckCardData & {
   descricao: string | null;
   quilometragem?: number | null;
   km?: number | null;
+  motor?: string | null;
+  cambio?: string | null;
+  combustivel?: string | null;
+  cor?: string | null;
   views?: number | null;
   truck_images?: TruckImage[];
 };
@@ -80,6 +84,27 @@ export function getMainImage(truck: Truck) {
   return main || defaultOgImage;
 }
 
+// Mapeia tração para schema.org DriveWheelConfiguration
+function getDriveWheel(tracao?: string | null): string | undefined {
+  if (!tracao) return undefined;
+  const t = tracao.toLowerCase();
+  if (t.includes("4x4") || t.includes("4wd") || t.includes("integral")) return "https://schema.org/AllWheelDriveConfiguration";
+  if (t.includes("6x4") || t.includes("6x2") || t.includes("traseira") || t.includes("tração traseira")) return "https://schema.org/RearWheelDriveConfiguration";
+  if (t.includes("dianteira") || t.includes("4x2")) return "https://schema.org/FrontWheelDriveConfiguration";
+  return undefined;
+}
+
+// Mapeia combustível para schema.org
+function getFuelType(combustivel?: string | null): string | undefined {
+  if (!combustivel) return undefined;
+  const c = combustivel.toLowerCase();
+  if (c.includes("diesel")) return "https://schema.org/Diesel";
+  if (c.includes("gas") || c.includes("gnv")) return "https://schema.org/CNG";
+  if (c.includes("eletri")) return "https://schema.org/Electric";
+  if (c.includes("híbrido") || c.includes("hibrido")) return "https://schema.org/Hybrid";
+  return undefined;
+}
+
 export function getStructuredData(truck: Truck, title: string, location: string, whatsappLink: string) {
   const canonicalPath = getCanonicalPath(truck);
   const url = `${siteUrl}${canonicalPath}`;
@@ -88,17 +113,37 @@ export function getStructuredData(truck: Truck, title: string, location: string,
   const description =
     truck.descricao?.trim() ||
     `${title}${location ? ` em ${location}` : ""}. Anúncio revisado com contato direto pelo WhatsApp.`;
+  const imageAbsolute = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
+  // ── Vehicle schema (Google Rich Results) ──────────────────────────────────
   const vehicle = {
     "@context": "https://schema.org",
     "@type": "Vehicle",
-    name: title, description, url,
-    image: image.startsWith("http") ? image : `${siteUrl}${image}`,
+    name: title,
+    description,
+    url,
+    image: imageAbsolute,
     brand: truck.marca ? { "@type": "Brand", name: truck.marca } : undefined,
     model: truck.modelo || undefined,
     vehicleModelDate: truck.ano_modelo ? String(truck.ano_modelo) : undefined,
+    modelDate: truck.ano_fabricacao ? String(truck.ano_fabricacao) : undefined,
+    vehicleConfiguration: truck.carroceria || undefined,
+    bodyType: truck.carroceria || undefined,
+    driveWheelConfiguration: getDriveWheel(truck.tracao),
+    fuelType: getFuelType(truck.combustivel ?? "Diesel"),
+    color: truck.cor || undefined,
+    vehicleEngine: truck.motor
+      ? { "@type": "EngineSpecification", name: truck.motor }
+      : undefined,
+    mileageFromOdometer: truck.quilometragem
+      ? { "@type": "QuantitativeValue", value: truck.quilometragem, unitCode: "KMT" }
+      : undefined,
+    itemCondition: "https://schema.org/UsedCondition",
     offers: {
-      "@type": "Offer", url, priceCurrency: "BRL", price,
+      "@type": "Offer",
+      url,
+      priceCurrency: "BRL",
+      price,
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
       seller: { "@type": "Organization", name: "Caminhões à Venda", url: siteUrl },
@@ -109,6 +154,30 @@ export function getStructuredData(truck: Truck, title: string, location: string,
       : undefined,
   };
 
+  // ── Product schema (Google Shopping / Merchant Center) ────────────────────
+  const product = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: title,
+    description,
+    url,
+    image: imageAbsolute,
+    sku: truck.id,
+    brand: truck.marca ? { "@type": "Brand", name: truck.marca } : undefined,
+    category: "Veículos > Caminhões",
+    offers: {
+      "@type": "Offer",
+      url,
+      priceCurrency: "BRL",
+      price,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/UsedCondition",
+      seller: { "@type": "Organization", name: "Caminhões à Venda", url: siteUrl },
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    },
+  };
+
+  // ── BreadcrumbList ─────────────────────────────────────────────────────────
   const breadcrumb = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -120,7 +189,7 @@ export function getStructuredData(truck: Truck, title: string, location: string,
     ],
   };
 
-  return { vehicle, breadcrumb };
+  return { vehicle, product, breadcrumb };
 }
 
 export function getSpecs(truck: Truck) {
@@ -131,6 +200,10 @@ export function getSpecs(truck: Truck) {
     { label: "Quilometragem", value: formatKm(truck.quilometragem || truck.km) },
     { label: "Tração",        value: truck.tracao },
     { label: "Carroceria",    value: truck.carroceria },
+    { label: "Motor",         value: truck.motor },
+    { label: "Câmbio",        value: truck.cambio },
+    { label: "Combustível",   value: truck.combustivel },
+    { label: "Cor",           value: truck.cor },
     { label: "Cidade",        value: getLocation(truck) },
   ].filter((s): s is { label: string; value: string } => Boolean(s.value));
 }
