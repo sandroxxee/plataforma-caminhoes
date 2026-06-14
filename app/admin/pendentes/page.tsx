@@ -26,7 +26,15 @@ type Truck = {
   tracao: string | null;
   whatsapp: string | null;
   descricao: string | null;
+  perfil: string | null;
   truck_images?: TruckImage[];
+};
+
+const PERFIL_LABEL: Record<string, { label: string; color: string; bg: string }> = {
+  Máquinas:  { label: "Máquina",   color: "#fde68a", bg: "#3a2b10" },
+  Peças:     { label: "Peça",      color: "#bfdbfe", bg: "#1e2f4a" },
+  Carretas:  { label: "Carreta",   color: "#d9f99d", bg: "#1a2e10" },
+  Implementos:{ label: "Implemento", color: "#e9d5ff", bg: "#2e1a3a" },
 };
 
 function getMainImage(truck: Truck) {
@@ -38,50 +46,24 @@ function getMainImage(truck: Truck) {
 
 function money(value: number | null) {
   if (!value) return "Sob consulta";
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
 export default async function AdminPendentesPage() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
+    .from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
 
   const { data } = await supabase
     .from("trucks")
     .select(`
-      id,
-      titulo,
-      marca,
-      modelo,
-      ano_modelo,
-      preco,
-      cidade,
-      estado,
-      carroceria,
-      tracao,
-      whatsapp,
-      descricao,
-      truck_images (
-        image_url,
-        principal,
-        ordem
-      )
+      id, titulo, marca, modelo, ano_modelo, preco,
+      cidade, estado, carroceria, tracao, whatsapp, descricao, perfil,
+      truck_images ( image_url, principal, ordem )
     `)
     .eq("status", "pendente")
     .order("created_at", { ascending: false });
@@ -96,14 +78,13 @@ export default async function AdminPendentesPage() {
       actions={<Link href="/admin/anuncios" style={styles.topButton}>Ver todos</Link>}
     >
       {trucks.length === 0 && (
-        <div style={styles.empty}>
-          Nenhum anúncio pendente agora.
-        </div>
+        <div style={styles.empty}>Nenhum anúncio pendente agora.</div>
       )}
 
       <div style={styles.grid}>
         {trucks.map((truck) => {
           const image = getMainImage(truck);
+          const perfilInfo = truck.perfil ? PERFIL_LABEL[truck.perfil] : null;
 
           return (
             <article key={truck.id} style={styles.card}>
@@ -117,19 +98,26 @@ export default async function AdminPendentesPage() {
 
               <div style={styles.body}>
                 <div style={styles.rowTop}>
-                  <span style={styles.status}>Pendente</span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <span style={styles.status}>Pendente</span>
+                    {perfilInfo && (
+                      <span style={{ padding: "7px 12px", borderRadius: 999, background: perfilInfo.bg, color: perfilInfo.color, fontWeight: 900, fontSize: 12 }}>
+                        {perfilInfo.label}
+                      </span>
+                    )}
+                  </div>
                   <strong style={styles.price}>{money(truck.preco)}</strong>
                 </div>
 
                 <h2 style={styles.cardTitle}>{truck.titulo}</h2>
 
                 <div style={styles.meta}>
-                  <span>{truck.marca}</span>
-                  <span>{truck.modelo}</span>
-                  <span>{truck.ano_modelo}</span>
-                  <span>{truck.cidade}/{truck.estado}</span>
-                  <span>{truck.carroceria}</span>
-                  <span>{truck.tracao}</span>
+                  {truck.marca && <span>{truck.marca}</span>}
+                  {truck.modelo && <span>{truck.modelo}</span>}
+                  {truck.ano_modelo && <span>{truck.ano_modelo}</span>}
+                  {(truck.cidade || truck.estado) && <span>{[truck.cidade, truck.estado].filter(Boolean).join("/")}</span>}
+                  {truck.carroceria && <span>{truck.carroceria}</span>}
+                  {truck.tracao && <span>{truck.tracao}</span>}
                 </div>
 
                 <p style={styles.desc}>{truck.descricao || "Sem descrição."}</p>
@@ -139,16 +127,11 @@ export default async function AdminPendentesPage() {
                     <input type="hidden" name="id" value={truck.id} />
                     <button style={styles.approve}>Aprovar</button>
                   </form>
-
                   <form action={reprovarAnuncio}>
                     <input type="hidden" name="id" value={truck.id} />
                     <button style={styles.reject}>Reprovar</button>
                   </form>
-
-                  <Link href={`/painel/anuncios/${truck.id}/editar`} style={styles.edit}>
-                    Editar
-                  </Link>
-
+                  <Link href={`/painel/anuncios/${truck.id}/editar`} style={styles.edit}>Editar</Link>
                   <form action={excluirAnuncioAdmin}>
                     <input type="hidden" name="id" value={truck.id} />
                     <button style={styles.delete}>Excluir</button>
