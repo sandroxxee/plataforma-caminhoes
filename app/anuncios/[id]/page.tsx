@@ -10,10 +10,9 @@ import { formatMoney, getCardTitle, getLocation, getTitle, type TruckCardData, t
 import { gerarSlugComId } from "@/lib/slug";
 import { ViewCounter } from "@/components/ViewCounter";
 
-// Cache de 5 minutos — ViewCounter é client-side, não é afetado
 export const revalidate = 300;
 
-const siteUrl = "https://caminhoesavenda.com";
+const siteUrl = "https://www.caminhoesavenda.com";
 const defaultOgImage = "/og-caminhoes-a-venda.jpg";
 const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
 
