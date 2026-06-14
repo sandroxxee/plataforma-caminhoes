@@ -44,10 +44,9 @@ export function getShortTruckId(id?: string | null) {
 }
 
 export function gerarSlugComId(truck: TruckSlugData) {
-  const shortId = getShortTruckId(truck.id);
   const slug = gerarSlug(truck);
-
-  return shortId ? `${slug}-${shortId}` : slug;
+  const id = String(truck.id || "").trim().toLowerCase();
+  return id ? `${slug}-${id}` : slug;
 }
 
 export function extrairIdDoParametroAnuncio(parametro: string) {
@@ -56,6 +55,12 @@ export function extrairIdDoParametroAnuncio(parametro: string) {
 
   if (uuidRegex.test(value)) {
     return { tipo: "uuid" as const, valor: value };
+  }
+
+  // UUID completo no final do slug: qualquer-texto-uuid
+  const uuidAtEnd = value.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/);
+  if (uuidAtEnd) {
+    return { tipo: "uuid" as const, valor: uuidAtEnd[1] };
   }
 
   const shortId = value.match(/-([a-f0-9]{8})$/)?.[1];
