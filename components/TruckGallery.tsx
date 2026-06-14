@@ -45,7 +45,15 @@ export function TruckGallery({ title, images }: Props) {
               style={{ objectFit: "contain", objectPosition: "center", padding: 10 }}
             />
           ) : (
-            <img src={selected} alt={title} style={styles.mainImage} />
+            // imagem não-Supabase: fetchpriority high para ser tratada como LCP
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={selected}
+              alt={title}
+              fetchPriority="high"
+              loading="eager"
+              style={styles.mainImage}
+            />
           )
         ) : (
           <div style={styles.noImage}>Sem foto</div>
@@ -81,9 +89,11 @@ export function TruckGallery({ title, images }: Props) {
                     style={{ objectFit: "contain", width: "100%", height: "100%", padding: 5, boxSizing: "border-box" }}
                   />
                 ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={url}
                     alt={`${title} - foto ${index + 1}`}
+                    loading="lazy"
                     style={styles.thumb}
                   />
                 )}
@@ -92,6 +102,36 @@ export function TruckGallery({ title, images }: Props) {
           })}
         </div>
       )}
+
+      <style>{`
+        .truck-gallery-wrap .main-wrap {
+          height: 520px;
+        }
+        @media (max-width: 768px) {
+          .truck-gallery-wrap .main-wrap {
+            height: 280px;
+          }
+          .truck-gallery-wrap .thumb-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+          }
+          .truck-gallery-wrap .thumb-btn {
+            height: 72px;
+          }
+        }
+        @media (max-width: 420px) {
+          .truck-gallery-wrap .main-wrap {
+            height: 220px;
+          }
+          .truck-gallery-wrap .thumb-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+          }
+          .truck-gallery-wrap .thumb-btn {
+            height: 60px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -134,7 +174,7 @@ const styles: Record<string, CSSProperties> = {
   },
   thumbGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(5,1fr)",
+    gridTemplateColumns: "repeat(5, 1fr)",
     gap: 12,
   },
   thumbButton: {
