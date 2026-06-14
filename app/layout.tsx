@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope } from "next/font/google";
+import { ClientShell } from "@/components/ClientShell";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -93,6 +94,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="pt-BR" className={manrope.variable}>
       <body>
         {children}
+        <ClientShell />
       </body>
     </html>
   );
