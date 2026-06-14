@@ -22,7 +22,6 @@ export async function GET(req: NextRequest) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`, { count: "exact" })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Peças,Máquinas)")
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
