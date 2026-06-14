@@ -7,7 +7,7 @@ import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
 import { LoadMore } from "./LoadMore";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
@@ -39,7 +39,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const supabase = await createClient();
 
-  // Mesma lógica original que funcionava — .not perfil in exclui as outras categorias
   let q = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
@@ -57,7 +56,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const { data } = await q;
   const trucks = (data || []) as Truck[];
 
-  // contagem total para o LoadMore
   let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
@@ -93,6 +91,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           </div>
         ) : (
           <LoadMore
+            key={`${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
             initialTrucks={trucks}
             total={total ?? trucks.length}
             pageSize={24}
