@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
-export const runtime = "edge";
-
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const marca = searchParams.get("marca") || "";
@@ -12,7 +10,7 @@ export async function GET(req: NextRequest) {
   const imagem = searchParams.get("img") || "";
 
   const heading = titulo || (marca && estado ? `${marca} em ${estado}` : marca || (estado ? `Caminhões em ${estado}` : "Caminhões à Venda"));
-  const sub = preco ? `R$ ${Number(preco).toLocaleString("pt-BR")}` : (marca && !titulo ? `Ver todos os ${marca} à venda` : "Anunìie ou encontre o seu caminhão");
+  const sub = preco ? `R$ ${Number(preco).toLocaleString("pt-BR")}` : (marca && !titulo ? `Ver todos os ${marca} à venda` : "Anuncie ou encontre o seu caminhão");
 
   return new ImageResponse(
     (
@@ -23,7 +21,6 @@ export async function GET(req: NextRequest) {
           padding: "60px 72px", justifyContent: "space-between",
         }}
       >
-        {/* Logo area */}
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ width: 56, height: 56, borderRadius: 16, background: "#1877f2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>
             🚛
@@ -31,7 +28,6 @@ export async function GET(req: NextRequest) {
           <span style={{ color: "rgba(255,255,255,.7)", fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em" }}>caminhoesavenda.com</span>
         </div>
 
-        {/* Conteúdo principal */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {imagem && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -50,7 +46,6 @@ export async function GET(req: NextRequest) {
           </div>
         </div>
 
-        {/* Rodapé */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ color: "rgba(255,255,255,.45)", fontSize: 16, fontWeight: 700 }}>A maior plataforma de caminhões do Brasil</span>
           <span style={{ background: "#1877f2", color: "#fff", fontSize: 16, fontWeight: 900, padding: "8px 20px", borderRadius: 999 }}>Ver anúncios →</span>

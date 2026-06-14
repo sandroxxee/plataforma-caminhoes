@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
 
-export const runtime = "edge";
 export const alt = "Caminhão à venda";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -80,7 +79,6 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
           fontFamily: "sans-serif",
         }}
       >
-        {/* Foto de fundo */}
         {mainImage && (
           <img
             src={mainImage}
@@ -95,7 +93,6 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
           />
         )}
 
-        {/* Gradiente escuro na base */}
         <div
           style={{
             position: "absolute",
@@ -105,7 +102,6 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
           }}
         />
 
-        {/* Badge top-left */}
         <div
           style={{
             position: "absolute",
@@ -125,7 +121,6 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
           🚛 CAMINHÕES À VENDA
         </div>
 
-        {/* Conteúdo base */}
         <div
           style={{
             position: "absolute",
