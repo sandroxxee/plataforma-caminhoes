@@ -1,69 +1,69 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop";
 import { createClient } from "@/lib/supabase/client";
-import { Upload, ZoomIn, ZoomOut, RotateCcw, Check, Loader2 } from "lucide-react";
+import { Upload, ZoomIn, ZoomOut, RotateCcw, Check, Loader2, ImageIcon } from "lucide-react";
 
-async function getCroppedBlob(imageSrc: string, cropArea: Area): Promise<Blob> {
+// Crop simples sem biblioteca externa
+interface CropState { x: number; y: number; scale: number }
+
+async function getCroppedBlob(imageSrc: string, zoom: number): Promise<Blob> {
   const img = await new Promise<HTMLImageElement>((res, rej) => {
     const i = new Image();
-    i.crossOrigin = "anonymous";
     i.onload = () => res(i);
     i.onerror = rej;
     i.src = imageSrc;
   });
+  // proporção 16:6 centralizada
+  const aspect   = 16 / 6;
+  const srcW     = img.naturalWidth  * zoom;
+  const srcH     = img.naturalHeight * zoom;
+  let cropW = srcW;
+  let cropH = srcW / aspect;
+  if (cropH > srcH) { cropH = srcH; cropW = srcH * aspect; }
+  const sx = (img.naturalWidth  - cropW / zoom) / 2;
+  const sy = (img.naturalHeight - cropH / zoom) / 2;
+  const outW = Math.round(cropW);
+  const outH = Math.round(cropH);
   const canvas = document.createElement("canvas");
-  canvas.width  = cropArea.width;
-  canvas.height = cropArea.height;
+  canvas.width  = outW;
+  canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(img, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 0, 0, cropArea.width, cropArea.height);
+  ctx.drawImage(img, sx, sy, cropW / zoom, cropH / zoom, 0, 0, outW, outH);
   return new Promise((res) => canvas.toBlob((b) => res(b!), "image/jpeg", 0.92));
 }
 
 type Props = { currentUrl: string; onSaved: (url: string) => void };
 
 export function HeroBannerUpload({ currentUrl, onSaved }: Props) {
-  const inputRef              = useRef<HTMLInputElement>(null);
-  const [src, setSrc]         = useState<string | null>(null);
-  const [crop, setCrop]       = useState({ x: 0, y: 0 });
-  const [zoom, setZoom]       = useState(1);
-  const [croppedArea, setCroppedArea] = useState<Area | null>(null);
-  const [saving, setSaving]   = useState(false);
-  const [saved, setSaved]     = useState(false);
-  const [error, setError]     = useState("");
+  const inputRef            = useRef<HTMLInputElement>(null);
+  const [src, setSrc]       = useState<string | null>(null);
+  const [zoom, setZoom]     = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved]   = useState(false);
+  const [error, setError]   = useState("");
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setSrc(URL.createObjectURL(file));
-    setZoom(1);
-    setCrop({ x: 0, y: 0 });
-    setSaved(false);
-    setError("");
+    setZoom(1); setSaved(false); setError("");
   }
 
-  const onCropComplete = useCallback((_: Area, pixels: Area) => {
-    setCroppedArea(pixels);
-  }, []);
-
   async function handleSave() {
-    if (!src || !croppedArea) return;
-    setSaving(true);
-    setError("");
+    if (!src) return;
+    setSaving(true); setError("");
     try {
-      const blob = await getCroppedBlob(src, croppedArea);
-      const supabase  = createClient();
-      const fileName  = `hero-banner-${Date.now()}.jpg`;
+      const blob     = await getCroppedBlob(src, zoom);
+      const supabase = createClient();
+      const fileName = `hero-banner-${Date.now()}.jpg`;
       const { error: upErr } = await supabase.storage
         .from("site-assets")
         .upload(fileName, blob, { contentType: "image/jpeg", upsert: true });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("site-assets").getPublicUrl(fileName);
       onSaved(data.publicUrl);
-      setSaved(true);
-      setSrc(null);
+      setSaved(true); setSrc(null);
     } catch (e: any) {
       setError(e?.message || "Erro ao enviar imagem.");
     } finally {
@@ -72,15 +72,12 @@ export function HeroBannerUpload({ currentUrl, onSaved }: Props) {
   }
 
   function reset() {
-    setSrc(null);
-    setSaved(false);
-    setError("");
+    setSrc(null); setSaved(false); setError("");
     if (inputRef.current) inputRef.current.value = "";
   }
 
   return (
     <div style={s.wrap}>
-      <p style={s.label}>Imagem da capa (banner hero)</p>
 
       {/* Preview atual */}
       {!src && currentUrl && (
@@ -90,77 +87,66 @@ export function HeroBannerUpload({ currentUrl, onSaved }: Props) {
         </div>
       )}
 
-      {/* Cropper */}
+      {/* Preview da nova imagem + zoom */}
       {src && (
         <div style={s.cropperSection}>
-          <div style={s.cropperBox}>
-            <Cropper
-              image={src}
-              crop={crop}
-              zoom={zoom}
-              aspect={16 / 6}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
+          <div style={s.previewNew}>
+            <img
+              src={src}
+              alt="Nova capa"
+              style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, transformOrigin: "center", display: "block" }}
             />
           </div>
-
           <div style={s.controls}>
-            <ZoomOut size={16} />
-            <input
-              type="range" min={1} max={3} step={0.01}
-              value={zoom}
+            <ZoomOut size={16} style={{ flexShrink: 0 }} />
+            <input type="range" min={1} max={2.5} step={0.01} value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              style={s.slider}
-              aria-label="Zoom"
-            />
-            <ZoomIn size={16} />
-            <button type="button" onClick={reset} style={s.resetBtn} title="Cancelar">
-              <RotateCcw size={14} /> Cancelar
+              style={s.slider} aria-label="Zoom" />
+            <ZoomIn size={16} style={{ flexShrink: 0 }} />
+            <span style={s.zoomVal}>{Math.round(zoom * 100)}%</span>
+            <button type="button" onClick={reset} style={s.resetBtn}>
+              <RotateCcw size={13} /> Cancelar
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            style={s.saveBtn}
-          >
-            {saving ? <Loader2 size={16} className="spin" /> : <Check size={16} />}
-            {saving ? "Enviando..." : "Salvar imagem"}
+          <button type="button" onClick={handleSave} disabled={saving} style={s.saveBtn}>
+            {saving ? <Loader2 size={16} /> : <Check size={16} />}
+            {saving ? "Enviando..." : "Confirmar imagem"}
           </button>
         </div>
       )}
 
-      {saved && (
-        <div style={s.success}>✅ Imagem da capa atualizada! Clique em “Salvar alterações” para confirmar.</div>
-      )}
-      {error && <div style={s.errorBox}>{error}</div>}
+      {saved && <div style={s.success}>✅ Imagem salva! Clique em “Salvar alterações” abaixo para confirmar.</div>}
+      {error && <div style={s.errorBox}>❌ {error}</div>}
 
-      <button type="button" onClick={() => inputRef.current?.click()} style={s.uploadBtn}>
-        <Upload size={15} />
+      {/* Botão upload — sempre visível */}
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        style={s.uploadBtn}
+      >
+        {currentUrl ? <ImageIcon size={16} /> : <Upload size={16} />}
         {currentUrl ? "Trocar imagem da capa" : "Enviar imagem da capa"}
       </button>
       <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFile} />
-      <small style={s.hint}>Recomendado: 1600×600px ou maior. Após recortar, clique em Salvar imagem e depois em Salvar alterações.</small>
+      <small style={s.hint}>JPG, PNG ou WebP. Recomendado: 1600×600px ou maior.</small>
     </div>
   );
 }
 
 const s: Record<string, React.CSSProperties> = {
-  wrap:          { display: "grid", gap: 12 },
-  label:         { margin: 0, fontWeight: 900, fontSize: 13, color: "#334155" },
-  previewWrap:   { position: "relative", borderRadius: 14, overflow: "hidden", maxHeight: 200 },
-  previewImg:    { width: "100%", objectFit: "cover", display: "block", maxHeight: 200 },
-  previewBadge:  { position: "absolute", top: 10, left: 10, background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 11, fontWeight: 900, padding: "4px 10px", borderRadius: 999 },
-  cropperSection:{ display: "grid", gap: 12 },
-  cropperBox:    { position: "relative", width: "100%", height: 240, background: "#0f172a", borderRadius: 14, overflow: "hidden" },
-  controls:      { display: "flex", alignItems: "center", gap: 10, color: "#64748b" },
-  slider:        { flex: 1, accentColor: "#1f64b5" },
-  resetBtn:      { display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 999, border: "1px solid #d8dee9", background: "#f1f5f9", color: "#64748b", fontWeight: 800, cursor: "pointer", fontSize: 13 },
-  saveBtn:       { display: "inline-flex", alignItems: "center", gap: 8, minHeight: 46, padding: "0 22px", borderRadius: 14, border: 0, background: "#16a34a", color: "#fff", fontWeight: 950, fontSize: 14, cursor: "pointer" },
-  success:       { padding: "10px 16px", borderRadius: 12, background: "#dcfce7", border: "1px solid #bbf7d0", color: "#166534", fontWeight: 800, fontSize: 13 },
-  errorBox:      { padding: "10px 16px", borderRadius: 12, background: "#fee2e2", border: "1px solid #fca5a5", color: "#991b1b", fontWeight: 800, fontSize: 13 },
-  uploadBtn:     { display: "inline-flex", alignItems: "center", gap: 8, height: 42, padding: "0 18px", borderRadius: 12, border: "1.5px dashed #93c5fd", background: "#eff6ff", color: "#1d4ed8", fontWeight: 800, fontSize: 13, cursor: "pointer" },
-  hint:          { color: "#94a3b8", fontWeight: 700, fontSize: 12 },
+  wrap:           { display: "grid", gap: 12 },
+  previewWrap:    { position: "relative", borderRadius: 14, overflow: "hidden", height: 160 },
+  previewImg:     { width: "100%", height: "100%", objectFit: "cover", display: "block" },
+  previewBadge:   { position: "absolute", top: 10, left: 10, background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 11, fontWeight: 900, padding: "4px 10px", borderRadius: 999 },
+  previewNew:     { position: "relative", height: 180, borderRadius: 14, overflow: "hidden", background: "#0f172a" },
+  cropperSection: { display: "grid", gap: 10 },
+  controls:       { display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 12, background: "#f8fafc", border: "1px solid #e2e8f0" },
+  slider:         { flex: 1, accentColor: "#1f64b5" },
+  zoomVal:        { fontSize: 12, fontWeight: 800, color: "#64748b", minWidth: 36, textAlign: "right" },
+  resetBtn:       { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 999, border: "1px solid #d8dee9", background: "#fff", color: "#64748b", fontWeight: 800, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" },
+  saveBtn:        { display: "inline-flex", alignItems: "center", gap: 8, minHeight: 46, padding: "0 22px", borderRadius: 14, border: 0, background: "#16a34a", color: "#fff", fontWeight: 950, fontSize: 14, cursor: "pointer" },
+  success:        { padding: "10px 16px", borderRadius: 12, background: "#dcfce7", border: "1px solid #bbf7d0", color: "#166534", fontWeight: 800, fontSize: 13 },
+  errorBox:       { padding: "10px 16px", borderRadius: 12, background: "#fee2e2", border: "1px solid #fca5a5", color: "#991b1b", fontWeight: 800, fontSize: 13 },
+  uploadBtn:      { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 48, padding: "0 22px", borderRadius: 14, border: "2px dashed #3b82f6", background: "#eff6ff", color: "#1d4ed8", fontWeight: 900, fontSize: 14, cursor: "pointer", width: "100%" },
+  hint:           { color: "#94a3b8", fontWeight: 700, fontSize: 12 },
 };
