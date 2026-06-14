@@ -1,8 +1,6 @@
-"use client";
-import type { ReactNode } from "react";
 import Link from "next/link";
 
-type Brand = { name: string; slug: string; logo: ReactNode };
+type Brand = { name: string; slug: string; logo: React.ReactNode };
 
 const brands: Brand[] = [
   {
