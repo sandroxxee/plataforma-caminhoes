@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import { ClientShell } from "@/components/ClientShell";
+import { CookieBanner } from "@/components/CookieBanner";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -82,7 +83,6 @@ export const viewport: Viewport = {
   themeColor: "#1877f2",
 };
 
-// SearchAction schema — Google Sitelinks Searchbox
 const searchActionSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -108,6 +108,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         />
         {children}
         <ClientShell />
+        <CookieBanner />
       </body>
     </html>
   );
