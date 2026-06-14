@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef } from "react";
-import { MapPin, Camera, MessageCircle } from "lucide-react";
+import { MapPin, Camera, MessageCircle, Eye } from "lucide-react";
 import {
   formatMoney,
   getCardTitle,
@@ -25,7 +25,12 @@ function isSupabaseUrl(url: string) {
 function isNew(created_at?: string | null) {
   if (!created_at) return false;
   const diff = Date.now() - new Date(created_at).getTime();
-  return diff < 3 * 24 * 60 * 60 * 1000; // 3 dias
+  return diff < 3 * 24 * 60 * 60 * 1000;
+}
+
+function fmtViews(n: number) {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(".0", "")}k`;
+  return String(n);
 }
 
 const WaIcon = () => (
@@ -46,9 +51,10 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const waLink     = getWhatsappLink(truck);
   const meta       = [year, type].filter(Boolean).join(" \u2022 ");
   const photoCount = (truck.truck_images || []).length;
+  const views      = (truck as any).views as number | null | undefined;
 
-  const novo      = isNew((truck as any).created_at);
-  const destaque  = !!(truck as any).destaque;
+  const novo     = isNew((truck as any).created_at);
+  const destaque = !!(truck as any).destaque;
 
   const [preview, setPreview] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,7 +81,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       onFocus={openPreview}
       onBlur={closePreview}
     >
-      {/* ---- Popover de pr\u00e9-visualiza\u00e7\u00e3o (desktop only) ---- */}
       {preview && (
         <div className="tc-preview" role="tooltip" aria-label={`Pr\u00e9-visualiza\u00e7\u00e3o: ${title}`}>
           <div className="tc-preview-photo">
@@ -96,11 +101,9 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
               </span>
             )}
           </div>
-
           <div className="tc-preview-body">
             <p className="tc-preview-title">{cardTitle}</p>
             <strong className="tc-preview-price">{formatMoney(truck.preco)}</strong>
-
             {specs.length > 0 && (
               <div className="tc-preview-specs">
                 {specs.map((s) => (
@@ -111,7 +114,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
                 ))}
               </div>
             )}
-
             <div className="tc-preview-actions">
               <Link href={truckUrl} className="tc-preview-btn-detail" onClick={closePreview}>
                 Ver detalhes
@@ -125,12 +127,10 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
               )}
             </div>
           </div>
-
           <div className="tc-preview-arrow" aria-hidden="true" />
         </div>
       )}
 
-      {/* ---- Card normal ---- */}
       <Link className="tc-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
           isSupabaseUrl(image) ? (
@@ -169,7 +169,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           </span>
         )}
 
-        {/* Badges sobrepostos no canto superior esquerdo */}
         <span className="tc-badges">
           {destaque && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
           {novo     && <span className="tc-badge tc-badge-novo">Novo</span>}
@@ -184,15 +183,21 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
       <div className="tc-body">
         <p className="tc-name">{cardTitle}</p>
-        {meta && <p className="tc-meta">{meta}</p>}
+        <div className="tc-meta-row">
+          {meta && <p className="tc-meta">{meta}</p>}
+          {views != null && views > 0 && (
+            <span className="tc-views">
+              <Eye size={11} strokeWidth={2.5} aria-hidden="true" />
+              {fmtViews(views)}
+            </span>
+          )}
+        </div>
         <Link className="tc-btn" href={truckUrl}>Ver detalhes</Link>
       </div>
 
       <style>{`
         .tc { isolation: isolate; }
         .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
-
-        /* Badges */
         .tc-badges {
           position: absolute; top: 9px; left: 9px;
           display: flex; flex-direction: column; gap: 4px;
@@ -205,26 +210,25 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           letter-spacing: .03em; line-height: 1;
           backdrop-filter: blur(4px);
         }
-        .tc-badge-destaque {
-          background: rgba(234,179,8,.92); color: #7c5c00;
-        }
-        .tc-badge-novo {
-          background: rgba(34,197,94,.9); color: #fff;
+        .tc-badge-destaque { background: rgba(234,179,8,.92); color: #7c5c00; }
+        .tc-badge-novo { background: rgba(34,197,94,.9); color: #fff; }
+
+        /* views + meta */
+        .tc-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .tc-views {
+          display: inline-flex; align-items: center; gap: 3px;
+          font-size: 11px; font-weight: 800; color: var(--muted);
+          white-space: nowrap; flex-shrink: 0;
         }
 
         /* Popover */
         .tc-preview {
-          position: absolute;
-          bottom: calc(100% + 12px);
+          position: absolute; bottom: calc(100% + 12px);
           left: 50%; transform: translateX(-50%);
-          width: 320px;
-          background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: 18px;
-          box-shadow: var(--shadow3);
-          z-index: 200;
-          overflow: visible;
-          animation: tc-pop .18s ease;
+          width: 320px; background: var(--surface);
+          border: 1px solid var(--line); border-radius: 18px;
+          box-shadow: var(--shadow3); z-index: 200;
+          overflow: visible; animation: tc-pop .18s ease;
           pointer-events: auto;
         }
         @keyframes tc-pop {
@@ -233,8 +237,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         }
         .tc-preview-photo {
           position: relative; width: 100%; height: 180px;
-          background: var(--soft); overflow: hidden;
-          border-radius: 18px 18px 0 0;
+          background: var(--soft); overflow: hidden; border-radius: 18px 18px 0 0;
         }
         .tc-preview-no-photo {
           width:100%; height:100%;
@@ -246,20 +249,17 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           display:inline-flex; align-items:center; gap:4px;
           height:22px; padding:0 9px; border-radius:999px;
           background:rgba(0,0,0,.55); color:#fff;
-          font-size:11px; font-weight:800;
-          backdrop-filter:blur(4px);
+          font-size:11px; font-weight:800; backdrop-filter:blur(4px);
         }
         .tc-preview-body { padding: 14px 16px 16px; }
         .tc-preview-title {
-          margin:0 0 4px;
-          font-size:14px; font-weight:800; color:var(--text);
+          margin:0 0 4px; font-size:14px; font-weight:800; color:var(--text);
           line-height:1.3; letter-spacing:-.02em;
           display:-webkit-box; -webkit-line-clamp:2;
           -webkit-box-orient:vertical; overflow:hidden;
         }
         .tc-preview-price {
-          display:block;
-          font-size:22px; font-weight:950;
+          display:block; font-size:22px; font-weight:950;
           color:var(--blue); letter-spacing:-.04em;
           line-height:1; margin-bottom:12px;
         }
