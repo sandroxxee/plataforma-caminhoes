@@ -9,8 +9,8 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Carretas \u00e0 Venda | Caminh\u00f5es \u00e0 Venda",
-  description: "Veja carretas e semirreboque \u00e0 venda: graneleiras, porta-containers, pranchas, frigor\u00edficas, tanques e muito mais. Negocia\u00e7\u00e3o direta pelo WhatsApp.",
+  title: "Carretas à Venda | Caminhões à Venda",
+  description: "Veja carretas e semirreboques à venda: graneleiras, porta-containers, pranchas, frigoríficas, tanques e muito mais. Negociação direta pelo WhatsApp.",
   alternates: { canonical: "/carretas" },
 };
 
@@ -34,9 +34,9 @@ export default async function CarretasPage() {
       <div className="car-cta">
         <div className="car-cta-inner">
           <div>
-            <span className="car-eyebrow">&#x1F69B; Carretas e semirreboque</span>
-            <h1 className="car-title">Carretas \u00e0 Venda</h1>
-            <p className="car-sub">Graneleiras, porta-containers, pranchas, frigor\u00edficas, tanques e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
+            <span className="car-eyebrow">🚛 Carretas e semirreboques</span>
+            <h1 className="car-title">Carretas à Venda</h1>
+            <p className="car-sub">Graneleiras, porta-containers, pranchas, frigoríficas, tanques e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
           </div>
           <Link href="/painel/anuncios/novo/carreta" className="car-anuncie">
             + Anuncie sua carreta aqui
@@ -56,7 +56,7 @@ export default async function CarretasPage() {
           </>
         ) : (
           <div className="car-empty">
-            <span>&#x1F69B;</span>
+            <span>🚛</span>
             <strong>Nenhuma carreta publicada ainda</strong>
             <p>Seja o primeiro a anunciar sua carreta aqui.</p>
             <Link href="/painel/anuncios/novo/carreta" className="car-anuncie">Anunciar agora</Link>

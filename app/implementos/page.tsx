@@ -9,8 +9,8 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Implementos \u00e0 Venda | Caminh\u00f5es \u00e0 Venda",
-  description: "Veja implementos rodovi\u00e1rios \u00e0 venda: carretas, ca\u00e7ambas, pranchas, ba\u00fas, tanques e semirreboque. Negocia\u00e7\u00e3o direta pelo WhatsApp.",
+  title: "Implementos à Venda | Caminhões à Venda",
+  description: "Veja implementos rodoviários à venda: carretas, caçambas, pranchas, baús, tanques e semirreboques. Negociação direta pelo WhatsApp.",
   alternates: { canonical: "/implementos" },
 };
 
@@ -34,9 +34,9 @@ export default async function ImplementosPage() {
       <div className="impl-cta">
         <div className="impl-cta-inner">
           <div>
-            <span className="impl-eyebrow">&#x1F6A2; Implementos rodovi\u00e1rios</span>
-            <h1 className="impl-title">Implementos \u00e0 Venda</h1>
-            <p className="impl-sub">Carretas, ca\u00e7ambas, pranchas, ba\u00fas, tanques e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
+            <span className="impl-eyebrow">🚚 Implementos rodoviários</span>
+            <h1 className="impl-title">Implementos à Venda</h1>
+            <p className="impl-sub">Carretas, caçambas, pranchas, baús, tanques e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
           </div>
           <Link href="/painel/anuncios/novo/implemento" className="impl-anuncie">
             + Anuncie seu implemento aqui
@@ -56,7 +56,7 @@ export default async function ImplementosPage() {
           </>
         ) : (
           <div className="impl-empty">
-            <span>&#x1F6A2;</span>
+            <span>🚚</span>
             <strong>Nenhum implemento publicado ainda</strong>
             <p>Seja o primeiro a anunciar seu implemento aqui.</p>
             <Link href="/painel/anuncios/novo/implemento" className="impl-anuncie">Anunciar agora</Link>

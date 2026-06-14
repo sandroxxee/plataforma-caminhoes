@@ -9,8 +9,8 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pe\u00e7as para Caminh\u00e3o \u00e0 Venda | Caminh\u00f5es \u00e0 Venda",
-  description: "Veja pe\u00e7as para caminh\u00e3o \u00e0 venda: motores, c\u00e2mbios, eixos, suspens\u00e3o, freios, el\u00e9trica e muito mais. Negocia\u00e7\u00e3o direta pelo WhatsApp.",
+  title: "Peças para Caminhão à Venda | Caminhões à Venda",
+  description: "Veja peças para caminhão à venda: motores, câmbios, eixos, suspensão, freios, elétrica e muito mais. Negociação direta pelo WhatsApp.",
   alternates: { canonical: "/pecas" },
 };
 
@@ -21,7 +21,7 @@ export default async function PecasPage() {
     .from("trucks")
     .select(`id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, whatsapp, destaque, created_at, truck_images(image_url, principal, ordem)`)
     .eq("status", "aprovado")
-    .eq("perfil", "Pe\u00e7as")
+    .eq("perfil", "Peças")
     .order("created_at", { ascending: false })
     .limit(48);
 
@@ -34,31 +34,31 @@ export default async function PecasPage() {
       <div className="pec-cta">
         <div className="pec-cta-inner">
           <div>
-            <span className="pec-eyebrow">&#x1F527; Pe\u00e7as para caminh\u00e3o</span>
-            <h1 className="pec-title">Pe\u00e7as \u00e0 Venda</h1>
-            <p className="pec-sub">Motores, c\u00e2mbios, eixos, suspens\u00e3o, freios, el\u00e9trica e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
+            <span className="pec-eyebrow">🔧 Peças para caminhão</span>
+            <h1 className="pec-title">Peças à Venda</h1>
+            <p className="pec-sub">Motores, câmbios, eixos, suspensão, freios, elétrica e muito mais. Contato direto com o vendedor pelo WhatsApp.</p>
           </div>
           <Link href="/painel/anuncios/novo/peca" className="pec-anuncie">
-            + Anuncie sua pe\u00e7a aqui
+            + Anuncie sua peça aqui
           </Link>
         </div>
       </div>
 
       <div className="pec-container">
-        <CategoryBrandsBar categoria="pecas" labelSingular="Pe\u00e7as" />
+        <CategoryBrandsBar categoria="pecas" labelSingular="Peças" />
 
         {pecas.length > 0 ? (
           <>
-            <p className="pec-count">{pecas.length} pe\u00e7a{pecas.length !== 1 ? "s" : ""} encontrada{pecas.length !== 1 ? "s" : ""}</p>
+            <p className="pec-count">{pecas.length} peça{pecas.length !== 1 ? "s" : ""} encontrada{pecas.length !== 1 ? "s" : ""}</p>
             <div className="pec-grid">
               {pecas.map((item) => <TruckCard key={item.id} truck={item} />)}
             </div>
           </>
         ) : (
           <div className="pec-empty">
-            <span>&#x1F527;</span>
-            <strong>Nenhuma pe\u00e7a publicada ainda</strong>
-            <p>Seja o primeiro a anunciar sua pe\u00e7a aqui.</p>
+            <span>🔧</span>
+            <strong>Nenhuma peça publicada ainda</strong>
+            <p>Seja o primeiro a anunciar sua peça aqui.</p>
             <Link href="/painel/anuncios/novo/peca" className="pec-anuncie">Anunciar agora</Link>
           </div>
         )}
