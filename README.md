@@ -2,9 +2,9 @@
 
 Esta é a etapa 3 da rota oficial do projeto:
 
-1. Protótipo visual navegável ✅
-2. Aprovar aparência e fluxo ✅
-3. Criar projeto Next.js ✅
+1. Protótipo visual navigável ✔️
+2. Aprovar aparência e fluxo ✔️
+3. Criar projeto Next.js ✔️
 4. Criar Supabase ⏭️
 5. Conectar login
 6. Conectar anúncios
@@ -63,3 +63,9 @@ Criar Supabase:
 - autenticação;
 - storage de fotos;
 - regras RLS.
+
+## Fixes aplicados
+
+- `proxy.ts`: export renomeado de `middleware` para `proxy` (Next.js 16)
+- `app/anuncios/page.tsx`: removido filtro de perfil que escondia anúncios
+- `app/api/anuncios/route.ts`: removido mesmo filtro na API do LoadMore
