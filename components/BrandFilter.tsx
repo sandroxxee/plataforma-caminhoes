@@ -1,209 +1,32 @@
+import Image from "next/image";
 import Link from "next/link";
 
-type Brand = { name: string; slug: string; logo: React.ReactNode };
+type Brand = { name: string; slug: string; logo: string };
 
 const brands: Brand[] = [
-  {
-    name: "Todas",
-    slug: "",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="url(#gAll)" strokeWidth="2.5" fill="none"/>
-        <path d="M14 24h20M24 14v20" stroke="url(#gAll)" strokeWidth="2.5" strokeLinecap="round"/>
-        <defs>
-          <linearGradient id="gAll" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#60a5fa"/><stop offset="1" stopColor="#a78bfa"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "Mercedes",
-    slug: "Mercedes-Benz",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="url(#gMB)" strokeWidth="2" fill="none"/>
-        <circle cx="24" cy="24" r="20" fill="url(#gMBfill)" fillOpacity="0.08"/>
-        <path d="M24 6 L24 24 L38.7 33" stroke="url(#gMB)" strokeWidth="2.2" strokeLinecap="round"/>
-        <path d="M24 24 L9.3 33" stroke="url(#gMB)" strokeWidth="2.2" strokeLinecap="round"/>
-        <defs>
-          <linearGradient id="gMB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#e2e8f0"/><stop offset="1" stopColor="#94a3b8"/>
-          </linearGradient>
-          <linearGradient id="gMBfill" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#e2e8f0"/><stop offset="1" stopColor="#64748b"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "Scania",
-    slug: "Scania",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="url(#gScBorder)" strokeWidth="2" fill="none"/>
-        <path d="M24 10 C16 10 10 16 10 24 C10 29 12.5 33.5 16.5 36 L24 28 L31.5 36 C35.5 33.5 38 29 38 24 C38 16 32 10 24 10Z" fill="url(#gScF)"/>
-        <circle cx="24" cy="22" r="4" fill="white" fillOpacity="0.95"/>
-        <defs>
-          <linearGradient id="gScBorder" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fca5a5"/><stop offset="1" stopColor="#dc2626"/>
-          </linearGradient>
-          <linearGradient id="gScF" x1="10" y1="10" x2="38" y2="38" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#ef4444"/><stop offset="1" stopColor="#991b1b"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "Volvo",
-    slug: "Volvo",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="18" stroke="url(#gVoBorder)" strokeWidth="2.5" fill="none"/>
-        <circle cx="24" cy="24" r="18" fill="url(#gVoF)" fillOpacity="0.12"/>
-        <path d="M24 13 L24 18" stroke="url(#gVoBorder)" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M29 15.5 L26.5 19.5" stroke="url(#gVoBorder)" strokeWidth="2" strokeLinecap="round"/>
-        <text x="24" y="30" textAnchor="middle" fontFamily="Arial Black,sans-serif" fontSize="10" fontWeight="900" fill="url(#gVoText)" letterSpacing="0.5">VOLVO</text>
-        <defs>
-          <linearGradient id="gVoBorder" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#93c5fd"/><stop offset="1" stopColor="#1d4ed8"/>
-          </linearGradient>
-          <linearGradient id="gVoF" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#93c5fd"/><stop offset="1" stopColor="#1e40af"/>
-          </linearGradient>
-          <linearGradient id="gVoText" x1="6" y1="20" x2="42" y2="34" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#bfdbfe"/><stop offset="1" stopColor="#3b82f6"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "VW",
-    slug: "Volkswagen",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="19" stroke="url(#gVW)" strokeWidth="2" fill="none"/>
-        <path d="M24 9l-6 14h-4l10 16 10-16h-4L24 9z" fill="url(#gVWF)" fillOpacity=".85"/>
-        <defs>
-          <linearGradient id="gVW" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#6ee7b7"/><stop offset="1" stopColor="#059669"/>
-          </linearGradient>
-          <linearGradient id="gVWF" x1="14" y1="9" x2="34" y2="39" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#6ee7b7"/><stop offset="1" stopColor="#065f46"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "Ford",
-    slug: "Ford",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="24" cy="24" rx="20" ry="13" stroke="url(#gFo)" strokeWidth="2" fill="none"/>
-        <text x="24" y="29" textAnchor="middle" fontFamily="Georgia,serif" fontSize="13" fontWeight="bold" fontStyle="italic" fill="url(#gFoF)">Ford</text>
-        <defs>
-          <linearGradient id="gFo" x1="4" y1="11" x2="44" y2="37" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#93c5fd"/><stop offset="1" stopColor="#1e40af"/>
-          </linearGradient>
-          <linearGradient id="gFoF" x1="10" y1="18" x2="38" y2="34" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#bfdbfe"/><stop offset="1" stopColor="#3b82f6"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "Iveco",
-    slug: "Iveco",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="8" y="16" width="32" height="16" rx="4" stroke="url(#gIv)" strokeWidth="2" fill="none"/>
-        <text x="24" y="28" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="11" fontWeight="900" fill="url(#gIvF)" letterSpacing="1">IVECO</text>
-        <defs>
-          <linearGradient id="gIv" x1="8" y1="16" x2="40" y2="32" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fcd34d"/><stop offset="1" stopColor="#d97706"/>
-          </linearGradient>
-          <linearGradient id="gIvF" x1="8" y1="20" x2="40" y2="30" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fef3c7"/><stop offset="1" stopColor="#f59e0b"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "DAF",
-    slug: "DAF",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="url(#gDafB)" strokeWidth="2" fill="none"/>
-        <circle cx="24" cy="24" r="20" fill="url(#gDafBg)" fillOpacity="0.1"/>
-        <text x="24" y="20" textAnchor="middle" fontFamily="Arial Black,sans-serif" fontSize="11" fontWeight="900" fill="url(#gDafF)" letterSpacing="1">DAF</text>
-        <path d="M12 25 Q24 35 36 25" stroke="url(#gDafF)" strokeWidth="2" strokeLinecap="round" fill="none"/>
-        <defs>
-          <linearGradient id="gDafB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#f9a8d4"/><stop offset="1" stopColor="#be185d"/>
-          </linearGradient>
-          <linearGradient id="gDafBg" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#f9a8d4"/><stop offset="1" stopColor="#be185d"/>
-          </linearGradient>
-          <linearGradient id="gDafF" x1="10" y1="14" x2="38" y2="34" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fce7f3"/><stop offset="1" stopColor="#ec4899"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "MAN",
-    slug: "MAN",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="url(#gManB)" strokeWidth="2" fill="none"/>
-        <circle cx="24" cy="24" r="20" fill="url(#gManBg)" fillOpacity="0.1"/>
-        <path d="M12 32 L12 16 L24 28 L36 16 L36 32" stroke="url(#gManF)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        <defs>
-          <linearGradient id="gManB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fbbf24"/><stop offset="1" stopColor="#b45309"/>
-          </linearGradient>
-          <linearGradient id="gManBg" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fde68a"/><stop offset="1" stopColor="#d97706"/>
-          </linearGradient>
-          <linearGradient id="gManF" x1="10" y1="12" x2="38" y2="36" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fef3c7"/><stop offset="1" stopColor="#f59e0b"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    name: "Agrale",
-    slug: "Agrale",
-    logo: (
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="url(#gAgrB)" strokeWidth="2" fill="none"/>
-        <circle cx="24" cy="24" r="20" fill="url(#gAgrBg)" fillOpacity="0.1"/>
-        <path d="M24 10 L34 34 L24 29 L14 34 Z" fill="url(#gAgrF)" fillOpacity="0.9"/>
-        <circle cx="24" cy="22" r="3" fill="white" fillOpacity="0.9"/>
-        <defs>
-          <linearGradient id="gAgrB" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#86efac"/><stop offset="1" stopColor="#15803d"/>
-          </linearGradient>
-          <linearGradient id="gAgrBg" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#86efac"/><stop offset="1" stopColor="#166534"/>
-          </linearGradient>
-          <linearGradient id="gAgrF" x1="14" y1="10" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#bbf7d0"/><stop offset="1" stopColor="#16a34a"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
+  { name: "Todas",    slug: "",             logo: "" },
+  { name: "Mercedes", slug: "Mercedes-Benz", logo: "https://img.logo.dev/mercedes-benz.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "Scania",   slug: "Scania",        logo: "https://img.logo.dev/scania.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "Volvo",    slug: "Volvo",         logo: "https://img.logo.dev/volvotrucks.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "VW",       slug: "Volkswagen",    logo: "https://img.logo.dev/vw.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "Ford",     slug: "Ford",          logo: "https://img.logo.dev/ford.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "Iveco",    slug: "Iveco",         logo: "https://img.logo.dev/iveco.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "DAF",      slug: "DAF",           logo: "https://img.logo.dev/daf.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "MAN",      slug: "MAN",           logo: "https://img.logo.dev/man.eu?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "Agrale",   slug: "Agrale",        logo: "https://img.logo.dev/agrale.com.br?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
 ];
+
+const ALL_ICON = (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+    <circle cx="24" cy="24" r="20" stroke="url(#gAll)" strokeWidth="2.5" fill="none"/>
+    <path d="M14 24h20M24 14v20" stroke="url(#gAll)" strokeWidth="2.5" strokeLinecap="round"/>
+    <defs>
+      <linearGradient id="gAll" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#60a5fa"/><stop offset="1" stopColor="#a78bfa"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 type Props = {
   marcaAtiva: string;
@@ -219,7 +42,18 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
           const href = b.slug === "" ? buildHref(undefined) : buildHref(b.slug);
           return (
             <Link key={b.slug || "todas"} href={href} className={`bf-item${active ? " active" : ""}`}>
-              <div className="bf-logo">{b.logo}</div>
+              <div className="bf-logo">
+                {b.logo ? (
+                  <Image
+                    src={b.logo}
+                    alt={b.name}
+                    width={38}
+                    height={38}
+                    style={{ objectFit: "contain", borderRadius: 8 }}
+                    unoptimized
+                  />
+                ) : ALL_ICON}
+              </div>
               <span className="bf-name">{b.name}</span>
             </Link>
           );
@@ -233,7 +67,7 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
         .bf-logo {
           width:58px; height:58px; border-radius:18px;
           display:flex; align-items:center; justify-content:center;
-          background:rgba(255,255,255,.04); border:1.5px solid rgba(255,255,255,.08);
+          background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.08);
           backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
           box-shadow:0 2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.08) inset,0 8px 24px rgba(0,0,0,.15);
           transition:border-color .18s,box-shadow .18s,background .18s;
@@ -244,9 +78,8 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
           background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 100%);
           border-radius:18px 18px 0 0; pointer-events:none;
         }
-        .bf-logo svg { width:34px; height:34px; }
         .bf-item.active .bf-logo {
-          background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.3);
+          background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3);
           box-shadow:0 4px 16px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.2) inset,0 0 0 2px rgba(96,165,250,.4);
         }
         .bf-item:hover .bf-logo { border-color:rgba(255,255,255,.2); box-shadow:0 8px 24px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.15) inset; }
@@ -254,7 +87,6 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
         .bf-item.active .bf-name { color:#93c5fd; }
         @media(max-width:560px) {
           .bf-logo { width:52px; height:52px; border-radius:16px; }
-          .bf-logo svg { width:30px; height:30px; }
           .bf-name { font-size:9px; }
         }
       `}</style>
