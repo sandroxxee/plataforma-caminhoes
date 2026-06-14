@@ -21,8 +21,8 @@ import {
   getSpecs,
 } from "./anuncio-utils";
 import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
+import { ChatWidget } from "@/components/ChatWidget";
 
-// ✅ revalidate aqui — único lugar válido
 export const revalidate = 300;
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title       = getTitle(truck);
   const seoTitle    = getSeoTitle(truck);
-  const location    = getLocation(truck); // ✅ função centralizada
+  const location    = getLocation(truck);
   const price       = formatMoney(truck.preco);
   const description = getSeoDescription(truck, title, location, price);
   const canonical   = getCanonicalPath(truck);
@@ -117,7 +117,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   }
 
   const title        = getTitle(truck);
-  const location     = getLocation(truck); // ✅ função centralizada — mesma do generateMetadata e getSpecs
+  const location     = getLocation(truck);
   const whatsappLink = getWhatsappLink(truck, title);
   const { vehicle: structuredData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
   const shareYear    = truck.ano_modelo || truck.ano_fabricacao;
@@ -143,7 +143,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <span>{truck.marca || "Anúncio"}</span>
           </nav>
 
-          {/* Galeria + contador (client) */}
           <AnuncioGaleria
             truckId={truck.id}
             title={title}
@@ -151,7 +150,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             initialViews={initialViews}
           />
 
-          {/* Título mobile */}
           <div className="detail-card detail-mobile-header">
             <h1 className="detail-h1">{title}</h1>
             {location && (
@@ -163,7 +161,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <strong className="detail-price-mobile">{formatMoney(truck.preco)}</strong>
           </div>
 
-          {/* Descrição */}
           <div className="detail-card detail-desc-card">
             <h2 className="detail-section-title">Sobre este caminhão</h2>
             <p className="detail-desc-text">
@@ -171,7 +168,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             </p>
           </div>
 
-          {/* Segurança */}
           <div className="detail-card detail-safety">
             <ShieldCheck size={18} strokeWidth={1.8} className="detail-safety-icon" aria-hidden="true" />
             <div>
@@ -198,7 +194,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
 
-            {/* ✅ Botões de ação dentro do aside — onde devem estar */}
             <AnuncioAsideActions
               truckId={truck.id}
               title={title}
@@ -224,6 +219,13 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       </div>
 
       <SiteFooter />
+
+      {/* Chat flutuante — só aparece para usuários logados que não são o vendedor */}
+      <ChatWidget
+        truckId={truck.id}
+        truckTitulo={title}
+        vendedorId={truck.user_id ?? ""}
+      />
 
       <style>{`
         .detail-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--muted);padding:14px 0 8px}

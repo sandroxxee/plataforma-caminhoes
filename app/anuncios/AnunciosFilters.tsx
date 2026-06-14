@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { SalvarBusca } from "@/components/SalvarBusca";
 
 const ESTADOS = [
   { label: "Todos", value: "" },
@@ -48,6 +49,11 @@ type Props = {
 export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilters, total }: Props) {
   const [open, setOpen] = useState(false);
   const activeCount = (faixaIdx > 0 ? 1 : 0) + (marcaFiltro ? 1 : 0) + (estadoFiltro ? 1 : 0);
+
+  // Mapeia faixa ativa para precoMax
+  const precoMaxAtivo = faixaIdx > 0 && FAIXAS[faixaIdx].max !== Infinity
+    ? FAIXAS[faixaIdx].max
+    : undefined;
 
   return (
     <div className="af-root">
@@ -138,13 +144,20 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
             </div>
           </div>
 
+          {/* Salvar busca — só aparece quando há filtro ativo */}
+          {hasFilters && (
+            <SalvarBusca
+              marca={marcaFiltro || undefined}
+              estado={estadoFiltro || undefined}
+              precoMax={precoMaxAtivo}
+            />
+          )}
+
         </div>
       </div>
 
       <style>{`
         .af-root { margin-bottom: 24px; }
-
-        /* Topbar */
         .af-topbar {
           display: flex; align-items: center;
           justify-content: space-between; gap: 12px;
@@ -156,8 +169,6 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
         .af-count strong { color: var(--text); font-size: 16px; }
         .af-filtered { color: var(--blue); }
         .af-topbar-right { display: flex; align-items: center; gap: 8px; }
-
-        /* Botão limpar */
         .af-clear {
           display: inline-flex; align-items: center; gap: 5px;
           height: 34px; padding: 0 12px; border-radius: 999px;
@@ -168,8 +179,6 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
           transition: background .15s;
         }
         .af-clear:hover { background: rgba(239,68,68,.14); }
-
-        /* Botão toggle */
         .af-toggle {
           display: inline-flex; align-items: center; gap: 7px;
           height: 38px; padding: 0 14px; border-radius: 12px;
@@ -191,12 +200,8 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
           background: var(--blue); color: #fff;
           font-size: 11px; font-weight: 900; padding: 0 4px;
         }
-        .af-chevron {
-          transition: transform .2s;
-        }
+        .af-chevron { transition: transform .2s; }
         .af-toggle.open .af-chevron { transform: rotate(180deg); }
-
-        /* Painel */
         .af-panel {
           display: grid;
           grid-template-rows: 0fr;
@@ -213,8 +218,6 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
           border-radius: 16px;
           margin-top: 8px;
         }
-
-        /* Grupos */
         .af-group { display: grid; gap: 8px; }
         .af-group-label {
           font-size: 11px; font-weight: 900;
