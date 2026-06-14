@@ -53,9 +53,9 @@ h1, h2, h3, strong, button, .public-menu a {
   font-family: var(--font-manrope), Arial, sans-serif;
 }
 h1, h2 {
-  font-weight: 800; letter-spacing: -0.03em; text-transform: uppercase;
+  font-weight: 800; letter-spacing: -0.03em;
 }
-h3 { font-weight: 900; letter-spacing: -0.02em; }
+h3 { font-weight: 700; letter-spacing: -0.02em; }
 
 /* === CONTAINERS === */
 .market-container, .container, .public-nav-shell, .site-footer {
@@ -172,7 +172,7 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
   border-radius: 999px; background: var(--blueSoft); color: var(--blue);
   font-size: 11px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase;
 }
-.market-section-head h2 { margin: 4px 0 0; font-size: clamp(20px,2.4vw,28px); letter-spacing: -.04em; }
+.market-section-head h2 { margin: 4px 0 0; font-size: clamp(20px,2.4vw,28px); letter-spacing: -.03em; }
 .market-section-head a {
   min-height: 40px; padding: 0 16px; border-radius: 999px;
   background: var(--blueSoft); color: var(--blue);
@@ -188,7 +188,7 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
 }
-.stock-head h1 { font-size: clamp(24px,3vw,36px); letter-spacing: -.04em; margin: 8px 0 0; line-height: 1.1; }
+.stock-head h1 { font-size: clamp(22px,2.8vw,32px); letter-spacing: -.03em; margin: 8px 0 0; line-height: 1.2; }
 .stock-eyebrow {
   display: inline-flex; min-height: 24px; align-items: center; padding: 0 10px;
   border-radius: 999px; background: var(--blueSoft); color: var(--blue);
@@ -278,7 +278,7 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
   border-radius: 999px; background: var(--blueSoft); color: var(--blue);
   font-size: 11px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase;
 }
-.detail-title h1 { font-size: clamp(22px,2.8vw,32px); letter-spacing: -.04em; margin: 8px 0 4px; }
+.detail-title h1 { font-size: clamp(22px,2.8vw,32px); letter-spacing: -.03em; margin: 8px 0 4px; }
 .detail-price { font-size: clamp(28px,3.5vw,42px); font-weight: 900; letter-spacing: -.05em; color: var(--blue); }
 .detail-specs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 16px 0; }
 .detail-specs div { background: var(--soft); border-radius: var(--radius-sm); padding: 12px 14px; }
@@ -352,7 +352,7 @@ body.public-theme-dark .market-field input:focus, body.public-theme-dark .market
 .seo-breadcrumb a { color: var(--blue); text-decoration: none; }
 
 .al-header { padding: 12px 0; }
-.al-title { margin: 0 0 4px; font-size: clamp(24px,4vw,36px); letter-spacing: -.04em; }
+.al-title { margin: 0 0 4px; font-size: clamp(24px,4vw,36px); letter-spacing: -.03em; }
 .al-subtitle { margin: 0; color: var(--muted); font-size: 14px; font-weight: 800; }
 
 .seo-text-block {
