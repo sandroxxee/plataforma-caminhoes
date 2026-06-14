@@ -7,27 +7,16 @@ import { defaultHomeContent, type HomeContent } from "@/lib/site-content";
 
 async function requireAdmin() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
-
   return supabase;
 }
 
 export async function salvarAparencia(formData: FormData) {
   const supabase = await requireAdmin();
-  const content = { ...defaultHomeContent } as HomeContent;
+  const content  = { ...defaultHomeContent } as HomeContent;
 
   (Object.keys(defaultHomeContent) as (keyof HomeContent)[]).forEach((key) => {
     const value = String(formData.get(key) || "").trim();
@@ -40,9 +29,7 @@ export async function salvarAparencia(formData: FormData) {
     updated_at: new Date().toISOString(),
   });
 
-  if (error) {
-    throw new Error(`Não foi possível salvar a aparência: ${error.message}`);
-  }
+  if (error) throw new Error(`Não foi possível salvar: ${error.message}`);
 
   revalidatePath("/");
   revalidatePath("/admin/aparencia");

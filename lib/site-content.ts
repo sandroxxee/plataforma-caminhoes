@@ -25,6 +25,7 @@ export type HomeContent = {
   sellText: string;
   finalMini: string;
   finalTitle: string;
+  heroBannerUrl: string;
 };
 
 export const defaultHomeContent: HomeContent = {
@@ -56,21 +57,19 @@ export const defaultHomeContent: HomeContent = {
     "Um anúncio bem organizado passa mais confiança e ajuda o comprador chamar já sabendo o básico do caminhão.",
   finalMini: "Caminhões à venda",
   finalTitle: "Veja o estoque completo ou anuncie seu caminhão.",
+  heroBannerUrl: "",
 };
 
 export function mergeHomeContent(content: unknown): HomeContent {
   if (!content || typeof content !== "object") return defaultHomeContent;
-
   const raw = content as Partial<Record<keyof HomeContent, unknown>>;
   const merged = { ...defaultHomeContent };
-
   (Object.keys(defaultHomeContent) as (keyof HomeContent)[]).forEach((key) => {
     const value = raw[key];
     if (typeof value === "string" && value.trim()) {
       merged[key] = value.trim();
     }
   });
-
   return merged;
 }
 
@@ -80,6 +79,5 @@ export async function getHomeContent(supabase: any): Promise<HomeContent> {
     .select("content")
     .eq("id", "home")
     .maybeSingle();
-
   return mergeHomeContent(data?.content);
 }

@@ -1,12 +1,18 @@
 import "./HeroMarketplace.css";
 import Link from "next/link";
+import { getHomeContent } from "@/lib/site-content";
+import { createClient } from "@/lib/supabase/server";
 
-export function HeroMarketplace() {
+export async function HeroMarketplace() {
+  const supabase = await createClient();
+  const content  = await getHomeContent(supabase);
+  const imgSrc   = content.heroBannerUrl || "/hero-home.jpg";
+
   return (
     <div className="market-container">
       <div className="hero-wrap">
         <img
-          src="/hero-home.jpg"
+          src={imgSrc}
           alt="Caminhões à Venda"
           className="hero-img"
           fetchPriority="high"
