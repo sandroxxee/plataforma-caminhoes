@@ -2,27 +2,25 @@
 
 import dynamic from "next/dynamic";
 
-// Componentes client-only carregados de forma lazy
-// Separados do layout.tsx para compatibilidade com Turbopack
-const PwaRegister = dynamic(() => import("@/components/PwaRegister"), {
-  ssr: false,
-  loading: () => null,
-});
+const PwaRegister = dynamic(
+  () => import("@/components/PwaRegister").then((m) => ({ default: m.PwaRegister })),
+  { ssr: false, loading: () => null }
+);
 
-const WhatsappClickTracker = dynamic(() => import("@/components/WhatsappClickTracker"), {
-  ssr: false,
-  loading: () => null,
-});
+const WhatsappClickTracker = dynamic(
+  () => import("@/components/WhatsappClickTracker").then((m) => ({ default: m.WhatsappClickTracker })),
+  { ssr: false, loading: () => null }
+);
 
-const CopyProtection = dynamic(() => import("@/components/CopyProtection"), {
-  ssr: false,
-  loading: () => null,
-});
+const CopyProtection = dynamic(
+  () => import("@/components/CopyProtection").then((m) => ({ default: m.CopyProtection })),
+  { ssr: false, loading: () => null }
+);
 
-const MobileBottomNav = dynamic(() => import("@/components/MobileBottomNav"), {
-  ssr: false,
-  loading: () => null,
-});
+const MobileBottomNav = dynamic(
+  () => import("@/components/MobileBottomNav").then((m) => ({ default: m.MobileBottomNav })),
+  { ssr: false, loading: () => null }
+);
 
 export function ClientShell() {
   return (
