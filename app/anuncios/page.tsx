@@ -7,8 +7,7 @@ import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
 import { LoadMore } from "./LoadMore";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
@@ -16,8 +15,8 @@ export const metadata = {
 };
 
 const FAIXAS = [
-  { min: 0, max: Infinity },
-  { min: 0, max: 100_000 },
+  { min: 0,       max: Infinity },
+  { min: 0,       max: 100_000 },
   { min: 100_000, max: 200_000 },
   { min: 200_000, max: 400_000 },
   { min: 400_000, max: Infinity },
@@ -40,31 +39,36 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const supabase = await createClient();
 
+  // Mesma lógica original que funcionava — .not perfil in exclui as outras categorias
+  let q = supabase
+    .from("trucks")
+    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
+    .eq("status", "aprovado")
+    .eq("vendido", false)
+    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
+    .order("created_at", { ascending: false })
+    .limit(24);
+
+  if (marcaFiltro)      q = q.eq("marca",  marcaFiltro);
+  if (estadoFiltro)     q = q.eq("estado", estadoFiltro);
+  if (min > 0)          q = q.gte("preco", min);
+  if (max !== Infinity) q = q.lte("preco", max);
+
+  const { data } = await q;
+  const trucks = (data || []) as Truck[];
+
+  // contagem total para o LoadMore
   let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
-    .eq("vendido", false);
+    .eq("vendido", false)
+    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)");
   if (marcaFiltro)      countQ = countQ.eq("marca",  marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
   if (max !== Infinity) countQ = countQ.lte("preco", max);
   const { count: total } = await countQ;
-
-  let dataQ = supabase
-    .from("trucks")
-    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
-    .eq("status", "aprovado")
-    .eq("vendido", false)
-    .order("created_at", { ascending: false })
-    .limit(24);
-  if (marcaFiltro)      dataQ = dataQ.eq("marca",  marcaFiltro);
-  if (estadoFiltro)     dataQ = dataQ.eq("estado", estadoFiltro);
-  if (min > 0)          dataQ = dataQ.gte("preco", min);
-  if (max !== Infinity) dataQ = dataQ.lte("preco", max);
-
-  const { data } = await dataQ;
-  const trucks = (data || []) as Truck[];
 
   return (
     <main className="market-page">
@@ -79,7 +83,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           marcaFiltro={marcaFiltro}
           estadoFiltro={estadoFiltro}
           hasFilters={hasFilters}
-          total={total ?? 0}
+          total={total ?? trucks.length}
         />
         {trucks.length === 0 ? (
           <div className="market-empty">
@@ -90,7 +94,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         ) : (
           <LoadMore
             initialTrucks={trucks}
-            total={total ?? 0}
+            total={total ?? trucks.length}
             pageSize={24}
             marca={marcaFiltro}
             estado={estadoFiltro}
