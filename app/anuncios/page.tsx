@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
+import { BrandFilter } from "@/components/BrandFilter";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -13,20 +14,13 @@ export const metadata = {
 
 type Truck = TruckCardData & { truck_images?: TruckImage[] };
 
-const MARCAS = ["Todas", "Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
-
 const ESTADOS = [
   { label: "Todos", value: "" },
-  { label: "SC", value: "SC" },
-  { label: "PR", value: "PR" },
-  { label: "RS", value: "RS" },
-  { label: "SP", value: "SP" },
-  { label: "MG", value: "MG" },
-  { label: "MS", value: "MS" },
-  { label: "MT", value: "MT" },
-  { label: "GO", value: "GO" },
-  { label: "BA", value: "BA" },
-  { label: "RJ", value: "RJ" },
+  { label: "SC", value: "SC" }, { label: "PR", value: "PR" },
+  { label: "RS", value: "RS" }, { label: "SP", value: "SP" },
+  { label: "MG", value: "MG" }, { label: "MS", value: "MS" },
+  { label: "MT", value: "MT" }, { label: "GO", value: "GO" },
+  { label: "BA", value: "BA" }, { label: "RJ", value: "RJ" },
   { label: "ES", value: "ES" },
 ];
 
@@ -38,6 +32,8 @@ const FAIXAS = [
   { label: "Acima R$400k", min: 400_000, max: Infinity },
 ];
 
+const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
+
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
@@ -45,7 +41,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const faixaIdx = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
   const { min, max } = FAIXAS[faixaIdx];
-  const marcaFiltro = MARCAS.includes(marca || "") && marca !== "Todas" ? marca : "";
+  const marcaFiltro = MARCAS_VALIDAS.includes(marca || "") ? marca! : "";
   const estadoFiltro = ESTADOS.find((e) => e.value === estado)?.value || "";
 
   const supabase = await createClient();
@@ -77,6 +73,10 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     return qs ? `/anuncios?${qs}` : "/anuncios";
   }
 
+  function buildMarcaHref(m: string | undefined) {
+    return buildHref({ marca: m });
+  }
+
   const hasFilters = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
   return (
@@ -89,26 +89,20 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio encontrado" : "anúncios encontrados"}</p>
         </div>
 
-        {/* Filtros */}
-        <div className="al-filters-wrap">
-          <div className="al-filter-group">
-            <span className="al-filter-label">Marca</span>
-            <div className="al-filter-row">
-              {MARCAS.map((m) => {
-                const active = m === "Todas" ? !marcaFiltro : marcaFiltro === m;
-                const href = m === "Todas" ? buildHref({ marca: undefined }) : buildHref({ marca: m });
-                return <Link key={m} href={href} className={`al-filter-btn${active ? " active" : ""}`}>{m}</Link>;
-              })}
-            </div>
-          </div>
+        {/* Marcas com logos 3D */}
+        <div className="al-brand-section">
+          <span className="al-filter-label">Marca</span>
+          <BrandFilter marcaAtiva={marcaFiltro} buildHref={buildMarcaHref} />
+        </div>
 
+        {/* Estado + Preço */}
+        <div className="al-filters-wrap">
           <div className="al-filter-group">
             <span className="al-filter-label">Estado</span>
             <div className="al-filter-row">
               {ESTADOS.map((e) => {
                 const active = estadoFiltro === e.value;
-                const href = buildHref({ estado: e.value || undefined });
-                return <Link key={e.value || "todos"} href={href} className={`al-filter-btn${active ? " active" : ""}`}>{e.label}</Link>;
+                return <Link key={e.value || "todos"} href={buildHref({ estado: e.value || undefined })} className={`al-filter-btn${active ? " active" : ""}`}>{e.label}</Link>;
               })}
             </div>
           </div>
@@ -116,25 +110,18 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           <div className="al-filter-group">
             <span className="al-filter-label">Preço</span>
             <div className="al-filter-row">
-              {FAIXAS.map((f, idx) => {
-                const active = faixaIdx === idx;
-                const href = buildHref({ faixa: idx === 0 ? undefined : idx });
-                return <Link key={idx} href={href} className={`al-filter-btn${active ? " active" : ""}`}>{f.label}</Link>;
-              })}
+              {FAIXAS.map((f, idx) => (
+                <Link key={idx} href={buildHref({ faixa: idx === 0 ? undefined : idx })} className={`al-filter-btn${faixaIdx === idx ? " active" : ""}`}>{f.label}</Link>
+              ))}
             </div>
           </div>
 
-          {hasFilters && (
-            <Link href="/anuncios" className="al-clear-btn">✕ Limpar filtros</Link>
-          )}
+          {hasFilters && <Link href="/anuncios" className="al-clear-btn">✕ Limpar filtros</Link>}
         </div>
 
         <Suspense fallback={null}>
           <section className="stock-grid">
-            {trucks.map((truck) => (
-              <TruckCard key={truck.id} truck={truck} />
-            ))}
-
+            {trucks.map((truck) => <TruckCard key={truck.id} truck={truck} />)}
             {trucks.length === 0 && (
               <div className="market-empty">
                 <strong>Nenhum anúncio encontrado</strong>
@@ -149,19 +136,18 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <SiteFooter />
 
       <style>{`
-        .al-header { padding: 28px 0 12px; }
-        .al-title { margin: 0 0 4px; font-size: clamp(26px, 4vw, 38px); letter-spacing: -.04em; line-height: 1; }
+        .al-header { padding: 28px 0 16px; }
+        .al-title { margin: 0 0 4px; font-size: clamp(26px,4vw,38px); letter-spacing: -.04em; line-height: 1; }
         .al-subtitle { margin: 0; color: var(--muted); font-size: 14px; font-weight: 750; }
-
+        .al-brand-section { display: grid; gap: 10px; margin-bottom: 20px; }
         .al-filters-wrap { display: grid; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
         .al-filter-group { display: grid; gap: 7px; }
         .al-filter-label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
         .al-filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
-        .al-filter-btn { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--soft); color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; transition: border-color .15s, color .15s, background .15s; white-space: nowrap; }
+        .al-filter-btn { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--soft); color: var(--muted); font-size: 12px; font-weight: 800; text-decoration: none; transition: border-color .15s,color .15s,background .15s; white-space: nowrap; }
         .al-filter-btn:hover { border-color: var(--blue); color: var(--blue); }
         .al-filter-btn.active { border-color: var(--blue); background: var(--blueSoft); color: var(--blue); }
-        .al-clear-btn { display: inline-flex; align-self: start; align-items: center; height: 32px; padding: 0 14px; border-radius: 999px; border: 1.5px solid rgba(239,68,68,.35); background: rgba(239,68,68,.07); color: #f87171; font-size: 12px; font-weight: 800; text-decoration: none; transition: background .15s; }
-        .al-clear-btn:hover { background: rgba(239,68,68,.14); }
+        .al-clear-btn { display: inline-flex; align-self: start; align-items: center; height: 32px; padding: 0 14px; border-radius: 999px; border: 1.5px solid rgba(239,68,68,.35); background: rgba(239,68,68,.07); color: #f87171; font-size: 12px; font-weight: 800; text-decoration: none; }
       `}</style>
     </main>
   );
