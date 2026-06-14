@@ -1,37 +1,25 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
+import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 
-export const alt = "Caminhão à venda";
-export const size = { width: 1200, height: 630 };
+export const alt         = "Caminhão à venda";
+export const size        = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-const UUID_REGEX    = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-const SHORT_ID_REGEX = /-([a-f0-9]{8})$/;
 
 async function getTruck(id: string) {
   const supabase = await createClient();
-  const value = id.trim().toLowerCase();
+  const { tipo, valor } = extrairIdDoParametroAnuncio(id);
 
-  if (UUID_REGEX.test(value)) {
-    const { data } = await supabase
-      .from("trucks")
-      .select("id,titulo,marca,modelo,ano_modelo,preco,cidade,estado,truck_images(image_url,principal,ordem)")
-      .eq("id", value).eq("status", "aprovado").maybeSingle();
-    return data;
-  }
+  if (tipo !== "uuid") return null;
 
-  const m = value.match(SHORT_ID_REGEX);
-  if (m) {
-    const { data } = await supabase.rpc("find_truck_by_short_id", { short_id: m[1] });
-    if (data?.length > 0) {
-      const truck = data[0];
-      const { data: imgs } = await supabase
-        .from("truck_images").select("image_url,principal,ordem")
-        .eq("truck_id", truck.id).order("ordem", { ascending: true });
-      return { ...truck, truck_images: imgs || [] };
-    }
-  }
-  return null;
+  const { data } = await supabase
+    .from("trucks")
+    .select("id,titulo,marca,modelo,ano_modelo,preco,cidade,estado,truck_images(image_url,principal,ordem)")
+    .eq("id", valor)
+    .eq("status", "aprovado")
+    .maybeSingle();
+
+  return data ?? null;
 }
 
 function formatPrice(preco: unknown) {
@@ -65,21 +53,16 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
     (
       <div style={{ width: 1200, height: 630, display: "flex", background: "#050d18", position: "relative", overflow: "hidden", fontFamily: "system-ui, sans-serif" }}>
 
-        {/* Foto de fundo */}
         {mainImage && (
           <img src={mainImage} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }} />
         )}
 
-        {/* Gradiente */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, rgba(5,13,24,0.97) 0%, rgba(5,13,24,0.80) 42%, rgba(5,13,24,0.30) 100%)" }} />
 
-        {/* Faixa azul lateral esquerda */}
         <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: "linear-gradient(to bottom, #1877f2, #0ea5e9)" }} />
 
-        {/* Conteúdo */}
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "44px 56px 44px 62px" }}>
 
-          {/* Topo: badge site */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg,#1877f2,#0ea5e9)", boxShadow: "0 2px 12px rgba(24,119,242,.5)" }}>
               <div style={{ color: "#fff", fontSize: 22, display: "flex" }}>🚛</div>
@@ -89,9 +72,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
             </div>
           </div>
 
-          {/* Corpo: título + localização */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-
             {marca && (
               <div style={{ display: "flex" }}>
                 <div style={{ display: "flex", padding: "5px 16px", borderRadius: 999, background: "rgba(24,119,242,0.22)", border: "1.5px solid rgba(56,189,248,0.4)", color: "#38bdf8", fontWeight: 900, fontSize: 18, letterSpacing: 1 }}>
@@ -111,7 +92,6 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
             )}
           </div>
 
-          {/* Rodapé: preço + CTA */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               {preco ? (
