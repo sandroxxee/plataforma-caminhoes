@@ -82,10 +82,30 @@ export const viewport: Viewport = {
   themeColor: "#1877f2",
 };
 
+// SearchAction schema — Google Sitelinks Searchbox
+const searchActionSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Caminhões à Venda",
+  url: siteUrl,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteUrl}/anuncios?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="pt-BR" className={manrope.variable}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(searchActionSchema) }}
+        />
         {children}
         <ClientShell />
       </body>

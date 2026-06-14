@@ -7,8 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AlertaBusca } from "@/components/AlertaBusca";
 import Link from "next/link";
+import { gerarSlugComId } from "@/lib/slug";
 
 export const revalidate = 3600;
+
+const BASE = "https://www.caminhoesavenda.com";
 
 const ESTADOS: Record<string, string> = {
   ac: "Acre",           al: "Alagoas",         am: "Amazonas",
@@ -39,48 +42,33 @@ export async function generateMetadata({ params }: { params: Promise<{ uf: strin
   return {
     title: `Caminhões à Venda em ${estado} | Caminhões à Venda`,
     description: `Anunciantes de caminhões em ${estado}. Veja fotos, preços e entre em contato pelo WhatsApp com o vendedor.`,
-    alternates: { canonical: `https://www.caminhoesavenda.com/caminhoes/estado/${uf}` },
+    alternates: { canonical: `${BASE}/caminhoes/estado/${uf}` },
     openGraph: {
       title: `Caminhões à Venda em ${estado}`,
       description: `Compre ou venda caminhões em ${estado}. Preços, fotos e contato direto.`,
-      url: `https://www.caminhoesavenda.com/caminhoes/estado/${uf}`,
-      images: [{ url: `https://www.caminhoesavenda.com/api/og?estado=${encodeURIComponent(estado)}`, width: 1200, height: 630 }],
+      url: `${BASE}/caminhoes/estado/${uf}`,
+      images: [{ url: `${BASE}/api/og?estado=${encodeURIComponent(estado)}`, width: 1200, height: 630 }],
     },
   };
 }
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; marca?: string | null; preco?: number | null; cidade?: string | null; };
 
-function TextoSEOEstado({ estado, uf, trucks }: { estado: string; uf: string; trucks: Truck[] }) {
+function TextoSEOEstado({ estado, trucks }: { estado: string; trucks: Truck[] }) {
   const total = trucks.length;
   if (total === 0) return null;
-
-  // Cidades com mais anuncios
   const porCidade: Record<string, number> = {};
   trucks.forEach((t) => { if (t.cidade) porCidade[t.cidade] = (porCidade[t.cidade] || 0) + 1; });
-  const topCidades = Object.entries(porCidade)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([c]) => c)
-    .join(", ");
-
-  // Marcas mais anunciadas
+  const topCidades = Object.entries(porCidade).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c]) => c).join(", ");
   const porMarca: Record<string, number> = {};
   trucks.forEach((t) => { if (t.marca) porMarca[t.marca] = (porMarca[t.marca] || 0) + 1; });
-  const topMarcas = Object.entries(porMarca)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 4)
-    .map(([m]) => m)
-    .join(", ");
-
-  // Faixa de preco
+  const topMarcas = Object.entries(porMarca).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([m]) => m).join(", ");
   const precos = trucks.map((t) => t.preco).filter((p): p is number => typeof p === "number" && p > 0);
   const precoMin = precos.length ? Math.min(...precos) : null;
   const precoMax = precos.length ? Math.max(...precos) : null;
   const faixaPreco = precoMin && precoMax
     ? `Os preços anunciados variam de ${precoMin.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} a ${precoMax.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}.`
     : "";
-
   return (
     <div className="seo-text-block">
       <p>
@@ -114,9 +102,41 @@ export default async function EstadoPage({ params }: { params: Promise<{ uf: str
     .order("created_at", { ascending: false });
 
   const trucks = (data || []) as Truck[];
+  const pageUrl = `${BASE}/caminhoes/estado/${uf}`;
+
+  // CollectionPage + ItemList schema
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `Caminhões à Venda em ${estado}`,
+    description: `Lista de caminhões à venda em ${estado} com fotos reais e contato direto pelo WhatsApp.`,
+    url: pageUrl,
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: trucks.length,
+      itemListElement: trucks.slice(0, 20).map((t, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${BASE}/anuncios/${gerarSlugComId({ id: t.id, marca: t.marca, modelo: t.modelo, ano_modelo: t.ano_modelo, ano_fabricacao: t.ano_fabricacao, cidade: t.cidade, estado: t.estado })}`,
+        name: t.titulo || `${t.marca} ${t.modelo}`,
+      })),
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Início", item: BASE },
+      { "@type": "ListItem", position: 2, name: "Caminhões", item: `${BASE}/anuncios` },
+      { "@type": "ListItem", position: 3, name: estado, item: pageUrl },
+    ],
+  };
 
   return (
     <main className="market-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <PublicHeader />
       <div className="market-container">
         <nav className="seo-breadcrumb" aria-label="Breadcrumb">
@@ -128,7 +148,7 @@ export default async function EstadoPage({ params }: { params: Promise<{ uf: str
           <h1 className="al-title">Caminhões à Venda em {estado}</h1>
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio" : "anúncios"} encontrados</p>
         </div>
-        <TextoSEOEstado estado={estado} uf={uf} trucks={trucks} />
+        <TextoSEOEstado estado={estado} trucks={trucks} />
         <div className="seo-marca-nav">
           {Object.entries(ESTADOS).map(([slug, nome]) => (
             <Link key={slug} href={`/caminhoes/estado/${slug}`} className={slug === uf ? "active" : ""}>{nome}</Link>
