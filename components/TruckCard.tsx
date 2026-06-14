@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Camera } from "lucide-react";
 import type { TruckCardData, TruckImage } from "@/lib/truck-utils";
-import { formatMoney, getCardTitle, getLocation, gerarSlugComId } from "@/lib/truck-utils";
+import { formatMoney, getCardTitle, getLocation, getTruckUrl } from "@/lib/truck-utils";
 
 type Props = {
   truck: TruckCardData & { truck_images?: TruckImage[] };
@@ -15,16 +15,7 @@ export function TruckCard({ truck }: Props) {
   const images = truck.truck_images || [];
   const mainImage = images.find((i) => i.principal)?.image_url || images[0]?.image_url;
   const photoCount = images.length;
-
-  const slug = gerarSlugComId({
-    id: truck.id,
-    marca: truck.marca,
-    modelo: truck.modelo,
-    ano_modelo: truck.ano_modelo,
-    ano_fabricacao: truck.ano_fabricacao,
-    cidade: truck.cidade,
-    estado: truck.estado,
-  });
+  const truckUrl = getTruckUrl(truck);
 
   const phone = (truck.whatsapp || "").replace(/\D/g, "");
   const waText = encodeURIComponent(
@@ -34,7 +25,7 @@ export function TruckCard({ truck }: Props) {
 
   return (
     <article className="tc">
-      <Link href={`/anuncios/${slug}`} className="tc-photo" aria-label={title}>
+      <Link href={truckUrl} className="tc-photo" aria-label={title}>
         {mainImage ? (
           <Image
             src={mainImage}
@@ -53,7 +44,6 @@ export function TruckCard({ truck }: Props) {
           </span>
         )}
 
-        {/* Overlay preço + cidade */}
         <span className="tc-overlay" aria-hidden="true">
           <span className="tc-price">{price}</span>
           {location && (
@@ -64,7 +54,6 @@ export function TruckCard({ truck }: Props) {
           )}
         </span>
 
-        {/* Badge contador de fotos */}
         {photoCount > 0 && (
           <span className="tc-photo-badge" aria-label={`${photoCount} fotos`}>
             <Camera size={10} aria-hidden="true" />
@@ -80,13 +69,9 @@ export function TruckCard({ truck }: Props) {
             .filter(Boolean)
             .join(" · ")}
         </p>
-
-        <Link href={`/anuncios/${slug}`} className="tc-btn">
-          Ver detalhes
-        </Link>
+        <Link href={truckUrl} className="tc-btn">Ver detalhes</Link>
       </div>
 
-      {/* Botão WhatsApp flutuante */}
       {waLink && (
         <a
           href={waLink}
