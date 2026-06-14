@@ -2,16 +2,15 @@
 import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/lib/truck-utils";
 import { gerarSlugComId } from "@/lib/slug";
 
-// revalidate pertence ao page.tsx — não exportar aqui
-
 export const siteUrl = "https://www.caminhoesavenda.com";
 export const defaultOgImage = "/og-caminhoes-a-venda.jpg";
-export const truckSelect = `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
+export const truckSelect = `id,user_id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
 
 export const UUID_REGEX = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export const SHORT_ID_REGEX = /-([a-f0-9]{8})$/;
 
 export type Truck = TruckCardData & {
+  user_id?: string | null;
   descricao: string | null;
   quilometragem?: number | null;
   km?: number | null;
@@ -125,7 +124,6 @@ export function getStructuredData(truck: Truck, title: string, location: string,
 }
 
 export function getSpecs(truck: Truck) {
-  // usa getLocation centralizado — mesma função usada no page.tsx
   return [
     { label: "Marca",         value: truck.marca },
     { label: "Modelo",        value: truck.modelo },
