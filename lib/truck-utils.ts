@@ -8,6 +8,7 @@ export type TruckImage = {
 
 export type TruckCardData = {
   id: string;
+  user_id?: string | null;   // dono do anúncio — sempre presente no select
   titulo: string | null;
   marca: string | null;
   modelo: string | null;
