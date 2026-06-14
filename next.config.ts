@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "img.logo.dev",
+      },
     ],
     formats: ["image/webp"],
     deviceSizes: [400, 800, 1200],
