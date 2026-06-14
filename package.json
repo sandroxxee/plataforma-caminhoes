@@ -15,7 +15,8 @@
     "lucide-react": "latest",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-easy-crop": "^5.4.0"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.14",
