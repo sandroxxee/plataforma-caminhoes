@@ -3,14 +3,14 @@ import Link from "next/link";
 type Marca = { nome: string; slug: string; svg: string | null };
 
 const SVG: Record<string, string> = {
-  scania:        "https://upload.wikimedia.org/wikipedia/commons/2/24/Scania_logo.svg",
-  volvo:         "https://upload.wikimedia.org/wikipedia/commons/5/58/Volvo-PB.svg",
+  scania:          "https://upload.wikimedia.org/wikipedia/commons/2/24/Scania_logo.svg",
+  volvo:           "https://upload.wikimedia.org/wikipedia/commons/5/58/Volvo-PB.svg",
   "mercedes-benz": "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
-  daf:           "https://upload.wikimedia.org/wikipedia/commons/2/21/DAF_Logo.svg",
-  man:           "https://upload.wikimedia.org/wikipedia/commons/8/89/MAN_Logo.svg",
-  iveco:         "https://upload.wikimedia.org/wikipedia/commons/4/45/Iveco_Logo.svg",
-  ford:          "https://upload.wikimedia.org/wikipedia/commons/a/a0/Ford_Motor_Company_Logo.svg",
-  volkswagen:    "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg",
+  daf:             "https://upload.wikimedia.org/wikipedia/commons/2/21/DAF_Logo.svg",
+  man:             "https://upload.wikimedia.org/wikipedia/commons/8/89/MAN_Logo.svg",
+  iveco:           "https://upload.wikimedia.org/wikipedia/commons/4/45/Iveco_Logo.svg",
+  ford:            "https://upload.wikimedia.org/wikipedia/commons/a/a0/Ford_Motor_Company_Logo.svg",
+  volkswagen:      "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg",
 };
 
 function m(nome: string, slug: string): Marca {
@@ -18,27 +18,31 @@ function m(nome: string, slug: string): Marca {
 }
 
 export const MARCAS_POR_CATEGORIA: Record<string, Marca[]> = {
+  // Apenas fabricantes de caminhões (cavalos mecânicos / trucks)
   caminhoes: [
     m("Scania", "scania"), m("Volvo", "volvo"), m("Mercedes-Benz", "mercedes-benz"),
     m("DAF", "daf"), m("MAN", "man"), m("Iveco", "iveco"),
     m("Ford", "ford"), m("Volkswagen", "volkswagen"),
-    m("Randon", "randon"), m("Agrale", "agrale"),
   ],
+  // Fabricantes de carretas / semirreboque
   carretas: [
     m("Randon", "randon"), m("Noma", "noma"), m("Guerra", "guerra"),
     m("Rodotec", "rodotec"), m("Librelato", "librelato"), m("Facchini", "facchini"),
     m("Paquetá", "paqueta"), m("Schwarzmüller", "schwarzmuller"),
   ],
+  // Fabricantes de implementos rodoviários
   implementos: [
     m("Randon", "randon"), m("Guerra", "guerra"), m("Librelato", "librelato"),
     m("Facchini", "facchini"), m("Rodotec", "rodotec"), m("Noma", "noma"),
     m("Paquetá", "paqueta"), m("Liebherr", "liebherr"),
   ],
+  // Peças: marcas dos motores/chassis
   pecas: [
     m("Scania", "scania"), m("Volvo", "volvo"), m("Mercedes-Benz", "mercedes-benz"),
     m("MAN", "man"), m("DAF", "daf"), m("Iveco", "iveco"),
     m("Volkswagen", "volkswagen"), m("Ford", "ford"),
   ],
+  // Máquinas pesadas
   maquinas: [
     m("Caterpillar", "caterpillar"), m("Volvo", "volvo"), m("Komatsu", "komatsu"),
     m("Case", "case"), m("John Deere", "john-deere"), m("Liebherr", "liebherr"),
@@ -83,9 +87,7 @@ export function CategoryBrandsBar({
           margin: 0 0 10px; font-size: 12px; font-weight: 800;
           color: var(--muted); letter-spacing: .04em; text-transform: uppercase;
         }
-        .cbb-grid {
-          display: flex; flex-wrap: wrap; gap: 8px;
-        }
+        .cbb-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .cbb-chip {
           display: inline-flex; align-items: center; gap: 8px;
           height: 40px; padding: 0 14px 0 10px;
@@ -102,21 +104,18 @@ export function CategoryBrandsBar({
           width: 36px; height: 22px;
           object-fit: contain; object-position: center;
           filter: grayscale(1) opacity(.6);
-          transition: filter .14s;
-          flex-shrink: 0;
+          transition: filter .14s; flex-shrink: 0;
         }
         .cbb-chip:hover .cbb-logo { filter: grayscale(0) opacity(1); }
         .cbb-initial {
           width: 28px; height: 22px; flex-shrink: 0;
           display: flex; align-items: center; justify-content: center;
           font-size: 11px; font-weight: 900; color: var(--muted);
-          background: var(--soft); border-radius: 6px;
-          transition: color .14s;
+          background: var(--soft); border-radius: 6px; transition: color .14s;
         }
         .cbb-chip:hover .cbb-initial { color: var(--blue); }
         .cbb-name {
-          font-size: 12px; font-weight: 800; color: var(--text);
-          white-space: nowrap;
+          font-size: 12px; font-weight: 800; color: var(--text); white-space: nowrap;
         }
         .cbb-chip:hover .cbb-name { color: var(--blue); }
         @media (max-width: 480px) {
