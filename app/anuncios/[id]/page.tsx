@@ -102,8 +102,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const { vehicle: structuredData, product: productData, breadcrumb: breadcrumbData } =
     getStructuredData(truck, title, location, whatsappLink);
   const shareYear    = truck.ano_modelo || truck.ano_fabricacao;
-  const shareText    = `${textos.emoji} ${title}${shareYear ? ` ${shareYear}` : ""}${
-    location ? ` · ${location}` : ""\n}\n${formatMoney(truck.preco)}`;
+  const shareLine1   = `${textos.emoji} ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}`;
+  const shareText    = `${shareLine1}\n${formatMoney(truck.preco)}`;
   const specs        = getSpecs(truck);
   const initialViews = truck.views ?? 0;
 
