@@ -139,15 +139,6 @@
 .hero-link-primary:hover { background: var(--blue2); border-color: var(--blue2); }
 
 @media (max-width: 760px) {
-  .hero-wrap, .hero-body { min-height: 420px; }
-  .hero-body { justify-content: center; padding: 28px 20px; }
-  .hero-h1 { font-size: clamp(28px, 7vw, 40px); }
-}
-
-@media (max-width: 560px) {
-  .hero-wrap, .hero-body { min-height: 380px; }
-  .hero-body { justify-content: center; padding: 24px 16px; }
-  .hero-form { max-width: 100%; }
-  .hero-links { display: grid; grid-template-columns: 1fr 1fr; }
-  .hero-link { justify-content: center; font-size: 12px; height: 44px; }
+  .hero-wrap { min-height: 220px; }
+  .hero-body { display: none; }
 }
