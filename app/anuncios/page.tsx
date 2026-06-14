@@ -25,13 +25,17 @@ const FAIXAS = [
 const MARCAS_VALIDAS  = ["Mercedes-Benz","Scania","Volvo","Volkswagen","Ford","Iveco","DAF","MAN","Agrale"];
 const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
 
+// Caminhoes = perfil IS NULL ou perfil = 'Caminhões'
+// Usando or() para evitar que .not(...in...) exclua nulls
+const PERFIL_CAMINHOES = "perfil.is.null,perfil.eq.Caminh%C3%B5es";
+
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
   const { faixa, marca, estado } = await searchParams;
 
-  const faixaIdx    = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
+  const faixaIdx     = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
   const { min, max } = FAIXAS[faixaIdx];
   const marcaFiltro  = MARCAS_VALIDAS.includes(marca   || "") ? marca!  : "";
   const estadoFiltro = ESTADOS_VALIDOS.includes(estado || "") ? estado! : "";
@@ -39,13 +43,13 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const supabase = await createClient();
 
-  // contagem total com filtros
+  // contagem
   let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)");
+    .or("perfil.is.null,perfil.eq.Caminh\u00f5es");
   if (marcaFiltro)      countQ = countQ.eq("marca",  marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
@@ -58,7 +62,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)")
+    .or("perfil.is.null,perfil.eq.Caminh\u00f5es")
     .order("created_at", { ascending: false })
     .limit(24);
   if (marcaFiltro)      dataQ = dataQ.eq("marca",  marcaFiltro);
@@ -111,6 +115,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
       <SiteFooter />
 
       <style>{`
+        .market-page { min-height: 100vh; background: var(--bg); color: var(--text); }
+        .market-container { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; padding-bottom: 64px; }
         .al-header { padding: 28px 0 16px; }
         .al-title { margin: 0; font-size: clamp(26px,4vw,38px); letter-spacing: -.04em; line-height: 1; }
         .market-empty {
