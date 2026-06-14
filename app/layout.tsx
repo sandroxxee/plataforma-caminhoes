@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import "./globals.css";
-import { ClientShell } from "@/components/ClientShell";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -93,7 +92,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="pt-BR" className={manrope.variable}>
       <body>
-        <ClientShell />
         {children}
       </body>
     </html>
