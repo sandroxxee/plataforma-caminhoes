@@ -12,9 +12,9 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Caminhões à Venda | Anúncios de caminhões e implementos",
+  title: "Caminh\u00f5es \u00e0 Venda | An\u00fancios de caminh\u00f5es e implementos",
   description:
-    "Veja caminhões usados, seminovos e implementos anunciados no Caminhões à Venda. Plataforma para comprar, vender e anunciar com contato direto pelo WhatsApp.",
+    "Veja caminh\u00f5es usados, seminovos e implementos anunciados no Caminh\u00f5es \u00e0 Venda. Plataforma para comprar, vender e anunciar com contato direto pelo WhatsApp.",
   alternates: { canonical: "/" },
 };
 
@@ -36,6 +36,8 @@ export default async function HomePage() {
       carroceria,
       tracao,
       whatsapp,
+      destaque,
+      created_at,
       truck_images (
         image_url,
         principal,
@@ -59,7 +61,7 @@ export default async function HomePage() {
         {/* Marcas */}
         <BrandsSection />
 
-        {/* Grid de anúncios recentes */}
+        {/* Grid de an\u00fancios recentes */}
         <FeaturedAds trucks={trucks} />
 
         {/* Como funciona */}

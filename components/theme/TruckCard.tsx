@@ -22,6 +22,12 @@ function isSupabaseUrl(url: string) {
   return url.includes(".supabase.co/storage/v1/object/public/");
 }
 
+function isNew(created_at?: string | null) {
+  if (!created_at) return false;
+  const diff = Date.now() - new Date(created_at).getTime();
+  return diff < 3 * 24 * 60 * 60 * 1000; // 3 dias
+}
+
 const WaIcon = () => (
   <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -40,6 +46,9 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const waLink     = getWhatsappLink(truck);
   const meta       = [year, type].filter(Boolean).join(" \u2022 ");
   const photoCount = (truck.truck_images || []).length;
+
+  const novo      = isNew((truck as any).created_at);
+  const destaque  = !!(truck as any).destaque;
 
   const [preview, setPreview] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -60,7 +69,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
   return (
     <article
-      className="tc"
+      className={`tc${destaque ? " tc-featured" : ""}`}
       onMouseEnter={openPreview}
       onMouseLeave={closePreview}
       onFocus={openPreview}
@@ -159,6 +168,12 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
             {photoCount}
           </span>
         )}
+
+        {/* Badges sobrepostos no canto superior esquerdo */}
+        <span className="tc-badges">
+          {destaque && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
+          {novo     && <span className="tc-badge tc-badge-novo">Novo</span>}
+        </span>
       </Link>
 
       {waLink && (
@@ -175,6 +190,27 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
       <style>{`
         .tc { isolation: isolate; }
+        .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
+
+        /* Badges */
+        .tc-badges {
+          position: absolute; top: 9px; left: 9px;
+          display: flex; flex-direction: column; gap: 4px;
+          pointer-events: none; z-index: 3;
+        }
+        .tc-badge {
+          display: inline-flex; align-items: center;
+          height: 22px; padding: 0 8px; border-radius: 999px;
+          font-size: 10px; font-weight: 900;
+          letter-spacing: .03em; line-height: 1;
+          backdrop-filter: blur(4px);
+        }
+        .tc-badge-destaque {
+          background: rgba(234,179,8,.92); color: #7c5c00;
+        }
+        .tc-badge-novo {
+          background: rgba(34,197,94,.9); color: #fff;
+        }
 
         /* Popover */
         .tc-preview {
@@ -255,7 +291,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         }
         .tc-preview-btn-wa:hover { background:rgba(37,211,102,.22); }
         body.public-theme-dark .tc-preview-btn-wa { color:#4ade80; }
-        /* Setinha */
         .tc-preview-arrow {
           position:absolute; bottom:-7px; left:50%;
           transform:translateX(-50%) rotate(45deg);
@@ -264,7 +299,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           border-right:1px solid var(--line);
           border-bottom:1px solid var(--line);
         }
-        /* Esconde no mobile/tablet */
         @media (max-width:900px) { .tc-preview { display:none; } }
       `}</style>
     </article>
