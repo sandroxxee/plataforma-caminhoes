@@ -1,6 +1,6 @@
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
 import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
@@ -37,7 +37,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const estadoFiltro = ESTADOS_VALIDOS.includes(estado || "") ? estado! : "";
   const hasFilters   = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   let countQ = supabase
     .from("trucks")

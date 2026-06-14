@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const estado = ESTADOS_VALIDOS.includes(estadoRaw) ? estadoRaw : "";
   const { min, max } = FAIXAS[faixaIdx];
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   let q = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`, { count: "exact" })
