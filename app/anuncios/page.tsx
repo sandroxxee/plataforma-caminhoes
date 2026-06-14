@@ -21,10 +21,13 @@ const FAIXAS = [
   { min: 400_000, max: Infinity },
 ];
 
-const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF"];
+const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF", "MAN"];
 const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES"];
 
-type Truck = TruckCardData & { truck_images?: TruckImage[] };
+// Perfis que são caminhoes (cavalos mecânicos)
+const PERFIS_CAMINHAO = ["Caminhões", "Caminhao", "Caminhão", null, undefined, ""];
+
+type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
@@ -39,9 +42,10 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("trucks")
-    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,created_at,truck_images(image_url,principal,ordem)`)
+    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
+    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
     .order("created_at", { ascending: false })
     .limit(300);
 
@@ -76,7 +80,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           ))}
           {trucks.length === 0 && (
             <div className="market-empty">
-              <strong>Nenhum anúncio encontrado</strong>
+              <strong>Nenhum caminhão encontrado</strong>
               <p>Tente outros filtros ou veja todos os caminhões.</p>
               <Link
                 href="/anuncios"
