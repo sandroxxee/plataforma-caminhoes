@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Handshake, LayoutDashboard, LogIn, Truck } from "lucide-react";
+import { Handshake, LayoutDashboard, LogIn, Truck, Wrench } from "lucide-react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 import { SearchBar } from "./SearchBar";
 
@@ -21,7 +21,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
 
   const navItems = [
     { href: "/anuncios",    label: "Caminhões",  icon: Truck },
-    { href: "/implementos", label: "Implementos", icon: Truck },
+    { href: "/implementos", label: "Implementos", icon: Wrench },
     { href: "/parceiros",   label: "Parceiros",   icon: Handshake },
     isLoggedIn
       ? { href: "/painel", label: "Painel",  icon: LayoutDashboard }
@@ -32,19 +32,22 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
     <>
       <header className="public-header">
         <div className="public-nav-shell">
+
           <Link href="/" className="public-brand" aria-label="Caminhões à Venda">
             <span className="brand-mark">
               <Truck size={20} aria-hidden="true" />
             </span>
             <span className="brand-text">
-              <Image src="/logo-horizontal-web.png" alt="Caminhões à Venda"
-                width={230} height={84} priority
+              <Image
+                src="/logo-horizontal-web.png"
+                alt="Caminhões à Venda"
+                width={230} height={84}
+                priority
                 style={{ width: 150, height: 36, objectFit: "contain" }}
               />
             </span>
           </Link>
 
-          {/* SearchBar some em mobile — MobileBottomNav tem botão Buscar */}
           <div className="ph-search">
             <SearchBar target={searchTarget} />
           </div>
@@ -54,9 +57,12 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
               const Icon = item.icon;
               const active = isActive(pathname, item.href);
               return (
-                <Link key={item.href} href={item.href}
+                <Link
+                  key={item.href}
+                  href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={active ? "active" : ""}>
+                  className={active ? "active" : ""}
+                >
                   <Icon size={15} aria-hidden="true" />
                   <span>{item.label}</span>
                 </Link>
@@ -84,10 +90,14 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         }
 
         .public-nav-shell {
-          min-height: 64px;
-          display: flex; align-items: center; gap: 10px;
+          min-height: 60px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0;
         }
 
+        /* Logo */
         .public-brand {
           display: flex; align-items: center; gap: 10px;
           flex-shrink: 0; text-decoration: none;
@@ -99,9 +109,8 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         }
         .brand-text img { display: block; }
 
-        .ph-search {
-          flex: 1; max-width: 460px;
-        }
+        /* Search */
+        .ph-search { flex: 1; max-width: 460px; }
         .search-top {
           height: 44px; border-radius: 999px;
           background: var(--soft); border: 1.5px solid transparent;
@@ -118,9 +127,11 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           color: var(--text); font-weight: 600; font-size: 14px;
         }
 
+        /* Nav desktop */
         .public-menu {
           display: flex; align-items: center; gap: 2px;
           overflow-x: auto; scrollbar-width: none;
+          flex-shrink: 0;
         }
         .public-menu::-webkit-scrollbar { display: none; }
         .public-menu a {
@@ -136,21 +147,48 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           background: var(--blueSoft); color: var(--blue);
         }
 
-        /* === TABLET (ate 900px): search desce, menu continua inline === */
+        /* === TABLET (ate 900px) === */
         @media (max-width: 900px) {
           .public-nav-shell { flex-wrap: wrap; padding: 8px 0; min-height: auto; }
           .ph-search { order: 3; max-width: 100%; width: 100%; flex-basis: 100%; }
           .public-menu { margin-left: auto; }
         }
 
-        /* === MOBILE (ate 680px): logo menor, menu scroll horizontal, search oculto === */
+        /* === MOBILE (ate 680px) === */
         @media (max-width: 680px) {
-          .public-nav-shell { gap: 8px; }
-          .brand-mark { width: 36px; height: 36px; border-radius: 10px; }
-          .brand-text img { width: 120px !important; height: 30px !important; }
+          /* sem flex-wrap: nav fica numa só linha */
+          .public-nav-shell {
+            flex-wrap: nowrap;
+            min-height: 56px;
+            gap: 6px;
+            padding: 0;
+          }
+
+          /* Logo menor */
+          .brand-mark { width: 34px; height: 34px; border-radius: 10px; }
+          .brand-mark svg { width: 17px; height: 17px; }
+          .brand-text img { width: 110px !important; height: 28px !important; }
+
+          /* Oculta search e label de texto do nav */
           .ph-search { display: none; }
-          .public-menu { order: unset; margin-left: 0; flex: 1; justify-content: flex-end; }
-          .public-menu a { min-height: 38px; padding: 0 10px; font-size: 13px; }
+
+          /* Nav: só ícones no mobile, alinhado à direita */
+          .public-menu {
+            margin-left: auto;
+            flex-shrink: 0;
+            gap: 0;
+          }
+          .public-menu a {
+            padding: 0 8px;
+            min-height: 44px;
+            font-size: 12px;
+            gap: 4px;
+          }
+          /* Oculta texto dos links no mobile, deixa só ícone */
+          .public-menu a span { display: none; }
+
+          /* ThemeToggle menor */
+          .theme-toggle-public { flex-shrink: 0; }
         }
       `}</style>
     </>
