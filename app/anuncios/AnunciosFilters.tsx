@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { SalvarBusca } from "@/components/SalvarBusca";
+import { MARCAS_VALIDAS } from "@/lib/constants";
 
 const ESTADOS = [
   { label: "Todos", value: "" },
@@ -22,9 +23,6 @@ const FAIXAS = [
   { label: "R$200k–400k",    min: 200_000, max: 400_000 },
   { label: "Acima R$400k",   min: 400_000, max: Infinity },
 ];
-
-// Lista completa e sincronizada com MARCAS_VALIDAS da page.tsx
-const MARCAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF", "MAN", "Agrale"];
 
 function buildHref(faixaIdx: number, marcaFiltro: string, estadoFiltro: string, overrides: Record<string, string | number | undefined>) {
   const params: Record<string, string> = {};
@@ -90,7 +88,7 @@ export function AnunciosFilters({ faixaIdx, marcaFiltro, estadoFiltro, hasFilter
           <div className="af-group">
             <span className="af-group-label">Marca</span>
             <div className="af-row">
-              {["Todas", ...MARCAS].map((m) => {
+              {["Todas", ...MARCAS_VALIDAS].map((m) => {
                 const val    = m === "Todas" ? "" : m;
                 const active = marcaFiltro === val;
                 return (

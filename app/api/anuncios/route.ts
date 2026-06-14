@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
-
-const MARCAS_VALIDAS  = ["Mercedes-Benz","Scania","Volvo","Volkswagen","Ford","Iveco","DAF","MAN","Agrale"];
-const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
-const FAIXAS = [
-  { min: 0,       max: Infinity },
-  { min: 0,       max: 100_000 },
-  { min: 100_000, max: 200_000 },
-  { min: 200_000, max: 400_000 },
-  { min: 400_000, max: Infinity },
-];
 
 export async function GET(req: NextRequest) {
   const sp     = req.nextUrl.searchParams;
@@ -30,11 +21,11 @@ export async function GET(req: NextRequest) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`, { count: "exact" })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
+    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Peças,Máquinas)")
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
-  if (marca)            q = q.eq("marca",  marca);
+  if (marca)            q = q.ilike("marca",  marca);
   if (estado)           q = q.eq("estado", estado);
   if (min > 0)          q = q.gte("preco", min);
   if (max !== Infinity) q = q.lte("preco", max);

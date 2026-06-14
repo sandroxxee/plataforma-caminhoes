@@ -6,6 +6,7 @@ import { AnunciosFilters } from "./AnunciosFilters";
 import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
 import { LoadMore } from "./LoadMore";
 import Link from "next/link";
+import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
 
 export const revalidate = 30;
 
@@ -13,17 +14,6 @@ export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
   description: "Veja todos os caminhões disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
 };
-
-const FAIXAS = [
-  { min: 0,       max: Infinity },
-  { min: 0,       max: 100_000 },
-  { min: 100_000, max: 200_000 },
-  { min: 200_000, max: 400_000 },
-  { min: 400_000, max: Infinity },
-];
-
-const MARCAS_VALIDAS  = ["Mercedes-Benz","Scania","Volvo","Volkswagen","Ford","Iveco","DAF","MAN","Agrale"];
-const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
@@ -44,11 +34,11 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
+    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Peças,Máquinas)")
     .order("created_at", { ascending: false })
     .limit(24);
 
-  if (marcaFiltro)      q = q.eq("marca",  marcaFiltro);
+  if (marcaFiltro)      q = q.ilike("marca",  marcaFiltro);
   if (estadoFiltro)     q = q.eq("estado", estadoFiltro);
   if (min > 0)          q = q.gte("preco", min);
   if (max !== Infinity) q = q.lte("preco", max);
@@ -61,8 +51,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)");
-  if (marcaFiltro)      countQ = countQ.eq("marca",  marcaFiltro);
+    .or("perfil.is.null,perfil.not.in.(Carretas,Implementos,Peças,Máquinas)");
+  if (marcaFiltro)      countQ = countQ.ilike("marca",  marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
   if (max !== Infinity) countQ = countQ.lte("preco", max);

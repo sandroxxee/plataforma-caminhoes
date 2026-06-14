@@ -1,0 +1,25 @@
+export const MARCAS_VALIDAS = [
+  "Mercedes-Benz",
+  "Scania",
+  "Volvo",
+  "Volkswagen",
+  "Ford",
+  "Iveco",
+  "DAF",
+  "MAN",
+  "Agrale",
+];
+
+export const ESTADOS_VALIDOS = [
+  "SC", "PR", "RS", "SP", "MG", "MS",
+  "MT", "GO", "BA", "RJ", "ES", "PE",
+  "CE", "PA", "AM",
+];
+
+export const FAIXAS = [
+  { min: 0,       max: Infinity },
+  { min: 0,       max: 100_000 },
+  { min: 100_000, max: 200_000 },
+  { min: 200_000, max: 400_000 },
+  { min: 400_000, max: Infinity },
+];
