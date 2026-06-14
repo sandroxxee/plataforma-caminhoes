@@ -11,7 +11,7 @@ export const revalidate = 60;
 
 export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
-  description: "Veja todos os caminhões e implementos disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
+  description: "Veja todos os caminhões disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
 };
 
 const FAIXAS = [
@@ -22,8 +22,8 @@ const FAIXAS = [
   { min: 400_000, max: Infinity },
 ];
 
-const MARCAS_VALIDAS = ["Mercedes-Benz", "Scania", "Volvo", "Volkswagen", "Ford", "Iveco", "DAF", "MAN", "Agrale"];
-const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES"];
+const MARCAS_VALIDAS  = ["Mercedes-Benz","Scania","Volvo","Volkswagen","Ford","Iveco","DAF","MAN","Agrale"];
+const ESTADOS_VALIDOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = { searchParams: Promise<{ faixa?: string; marca?: string; estado?: string }> };
@@ -33,37 +33,37 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const faixaIdx    = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
   const { min, max } = FAIXAS[faixaIdx];
-  const marcaFiltro  = MARCAS_VALIDAS.includes(marca  || "") ? marca!  : "";
+  const marcaFiltro  = MARCAS_VALIDAS.includes(marca   || "") ? marca!  : "";
   const estadoFiltro = ESTADOS_VALIDOS.includes(estado || "") ? estado! : "";
   const hasFilters   = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
   const supabase = await createClient();
 
-  // Contagem total (com filtros aplicados no banco)
+  // contagem total com filtros
   let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)");
-  if (marcaFiltro)  countQ = countQ.eq("marca", marcaFiltro);
-  if (estadoFiltro) countQ = countQ.eq("estado", estadoFiltro);
-  if (min > 0)      countQ = countQ.gte("preco", min);
+    .not("perfil", "in", "(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)");
+  if (marcaFiltro)      countQ = countQ.eq("marca",  marcaFiltro);
+  if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
+  if (min > 0)          countQ = countQ.gte("preco", min);
   if (max !== Infinity) countQ = countQ.lte("preco", max);
   const { count: total } = await countQ;
 
-  // Primeiro batch — filtros aplicados no banco
+  // primeiro batch
   let dataQ = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
-    .not("perfil", "in", "(Carretas,Implementos,Peças,Máquinas)")
+    .not("perfil", "in", "(Carretas,Implementos,Pe\u00e7as,M\u00e1quinas)")
     .order("created_at", { ascending: false })
     .limit(24);
-  if (marcaFiltro)  dataQ = dataQ.eq("marca", marcaFiltro);
-  if (estadoFiltro) dataQ = dataQ.eq("estado", estadoFiltro);
-  if (min > 0)      dataQ = dataQ.gte("preco", min);
+  if (marcaFiltro)      dataQ = dataQ.eq("marca",  marcaFiltro);
+  if (estadoFiltro)     dataQ = dataQ.eq("estado", estadoFiltro);
+  if (min > 0)          dataQ = dataQ.gte("preco", min);
   if (max !== Infinity) dataQ = dataQ.lte("preco", max);
 
   const { data } = await dataQ;
@@ -88,26 +88,23 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           total={total ?? 0}
         />
 
-        <section className="stock-grid" aria-label="Lista de anúncios">
-          {trucks.map((truck) => (
-            <TruckCard key={truck.id} truck={truck} />
-          ))}
-          {trucks.length === 0 && (
-            <div className="market-empty">
-              <strong>Nenhum caminhão encontrado</strong>
-              <p>Tente outros filtros ou veja todos os caminhões.</p>
-              <Link
-                href="/anuncios"
-                style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}
-              >
-                Ver todos
-              </Link>
-            </div>
-          )}
-        </section>
-
-        {(total ?? 0) > 24 && (
-          <LoadMore initialTrucks={trucks} total={total ?? 0} pageSize={24} />
+        {trucks.length === 0 ? (
+          <div className="market-empty">
+            <strong>Nenhum caminhão encontrado</strong>
+            <p>Tente outros filtros ou veja todos.</p>
+            <Link href="/anuncios" style={{ marginTop: 8, display: "inline-flex", padding: "10px 20px", borderRadius: 10, background: "var(--blue)", color: "#fff", fontWeight: 800 }}>
+              Ver todos
+            </Link>
+          </div>
+        ) : (
+          <LoadMore
+            initialTrucks={trucks}
+            total={total ?? 0}
+            pageSize={24}
+            marca={marcaFiltro}
+            estado={estadoFiltro}
+            faixa={faixaIdx}
+          />
         )}
       </div>
 
@@ -115,10 +112,14 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <style>{`
         .al-header { padding: 28px 0 16px; }
-        .al-title {
-          margin: 0; font-size: clamp(26px,4vw,38px);
-          letter-spacing: -.04em; line-height: 1;
+        .al-title { margin: 0; font-size: clamp(26px,4vw,38px); letter-spacing: -.04em; line-height: 1; }
+        .market-empty {
+          display: flex; flex-direction: column; align-items: center;
+          gap: 10px; padding: 72px 24px; text-align: center; color: var(--muted);
+          background: var(--surface); border-radius: 20px; border: 1px solid var(--line);
         }
+        .market-empty strong { font-size: 18px; color: var(--text); }
+        .market-empty p { margin: 0; font-size: 14px; }
       `}</style>
     </main>
   );

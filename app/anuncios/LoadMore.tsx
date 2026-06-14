@@ -2,15 +2,27 @@
 
 import { useState, useTransition } from "react";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
+import { TruckGridSkeleton } from "@/components/theme/TruckCardSkeleton";
 
 type Props = {
   initialTrucks: TruckCardData[];
-  total: number;
-  pageSize?: number;
+  total:         number;
+  pageSize?:     number;
+  // filtros ativos — repassados para a API
+  marca?:        string;
+  estado?:       string;
+  faixa?:        number;
 };
 
-export function LoadMore({ initialTrucks, total, pageSize = 24 }: Props) {
-  const [trucks, setTrucks] = useState(initialTrucks);
+export function LoadMore({
+  initialTrucks,
+  total,
+  pageSize = 24,
+  marca  = "",
+  estado = "",
+  faixa  = 0,
+}: Props) {
+  const [trucks, setTrucks]     = useState(initialTrucks);
   const [isPending, startTransition] = useTransition();
 
   const hasMore = trucks.length < total;
@@ -18,7 +30,12 @@ export function LoadMore({ initialTrucks, total, pageSize = 24 }: Props) {
   async function loadMore() {
     startTransition(async () => {
       const offset = trucks.length;
-      const res = await fetch(`/api/anuncios?offset=${offset}&limit=${pageSize}`);
+      const params = new URLSearchParams({ offset: String(offset), limit: String(pageSize) });
+      if (marca)   params.set("marca",  marca);
+      if (estado)  params.set("estado", estado);
+      if (faixa > 0) params.set("faixa", String(faixa));
+
+      const res = await fetch(`/api/anuncios?${params.toString()}`);
       if (!res.ok) return;
       const json = await res.json();
       setTrucks((prev) => [...prev, ...json.trucks]);
@@ -27,40 +44,57 @@ export function LoadMore({ initialTrucks, total, pageSize = 24 }: Props) {
 
   return (
     <>
+      {/* cards já carregados */}
       <div className="stock-grid">
         {trucks.map((truck) => (
           <TruckCard key={truck.id} truck={truck} />
         ))}
       </div>
 
-      {hasMore && (
+      {/* skeleton durante carregamento */}
+      {isPending && <TruckGridSkeleton count={pageSize} />}
+
+      {/* botão carregar mais */}
+      {hasMore && !isPending && (
         <div className="lm-wrap">
           <button
             className="lm-btn"
             onClick={loadMore}
-            disabled={isPending}
             aria-busy={isPending}
           >
-            {isPending ? "Carregando..." : `Carregar mais (${total - trucks.length} restantes)`}
+            Carregar mais
+            <span className="lm-count">{total - trucks.length} restantes</span>
           </button>
         </div>
       )}
 
       <style>{`
-        .lm-wrap { display: flex; justify-content: center; padding: 32px 0 8px; }
+        .lm-wrap {
+          display: flex; justify-content: center;
+          padding: 36px 0 8px;
+        }
         .lm-btn {
-          height: 48px; padding: 0 32px; border-radius: 14px;
+          display: inline-flex; align-items: center; gap: 10px;
+          height: 50px; padding: 0 32px; border-radius: 14px;
           border: 1.5px solid var(--line);
           background: var(--surface); color: var(--text);
           font-size: 14px; font-weight: 800; cursor: pointer;
           transition: border-color .14s, box-shadow .14s, transform .14s;
           box-shadow: var(--shadow);
         }
-        .lm-btn:hover:not(:disabled) {
-          border-color: var(--blue); box-shadow: var(--shadow2);
+        .lm-btn:hover {
+          border-color: var(--blue);
+          box-shadow: var(--shadow2);
           transform: translateY(-1px);
         }
-        .lm-btn:disabled { opacity: .6; cursor: not-allowed; }
+        .lm-count {
+          display: inline-flex; align-items: center;
+          height: 22px; padding: 0 9px;
+          border-radius: 999px;
+          background: var(--blueSoft);
+          color: var(--blue);
+          font-size: 11px; font-weight: 900;
+        }
       `}</style>
     </>
   );
