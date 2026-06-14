@@ -1,13 +1,14 @@
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { createPublicClient } from "@/lib/supabase/public";
+import { createClient } from "@/lib/supabase/server";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
 import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
 import { LoadMore } from "./LoadMore";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata = {
   title: "Caminhões à Venda | Todos os anúncios",
@@ -37,12 +38,13 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const estadoFiltro = ESTADOS_VALIDOS.includes(estado || "") ? estado! : "";
   const hasFilters   = faixaIdx > 0 || !!marcaFiltro || !!estadoFiltro;
 
-  const supabase = createPublicClient();
+  const supabase = await createClient();
 
   let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
-    .eq("status", "aprovado");
+    .eq("status", "aprovado")
+    .eq("vendido", false);
   if (marcaFiltro)      countQ = countQ.eq("marca",  marcaFiltro);
   if (estadoFiltro)     countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0)          countQ = countQ.gte("preco", min);
@@ -53,6 +55,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
+    .eq("vendido", false)
     .order("created_at", { ascending: false })
     .limit(24);
   if (marcaFiltro)      dataQ = dataQ.eq("marca",  marcaFiltro);
