@@ -72,9 +72,11 @@ function getSeoTitle(truck: Truck) {
 }
 
 function getSeoDescription(truck: Truck, title: string, location: string, price: string) {
-  const tipo = cleanText(truck.carroceria) || cleanText(truck.tracao) || "caminhão ou implemento";
-  const detalhes = [tipo, price !== "Preço sob consulta" ? price : "", location].filter(Boolean).join(" · ");
-  return `${title}. ${detalhes ? `${detalhes}. ` : ""}Veja fotos, detalhes do anúncio e contato direto pelo WhatsApp no Caminhões à Venda.`;
+  const tipo = cleanText(truck.carroceria) || cleanText(truck.tracao) || "";
+  const partes = [tipo, price !== "Preço sob consulta" ? price : "", location].filter(Boolean);
+  const detalhes = partes.join(" · ");
+  const base = `${title}${detalhes ? `. ${detalhes}` : ""}. Veja fotos e fale pelo WhatsApp.`;
+  return base.length > 125 ? base.slice(0, 122) + "..." : base;
 }
 
 async function getApprovedTruck(parametro: string): Promise<Truck | null> {
@@ -214,7 +216,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const whatsappLink = getWhatsappLink(truck, title);
   const { vehicle: structuredData, breadcrumb: breadcrumbData } = getStructuredData(truck, title, location, whatsappLink);
   const shareYear = truck.ano_modelo || truck.ano_fabricacao;
-  const shareText = `🚛 ${getCardTitle(truck)}${shareYear ? ` ${shareYear}` : ""}`;
+  const shareText = `🚛 ${getCardTitle(truck)}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
   const photoCount = (truck.truck_images || []).length;
   const initialViews = truck.views ?? 0;
 
