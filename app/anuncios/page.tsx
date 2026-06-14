@@ -1,12 +1,9 @@
-import { Suspense } from "react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { TruckCard, type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
-import { BrandFilter } from "@/components/BrandFilter";
 
-// Cache de 60s funciona porque os filtros sao aplicados em JS, nao via searchParams no Supabase
 export const revalidate = 60;
 
 export const metadata = {
@@ -62,7 +59,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const marcaFiltro = MARCAS_VALIDAS.includes(marca || "") ? marca! : "";
   const estadoFiltro = ESTADOS.find((e) => e.value === estado)?.value || "";
 
-  // Busca todos aprovados de uma vez — filtros aplicados em JS para o cache funcionar
   const supabase = await createClient();
   const { data } = await supabase
     .from("trucks")
@@ -72,7 +68,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     .order("created_at", { ascending: false })
     .limit(300);
 
-  // Filtragem em JS (nao bate no banco de novo)
   let trucks = (data || []) as Truck[];
   if (min > 0) trucks = trucks.filter((t) => (t.preco ?? 0) >= min);
   if (max !== Infinity) trucks = trucks.filter((t) => (t.preco ?? 0) <= max);
@@ -92,12 +87,22 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio encontrado" : "anúncios encontrados"}</p>
         </div>
 
-        <div className="al-brand-section">
-          <span className="al-filter-label">Marca</span>
-          <BrandFilter marcaAtiva={marcaFiltro} buildHref={(m) => buildHref(base, { marca: m })} />
-        </div>
-
         <div className="al-filters-wrap">
+          <div className="al-filter-group">
+            <span className="al-filter-label">Marca</span>
+            <div className="al-filter-row">
+              {["Todas", ...MARCAS_VALIDAS].map((m) => {
+                const val = m === "Todas" ? "" : m;
+                const active = marcaFiltro === val;
+                return (
+                  <Link key={m} href={buildHref(base, { marca: val || undefined })} className={`al-filter-btn${active ? " active" : ""}`}>
+                    {m}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="al-filter-group">
             <span className="al-filter-label">Estado</span>
             <div className="al-filter-row">
@@ -144,7 +149,6 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
         .al-header { padding: 28px 0 16px; }
         .al-title { margin: 0 0 4px; font-size: clamp(26px,4vw,38px); letter-spacing: -.04em; line-height: 1; }
         .al-subtitle { margin: 0; color: var(--muted); font-size: 14px; font-weight: 750; }
-        .al-brand-section { display: grid; gap: 10px; margin-bottom: 20px; }
         .al-filters-wrap { display: grid; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
         .al-filter-group { display: grid; gap: 7px; }
         .al-filter-label { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
