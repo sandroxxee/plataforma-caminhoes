@@ -26,6 +26,15 @@ const MARCA_DISPLAY: Record<string, string> = {
   guerra:          "Guerra",
 };
 
+const ESTADO_NOME: Record<string, string> = {
+  AC:"Acre",AL:"Alagoas",AM:"Amazonas",AP:"Amapá",BA:"Bahia",CE:"Ceará",
+  DF:"Distrito Federal",ES:"Espírito Santo",GO:"Goiás",MA:"Maranhão",
+  MG:"Minas Gerais",MS:"Mato Grosso do Sul",MT:"Mato Grosso",PA:"Pará",
+  PB:"Paraíba",PE:"Pernambuco",PI:"Piauí",PR:"Paraná",RJ:"Rio de Janeiro",
+  RN:"Rio Grande do Norte",RO:"Rondônia",RR:"Roraima",RS:"Rio Grande do Sul",
+  SC:"Santa Catarina",SE:"Sergipe",SP:"São Paulo",TO:"Tocantins",
+};
+
 export async function generateStaticParams() {
   return Object.keys(MARCA_DISPLAY).map((m) => ({ marca: m }));
 }
@@ -47,7 +56,48 @@ export async function generateMetadata({ params }: { params: Promise<{ marca: st
   };
 }
 
-type Truck = TruckCardData & { truck_images?: TruckImage[] };
+type Truck = TruckCardData & { truck_images?: TruckImage[]; estado?: string | null; preco?: number | null; modelo?: string | null; };
+
+function TextoSEOMarca({ display, trucks }: { display: string; trucks: Truck[] }) {
+  const total = trucks.length;
+  if (total === 0) return null;
+
+  // Estados com mais anuncios
+  const porEstado: Record<string, number> = {};
+  trucks.forEach((t) => { if (t.estado) porEstado[t.estado] = (porEstado[t.estado] || 0) + 1; });
+  const topEstados = Object.entries(porEstado)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([uf]) => ESTADO_NOME[uf] || uf)
+    .join(", ");
+
+  // Faixa de preco
+  const precos = trucks.map((t) => t.preco).filter((p): p is number => typeof p === "number" && p > 0);
+  const precoMin = precos.length ? Math.min(...precos) : null;
+  const precoMax = precos.length ? Math.max(...precos) : null;
+  const faixaPreco = precoMin && precoMax
+    ? `Os preços variam de ${precoMin.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} a ${precoMax.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}.`
+    : "";
+
+  // Modelos unicos
+  const modelos = [...new Set(trucks.map((t) => t.modelo).filter(Boolean))].slice(0, 5).join(", ");
+
+  return (
+    <div className="seo-text-block">
+      <p>
+        Encontre <strong>{total} {total === 1 ? "caminhão" : "caminhões"} {display}</strong> à venda com fotos reais, preço e contato direto pelo WhatsApp.
+        {topEstados && <> Os estados com mais ofertas são <strong>{topEstados}</strong>.</>}
+        {faixaPreco && <> {faixaPreco}</>}
+      </p>
+      {modelos && (
+        <p>
+          Entre os modelos disponíveis: <strong>{modelos}</strong>.
+          Todos os anúncios são verificados e publicados diretamente pelo vendedor — sem intermíiários.
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default async function MarcaPage({ params }: { params: Promise<{ marca: string }> }) {
   const { marca } = await params;
@@ -78,6 +128,7 @@ export default async function MarcaPage({ params }: { params: Promise<{ marca: s
           <h1 className="al-title">Caminhões {display} à Venda</h1>
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio" : "anúncios"} encontrados</p>
         </div>
+        <TextoSEOMarca display={display} trucks={trucks} />
         <div className="seo-marca-nav">
           {Object.entries(MARCA_DISPLAY).map(([slug, name]) => (
             <Link key={slug} href={`/caminhoes/marca/${slug}`} className={slug === marca ? "active" : ""}>{name}</Link>

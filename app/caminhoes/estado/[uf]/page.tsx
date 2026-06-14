@@ -49,7 +49,55 @@ export async function generateMetadata({ params }: { params: Promise<{ uf: strin
   };
 }
 
-type Truck = TruckCardData & { truck_images?: TruckImage[] };
+type Truck = TruckCardData & { truck_images?: TruckImage[]; marca?: string | null; preco?: number | null; cidade?: string | null; };
+
+function TextoSEOEstado({ estado, uf, trucks }: { estado: string; uf: string; trucks: Truck[] }) {
+  const total = trucks.length;
+  if (total === 0) return null;
+
+  // Cidades com mais anuncios
+  const porCidade: Record<string, number> = {};
+  trucks.forEach((t) => { if (t.cidade) porCidade[t.cidade] = (porCidade[t.cidade] || 0) + 1; });
+  const topCidades = Object.entries(porCidade)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([c]) => c)
+    .join(", ");
+
+  // Marcas mais anunciadas
+  const porMarca: Record<string, number> = {};
+  trucks.forEach((t) => { if (t.marca) porMarca[t.marca] = (porMarca[t.marca] || 0) + 1; });
+  const topMarcas = Object.entries(porMarca)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([m]) => m)
+    .join(", ");
+
+  // Faixa de preco
+  const precos = trucks.map((t) => t.preco).filter((p): p is number => typeof p === "number" && p > 0);
+  const precoMin = precos.length ? Math.min(...precos) : null;
+  const precoMax = precos.length ? Math.max(...precos) : null;
+  const faixaPreco = precoMin && precoMax
+    ? `Os preços anunciados variam de ${precoMin.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} a ${precoMax.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}.`
+    : "";
+
+  return (
+    <div className="seo-text-block">
+      <p>
+        Encontre <strong>{total} {total === 1 ? "caminhão" : "caminhões"} à venda em {estado}</strong> com fotos reais e contato direto pelo WhatsApp com o vendedor.
+        {topCidades && <> As cidades com mais ofertas são <strong>{topCidades}</strong>.</>}
+        {faixaPreco && <> {faixaPreco}</>}
+      </p>
+      {topMarcas && (
+        <p>
+          As marcas mais anunciadas em {estado} são <strong>{topMarcas}</strong>.
+          Todos os anúncios são verificados e publicados diretamente pelo vendedor — sem intermediários.
+          Use o alerta de busca abaixo para ser avisado assim que um novo caminhão aparecer em {estado}.
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default async function EstadoPage({ params }: { params: Promise<{ uf: string }> }) {
   const { uf } = await params;
@@ -80,6 +128,7 @@ export default async function EstadoPage({ params }: { params: Promise<{ uf: str
           <h1 className="al-title">Caminhões à Venda em {estado}</h1>
           <p className="al-subtitle">{trucks.length} {trucks.length === 1 ? "anúncio" : "anúncios"} encontrados</p>
         </div>
+        <TextoSEOEstado estado={estado} uf={uf} trucks={trucks} />
         <div className="seo-marca-nav">
           {Object.entries(ESTADOS).map(([slug, nome]) => (
             <Link key={slug} href={`/caminhoes/estado/${slug}`} className={slug === uf ? "active" : ""}>{nome}</Link>
