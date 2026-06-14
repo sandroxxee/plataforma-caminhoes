@@ -5,7 +5,7 @@ export const alt = "Caminhão à venda";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const UUID_REGEX = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+const UUID_REGEX    = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const SHORT_ID_REGEX = /-([a-f0-9]{8})$/;
 
 async function getTruck(id: string) {
@@ -16,33 +16,27 @@ async function getTruck(id: string) {
     const { data } = await supabase
       .from("trucks")
       .select("id,titulo,marca,modelo,ano_modelo,preco,cidade,estado,truck_images(image_url,principal,ordem)")
-      .eq("id", value)
-      .eq("status", "aprovado")
-      .maybeSingle();
+      .eq("id", value).eq("status", "aprovado").maybeSingle();
     return data;
   }
 
-  const shortIdMatch = value.match(SHORT_ID_REGEX);
-  if (shortIdMatch) {
-    const { data } = await supabase
-      .rpc("find_truck_by_short_id", { short_id: shortIdMatch[1] });
-    if (data && data.length > 0) {
+  const m = value.match(SHORT_ID_REGEX);
+  if (m) {
+    const { data } = await supabase.rpc("find_truck_by_short_id", { short_id: m[1] });
+    if (data?.length > 0) {
       const truck = data[0];
-      const { data: images } = await supabase
-        .from("truck_images")
-        .select("image_url,principal,ordem")
-        .eq("truck_id", truck.id)
-        .order("ordem", { ascending: true });
-      return { ...truck, truck_images: images || [] };
+      const { data: imgs } = await supabase
+        .from("truck_images").select("image_url,principal,ordem")
+        .eq("truck_id", truck.id).order("ordem", { ascending: true });
+      return { ...truck, truck_images: imgs || [] };
     }
   }
-
   return null;
 }
 
 function formatPrice(preco: unknown) {
   const n = Number(preco);
-  if (!n || !Number.isFinite(n)) return "Preço sob consulta";
+  if (!n || !Number.isFinite(n)) return null;
   return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
@@ -50,133 +44,88 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const { id } = await params;
   const truck = await getTruck(id);
 
-  const marca = truck?.marca || "";
+  const marca  = truck?.marca  || "";
   const modelo = truck?.modelo || truck?.titulo || "Caminhão";
-  const ano = truck?.ano_modelo ? String(truck.ano_modelo) : "";
+  const ano    = truck?.ano_modelo ? String(truck.ano_modelo) : "";
   const cidade = truck?.cidade || "";
   const estado = truck?.estado || "";
   const titulo = [marca, modelo, ano].filter(Boolean).join(" ");
-  const local = [cidade, estado].filter(Boolean).join("/");
-  const preco = formatPrice(truck?.preco);
+  const local  = [cidade, estado].filter(Boolean).join(" / ");
+  const preco  = formatPrice(truck?.preco);
 
   const images = (truck?.truck_images || []) as Array<{ image_url: string; principal?: boolean; ordem?: number }>;
   const mainImage =
-    images.find((i) => i.principal)?.image_url ||
-    images.sort((a, b) => (a.ordem ?? 99) - (b.ordem ?? 99))[0]?.image_url ||
+    images.find((i) => i.principal)?.image_url ??
+    images.sort((a, b) => (a.ordem ?? 99) - (b.ordem ?? 99))[0]?.image_url ??
     null;
+
+  const tituloSize = titulo.length > 35 ? 44 : titulo.length > 25 ? 52 : 60;
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: 1200,
-          height: 630,
-          display: "flex",
-          flexDirection: "column",
-          background: "#0a0f14",
-          position: "relative",
-          overflow: "hidden",
-          fontFamily: "sans-serif",
-        }}
-      >
+      <div style={{ width: 1200, height: 630, display: "flex", background: "#050d18", position: "relative", overflow: "hidden", fontFamily: "system-ui, sans-serif" }}>
+
+        {/* Foto de fundo */}
         {mainImage && (
-          <img
-            src={mainImage}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              opacity: 0.45,
-            }}
-          />
+          <img src={mainImage} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.38 }} />
         )}
 
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.15) 100%)",
-          }}
-        />
+        {/* Gradiente */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg, rgba(5,13,24,0.97) 0%, rgba(5,13,24,0.80) 42%, rgba(5,13,24,0.30) 100%)" }} />
 
-        <div
-          style={{
-            position: "absolute",
-            top: 36,
-            left: 48,
-            background: "rgba(34,197,94,0.18)",
-            border: "1.5px solid rgba(34,197,94,0.5)",
-            borderRadius: 999,
-            padding: "6px 18px",
-            color: "#86efac",
-            fontSize: 22,
-            fontWeight: 900,
-            letterSpacing: 2,
-            display: "flex",
-          }}
-        >
-          🚛 CAMINHÕES À VENDA
-        </div>
+        {/* Faixa azul lateral esquerda */}
+        <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 6, background: "linear-gradient(to bottom, #1877f2, #0ea5e9)" }} />
 
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: "0 48px 42px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-          }}
-        >
-          {local && (
-            <div style={{ color: "#94a3b8", fontSize: 24, fontWeight: 700, display: "flex" }}>
-              📍 {local}
+        {/* Conteúdo */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "44px 56px 44px 62px" }}>
+
+          {/* Topo: badge site */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg,#1877f2,#0ea5e9)", boxShadow: "0 2px 12px rgba(24,119,242,.5)" }}>
+              <div style={{ color: "#fff", fontSize: 22, display: "flex" }}>🚛</div>
             </div>
-          )}
-
-          <div
-            style={{
-              color: "#ffffff",
-              fontSize: titulo.length > 30 ? 48 : 58,
-              fontWeight: 900,
-              lineHeight: 1.1,
-              display: "flex",
-              letterSpacing: -1,
-            }}
-          >
-            {titulo || "Caminhão à venda"}
+            <div style={{ color: "#fff", fontWeight: 900, fontSize: 22, display: "flex", letterSpacing: -0.3 }}>
+              Caminhões <span style={{ color: "#38bdf8", marginLeft: 6 }}>à Venda</span>
+            </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 6 }}>
-            <div
-              style={{
-                color: "#22c55e",
-                fontSize: 42,
-                fontWeight: 900,
-                letterSpacing: -1,
-                display: "flex",
-              }}
-            >
-              {preco}
+          {/* Corpo: título + localização */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+            {marca && (
+              <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", padding: "5px 16px", borderRadius: 999, background: "rgba(24,119,242,0.22)", border: "1.5px solid rgba(56,189,248,0.4)", color: "#38bdf8", fontWeight: 900, fontSize: 18, letterSpacing: 1 }}>
+                  {marca.toUpperCase()}
+                </div>
+              </div>
+            )}
+
+            <div style={{ color: "#fff", fontWeight: 900, fontSize: tituloSize, lineHeight: 1.08, display: "flex", letterSpacing: -1.5, maxWidth: 720 }}>
+              {titulo || "Caminhão à venda"}
             </div>
 
-            <div
-              style={{
-                background: "#22c55e",
-                color: "#052e16",
-                borderRadius: 12,
-                padding: "10px 24px",
-                fontSize: 22,
-                fontWeight: 900,
-                display: "flex",
-              }}
-            >
-              Ver anúncio →
+            {local && (
+              <div style={{ color: "#94a3b8", fontSize: 22, fontWeight: 700, display: "flex", gap: 8 }}>
+                <span style={{ display: "flex" }}>📍</span> {local}
+              </div>
+            )}
+          </div>
+
+          {/* Rodapé: preço + CTA */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {preco ? (
+                <>
+                  <div style={{ color: "#64748b", fontSize: 15, fontWeight: 700, display: "flex" }}>PREÇO</div>
+                  <div style={{ color: "#22c55e", fontWeight: 900, fontSize: 46, lineHeight: 1, display: "flex", letterSpacing: -1.5 }}>{preco}</div>
+                </>
+              ) : (
+                <div style={{ color: "#94a3b8", fontSize: 22, fontWeight: 700, display: "flex" }}>Preço sob consulta</div>
+              )}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 28px", borderRadius: 16, background: "linear-gradient(135deg,#1877f2,#0ea5e9)", boxShadow: "0 4px 20px rgba(24,119,242,.45)" }}>
+              <div style={{ color: "#fff", fontWeight: 900, fontSize: 20, display: "flex" }}>Ver anúncio →</div>
             </div>
           </div>
         </div>
