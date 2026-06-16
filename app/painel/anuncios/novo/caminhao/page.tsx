@@ -41,7 +41,6 @@ type Campos = {
   cidade: string;
   estado: string;
   carroceria: string;
-  tracao: string;
   whatsapp: string;
   descricao: string;
 };
@@ -57,7 +56,6 @@ export default function NovoCaminhaoPage() {
     cidade: "",
     estado: "SC",
     carroceria: "",
-    tracao: "",
     whatsapp: "",
     descricao: "",
   });
@@ -94,7 +92,6 @@ export default function NovoCaminhaoPage() {
       cidade: sugestao.cidade || prev.cidade,
       estado: sugestao.estado && estados.includes(sugestao.estado) ? sugestao.estado : prev.estado,
       carroceria: sugestao.carroceria && carrocerias.includes(sugestao.carroceria) ? sugestao.carroceria : prev.carroceria,
-      tracao: sugestao.tracao || prev.tracao,
       whatsapp: sugestao.whatsapp || prev.whatsapp,
       descricao: sugestao.descricao || prev.descricao,
     }));
@@ -202,7 +199,7 @@ export default function NovoCaminhaoPage() {
                   </select>
                 </label>
 
-                <TruckConfigurationFields tracao={campos.tracao} onTracaoChange={(v) => setCampos((prev) => ({ ...prev, tracao: v }))} />
+                <TruckConfigurationFields />
 
                 <label>
                   Quilometragem <span className="optional-tag">(opcional)</span>
