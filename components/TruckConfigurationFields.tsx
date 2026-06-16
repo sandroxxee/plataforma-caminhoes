@@ -16,7 +16,12 @@ function tracaoDaConfiguracao(configuracao: string) {
   return "Simples";
 }
 
-export function TruckConfigurationFields() {
+type Props = {
+  tracao?: string;
+  onTracaoChange?: (v: string) => void;
+};
+
+export function TruckConfigurationFields({ tracao: _tracao, onTracaoChange: _onTracaoChange }: Props = {}) {
   const [tipo, setTipo] = useState("");
   const [configuracaoManual, setConfiguracaoManual] = useState("");
 
