@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PanelLayout } from "@/components/PanelLayout";
 import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
-import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
+import { AutoFillTruckButton, SugestaoAnuncio } from "@/components/AutoFillTruckButton";
 import { criarAnuncio } from "../../actions";
 
 const estados = ["SC", "PR", "RS", "SP", "MG", "MS", "MT", "GO", "BA", "RJ", "ES", "Outro"];
@@ -53,7 +53,7 @@ export default function NovaCarretaPage() {
     descricao: "",
   });
 
-  function handleFill(s: Partial<Record<string, string>>) {
+  function handleFill(s: SugestaoAnuncio) {
     setCampos((prev) => ({
       tipo_implemento: s.carroceria && CARRETA_TIPOS.includes(s.carroceria) ? s.carroceria : prev.tipo_implemento,
       implemento_marca: s.marca && CARRETA_MARCAS.includes(s.marca) ? s.marca : prev.implemento_marca,
@@ -90,10 +90,7 @@ export default function NovaCarretaPage() {
           <div className="ai-grid">
             <label>
               Texto do anúncio
-              <textarea
-                name="texto_ia"
-                placeholder="Cole aqui a descrição da carreta (OLX, Facebook Marketplace, WhatsApp...). Ex: Randon graneleira 3 eixos 2020, pneus bons, SP, R$ 95.000"
-              />
+              <textarea name="texto_ia" placeholder="Cole aqui a descrição da carreta (OLX, Facebook Marketplace, WhatsApp...). Ex: Randon graneleira 3 eixos 2020, pneus bons, SP, R$ 95.000" />
             </label>
             <AutoFillTruckButton onFill={handleFill} />
           </div>
@@ -102,49 +99,34 @@ export default function NovaCarretaPage() {
         <section className="form-section">
           <div className="section-head">
             <span>01</span>
-            <div>
-              <h2>Dados da carreta</h2>
-              <p>Informe tipo, marca, eixos, ano e conservação.</p>
-            </div>
+            <div><h2>Dados da carreta</h2><p>Informe tipo, marca, eixos, ano e conservação.</p></div>
           </div>
-
           <div className="form-grid three">
-            <label>
-              Tipo de carreta *
+            <label>Tipo de carreta *
               <select name="tipo_implemento" value={campos.tipo_implemento} onChange={(e) => setCampos((p) => ({ ...p, tipo_implemento: e.target.value }))} required>
                 <option value="" disabled>Selecione o tipo</option>
                 {CARRETA_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </label>
-
-            <label>
-              Marca *
+            <label>Marca *
               <select name="implemento_marca" value={campos.implemento_marca} onChange={(e) => setCampos((p) => ({ ...p, implemento_marca: e.target.value }))} required>
                 <option value="" disabled>Selecione a marca</option>
                 {CARRETA_MARCAS.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </label>
-
-            <label>
-              Modelo / versão *
+            <label>Modelo / versão *
               <input name="implemento_modelo" placeholder="Ex: Graneleira LS 3 eixos" value={campos.implemento_modelo} onChange={(e) => setCampos((p) => ({ ...p, implemento_modelo: e.target.value }))} />
             </label>
-
-            <label>
-              Ano *
+            <label>Ano *
               <input name="implemento_ano" type="number" placeholder="Ex: 2020" value={campos.implemento_ano} onChange={(e) => setCampos((p) => ({ ...p, implemento_ano: e.target.value }))} />
             </label>
-
-            <label>
-              Número de eixos *
+            <label>Número de eixos *
               <select name="numero_eixos" value={campos.numero_eixos} onChange={(e) => setCampos((p) => ({ ...p, numero_eixos: e.target.value }))} required>
                 <option value="" disabled>Selecione</option>
                 {EIXOS.map((e) => <option key={e} value={e}>{e}</option>)}
               </select>
             </label>
-
-            <label>
-              Conservação *
+            <label>Conservação *
               <select name="conservacao" value={campos.conservacao} onChange={(e) => setCampos((p) => ({ ...p, conservacao: e.target.value }))} required>
                 <option value="" disabled>Selecione</option>
                 {CONSERVACOES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -154,24 +136,15 @@ export default function NovaCarretaPage() {
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>02</span>
-            <div>
-              <h2>Valor e localização</h2>
-              <p>Esses dados ajudam o comprador a decidir rapidamente.</p>
-            </div>
-          </div>
+          <div className="section-head"><span>02</span><div><h2>Valor e localização</h2><p>Esses dados ajudam o comprador a decidir rapidamente.</p></div></div>
           <div className="form-grid three">
-            <label>
-              Valor *
+            <label>Valor *
               <input name="preco" type="number" placeholder="Ex: 95000" value={campos.preco} onChange={(e) => setCampos((p) => ({ ...p, preco: e.target.value }))} required />
             </label>
-            <label>
-              Cidade <span className="optional-tag">(opcional)</span>
+            <label>Cidade <span className="optional-tag">(opcional)</span>
               <input name="cidade" placeholder="Ex: Cascavel" value={campos.cidade} onChange={(e) => setCampos((p) => ({ ...p, cidade: e.target.value }))} />
             </label>
-            <label>
-              Estado *
+            <label>Estado *
               <select name="estado" value={campos.estado} onChange={(e) => setCampos((p) => ({ ...p, estado: e.target.value }))} required>
                 {estados.map((e) => <option key={e} value={e}>{e}</option>)}
               </select>
@@ -180,34 +153,20 @@ export default function NovaCarretaPage() {
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>03</span>
-            <div>
-              <h2>Contato e descrição</h2>
-              <p>Informe um WhatsApp válido e uma descrição objetiva.</p>
-            </div>
-          </div>
+          <div className="section-head"><span>03</span><div><h2>Contato e descrição</h2><p>Informe um WhatsApp válido e uma descrição objetiva.</p></div></div>
           <div className="form-grid two">
-            <label>
-              WhatsApp *
+            <label>WhatsApp *
               <input name="whatsapp" placeholder="Ex: 5549999362681" value={campos.whatsapp} onChange={(e) => setCampos((p) => ({ ...p, whatsapp: e.target.value }))} required />
               <small>DDI + DDD + número. Exemplo: 5549999999999</small>
             </label>
-            <label className="wide">
-              Descrição
+            <label className="wide">Descrição
               <textarea name="descricao" placeholder="Ex: Graneleira Randon 3 eixos 2020, pneus bons, documentos em dia." value={campos.descricao} onChange={(e) => setCampos((p) => ({ ...p, descricao: e.target.value }))} />
             </label>
           </div>
         </section>
 
         <section className="form-section upload-section">
-          <div className="section-head">
-            <span>04</span>
-            <div>
-              <h2>Fotos da carreta</h2>
-              <p>As fotos serão preparadas com a marca d’água www.caminhoesavenda.com antes do envio.</p>
-            </div>
-          </div>
+          <div className="section-head"><span>04</span><div><h2>Fotos da carreta</h2><p>As fotos serão preparadas com a marca d’água antes do envio.</p></div></div>
           <WatermarkPhotoUploader />
         </section>
 

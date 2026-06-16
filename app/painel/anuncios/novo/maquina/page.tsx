@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PanelLayout } from "@/components/PanelLayout";
 import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
-import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
+import { AutoFillTruckButton, SugestaoAnuncio } from "@/components/AutoFillTruckButton";
 import { criarAnuncio } from "../../actions";
 
 const estados = ["SC", "PR", "RS", "SP", "MG", "MS", "MT", "GO", "BA", "RJ", "ES", "Outro"];
@@ -52,7 +52,7 @@ export default function NovoMaquinaPage() {
     descricao: "",
   });
 
-  function handleFill(s: Partial<Record<string, string>>) {
+  function handleFill(s: SugestaoAnuncio) {
     setCampos((prev) => ({
       tipo_implemento: s.carroceria && MAQUINA_TIPOS.includes(s.carroceria) ? s.carroceria : prev.tipo_implemento,
       implemento_marca: s.marca && MAQUINA_MARCAS.includes(s.marca) ? s.marca : prev.implemento_marca,
@@ -86,61 +86,39 @@ export default function NovoMaquinaPage() {
             </div>
           </div>
           <div className="ai-grid">
-            <label>
-              Texto do anúncio
-              <textarea
-                name="texto_ia"
-                placeholder="Cole aqui a descrição da máquina. Ex: Caterpillar 320D 2018, 8500 horas, SP, R$ 380.000"
-              />
+            <label>Texto do anúncio
+              <textarea name="texto_ia" placeholder="Cole aqui a descrição da máquina. Ex: Caterpillar 320D 2018, 8500 horas, SP, R$ 380.000" />
             </label>
             <AutoFillTruckButton onFill={handleFill} />
           </div>
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>01</span>
-            <div>
-              <h2>Dados da máquina</h2>
-              <p>Informe tipo, marca, modelo, ano e conservação.</p>
-            </div>
-          </div>
-
+          <div className="section-head"><span>01</span><div><h2>Dados da máquina</h2><p>Informe tipo, marca, modelo, ano e conservação.</p></div></div>
           <div className="form-grid three">
-            <label>
-              Tipo de máquina *
+            <label>Tipo de máquina *
               <select name="tipo_implemento" value={campos.tipo_implemento} onChange={(e) => setCampos((p) => ({ ...p, tipo_implemento: e.target.value }))} required>
                 <option value="" disabled>Selecione o tipo</option>
                 {MAQUINA_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </label>
-
-            <label>
-              Marca *
+            <label>Marca *
               <select name="implemento_marca" value={campos.implemento_marca} onChange={(e) => setCampos((p) => ({ ...p, implemento_marca: e.target.value }))} required>
                 <option value="" disabled>Selecione a marca</option>
                 {MAQUINA_MARCAS.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </label>
-
-            <label>
-              Modelo / versão *
+            <label>Modelo / versão *
               <input name="implemento_modelo" placeholder="Ex: 320D, 950K, 120M" value={campos.implemento_modelo} onChange={(e) => setCampos((p) => ({ ...p, implemento_modelo: e.target.value }))} />
             </label>
-
-            <label>
-              Ano *
+            <label>Ano *
               <input name="implemento_ano" type="number" placeholder="Ex: 2019" value={campos.implemento_ano} onChange={(e) => setCampos((p) => ({ ...p, implemento_ano: e.target.value }))} />
             </label>
-
-            <label>
-              Horímetro (horas) <span className="optional-tag">(opcional)</span>
+            <label>Horímetro (horas) <span className="optional-tag">(opcional)</span>
               <input name="quilometragem" type="number" placeholder="Ex: 8500" />
               <small>Horas trabalhadas. Deixe em branco se não souber.</small>
             </label>
-
-            <label>
-              Conservação *
+            <label>Conservação *
               <select name="conservacao" value={campos.conservacao} onChange={(e) => setCampos((p) => ({ ...p, conservacao: e.target.value }))} required>
                 <option value="" disabled>Selecione</option>
                 {CONSERVACOES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -150,24 +128,15 @@ export default function NovoMaquinaPage() {
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>02</span>
-            <div>
-              <h2>Valor e localização</h2>
-              <p>Esses dados ajudam o comprador a decidir rapidamente.</p>
-            </div>
-          </div>
+          <div className="section-head"><span>02</span><div><h2>Valor e localização</h2><p>Esses dados ajudam o comprador a decidir rapidamente.</p></div></div>
           <div className="form-grid three">
-            <label>
-              Valor *
+            <label>Valor *
               <input name="preco" type="number" placeholder="Ex: 320000" value={campos.preco} onChange={(e) => setCampos((p) => ({ ...p, preco: e.target.value }))} required />
             </label>
-            <label>
-              Cidade <span className="optional-tag">(opcional)</span>
+            <label>Cidade <span className="optional-tag">(opcional)</span>
               <input name="cidade" placeholder="Ex: Curitiba" value={campos.cidade} onChange={(e) => setCampos((p) => ({ ...p, cidade: e.target.value }))} />
             </label>
-            <label>
-              Estado *
+            <label>Estado *
               <select name="estado" value={campos.estado} onChange={(e) => setCampos((p) => ({ ...p, estado: e.target.value }))} required>
                 {estados.map((e) => <option key={e} value={e}>{e}</option>)}
               </select>
@@ -176,34 +145,20 @@ export default function NovoMaquinaPage() {
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>03</span>
-            <div>
-              <h2>Contato e descrição</h2>
-              <p>Informe um WhatsApp válido e uma descrição objetiva.</p>
-            </div>
-          </div>
+          <div className="section-head"><span>03</span><div><h2>Contato e descrição</h2><p>Informe um WhatsApp válido e uma descrição objetiva.</p></div></div>
           <div className="form-grid two">
-            <label>
-              WhatsApp *
+            <label>WhatsApp *
               <input name="whatsapp" placeholder="Ex: 5549999362681" value={campos.whatsapp} onChange={(e) => setCampos((p) => ({ ...p, whatsapp: e.target.value }))} required />
               <small>DDI + DDD + número. Exemplo: 5549999999999</small>
             </label>
-            <label className="wide">
-              Descrição
+            <label className="wide">Descrição
               <textarea name="descricao" placeholder="Ex: Escavadeira em ótimo estado, revisada, pronta para trabalhar." value={campos.descricao} onChange={(e) => setCampos((p) => ({ ...p, descricao: e.target.value }))} />
             </label>
           </div>
         </section>
 
         <section className="form-section upload-section">
-          <div className="section-head">
-            <span>04</span>
-            <div>
-              <h2>Fotos da máquina</h2>
-              <p>As fotos serão preparadas com a marca d’água www.caminhoesavenda.com antes do envio.</p>
-            </div>
-          </div>
+          <div className="section-head"><span>04</span><div><h2>Fotos da máquina</h2><p>As fotos serão preparadas com a marca d’água antes do envio.</p></div></div>
           <WatermarkPhotoUploader />
         </section>
 

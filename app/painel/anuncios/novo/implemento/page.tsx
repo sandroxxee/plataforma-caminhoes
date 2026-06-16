@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PanelLayout } from "@/components/PanelLayout";
 import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
-import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
+import { AutoFillTruckButton, SugestaoAnuncio } from "@/components/AutoFillTruckButton";
 import {
   IMPLEMENTO_COMPOSICOES,
   IMPLEMENTO_CONSERVACOES,
@@ -56,7 +56,7 @@ export default function NovoImplementoPage() {
   const marcasNomes = IMPLEMENTO_MARCAS.map((m) => m.nome);
   const tiposNomes = IMPLEMENTO_TIPOS.map((t) => t.nome);
 
-  function handleFill(s: Partial<Record<string, string>>) {
+  function handleFill(s: SugestaoAnuncio) {
     setCampos((prev) => ({
       tipo_implemento: s.carroceria && tiposNomes.includes(s.carroceria) ? s.carroceria : prev.tipo_implemento,
       implemento_marca: s.marca && marcasNomes.includes(s.marca) ? s.marca : prev.implemento_marca,
@@ -94,109 +94,65 @@ export default function NovoImplementoPage() {
             </div>
           </div>
           <div className="ai-grid">
-            <label>
-              Texto do anúncio
-              <textarea
-                name="texto_ia"
-                placeholder="Cole aqui a descrição do implemento. Ex: Randon graneleira 3 eixos 2019, pneus bons, PR, R$ 85.000"
-              />
+            <label>Texto do anúncio
+              <textarea name="texto_ia" placeholder="Cole aqui a descrição do implemento. Ex: Randon graneleira 3 eixos 2019, pneus bons, PR, R$ 85.000" />
             </label>
             <AutoFillTruckButton onFill={handleFill} />
           </div>
         </section>
 
         <section className="form-section implemento-section">
-          <div className="section-head">
-            <span>01</span>
-            <div>
-              <h2>Dados do implemento</h2>
-              <p>Informe tipo, marca, modelo, ano, eixos e condições principais do implemento.</p>
-            </div>
-          </div>
-
+          <div className="section-head"><span>01</span><div><h2>Dados do implemento</h2><p>Informe tipo, marca, modelo, ano, eixos e condições principais do implemento.</p></div></div>
           <div className="form-grid three">
-            <label>
-              Tipo de implemento *
+            <label>Tipo de implemento *
               <select name="tipo_implemento" value={campos.tipo_implemento} onChange={(e) => setCampos((p) => ({ ...p, tipo_implemento: e.target.value }))} required>
                 <option value="" disabled>Selecione o tipo</option>
-                {IMPLEMENTO_TIPOS.map((tipo) => (
-                  <option key={tipo.id} value={tipo.nome}>{tipo.nome}</option>
-                ))}
+                {IMPLEMENTO_TIPOS.map((tipo) => <option key={tipo.id} value={tipo.nome}>{tipo.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Marca do implemento *
+            <label>Marca do implemento *
               <select name="implemento_marca" value={campos.implemento_marca} onChange={(e) => setCampos((p) => ({ ...p, implemento_marca: e.target.value }))} required>
                 <option value="" disabled>Selecione a marca</option>
-                {IMPLEMENTO_MARCAS.map((marca) => (
-                  <option key={marca.id} value={marca.nome}>{marca.nome}</option>
-                ))}
+                {IMPLEMENTO_MARCAS.map((marca) => <option key={marca.id} value={marca.nome}>{marca.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Modelo / versão *
+            <label>Modelo / versão *
               <input name="implemento_modelo" placeholder="Ex: Basculante meia-cana, LS, graneleira" value={campos.implemento_modelo} onChange={(e) => setCampos((p) => ({ ...p, implemento_modelo: e.target.value }))} />
             </label>
-
-            <label>
-              Ano do implemento *
+            <label>Ano do implemento *
               <input name="implemento_ano" type="number" placeholder="Ex: 2020" value={campos.implemento_ano} onChange={(e) => setCampos((p) => ({ ...p, implemento_ano: e.target.value }))} />
             </label>
-
-            <label>
-              Número de eixos *
+            <label>Número de eixos *
               <select name="numero_eixos" value={campos.numero_eixos} onChange={(e) => setCampos((p) => ({ ...p, numero_eixos: e.target.value }))} required>
                 <option value="" disabled>Selecione</option>
-                {IMPLEMENTO_EIXOS.map((eixo) => (
-                  <option key={eixo.id} value={eixo.nome}>{eixo.nome}</option>
-                ))}
+                {IMPLEMENTO_EIXOS.map((eixo) => <option key={eixo.id} value={eixo.nome}>{eixo.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Composição
+            <label>Composição
               <select name="composicao" value={campos.composicao} onChange={(e) => setCampos((p) => ({ ...p, composicao: e.target.value }))}>
                 <option value="" disabled>Selecione</option>
-                {IMPLEMENTO_COMPOSICOES.map((composicao) => (
-                  <option key={composicao.id} value={composicao.nome}>{composicao.nome}</option>
-                ))}
+                {IMPLEMENTO_COMPOSICOES.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Pneus *
+            <label>Pneus *
               <select name="pneus" value={campos.pneus} onChange={(e) => setCampos((p) => ({ ...p, pneus: e.target.value }))} required>
                 <option value="" disabled>Selecione</option>
-                {IMPLEMENTO_PNEUS.map((pneu) => (
-                  <option key={pneu.id} value={pneu.nome}>{pneu.nome}</option>
-                ))}
+                {IMPLEMENTO_PNEUS.map((p) => <option key={p.id} value={p.nome}>{p.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Suspensão
+            <label>Suspensão
               <select name="suspensao" value={campos.suspensao} onChange={(e) => setCampos((p) => ({ ...p, suspensao: e.target.value }))}>
                 <option value="" disabled>Selecione</option>
-                {IMPLEMENTO_SUSPENSOES.map((suspensao) => (
-                  <option key={suspensao.id} value={suspensao.nome}>{suspensao.nome}</option>
-                ))}
+                {IMPLEMENTO_SUSPENSOES.map((s) => <option key={s.id} value={s.nome}>{s.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Conservação *
+            <label>Conservação *
               <select name="conservacao" value={campos.conservacao} onChange={(e) => setCampos((p) => ({ ...p, conservacao: e.target.value }))} required>
                 <option value="" disabled>Selecione</option>
-                {IMPLEMENTO_CONSERVACOES.map((conservacao) => (
-                  <option key={conservacao.id} value={conservacao.nome}>{conservacao.nome}</option>
-                ))}
+                {IMPLEMENTO_CONSERVACOES.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}
               </select>
             </label>
-
-            <label>
-              Quilometragem <span className="optional-tag">(opcional)</span>
+            <label>Quilometragem <span className="optional-tag">(opcional)</span>
               <input name="quilometragem" type="number" placeholder="Ex: 380000" />
               <small>Em km. Deixe em branco se não souber.</small>
             </label>
@@ -204,73 +160,37 @@ export default function NovoImplementoPage() {
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>02</span>
-            <div>
-              <h2>Valor e localização</h2>
-              <p>Esses dados ajudam o comprador a decidir rapidamente.</p>
-            </div>
-          </div>
-
+          <div className="section-head"><span>02</span><div><h2>Valor e localização</h2><p>Esses dados ajudam o comprador a decidir rapidamente.</p></div></div>
           <div className="form-grid three">
-            <label>
-              Valor *
+            <label>Valor *
               <input name="preco" type="number" placeholder="Ex: 180000" value={campos.preco} onChange={(e) => setCampos((p) => ({ ...p, preco: e.target.value }))} required />
             </label>
-
-            <label>
-              Cidade <span className="optional-tag">(opcional)</span>
+            <label>Cidade <span className="optional-tag">(opcional)</span>
               <input name="cidade" placeholder="Ex: Xanxerê" value={campos.cidade} onChange={(e) => setCampos((p) => ({ ...p, cidade: e.target.value }))} />
             </label>
-
-            <label>
-              Estado *
+            <label>Estado *
               <select name="estado" value={campos.estado} onChange={(e) => setCampos((p) => ({ ...p, estado: e.target.value }))} required>
-                {estados.map((estado) => (
-                  <option key={estado} value={estado}>{estado}</option>
-                ))}
+                {estados.map((e) => <option key={e} value={e}>{e}</option>)}
               </select>
             </label>
           </div>
         </section>
 
         <section className="form-section">
-          <div className="section-head">
-            <span>03</span>
-            <div>
-              <h2>Contato e descrição</h2>
-              <p>Informe um WhatsApp válido e uma descrição objetiva.</p>
-            </div>
-          </div>
-
+          <div className="section-head"><span>03</span><div><h2>Contato e descrição</h2><p>Informe um WhatsApp válido e uma descrição objetiva.</p></div></div>
           <div className="form-grid two">
-            <label>
-              WhatsApp *
+            <label>WhatsApp *
               <input name="whatsapp" placeholder="Ex: 5549999362681" value={campos.whatsapp} onChange={(e) => setCampos((p) => ({ ...p, whatsapp: e.target.value }))} required />
               <small>Use DDI + DDD + número. Exemplo: 5549999999999</small>
             </label>
-
-            <label className="wide">
-              Descrição
-              <textarea
-                name="descricao"
-                placeholder="Ex: Caçamba conservada, pneus bons, pronta para trabalhar."
-                value={campos.descricao}
-                onChange={(e) => setCampos((p) => ({ ...p, descricao: e.target.value }))}
-              />
+            <label className="wide">Descrição
+              <textarea name="descricao" placeholder="Ex: Caçamba conservada, pneus bons, pronta para trabalhar." value={campos.descricao} onChange={(e) => setCampos((p) => ({ ...p, descricao: e.target.value }))} />
             </label>
           </div>
         </section>
 
         <section className="form-section upload-section">
-          <div className="section-head">
-            <span>04</span>
-            <div>
-              <h2>Fotos do implemento</h2>
-              <p>As fotos serão preparadas com a marca d’água www.caminhoesavenda.com antes do envio.</p>
-            </div>
-          </div>
-
+          <div className="section-head"><span>04</span><div><h2>Fotos do implemento</h2><p>As fotos serão preparadas com a marca d’água antes do envio.</p></div></div>
           <WatermarkPhotoUploader />
         </section>
 
@@ -310,7 +230,7 @@ export default function NovoImplementoPage() {
         input:focus, select:focus, textarea:focus { border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,.12); }
         select option { background: #15181b; color: #e8eaed; }
         .wide { min-width: 0; }
-        .preview-box { padding: 16px 18px; display: flex; gap: 10px; flex-wrap: wrap; color: #a7afb7; border-radius: 24px; background: #1f2327; border: 1px solid #343a40; }
+        .preview-box { padding: 16px 18px; display: flex; gap: 10px; flex-wrap: wrap; color: #a7afb7; }
         .preview-box strong { color: #22c55e; }
         .form-footer { padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
         .form-footer p { margin: 0; color: #a7afb7; line-height: 1.55; }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type SugestaoAnuncio = {
+export type SugestaoAnuncio = {
   marca?: string;
   modelo?: string;
   ano?: string;
@@ -62,7 +62,6 @@ export function AutoFillTruckButton({ onFill }: Props) {
 
       const sugestao = (data?.sugestao || {}) as SugestaoAnuncio;
 
-      // Atualiza estado React (selects e inputs controlados)
       if (onFill) {
         onFill(sugestao);
       }
