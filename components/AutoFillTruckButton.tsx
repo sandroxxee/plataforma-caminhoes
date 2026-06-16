@@ -16,18 +16,11 @@ type SugestaoAnuncio = {
   observacoes?: string[];
 };
 
-function setField(form: HTMLFormElement, name: string, value?: string) {
-  if (!value) return;
+type Props = {
+  onFill?: (sugestao: SugestaoAnuncio) => void;
+};
 
-  const field = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
-  if (!field) return;
-
-  field.value = value;
-  field.dispatchEvent(new Event("input", { bubbles: true }));
-  field.dispatchEvent(new Event("change", { bubbles: true }));
-}
-
-export function AutoFillTruckButton() {
+export function AutoFillTruckButton({ onFill }: Props) {
   const [carregando, setCarregando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [observacoes, setObservacoes] = useState<string[]>([]);
@@ -47,7 +40,7 @@ export function AutoFillTruckButton() {
     const texto = (textoBase?.value || descricaoAtual?.value || "").trim();
 
     if (texto.length < 10) {
-      setMensagem("Cole uma descrição do caminhão antes de usar a IA.");
+      setMensagem("Cole o texto do anúncio (OLX, Facebook, WhatsApp...) antes de usar a IA.");
       return;
     }
 
@@ -69,16 +62,10 @@ export function AutoFillTruckButton() {
 
       const sugestao = (data?.sugestao || {}) as SugestaoAnuncio;
 
-      setField(form, "marca", sugestao.marca);
-      setField(form, "modelo", sugestao.modelo);
-      setField(form, "ano", sugestao.ano);
-      setField(form, "preco", sugestao.preco);
-      setField(form, "cidade", sugestao.cidade);
-      setField(form, "estado", sugestao.estado);
-      setField(form, "carroceria", sugestao.carroceria);
-      setField(form, "tracao", sugestao.tracao);
-      setField(form, "whatsapp", sugestao.whatsapp);
-      setField(form, "descricao", sugestao.descricao);
+      // Atualiza estado React (selects e inputs controlados)
+      if (onFill) {
+        onFill(sugestao);
+      }
 
       setObservacoes(sugestao.observacoes || []);
       setMensagem("IA preencheu o que conseguiu identificar. Revise antes de enviar para aprovação.");

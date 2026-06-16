@@ -33,14 +33,32 @@ const etapas = [
   { href: "#revisao-envio", numero: "4", titulo: "Enviar", texto: "Aprovação" },
 ];
 
+type Campos = {
+  marca: string;
+  modelo: string;
+  ano: string;
+  preco: string;
+  cidade: string;
+  estado: string;
+  carroceria: string;
+  tracao: string;
+  whatsapp: string;
+  descricao: string;
+};
+
 export default function NovoCaminhaoPage() {
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [campos, setCampos] = useState({
+  const [campos, setCampos] = useState<Campos>({
+    marca: "",
     modelo: "",
+    ano: "",
     preco: "",
     cidade: "",
     estado: "SC",
+    carroceria: "",
+    tracao: "",
+    whatsapp: "",
     descricao: "",
   });
 
@@ -52,19 +70,34 @@ export default function NovoCaminhaoPage() {
     estado: string;
     imagens: string[];
   }) {
-    // Tenta extrair modelo do título (ex: "Volvo FH 460 6x4 2021")
     const modeloExtraido = dados.titulo
       .replace(/mercedes[-\s]?benz|scania|volvo|volkswagen|ford|iveco|daf/gi, "")
-      .replace(/\d{4}/, "") // remove ano
+      .replace(/\d{4}/, "")
       .trim();
 
-    setCampos({
-      modelo: modeloExtraido || campos.modelo,
-      preco: dados.preco ? String(dados.preco) : campos.preco,
-      cidade: dados.cidade || campos.cidade,
-      estado: dados.estado || campos.estado,
-      descricao: dados.descricao || campos.descricao,
-    });
+    setCampos((prev) => ({
+      ...prev,
+      modelo: modeloExtraido || prev.modelo,
+      preco: dados.preco ? String(dados.preco) : prev.preco,
+      cidade: dados.cidade || prev.cidade,
+      estado: dados.estado || prev.estado,
+      descricao: dados.descricao || prev.descricao,
+    }));
+  }
+
+  function handleFill(sugestao: Partial<Campos>) {
+    setCampos((prev) => ({
+      marca: sugestao.marca && marcas.includes(sugestao.marca) ? sugestao.marca : prev.marca,
+      modelo: sugestao.modelo || prev.modelo,
+      ano: sugestao.ano || prev.ano,
+      preco: sugestao.preco || prev.preco,
+      cidade: sugestao.cidade || prev.cidade,
+      estado: sugestao.estado && estados.includes(sugestao.estado) ? sugestao.estado : prev.estado,
+      carroceria: sugestao.carroceria && carrocerias.includes(sugestao.carroceria) ? sugestao.carroceria : prev.carroceria,
+      tracao: sugestao.tracao || prev.tracao,
+      whatsapp: sugestao.whatsapp || prev.whatsapp,
+      descricao: sugestao.descricao || prev.descricao,
+    }));
   }
 
   return (
@@ -118,7 +151,12 @@ export default function NovoCaminhaoPage() {
               <div className="form-grid three">
                 <label>
                   Marca do caminhão *
-                  <select name="marca" defaultValue="" required>
+                  <select
+                    name="marca"
+                    value={campos.marca}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, marca: e.target.value }))}
+                    required
+                  >
                     <option value="" disabled>Selecione a marca</option>
                     {marcas.map((marca) => (
                       <option key={marca} value={marca}>{marca}</option>
@@ -133,18 +171,30 @@ export default function NovoCaminhaoPage() {
                     placeholder="Ex: 113, P420, FH 540"
                     required
                     value={campos.modelo}
-                    onChange={(e) => setCampos({ ...campos, modelo: e.target.value })}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, modelo: e.target.value }))}
                   />
                 </label>
 
                 <label>
                   Ano do caminhão *
-                  <input name="ano" type="number" placeholder="Ex: 1995" required />
+                  <input
+                    name="ano"
+                    type="number"
+                    placeholder="Ex: 1995"
+                    required
+                    value={campos.ano}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, ano: e.target.value }))}
+                  />
                 </label>
 
                 <label>
                   Carroceria *
-                  <select name="carroceria" defaultValue="" required>
+                  <select
+                    name="carroceria"
+                    value={campos.carroceria}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, carroceria: e.target.value }))}
+                    required
+                  >
                     <option value="" disabled>Selecione a carroceria</option>
                     {carrocerias.map((carroceria) => (
                       <option key={carroceria} value={carroceria}>{carroceria}</option>
@@ -152,7 +202,7 @@ export default function NovoCaminhaoPage() {
                   </select>
                 </label>
 
-                <TruckConfigurationFields />
+                <TruckConfigurationFields tracao={campos.tracao} onTracaoChange={(v) => setCampos((prev) => ({ ...prev, tracao: v }))} />
 
                 <label>
                   Quilometragem <span className="optional-tag">(opcional)</span>
@@ -166,21 +216,21 @@ export default function NovoCaminhaoPage() {
               <div className="section-head compact-head">
                 <span>IA</span>
                 <div>
-                  <h2>Texto do vendedor</h2>
-                  <p>Cole uma mensagem recebida para ajudar no preenchimento. Confira antes de enviar.</p>
+                  <h2>Importar com IA</h2>
+                  <p>Cole o texto do anúncio — OLX, Facebook Marketplace, WhatsApp ou qualquer fonte. A IA preenche os campos automaticamente.</p>
                 </div>
               </div>
 
               <div className="ai-grid">
                 <label>
-                  Texto base
+                  Texto do anúncio
                   <textarea
                     name="texto_ia"
-                    placeholder="Ex: VW 24.280 8x2 com tanque, ano 2014, pronto para trabalhar."
+                    placeholder="Cole aqui a descrição do anúncio (OLX, Facebook Marketplace, WhatsApp...). Ex: Scania R440 6x4 ano 2018, com baú frigorífico, 680mil km, SP, R$ 320.000"
                   />
                 </label>
 
-                <AutoFillTruckButton />
+                <AutoFillTruckButton onFill={handleFill} />
               </div>
             </section>
 
@@ -214,7 +264,7 @@ export default function NovoCaminhaoPage() {
                     placeholder="Ex: 180000"
                     required
                     value={campos.preco}
-                    onChange={(e) => setCampos({ ...campos, preco: e.target.value })}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, preco: e.target.value }))}
                   />
                 </label>
 
@@ -224,7 +274,7 @@ export default function NovoCaminhaoPage() {
                     name="cidade"
                     placeholder="Ex: Xanxerê"
                     value={campos.cidade}
-                    onChange={(e) => setCampos({ ...campos, cidade: e.target.value })}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, cidade: e.target.value }))}
                   />
                 </label>
 
@@ -233,7 +283,7 @@ export default function NovoCaminhaoPage() {
                   <select
                     name="estado"
                     value={campos.estado}
-                    onChange={(e) => setCampos({ ...campos, estado: e.target.value })}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, estado: e.target.value }))}
                     required
                   >
                     {estados.map((estado) => (
@@ -244,7 +294,13 @@ export default function NovoCaminhaoPage() {
 
                 <label>
                   WhatsApp *
-                  <input name="whatsapp" placeholder="Ex: 5549999362681" required />
+                  <input
+                    name="whatsapp"
+                    placeholder="Ex: 5549999362681"
+                    required
+                    value={campos.whatsapp}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, whatsapp: e.target.value }))}
+                  />
                   <small>Use DDI + DDD + número.</small>
                 </label>
 
@@ -254,7 +310,7 @@ export default function NovoCaminhaoPage() {
                     name="descricao"
                     placeholder="Ex: Mecânica em dia, pronto para trabalhar, pneus bons, documentação em dia."
                     value={campos.descricao}
-                    onChange={(e) => setCampos({ ...campos, descricao: e.target.value })}
+                    onChange={(e) => setCampos((prev) => ({ ...prev, descricao: e.target.value }))}
                   />
                 </label>
               </div>
