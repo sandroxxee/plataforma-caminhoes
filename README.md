@@ -5,13 +5,13 @@ Esta é a etapa 3 da rota oficial do projeto:
 1. Protótipo visual navigável ✔️
 2. Aprovar aparência e fluxo ✔️
 3. Criar projeto Next.js ✔️
-4. Criar Supabase ⏭️
-5. Conectar login
-6. Conectar anúncios
-7. Criar painel anunciante
-8. Criar admin
-9. Testar segurança
-10. Publicar
+4. Criar Supabase ✔️
+5. Conectar login ✔️
+6. Conectar anúncios ✔️
+7. Criar painel anunciante ✔️
+8. Criar admin ✔️
+9. Testar segurança ✔️
+10. Publicar ✔️
 
 ## O que este projeto contém
 
@@ -30,11 +30,6 @@ Base visual em Next.js com App Router, TypeScript e rotas principais:
 - `/admin/pendentes` Aprovação
 - `/admin/anuncios` Todos os anúncios
 - `/admin/usuarios` Usuários
-
-## Importante
-
-Esta base ainda NÃO está conectada ao Supabase.
-Ela é a primeira estrutura Next.js para levar o protótipo visual aprovado para dentro da tecnologia final.
 
 ## Como rodar no Windows
 
