@@ -13,6 +13,7 @@ export type SugestaoAnuncio = {
   tracao?: string;
   whatsapp?: string;
   descricao?: string;
+  conservacao?: string;
   observacoes?: string[];
 };
 
@@ -44,13 +45,16 @@ export function AutoFillTruckButton({ onFill }: Props) {
       return;
     }
 
+    const tipoInput = form.elements.namedItem("tipo_anuncio") as HTMLInputElement | null;
+    const tipo_anuncio = tipoInput?.value || "Caminhão";
+
     setCarregando(true);
 
     try {
       const response = await fetch("/api/anuncios/preencher-ia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto }),
+        body: JSON.stringify({ texto, tipo_anuncio }),
       });
 
       const data = await response.json();
@@ -93,43 +97,11 @@ export function AutoFillTruckButton({ onFill }: Props) {
       )}
 
       <style jsx>{`
-        .ai-actions-box {
-          display: grid;
-          gap: 10px;
-        }
-
-        .ai-fill-button {
-          min-height: 52px;
-          border: 0;
-          padding: 0 18px;
-          border-radius: 16px;
-          background: #22c55e;
-          color: #052e16;
-          font-weight: 950;
-          cursor: pointer;
-          box-shadow: 0 14px 34px rgba(34,197,94,.18);
-        }
-
-        .ai-fill-button:disabled {
-          opacity: .7;
-          cursor: wait;
-        }
-
-        .ai-message {
-          margin: 0;
-          color: #d9f99d;
-          font-size: 13px;
-          line-height: 1.45;
-          font-weight: 800;
-        }
-
-        .ai-observations {
-          margin: 0;
-          padding-left: 18px;
-          color: #fef08a;
-          font-size: 13px;
-          line-height: 1.45;
-        }
+        .ai-actions-box { display: grid; gap: 10px; }
+        .ai-fill-button { min-height: 52px; border: 0; padding: 0 18px; border-radius: 16px; background: #22c55e; color: #052e16; font-weight: 950; cursor: pointer; box-shadow: 0 14px 34px rgba(34,197,94,.18); }
+        .ai-fill-button:disabled { opacity: .7; cursor: wait; }
+        .ai-message { margin: 0; color: #d9f99d; font-size: 13px; line-height: 1.45; font-weight: 800; }
+        .ai-observations { margin: 0; padding-left: 18px; color: #fef08a; font-size: 13px; line-height: 1.45; }
       `}</style>
     </div>
   );
