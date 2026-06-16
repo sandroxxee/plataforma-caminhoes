@@ -42,3 +42,24 @@ Edite o array `MARCAS` em `download-logos.mjs` e rode o script novamente.
 | `caminhoes` | Mercedes-Benz, Scania, Volvo |
 | `implementos` | Randon, Guerra, Librelato |
 | `maquinas` | Caterpillar, Komatsu, John Deere |
+
+## project-status.js
+
+Gera um resumo do estado atual do projeto, incluindo:
+
+- arquivos e pastas principais presentes ou ausentes
+- contagem de arquivos `app`, `components`, `lib` e `public`
+- scripts disponíveis em `package.json`
+- dependências e devDependencies
+- informações do Git (branch, commit e estado da working tree)
+
+### Como usar
+
+```bash
+npm run status
+```
+
+O script cria dois arquivos na raiz do projeto:
+
+- `project-status.json`
+- `project-status.md`

@@ -65,7 +65,7 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
 
   if (!data.is_active) {
     return {
-      success: false,
+   .select('id, name, is_active, request_count')
       error: 'This API key has been revoked.',
       status: 403,
     }
@@ -79,7 +79,7 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
       request_count: data.request_count + 1,
     })
     .eq('id', data.id)
-    .then(() => {})
+request_count: (data.request_count ?? 0) + 1,
 
   return {
     success: true,

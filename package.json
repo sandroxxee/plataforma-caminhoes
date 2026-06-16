@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check": "node scripts/verify-project.js",
+    "verify": "npm run check",
+    "status": "node scripts/project-status.js",
+    "overview": "node scripts/project-overview.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
