@@ -1,14 +1,35 @@
-export function StatsSection() {
+import { createClient } from "@/lib/supabase/server";
+
+export async function StatsSection() {
+  const supabase = await createClient();
+
+  // Busca contagens reais do banco
+  const [{ count: totalAnuncios }, { count: totalVendedores }] = await Promise.all([
+    supabase
+      .from("trucks")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "aprovado")
+      .eq("vendido", false),
+    supabase
+      .from("trucks")
+      .select("user_id", { count: "exact", head: true })
+      .eq("status", "aprovado"),
+  ]);
+
+  const anuncios  = totalAnuncios  ?? 0;
+  const vendedores = totalVendedores ?? 0;
+
+  // Só mostra a seção se tiver conteúdo real
+  if (anuncios === 0) return null;
+
   const stats = [
-    { value: "1.200+", label: "Caminhões anunciados" },
-    { value: "800+",   label: "Vendedores ativos" },
-    { value: "3.500+", label: "Compradores cadastrados" },
-    { value: "98%",    label: "Anúncios com WhatsApp" },
+    { value: `${anuncios}`,   label: anuncios === 1 ? "Caminhão disponível" : "Caminhões disponíveis" },
+    { value: `${vendedores}`, label: vendedores === 1 ? "Anúncio publicado" : "Anúncios publicados" },
   ];
 
   return (
     <section className="market-container stats-section">
-      <div className="stats-grid">
+      <div className="stats-grid" style={{ gridTemplateColumns: `repeat(${stats.length}, 1fr)` }}>
         {stats.map((s) => (
           <div key={s.label} className="stats-card">
             <span className="stats-value">{s.value}</span>
@@ -20,7 +41,6 @@ export function StatsSection() {
         .stats-section { padding-top: 0; padding-bottom: 0; }
         .stats-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
           gap: 16px;
         }
         .stats-card {
@@ -50,11 +70,11 @@ export function StatsSection() {
           letter-spacing: .01em;
         }
         @media (max-width: 768px) {
-          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .stats-value { font-size: 26px; }
         }
         @media (max-width: 420px) {
-          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          .stats-grid { gap: 10px; }
           .stats-card { padding: 20px 10px; border-radius: 14px; }
           .stats-value { font-size: 22px; }
           .stats-label { font-size: 11px; }
