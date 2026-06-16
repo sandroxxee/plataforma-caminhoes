@@ -43,6 +43,20 @@ Edite o array `MARCAS` em `download-logos.mjs` e rode o script novamente.
 | `implementos` | Randon, Guerra, Librelato |
 | `maquinas` | Caterpillar, Komatsu, John Deere |
 
+## project-overview.js
+
+Gera um resumo completo do projeto para usar como contexto em uma conversa nova com uma IA.
+
+### Como usar
+
+```bash
+npm run overview
+```
+
+O script cria o arquivo:
+
+- `project-overview.md`
+
 ## project-status.js
 
 Gera um resumo do estado atual do projeto, incluindo:
@@ -63,3 +77,39 @@ O script cria dois arquivos na raiz do projeto:
 
 - `project-status.json`
 - `project-status.md`
+
+## verify-project.js
+
+Roda validações do projeto antes de enviar alterações.
+
+### O que faz
+
+- executa `npm run lint`
+- executa `npm run build`
+- verifica se há alterações de Git não commitadas
+
+### Como usar
+
+```bash
+npm run verify
+```
+
+## doctor.js
+
+Verifica o ambiente local e os arquivos principais do projeto.
+
+### Como usar
+
+```bash
+npm run doctor
+```
+
+## install-git-hooks.js
+
+Configura os hooks Git locais para usar o hook pré-commit em `.githooks/pre-commit`.
+
+### Como usar
+
+```bash
+npm run install-hooks
+```

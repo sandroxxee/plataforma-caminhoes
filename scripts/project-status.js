@@ -160,9 +160,9 @@ function toMarkdown(data) {
     lines.push(`- Branch: ${data.summary.git.branch}`);
     lines.push(`- Commit: ${data.summary.git.commit}`);
     lines.push(`- Clean: ${data.summary.git.clean ? 'sim' : 'não'}`);
-    lines.push(`- Status:
-
-\\`${data.summary.git.status.replace(/\n/g, '\n\n') || 'clean'}\\``);
+    lines.push('- Status:');
+    lines.push('');
+    lines.push('`' + (data.summary.git.status.replace(/\n/g, '\n\n') || 'clean') + '`');
     lines.push('');
   }
   lines.push('## Auditoria');

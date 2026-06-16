@@ -54,6 +54,43 @@ npm run dev
 http://localhost:3000
 ```
 
+## Validação e fluxo de qualidade
+
+Este projeto já tem validação automática e ferramentas de suporte para evitar erros:
+
+- `npm run check` / `npm run verify`: roda `lint` e `build`.
+- `npm run status`: gera um relatório do estado atual do projeto em `project-status.md` e `project-status.json`.
+- `npm run overview`: gera um resumo geral do projeto em `project-overview.md` para usar como contexto em uma nova conversa com IA.
+- `npm run doctor`: verifica o ambiente local (Node, npm, arquivos principais).
+- `npm run install-hooks`: configura o hook de pré-commit local em `.githooks/pre-commit`.
+
+### GitHub Actions
+
+O workflow de CI está em `.github/workflows/ci.yml` e roda em `push` e `pull_request` para `main`:
+
+- `npm ci`
+- `npm run lint`
+- `npm run build`
+- `npm run status`
+
+### Fluxo recomendado com IA
+
+1. Gere o contexto do projeto:
+
+```bash
+npm run overview
+```
+
+2. Cole o conteúdo de `project-overview.md` ao iniciar uma nova conversa.
+3. Após aplicar mudanças, valide com:
+
+```bash
+npm run verify
+npm run status
+```
+
+4. Use branches para alterações geradas pela IA e não trabalhe direto em `main`.
+
 ## Próxima etapa
 
 Criar Supabase:

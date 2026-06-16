@@ -59,10 +59,10 @@ function toMarkdown(data) {
   lines.push('Ele contém a estrutura principal, scripts, dependências e rotas encontradas.');
   lines.push('');
   lines.push('## Informações gerais');
-  lines.push(`- Diretório: \\`${data.root}\\``);
-  lines.push(`- Nome do pacote: \\`${data.package.name}\\``);
-  lines.push(`- Versão: \\`${data.package.version}\\``);
-  lines.push(`- Node: \\`${data.node}\\``);
+  lines.push('- Diretório: `' + data.root + '`');
+  lines.push('- Nome do pacote: `' + data.package.name + '`');
+  lines.push('- Versão: `' + data.package.version + '`');
+  lines.push('- Node: `' + data.node + '`');
   lines.push('');
   lines.push('## Scripts disponíveis');
   lines.push(...formatList(data.scripts));

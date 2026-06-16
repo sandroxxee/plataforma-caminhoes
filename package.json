@@ -1,6 +1,9 @@
 {
   "name": "plataforma-caminhoes",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=18"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,8 +13,11 @@
     "check": "node scripts/verify-project.js",
     "verify": "npm run check",
     "status": "node scripts/project-status.js",
-    "overview": "node scripts/project-overview.js"
+    "overview": "node scripts/project-overview.js",
+    "doctor": "node scripts/doctor.js",
+    "install-hooks": "node scripts/install-git-hooks.js"
   },
+  "prepare": "npm run install-hooks",
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
