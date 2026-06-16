@@ -51,7 +51,7 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
 
   const { data, error } = await supabaseAdmin
     .from('api_keys')
-    .select('id, name, is_active')
+    .select('id, name, is_active, request_count')
     .eq('key_hash', keyHash)
     .single()
 
@@ -65,6 +65,7 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
 
   if (!data.is_active) {
     return {
+      success: false,
       error: 'This API key has been revoked.',
       status: 403,
     }
@@ -78,7 +79,6 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
       request_count: data.request_count + 1,
     })
     .eq('id', data.id)
-request_count: (data.request_count ?? 0) + 1,
 
   return {
     success: true,
