@@ -38,19 +38,19 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
       <style>{`
         .ph-root {
           position: sticky; top: 0; z-index: 80;
-          height: 64px;
-          background: rgba(255,255,255,.82);
-          backdrop-filter: blur(14px) saturate(180%);
-          -webkit-backdrop-filter: blur(14px) saturate(180%);
-          border-bottom: 1px solid var(--line);
-          box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 4px 20px rgba(0,0,0,.06);
+          height: 70px;
+          background: rgba(255,255,255,.90);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border-bottom: 1px solid rgba(148,163,184,.16);
+          box-shadow: 0 18px 42px rgba(15,23,42,.08);
           display: flex; align-items: center;
-          padding: 0 20px; gap: 16px;
+          padding: 0 20px; gap: 18px;
         }
         body.public-theme-dark .ph-root {
-          background: rgba(15,23,42,.82);
-          border-bottom-color: rgba(255,255,255,.07);
-          box-shadow: 0 1px 0 rgba(0,0,0,.2), 0 4px 20px rgba(0,0,0,.3);
+          background: rgba(15,23,42,.92);
+          border-bottom-color: rgba(255,255,255,.12);
+          box-shadow: 0 18px 42px rgba(0,0,0,.24);
         }
         .ph-logo {
           display: flex; align-items: center; gap: 10px;
@@ -93,22 +93,25 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         }
         .ph-nav {
           display: flex; align-items: center;
-          gap: 1px; margin-left: auto;
+          gap: 8px; margin-left: auto;
         }
         .ph-nav-link {
-          display: flex; align-items: center; gap: 5px;
-          padding: 5px 8px; border-radius: 8px;
+          display: flex; align-items: center; gap: 6px;
+          padding: 8px 12px; border-radius: 14px;
           text-decoration: none; font-weight: 700;
-          font-size: 12.5px; color: var(--muted);
+          font-size: 13px; color: var(--muted);
           white-space: nowrap; position: relative;
-          transition: color .15s;
+          transition: background .18s, color .18s;
         }
-        .ph-nav-link:hover { color: var(--blue); }
-        .ph-nav-link.active { color: var(--blue); font-weight: 800; }
+        .ph-nav-link:hover { background: rgba(59,130,246,.12); color: var(--blue); }
+        .ph-nav-link.active {
+          color: var(--blue); font-weight: 800;
+          background: rgba(59,130,246,.12);
+        }
         .ph-nav-link.active::after {
           content: '';
           position: absolute; bottom: -2px;
-          left: 8px; right: 8px;
+          left: 10px; right: 10px;
           height: 2px; border-radius: 2px;
           background: var(--blue);
         }
@@ -151,6 +154,17 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           z-index: 90; background: rgba(0,0,0,.18);
         }
         .ph-backdrop.open { display: block; }
+        .public-cta {
+          display: inline-flex;
+          align-items: center; justify-content: center;
+          min-height: 42px; padding: 0 18px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #2563eb, #4f46e5);
+          color: #fff; font-weight: 900;
+          text-decoration: none;
+          transition: transform .18s, box-shadow .18s, opacity .18s;
+        }
+        .public-cta:hover { transform: translateY(-1px); box-shadow: 0 18px 44px rgba(37,99,235,.24); }
         @media (max-width: 1100px) {
           .ph-search { display: none; }
         }
@@ -161,6 +175,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           .ph-logo-text { display: none; }
           .ph-logo-icon { width: 36px; height: 36px; border-radius: 11px; }
           .ph-root { padding: 0 14px; gap: 10px; height: 58px; }
+          .public-cta { display: none; }
         }
       `}</style>
 
@@ -207,6 +222,8 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           })}
           <ThemeTogglePublic />
         </nav>
+
+        <Link href="/anunciar" className="public-cta">Anunciar grátis</Link>
 
         <button
           className="ph-hamburger"

@@ -20,13 +20,20 @@ export async function HeroMarketplace() {
         />
         <div className="hero-overlay" />
         <div className="hero-content">
+          <h1 className="hero-title">
+            Compre e venda <span className="hero-title-accent">caminhões com confiança</span>
+          </h1>
           <p className="hero-sub">
-            Anúncios revisados, contato direto pelo WhatsApp,<br className="hero-br" />
-            sem intermediários.
+            Anúncios aprovados, contato direto pelo WhatsApp<br className="hero-br" />
+            com vendedores verificados. Sem intermediários.
           </p>
           <div className="hero-actions">
-            <Link href="/anuncios" className="hero-btn-primary">Ver caminhões</Link>
-            <Link href="/anunciar" className="hero-btn-secondary">Anunciar grátis</Link>
+            <Link href="/anuncios" className="hero-btn-primary">
+              <span>🔍 Ver caminhões disponíveis</span>
+            </Link>
+            <Link href="/anunciar" className="hero-btn-secondary">
+              <span>➕ Anunciar grátis</span>
+            </Link>
           </div>
         </div>
       </div>

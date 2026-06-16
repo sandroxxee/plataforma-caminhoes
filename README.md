@@ -61,6 +61,7 @@ Este projeto já tem validação automática e ferramentas de suporte para evita
 - `npm run check` / `npm run verify`: roda `lint` e `build`.
 - `npm run status`: gera um relatório do estado atual do projeto em `project-status.md` e `project-status.json`.
 - `npm run overview`: gera um resumo geral do projeto em `project-overview.md` para usar como contexto em uma nova conversa com IA.
+- `npm run ui-context`: gera `project-ui-context.md` com o estado real da interface atual, componentes usados e sugestões de visual sem mudar a estrutura.
 - `npm run doctor`: verifica o ambiente local (Node, npm, arquivos principais).
 - `npm run install-hooks`: configura o hook de pré-commit local em `.githooks/pre-commit`.
 - **`npm run ai-review`**: abre um painel web em tempo real (http://localhost:3333) que:
