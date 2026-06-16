@@ -1,72 +1,108 @@
 # 🚛 CONTEXT.md — plataforma-caminhoes
 
-> Leia este arquivo antes de qualquer ação no projeto.
+> Leia este arquivo ANTES de qualquer ação. Sempre atualize após cada melhoria.
 
 ---
 
-## 🧠 O que é este projeto
-Marketplace de caminhões, carretas, implementos e máquinas.
-- **Site:** https://plataforma-caminhoes.vercel.app (confirmar URL)
-- **Stack:** Next.js 14 (App Router), TypeScript, TailwindCSS, Supabase, Vercel
+## 🧠 O projeto
+Marketplace de caminhões, carretas, implementos e máquinas. Foco em venda direta com WhatsApp, anúncios por usuário, painel admin e página pública de listagem.
+
+- **Site:** https://plataforma-caminhoes.vercel.app
+- **Stack:** Next.js 14 (App Router), TypeScript, Supabase (auth + db), Vercel (deploy)
 - **Repo:** https://github.com/sandroxxee/plataforma-caminhoes
+- **Dono:** Sandro Luiz Mayer — Ametista do Sul, RS, BR
 
 ---
 
-## 📁 Estrutura principal
+## 📁 Estrutura
 ```
-app/          → páginas (App Router Next.js)
+app/          → páginas (App Router)
 components/   → componentes reutilizáveis
-lib/          → utilitários, Supabase, helpers
+lib/          → utils, Supabase, helpers
 public/       → assets estáticos
 scripts/      → scripts de manutenção
 ```
 
 ---
 
-## ⚙️ Regras do projeto
-- Sempre usar `"use client"` em componentes com hooks
-- CSS via `<style>` inline nos componentes (padrão existente)
-- Não mexer em autenticação/Supabase sem avisar
+## ⚙️ Regras obrigatórias
+- `"use client"` em todo componente com hooks/estado
+- CSS via `<style>` inline (padrão do projeto, não usar Tailwind)
+- Não mexer em auth/Supabase sem avisar
 - Não quebrar rotas existentes
-- Deploy automático via Vercel ao fazer push no `main`
-
----
-
-## ✅ Componentes já melhorados
-| Componente | Data | O que foi feito |
-|---|---|---|
-| `TruckCard.tsx` | 2026-06-16 | Hover zoom, favoritar, avaliações, badge verificado, ribbon destaque, visualizações |
-
----
-
-## 🔄 PRs abertos (pendentes de decisão)
-| PR | Título | Ação sugerida |
-|---|---|---|
-| #22 | Centraliza CSS páginas institucionais | Revisar e mergear |
-| #21 | Revamp /anunciar hero premium | Revisar e mergear |
-| #5 | Vercel Speed Insights | Mergear |
-| #4 | Vercel Web Analytics | Mergear |
-| #2 | Visual estilo revenda profissional | Revisar |
-
----
-
-## 🚀 Próximos componentes a melhorar (prioridade)
-1. `PublicHeaderClient.tsx` — filtros sticky + autocomplete
-2. Homepage — Hero + Stats + Grid moderno
-3. `FilterSidebar` — filtros avançados lateral
-4. `SiteFooter.tsx` — rodapé estilo Mercado Livre
+- Push no `main` = deploy automático no Vercel
+- Sempre atualizar este CONTEXT.md após cada mudança
 
 ---
 
 ## 🎨 Paleta de cores
-- Primária: `#1a3a52` (azul escuro)
-- CTA: `#ff6b35` (laranja)
-- Sucesso/Verificado: `#06a77d` (verde)
-- Destaque: `#ffc857` (amarelo)
-- Fundo: `#f8f9fa`
+| Uso | Cor |
+|---|---|
+| Primária (confiança) | `#1a3a52` azul escuro |
+| CTA (ação) | `#ff6b35` laranja |
+| Verificado/Sucesso | `#06a77d` verde |
+| Destaque/Ribbon | `#ffc857` amarelo |
+| Fundo claro | `#f8f9fa` |
 
 ---
 
-## 📝 Como usar este arquivo com a IA
-No início de cada chat novo, diga:
-> "Leia o CONTEXT.md do repo sandroxxee/plataforma-caminhoes e continue de onde paramos."
+## ✅ Já feito
+| Componente | Data | Descrição |
+|---|---|---|
+| `TruckCard.tsx` | 2026-06-16 | Hover zoom, ❤️ favoritar, ⭐ avaliações, ✅ badge verificado, ribbon destaque, 👁️ visualizações, botões lado a lado |
+| `CONTEXT.md` | 2026-06-16 | Arquivo de contexto para continuidade com IA |
+
+---
+
+## 🔄 PRs abertos (decidir)
+| PR | Título | Decisão |
+|---|---|---|
+| [#22](https://github.com/sandroxxee/plataforma-caminhoes/pull/22) | Centraliza CSS páginas institucionais | ⏳ Pendente |
+| [#21](https://github.com/sandroxxee/plataforma-caminhoes/pull/21) | Revamp /anunciar hero premium | ⏳ Pendente |
+| [#5](https://github.com/sandroxxee/plataforma-caminhoes/pull/5) | Vercel Speed Insights | ⏳ Pendente |
+| [#4](https://github.com/sandroxxee/plataforma-caminhoes/pull/4) | Vercel Web Analytics | ⏳ Pendente |
+| [#2](https://github.com/sandroxxee/plataforma-caminhoes/pull/2) | Visual estilo revenda profissional | ⏳ Pendente |
+
+---
+
+## 🚀 ROADMAP
+
+### 🔴 FASE 1 — Visual moderno (AGORA)
+> Objetivo: site visualmente competitivo com OLX/Mercado Livre
+
+| # | Componente | Status |
+|---|---|---|
+| 1 | `TruckCard.tsx` — avaliações, badge, favoritar | ✅ Feito |
+| 2 | `PublicHeaderClient.tsx` — filtros sticky, autocomplete | ❌ Fazer |
+| 3 | `HomePage` — Hero + Stats + Grid + CTA | ❌ Fazer |
+| 4 | `FilterSidebar` — preço/ano/km/chassi sliders | ❌ Fazer |
+| 5 | `SiteFooter.tsx` — links, redes sociais, selos | ❌ Fazer |
+
+### 🟡 FASE 2 — Funcionalidades (PRÓXIMO)
+> Objetivo: engajamento e conversão
+
+| # | Feature | Status |
+|---|---|---|
+| 1 | Sistema de favoritos (salvar no Supabase) | ❌ Fazer |
+| 2 | Alerta de preço (notificação por e-mail) | ❌ Fazer |
+| 3 | Comparador de caminhões (2-3 lado a lado) | ❌ Fazer |
+| 4 | Simulador de financiamento (12x/24x/36x) | ❌ Fazer |
+| 5 | Sistema de avaliações (stars + comentários) | ❌ Fazer |
+| 6 | Busca com autocomplete (marcas/modelos) | ❌ Fazer |
+
+### 🟢 FASE 3 — Crescimento (FUTURO)
+> Objetivo: SEO, performance e escala
+
+| # | Feature | Status |
+|---|---|---|
+| 1 | SEO avançado (sitemap, schema.org, meta dinâmico) | ❌ Fazer |
+| 2 | PWA (instalar no celular) | ❌ Fazer |
+| 3 | Painel de analytics (visualizações, cliques WhatsApp) | ❌ Fazer |
+| 4 | Plano de destaque pago (integração pagamento) | ❌ Fazer |
+| 5 | App mobile (React Native ou PWA avançado) | ❌ Fazer |
+
+---
+
+## 💬 Como usar com qualquer IA
+No início de cada chat novo:
+> **"Leia o CONTEXT.md do repo sandroxxee/plataforma-caminhoes e continue o roadmap de onde paramos."**
