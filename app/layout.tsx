@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { Manrope } from "next/font/google";
 import { ClientShell } from "@/components/ClientShell";
 import { CookieBanner } from "@/components/CookieBanner";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -109,6 +111,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         {children}
         <ClientShell />
         <CookieBanner />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
