@@ -28,7 +28,9 @@ export default async function FavoritosPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  const trucks = ((data || []).map((f) => f.trucks).filter(Boolean)) as TruckCardData[];
+  const trucks = (data || [])
+    .flatMap((f) => (Array.isArray(f.trucks) ? f.trucks : f.trucks ? [f.trucks] : []))
+    .filter(Boolean) as unknown as TruckCardData[];
 
   return (
     <PanelLayout>
