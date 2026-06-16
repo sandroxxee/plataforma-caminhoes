@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Truck, Container, Wrench, Bus, Tractor, Package, X } from "lucide-react";
 import { SalvarBusca } from "@/components/SalvarBusca";
 import { MARCAS_VALIDAS } from "@/lib/constants";
@@ -27,28 +28,26 @@ function CatIcon({ name }: { name: string }) {
   return <Truck size={s} />;
 }
 
-// Cores por marca para as iniciais
-const MARCAS_CORES: Record<string, { bg: string; color: string; label: string }> = {
-  "Mercedes-Benz": { bg: "#e8f5e9", color: "#2e7d32", label: "MB" },
-  "Scania":        { bg: "#fff3e0", color: "#e65100", label: "SC" },
-  "Volvo":         { bg: "#e3f2fd", color: "#1565c0", label: "VO" },
-  "Volkswagen":    { bg: "#e3f2fd", color: "#0d47a1", label: "VW" },
-  "Ford":          { bg: "#e3f2fd", color: "#1a237e", label: "FD" },
-  "Iveco":         { bg: "#fce4ec", color: "#c62828", label: "IV" },
-  "DAF":           { bg: "#fff8e1", color: "#f57f17", label: "DF" },
-  "MAN":           { bg: "#f3e5f5", color: "#6a1b9a", label: "MN" },
-  "Agrale":        { bg: "#e8f5e9", color: "#1b5e20", label: "AG" },
+// Mapa marca -> arquivo SVG local em /public/marcas/
+const MARCAS_SVG: Record<string, string> = {
+  "Mercedes-Benz": "/marcas/mercedes-benz.svg",
+  "Scania":        "/marcas/scania.svg",
+  "Volvo":         "/marcas/volvo.svg",
+  "Volkswagen":    "/marcas/volkswagen.svg",
+  "Ford":          "/marcas/ford.svg",
+  "Iveco":         "/marcas/iveco.svg",
+  "DAF":           "/marcas/daf.svg",
+  "MAN":           "/marcas/man.svg",
+  "Agrale":        "/marcas/agrale.svg",
 };
 
 function MarcaIcon({ marca }: { marca: string }) {
-  const info = MARCAS_CORES[marca];
-  const label = info?.label ?? marca.slice(0, 2).toUpperCase();
-  const bg    = info?.bg    ?? "var(--soft)";
-  const color = info?.color ?? "var(--muted)";
+  const src = MARCAS_SVG[marca];
+  if (src) {
+    return <Image src={src} alt={marca} width={24} height={24} className="asb-logo" unoptimized />;
+  }
   return (
-    <span className="asb-marca-ico" style={{ background: bg, color }}>
-      {label}
-    </span>
+    <span className="asb-ico">{marca[0]}</span>
   );
 }
 
@@ -177,7 +176,7 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
         .asb-ico { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:5px; background:var(--soft); color:var(--muted); font-size:11px; flex-shrink:0; }
         .asb-ico-star { font-size:13px; }
         .asb-item.active .asb-ico { background:var(--blueSoft); color:var(--blue); }
-        .asb-marca-ico { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:5px; font-size:9px; font-weight:900; letter-spacing:-.02em; flex-shrink:0; }
+        .asb-logo { border-radius:4px; object-fit:contain; flex-shrink:0; }
         .asb-chips { display:flex; gap:4px; flex-wrap:wrap; }
         .asb-chip { display:inline-flex; align-items:center; height:26px; padding:0 9px; border-radius:999px; border:1.5px solid var(--line); background:var(--soft); color:var(--muted); font-size:11px; font-weight:800; text-decoration:none; transition:.12s; }
         .asb-chip:hover { border-color:var(--blue); color:var(--blue); }
