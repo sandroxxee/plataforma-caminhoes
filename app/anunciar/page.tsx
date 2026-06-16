@@ -34,7 +34,7 @@ const BENEFICIOS = [
   { emoji: "🔍", titulo: "Aparece no Google",          desc: "Cada anúncio tem página própria indexada nos buscadores." },
 ];
 
-const css = `
+const pageStyles = `
 .lp-wrap { min-height:100vh; background:#030712; color:#f1f5f9; }
 .hero { display:flex; flex-direction:column; align-items:center; text-align:center; padding:80px 20px 64px; gap:20px; }
 .hero-badge { display:inline-block; background:#052e16; color:#4ade80; border:1px solid #166534; border-radius:999px; padding:4px 16px; font-size:13px; font-weight:700; margin:0; }
@@ -75,7 +75,7 @@ const css = `
 export default function AnunciarPage() {
   return (
     <main className="lp-wrap">
-      <style dangerouslySetInnerHTML={{ __html: css }} />
+      <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
 
       {/* HERO */}
       <section className="hero">
