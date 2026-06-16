@@ -59,10 +59,11 @@ type SugestaoAnuncio = {
   preco?: string;
   cidade?: string;
   estado?: string;
-  carroceria?: string;   // tipo do veículo/implemento (nome do campo unificado para o prompt)
-  tracao?: string;       // apenas caminhão
+  carroceria?: string;
+  tracao?: string;
   whatsapp?: string;
   descricao?: string;
+  conservacao?: string;  // ← adicionado
   observacoes?: string[];
 };
 
@@ -75,8 +76,6 @@ function normalizeText(value: string) {
 function pickFromList(textoNormalizado: string, lista: string[]) {
   return lista.find((item) => textoNormalizado.includes(normalizeText(item)));
 }
-
-// ─── Extratores locais ───────────────────────────────────────────────────────
 
 function extrairMarcaCaminhao(t: string) {
   if (/\bmb\b|mercedes|benz|\batego\b|\baxor\b|\baccelo\b|\b1113\b|\b1513\b|\b1618\b|\b2428\b|\b2544\b/.test(t)) return "Mercedes-Benz";
@@ -159,8 +158,7 @@ function extrairModelo(texto: string) {
     /\b(\d{2}[\s.-]?\d{3})\b/i,
     /\b(axor\s?\d{4})\b/i, /\b(atego\s?\d{4})\b/i,
     /\b(cargo\s?\d{4})\b/i, /\b(xf\s?\d{3})\b/i,
-    /\b(stralis\s?\d{3})\b/i,
-    /\b(\d{3}[A-Z])\b/i,
+    /\b(stralis\s?\d{3})\b/i, /\b(\d{3}[A-Z])\b/i,
   ];
   for (const re of padroes) {
     const m = texto.match(re);
@@ -205,11 +203,8 @@ function extrairCidade(texto: string) {
   return texto.match(/(?:cidade|local|em|de)\s*[:\-]?\s*([A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]+(?:\s+[A-ZÁÉÍÓÚÂÊÔÃÕÇ][a-záéíóúâêôãõç]+){0,3})/)?.[1]?.trim() || "";
 }
 
-// ─── Preenchimento local por tipo ────────────────────────────────────────────
-
 function preenchimentoLocal(texto: string, tipo: TipoAnuncio): SugestaoAnuncio {
   const t = normalizeText(texto);
-
   let marca = "";
   let carroceria = "";
 
@@ -221,24 +216,21 @@ function preenchimentoLocal(texto: string, tipo: TipoAnuncio): SugestaoAnuncio {
     carroceria = extrairTipoMaquina(t);
   } else if (tipo === "Implemento") {
     marca = extrairMarcaCarreta(t) || pickFromList(t, MARCAS_IMPLEMENTO) || "";
-    carroceria = extrairTipoCarreta(t); // listas similares
+    carroceria = extrairTipoCarreta(t);
   } else {
     marca = extrairMarcaCaminhao(t) || pickFromList(t, MARCAS_CAMINHAO) || "";
-    carroceria = ""; // extrairCarroceria abaixo
-    if (!carroceria) {
-      if (/cavalo|quinta roda/.test(t)) carroceria = "Cavalo mecânico";
-      else if (/tanque/.test(t)) carroceria = "Tanque";
-      else if (/bau frigorifico|frigorifico/.test(t)) carroceria = "Baú frigorífico";
-      else if (/bau/.test(t)) carroceria = "Baú seco";
-      else if (/cacamba meia/.test(t)) carroceria = "Caçamba meia-cana";
-      else if (/cacamba|basculante/.test(t)) carroceria = "Caçamba basculante";
-      else if (/graneleir/.test(t)) carroceria = "Graneleira";
-      else if (/prancha/.test(t)) carroceria = "Prancha";
-      else if (/plataforma/.test(t)) carroceria = "Plataforma";
-      else if (/munck|guindauto/.test(t)) carroceria = "Munck";
-      else if (/chassi/.test(t)) carroceria = "Chassis";
-      else carroceria = "Outra";
-    }
+    if (/cavalo|quinta roda/.test(t)) carroceria = "Cavalo mecânico";
+    else if (/tanque/.test(t)) carroceria = "Tanque";
+    else if (/bau frigorifico|frigorifico/.test(t)) carroceria = "Baú frigorífico";
+    else if (/bau/.test(t)) carroceria = "Baú seco";
+    else if (/cacamba meia/.test(t)) carroceria = "Caçamba meia-cana";
+    else if (/cacamba|basculante/.test(t)) carroceria = "Caçamba basculante";
+    else if (/graneleir/.test(t)) carroceria = "Graneleira";
+    else if (/prancha/.test(t)) carroceria = "Prancha";
+    else if (/plataforma/.test(t)) carroceria = "Plataforma";
+    else if (/munck|guindauto/.test(t)) carroceria = "Munck";
+    else if (/chassi/.test(t)) carroceria = "Chassis";
+    else carroceria = "Outra";
   }
 
   const sugestao: SugestaoAnuncio = {
@@ -251,6 +243,7 @@ function preenchimentoLocal(texto: string, tipo: TipoAnuncio): SugestaoAnuncio {
     carroceria,
     tracao: tipo === "Caminhão" ? extrairTracao(t) : extrairEixos(t),
     whatsapp: "",
+    conservacao: "",
     observacoes: [],
   };
 
@@ -264,8 +257,6 @@ function preenchimentoLocal(texto: string, tipo: TipoAnuncio): SugestaoAnuncio {
 
   return sugestao;
 }
-
-// ─── Validação de saída ───────────────────────────────────────────────────────
 
 function limparSugestao(data: SugestaoAnuncio, tipo: TipoAnuncio): SugestaoAnuncio {
   let marcasValidas: string[];
@@ -298,10 +289,8 @@ function limparSugestao(data: SugestaoAnuncio, tipo: TipoAnuncio): SugestaoAnunc
     descricao: String(data.descricao || "").trim().slice(0, 1500),
     conservacao: CONSERVACOES.includes(data.conservacao || "") ? data.conservacao : "",
     observacoes: Array.isArray(data.observacoes) ? data.observacoes.slice(0, 6).map(String) : [],
-  } as SugestaoAnuncio;
+  };
 }
-
-// ─── OpenAI ───────────────────────────────────────────────────────────────────
 
 async function preencherComOpenAI(texto: string, tipo: TipoAnuncio): Promise<SugestaoAnuncio | null> {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -376,8 +365,6 @@ ${texto}`;
     return null;
   }
 }
-
-// ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(request: Request) {
   const supabase = await createClient();
