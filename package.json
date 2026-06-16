@@ -15,7 +15,8 @@
     "status": "node scripts/project-status.js",
     "overview": "node scripts/project-overview.js",
     "doctor": "node scripts/doctor.js",
-    "install-hooks": "node scripts/install-git-hooks.js"
+    "install-hooks": "node scripts/install-git-hooks.js",
+    "ai-review": "node scripts/ai-review.js"
   },
   "prepare": "npm run install-hooks",
   "dependencies": {

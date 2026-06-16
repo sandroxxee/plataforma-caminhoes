@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Review - Painel de Análise</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    header {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+      color: #60a5fa;
+    }
+    
+    .status {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 10px;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .card h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #60a5fa;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+    }
+    
+    .list {
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    
+    .list item {
+      display: block;
+      padding: 5px 0;
+      color: #cbd5e1;
+    }
+    
+    .list .add { color: #10b981; }
+    .list .mod { color: #f59e0b; }
+    .list .del { color: #ef4444; }
+    .list .err { color: #ef4444; font-weight: bold; }
+    .list .warn { color: #f59e0b; }
+    
+    .prompt-section {
+      grid-column: 1 / -1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .prompt-section h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #60a5fa;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 300px;
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 10px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      resize: vertical;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: space-between;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .btn-copy {
+      background: #3b82f6;
+      color: white;
+      flex: 1;
+    }
+    
+    .btn-copy:hover { background: #2563eb; }
+    
+    .btn-commit {
+      background: #10b981;
+      color: white;
+      flex: 1;
+    }
+    
+    .btn-commit:hover { background: #059669; }
+    
+    .btn-refresh {
+      background: #6366f1;
+      color: white;
+    }
+    
+    .btn-refresh:hover { background: #4f46e5; }
+    
+    .validation {
+      grid-column: 1 / -1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .validation h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #60a5fa;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+    }
+    
+    .checklist {
+      font-size: 12px;
+      line-height: 2;
+    }
+    
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0;
+    }
+    
+    .check-item input {
+      cursor: pointer;
+    }
+    
+    .check-item label {
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .success { color: #10b981; }
+    .error { color: #ef4444; }
+    .warning { color: #f59e0b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤖 AI Review - Painel de Análise</h1>
+      <div class="status" id="status">Carregando...</div>
+    </header>
+    
+    <div class="grid">
+      <div class="card">
+        <h2>📦 Projeto</h2>
+        <div class="list" id="projectInfo">Carregando...</div>
+      </div>
+      
+      <div class="card">
+        <h2>📝 Mudanças Locais</h2>
+        <div class="list" id="changes">Carregando...</div>
+      </div>
+    </div>
+    
+    <div class="prompt-section">
+      <h2>✏️ Template de Prompt (copie e cole na IA)</h2>
+      <textarea id="promptTemplate" readonly></textarea>
+      <div class="buttons">
+        <button class="btn-copy" onclick="copyPrompt()">📋 Copiar Prompt</button>
+        <button class="btn-refresh" onclick="refreshData()">🔄 Atualizar</button>
+      </div>
+    </div>
+    
+    <div class="validation">
+      <h2>✅ Validação & Checklist</h2>
+      <div class="list" id="validation">Carregando...</div>
+      <div class="checklist">
+        <div class="check-item">
+          <input type="checkbox" id="check1">
+          <label for="check1">Código foi testado localmente</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="check2">
+          <label for="check2">Rotas não foram quebradas</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="check3">
+          <label for="check3">TypeScript está correto</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="check4">
+          <label for="check4">Imports estão com @/</label>
+        </div>
+        <div class="check-item">
+          <input type="checkbox" id="check5">
+          <label for="check5"><code>npm run verify</code> passou</label>
+        </div>
+      </div>
+      <div class="buttons" style="margin-top: 20px;">
+        <button class="btn-commit" onclick="makeCommit()">🚀 Fazer Commit & Push</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadData() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        
+        // Projeto
+        document.getElementById('projectInfo').innerHTML = `
+          <item><strong>${data.context.name}</strong> v${data.context.version}</item>
+          <item>Scripts: ${data.context.scripts.length}</item>
+          <item>Dependências: ${data.context.dependencies.length}</item>
+          <item>Rotas: ${data.context.routes.length}</item>
+        `;
+        
+        // Mudanças
+        const changes = data.changes;
+        let changesHtml = '';
+        if (changes.modified.length) changesHtml += `<item class="mod">✏️ Modificados: ${changes.modified.length}</item>`;
+        if (changes.added.length) changesHtml += `<item class="add">➕ Novos: ${changes.added.length}</item>`;
+        if (changes.deleted.length) changesHtml += `<item class="del">🗑️ Deletados: ${changes.deleted.length}</item>`;
+        if (!changes.modified.length && !changes.added.length && !changes.deleted.length) {
+          changesHtml = '<item style="color: #94a3b8;">Nenhuma mudança detectada</item>';
+        }
+        document.getElementById('changes').innerHTML = changesHtml;
+        
+        // Prompt
+        document.getElementById('promptTemplate').value = data.promptTemplate;
+        
+        // Validação
+        let validationHtml = '';
+        if (data.validation.errors.length) {
+          validationHtml += '<div style="margin-bottom: 10px;"><strong class="error">❌ Erros:</strong></div>';
+          data.validation.errors.forEach(e => {
+            validationHtml += `<item class="err">- ${e}</item>`;
+          });
+        }
+        if (data.validation.warnings.length) {
+          validationHtml += '<div style="margin-bottom: 10px;"><strong class="warning">⚠️ Avisos:</strong></div>';
+          data.validation.warnings.forEach(w => {
+            validationHtml += `<item class="warn">- ${w}</item>`;
+          });
+        }
+        if (!data.validation.errors.length && !data.validation.warnings.length) {
+          validationHtml = '<item class="success">✅ Tudo validado com sucesso!</item>';
+        }
+        document.getElementById('validation').innerHTML = validationHtml;
+        
+        document.getElementById('status').textContent = `Atualizado em ${new Date(data.timestamp).toLocaleTimeString()}`;
+      } catch (error) {
+        document.getElementById('status').textContent = `Erro ao carregar dados: ${error.message}`;
+      }
+    }
+    
+    function copyPrompt() {
+      const textarea = document.getElementById('promptTemplate');
+      textarea.select();
+      document.execCommand('copy');
+      alert('✅ Prompt copiado para a área de transferência!');
+    }
+    
+    async function makeCommit() {
+      const checks = [
+        document.getElementById('check1').checked,
+        document.getElementById('check2').checked,
+        document.getElementById('check3').checked,
+        document.getElementById('check4').checked,
+        document.getElementById('check5').checked,
+      ];
+      
+      if (!checks.every(c => c)) {
+        alert('⚠️ Complete o checklist antes de fazer commit');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/commit', { method: 'POST' });
+        const data = await res.json();
+        
+        if (data.success) {
+          alert('✅ Commit enviado com sucesso!\nVercel vai fazer deploy automaticamente.');
+          loadData();
+        } else {
+          alert(`❌ Erro: ${data.error || data.message}`);
+        }
+      } catch (error) {
+        alert(`❌ Erro ao fazer commit: ${error.message}`);
+      }
+    }
+    
+    function refreshData() {
+      loadData();
+    }
+    
+    // Auto-refresh a cada 3 segundos
+    loadData();
+    setInterval(loadData, 3000);
+  </script>
+</body>
+</html>

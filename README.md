@@ -63,8 +63,35 @@ Este projeto já tem validação automática e ferramentas de suporte para evita
 - `npm run overview`: gera um resumo geral do projeto em `project-overview.md` para usar como contexto em uma nova conversa com IA.
 - `npm run doctor`: verifica o ambiente local (Node, npm, arquivos principais).
 - `npm run install-hooks`: configura o hook de pré-commit local em `.githooks/pre-commit`.
+- **`npm run ai-review`**: abre um painel web em tempo real (http://localhost:3333) que:
+  - Gera template de prompt estruturado pronto para copiar
+  - Monitora mudanças locais em tempo real
+  - Valida código automaticamente (imports, tipos, rotas)
+  - Cria checklist de validação
+  - Permite fazer commit com um clique
 
-### GitHub Actions
+### Fluxo com IA e Painel AI Review
+
+1. Rode o painel:
+
+```bash
+npm run ai-review
+```
+
+2. Browser abre automaticamente em http://localhost:3333 com:
+   - Template de prompt estruturado
+   - Contexto completo do projeto
+   - Validações em tempo real
+
+3. Copie o template → Cole em ChatGPT, Perplexity, etc
+
+4. Receba o código da IA → Cole no seu editor
+
+5. Painel detecta mudanças automaticamente e alerta sobre erros
+
+6. Complete o checklist e clique "🚀 Fazer Commit & Push"
+
+## GitHub Actions
 
 O workflow de CI está em `.github/workflows/ci.yml` e roda em `push` e `pull_request` para `main`:
 
@@ -72,24 +99,6 @@ O workflow de CI está em `.github/workflows/ci.yml` e roda em `push` e `pull_re
 - `npm run lint`
 - `npm run build`
 - `npm run status`
-
-### Fluxo recomendado com IA
-
-1. Gere o contexto do projeto:
-
-```bash
-npm run overview
-```
-
-2. Cole o conteúdo de `project-overview.md` ao iniciar uma nova conversa.
-3. Após aplicar mudanças, valide com:
-
-```bash
-npm run verify
-npm run status
-```
-
-4. Use branches para alterações geradas pela IA e não trabalhe direto em `main`.
 
 ## Próxima etapa
 
