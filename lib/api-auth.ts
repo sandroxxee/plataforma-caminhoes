@@ -65,7 +65,6 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
 
   if (!data.is_active) {
     return {
-   .select('id, name, is_active, request_count')
       error: 'This API key has been revoked.',
       status: 403,
     }
