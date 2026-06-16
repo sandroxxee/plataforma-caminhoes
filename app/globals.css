@@ -1,7 +1,5 @@
 /* ============================================================
    TOKENS BASE — TEMA CLARO (light)
-   Todos os componentes usam APENAS estas vars.
-   Para trocar o tema, basta sobrescrever as vars abaixo.
    ============================================================ */
 :root {
   --bg:        #f0f2f5;
@@ -20,7 +18,6 @@
   --radius:    20px;
   --radius-sm: 12px;
   --header-bg: #ffffff;
-  /* tipografia */
   --font-display: var(--font-manrope), Arial, sans-serif;
   --font-title:   var(--font-manrope), Arial, sans-serif;
   --font-body:    var(--font-manrope), Arial, sans-serif;
@@ -45,18 +42,6 @@ body.public-theme-dark {
   --header-bg:#131c2e;
   color-scheme: dark;
 }
-
-/*
-  COMO ADICIONAR UM NOVO TEMA:
-  Crie uma classe .public-theme-NOMEDOTEMA e sobrescreva os tokens.
-  Ex:
-  body.public-theme-orange {
-    --blue:     #f97316;
-    --blue2:    #ea6c0a;
-    --blueSoft: #ffedd5;
-    --header-bg:#fff7ed;
-  }
-*/
 
 body.public-theme-light { color-scheme: light; }
 
@@ -93,10 +78,7 @@ h3      { font-weight: 700; letter-spacing: -0.02em; }
 .market-page { min-height: 100vh; background: var(--bg); color: var(--text); padding-bottom: 48px; }
 .market-main { display: flex; flex-direction: column; gap: 24px; padding-top: 24px; }
 
-/* === HEADER ===
-   Usa --header-bg para que cada tema possa customizar
-   sem precisar de um seletor específico.
-   ============= */
+/* === HEADER === */
 .public-header {
   position: sticky; top: 0; z-index: 80;
   background: rgba(255,255,255,.92);
@@ -292,7 +274,7 @@ body.public-theme-dark .public-header {
 .tc-meta { margin: 0 0 8px; font-size: 12px; color: var(--muted); font-weight: 800; }
 .tc-btn {
   display: flex; align-items: center; justify-content: center;
-  height: 44px; border-radius: 14px;
+  min-height: 44px; border-radius: 14px;
   background: linear-gradient(135deg, var(--blue), var(--blue2)); color: #fff;
   font-weight: 900; font-size: 13px;
   text-decoration: none; margin-top: auto;
@@ -333,6 +315,8 @@ body.public-theme-dark .public-header {
 .ad-gallery-main {
   border-radius: var(--radius); overflow: hidden;
   background: var(--soft); aspect-ratio: 16/10; position: relative;
+  /* fix: impede imagem de vazar fora da moldura */
+  isolation: isolate;
 }
 .ad-gallery-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ad-gallery-thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
@@ -436,7 +420,7 @@ body.public-theme-dark .public-header {
 .seo-internal-row a:hover { color: var(--blue); border-color: var(--blue); }
 
 /* ============================================================
-   MOBILE
+   MOBILE — 900px
    ============================================================ */
 @media (max-width: 900px) {
   html, body { max-width: 100%; overflow-x: hidden; }
@@ -458,37 +442,83 @@ body.public-theme-dark .public-header {
   .seo-marca-nav { gap: 6px; }
 }
 
+/* ============================================================
+   MOBILE — 640px  (padrão app: 1 coluna, touch targets 44px)
+   ============================================================ */
 @media (max-width: 640px) {
   .market-container, .container, .public-nav-shell, .site-footer { width: calc(100vw - 20px); }
-  .stock-grid, .market-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .tc-price  { font-size: 14px; }
-  .tc-name   { font-size: 12px; }
-  .tc-body   { padding: 9px 10px 11px; }
-  .tc-btn    { height: 36px; font-size: 12px; }
-  .tc-loc    { display: none; }
-  .tc-wa     { width: 32px; height: 32px; top: 7px; right: 7px; }
+
+  /* Grid: 1 coluna para cards legíveis — padrão iOS/Android HIG */
+  .stock-grid, .market-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Card: foto maior, textos legíveis */
+  .tc { border-radius: 16px; }
+  .tc-photo { aspect-ratio: 16/9; }
+  .tc-price  { font-size: 16px; }
+  .tc-name   { font-size: 15px; }
+  .tc-meta   { font-size: 13px; }
+  .tc-body   { padding: 12px 14px 14px; gap: 6px; }
+
+  /* Botão "Ver detalhes": mínimo 44px (Apple HIG / Material You) */
+  .tc-btn    { min-height: 44px; font-size: 14px; border-radius: 12px; }
+
+  /* WhatsApp badge mantém visível */
+  .tc-wa     { width: 36px; height: 36px; top: 8px; right: 8px; }
+
+  /* Localização visível no mobile */
+  .tc-loc    { max-width: 55%; font-size: 10px; }
+
+  /* Gallery: altura máxima para não vazar em telas pequenas */
+  .ad-gallery-main {
+    border-radius: 14px;
+    aspect-ratio: 4/3;       /* mais compacto em portrait */
+    max-height: 280px;
+    overflow: hidden;
+    isolation: isolate;      /* garante que Next/Image não vaza */
+  }
+  .ad-gallery-thumbs button { width: 60px; height: 46px; }
+
+  /* Formulários: font-size 16px previne zoom automático no iOS */
   .market-field input, .market-field select, input, select, textarea { font-size: 16px; }
   .market-search { padding: 14px; }
   .market-field { min-width: 100%; }
   .market-filter-actions { width: 100%; }
   .market-filter-actions button { flex: 1; min-height: 50px; }
+
+  /* Detail */
   .detail-card { padding: 16px; }
-  .detail-price { font-size: 30px; }
-  .ad-gallery-main { border-radius: 14px; min-height: 220px; }
-  .ad-gallery-thumbs button { width: 60px; height: 46px; }
+  .detail-price { font-size: 28px; }
+  .detail-whatsapp { min-height: 52px; font-size: 15px; }
+
+  /* Section */
   .market-section { padding: 16px 12px; border-radius: 16px; }
   .market-section-head h2 { font-size: 20px; }
+
+  /* Footer */
   .site-footer nav a { min-height: 44px; font-size: 13px; }
+
+  /* Header */
   .brand-mark { width: 36px; height: 36px; }
   .brand-text img { width: min(130px, 44vw); height: 30px; }
+
+  /* SEO */
   .seo-alerta-row { flex-direction: column; align-items: flex-start; }
   .al-title { font-size: 26px; }
   .seo-text-block { padding: 12px 14px; font-size: 13px; }
 }
 
+/* ============================================================
+   MOBILE — 390px  (iPhone SE / pequenos)
+   ============================================================ */
 @media (max-width: 390px) {
-  .stock-grid, .market-grid { gap: 8px; }
+  .stock-grid, .market-grid { gap: 10px; }
+  .tc-name  { font-size: 14px; }
+  .tc-price { font-size: 15px; }
   .brand-text img { width: min(116px, 42vw); }
-  .detail-price { font-size: 26px; }
+  .detail-price { font-size: 24px; }
   .site-footer nav { flex-direction: column; }
+  .ad-gallery-main { max-height: 240px; }
 }
