@@ -4,6 +4,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { FeaturedAds } from "@/components/theme/FeaturedAds";
 import { HeroMarketplace } from "@/components/theme/HeroMarketplace";
+import { BrandsSection } from "@/components/theme/BrandsSection";
+import { StatsSection } from "@/components/theme/StatsSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import type { TruckCardData } from "@/components/theme/TruckCard";
 
@@ -55,7 +57,14 @@ export default async function HomePage() {
       <PublicHeader />
 
       <div className="market-main">
+        {/* Hero com imagem e CTAs */}
         <HeroMarketplace />
+
+        {/* Números de impacto */}
+        <StatsSection />
+
+        {/* Buscar por marca */}
+        <BrandsSection />
 
         {/* Grid de anúncios recentes */}
         <FeaturedAds trucks={trucks} />
