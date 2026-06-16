@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { CSSProperties } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { PanelLayout } from "@/components/PanelLayout";
 import { criarAnuncio } from "../actions";
@@ -163,7 +164,7 @@ export default async function NovoAnuncioPage() {
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   formCard: {
     padding: 26,
     borderRadius: 24,

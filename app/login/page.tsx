@@ -19,7 +19,7 @@ export default function LoginPage() {
         <div className="copy">
           <span>Entrar</span>
           <h1>Acesse sua conta.</h1>
-          <p>Entre com e-mail e senha para acessar seu painel. O login agora é feito no navegador para gravar a sessão corretamente.</p>
+          <p>Entre com e-mail e senha para acessar o painel.</p>
         </div>
 
         <LoginForm />

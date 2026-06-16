@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-function erroLogin(mensagem: string) {
+function erroLogin(mensagem: string): never {
   redirect(`/login?erro=${encodeURIComponent(mensagem)}`);
 }
 
@@ -17,7 +17,7 @@ export async function entrar(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password: senha,
   });
@@ -26,8 +26,15 @@ export async function entrar(formData: FormData) {
     erroLogin("E-mail ou senha inválidos.");
   }
 
-  const result = await supabase.auth.getUser();
-  const userId = result.data.user?.id;
+  let userId: string | undefined = data.user?.id;
+
+  if (!userId) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    userId = user?.id;
+  }
 
   if (!userId) {
     erroLogin("Não foi possível manter a sessão. Tente novamente.");

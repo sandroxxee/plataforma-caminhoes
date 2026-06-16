@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { sair } from "@/app/logout/actions";
 
 type Props = {
   title: string;
@@ -29,7 +30,9 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
 
         <div className="panel-bottom">
           <Link href="/anuncios" className="panel-public">Ver site público</Link>
-          <Link href="/logout" className="panel-logout">Sair</Link>
+          <form action={sair}>
+            <button type="submit" className="panel-logout">Sair</button>
+          </form>
         </div>
       </aside>
 
@@ -103,6 +106,7 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
         .panel-menu a,
         .panel-public,
         .panel-logout {
+          width: 100%;
           min-height: 48px;
           padding: 13px 14px;
           border-radius: 14px;
@@ -116,12 +120,18 @@ export function PanelLayout({ title, subtitle, badge, actions, children }: Props
           justify-content: center;
           text-align: center;
           white-space: nowrap;
+          cursor: pointer;
+          font-family: inherit;
         }
 
         .panel-bottom {
           margin-top: auto;
           display: grid;
           gap: 12px;
+        }
+
+        .panel-bottom form {
+          margin: 0;
         }
 
         .panel-public {

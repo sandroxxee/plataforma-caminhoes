@@ -10,6 +10,7 @@ export function LoginForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
     setErro("");
     setCarregando(true);
 
@@ -41,12 +42,10 @@ export function LoginForm() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setErro("Não foi possível manter a sessão. Tente entrar novamente.");
+      setErro("Não foi possível manter a sessão. Tente novamente.");
       setCarregando(false);
       return;
     }
-
-    let destino = "/painel";
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -54,15 +53,9 @@ export function LoginForm() {
       .eq("id", user.id)
       .maybeSingle();
 
-    if (profile?.role === "admin") {
-      destino = "/admin/pendentes";
-    }
+    const destino = profile?.role === "admin" ? "/admin/pendentes" : "/painel";
 
-    /*
-      Recarrega a página de destino de verdade.
-      Isso força o servidor a ler os cookies recém-gravados pelo Supabase.
-    */
-    window.location.assign(destino);
+    window.location.href = destino;
   }
 
   return (
