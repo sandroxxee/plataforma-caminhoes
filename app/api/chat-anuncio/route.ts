@@ -24,11 +24,6 @@ type TruckContext = {
   whatsapp?: string | null;
 };
 
-type HistoricoMsg = {
-  role: string;
-  parts: { text: string }[];
-};
-
 function buildSystemPrompt(truck: TruckContext): string {
   const preco = truck.preco
     ? `R$ ${Number(truck.preco).toLocaleString("pt-BR")}`
@@ -72,37 +67,50 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json() as {
       mensagem: string;
-      historico?: HistoricoMsg[];
-      truck?: TruckContext;
+      historico: { role: "user" | "assistant"; content: string }[];
+      truck: TruckContext;
     };
 
-    const { mensagem, historico = [], truck = {} } = body;
+    const { mensagem, historico = [], truck } = body;
 
     if (!mensagem?.trim()) {
       return NextResponse.json({ erro: "Mensagem vazia" }, { status: 400 });
     }
 
-    // Filtra historico valido e com pares user/model alternados
-    const historicoValido = historico
-      .filter(m => m?.role && m?.parts?.[0]?.text)
-      .slice(-6);
+    // Converte historico do front (role/content) para formato Gemini (role/parts)
+    const historicoFiltrado = historico
+      .filter(msg => msg.content && msg.content.trim() !== "")
+      .map((msg) => ({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }],
+      }));
 
-    const chat = ai.chats.create({
+    // Gemini nao aceita historico comecando com mensagem do modelo
+    if (historicoFiltrado.length > 0 && historicoFiltrado[0].role === "model") {
+      historicoFiltrado.shift();
+    }
+
+    const conteudosDoChat = [
+      ...historicoFiltrado,
+      { role: "user", parts: [{ text: mensagem }] },
+    ];
+
+    const resposta = await ai.models.generateContent({
       model: "gemini-1.5-flash",
+      contents: conteudosDoChat,
       config: {
-        systemInstruction: buildSystemPrompt(truck),
-        temperature: 0.5,
+        systemInstruction: buildSystemPrompt(truck ?? {}),
+        temperature: 0.2,
+        maxOutputTokens: 400,
       },
-      ...(historicoValido.length > 0 ? { history: historicoValido } : {}),
     });
 
-    const response = await chat.sendMessage({ message: mensagem });
-    const texto = response.text ?? "Nao consegui processar sua pergunta.";
+    const texto = resposta.text ?? "Nao consegui processar sua pergunta.";
 
     return NextResponse.json({ resposta: texto });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("[chat-anuncio] erro:", msg);
+    console.error("[chat-anuncio]", msg);
     return NextResponse.json({ erro: msg }, { status: 500 });
   }
 }
