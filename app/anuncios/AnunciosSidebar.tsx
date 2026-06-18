@@ -27,6 +27,15 @@ const CATEGORIAS = [
   { id: "pecas",       label: "Peças",       icon: Package },
 ];
 
+const fmt = (n: number) =>
+  n === Infinity ? "" : `R$ ${(n / 1000).toFixed(0)}k`;
+
+const faixaLabel = (f: { min: number; max: number }, idx: number) => {
+  if (idx === 0) return "Até R$ 100k";
+  if (f.max === Infinity) return `Acima de ${fmt(f.min)}`;
+  return `${fmt(f.min)} – ${fmt(f.max)}`;
+};
+
 export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFilters, total, categoriaAtiva }: SidebarProps) {
   const getUrl = (params: Record<string, string | number | undefined>) => {
     const sp = new URLSearchParams();
@@ -69,12 +78,12 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
         <section className="asb-section">
           <span className="asb-label">Faixa de Preço</span>
           <div className="asb-list">
-            <Link href={getUrl({ faixa: undefined })} className={`asb-item${faixaIdx === 0 ? " active" : ""}` }>
+            <Link href={getUrl({ faixa: undefined })} className={`asb-item${faixaIdx === 0 ? " active" : ""}`}>
               Todos os preços
             </Link>
-            {FAIXAS.map((f, idx) => (
+            {FAIXAS.slice(1).map((f, idx) => (
               <Link key={idx} href={getUrl({ faixa: idx + 1 })} className={`asb-item${faixaIdx === idx + 1 ? " active" : ""}`}>
-                {f.label}
+                {faixaLabel(f, idx)}
               </Link>
             ))}
           </div>
@@ -109,6 +118,26 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
       <div className="asb-footer">
         <SalvarBusca total={total} />
       </div>
+
+      <style jsx>{`
+        .asb { display: flex; flex-direction: column; height: 100%; background: var(--surface); border-radius: var(--radius); border: 1.5px solid var(--line); box-shadow: var(--shadow); overflow: hidden; }
+        .asb-header { padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--soft); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .asb-title { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 14px; color: var(--text); }
+        .asb-clear { font-size: 12px; font-weight: 800; color: var(--blue); text-decoration: none; }
+        .asb-scroll { flex: 1; overflow-y: auto; }
+        .asb-section { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+        .asb-label { display: block; font-size: 10px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
+        .asb-list { display: flex; flex-direction: column; gap: 2px; }
+        .asb-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--text); text-decoration: none; transition: all .15s; }
+        .asb-item:hover { background: var(--soft); color: var(--blue); }
+        .asb-item.active { background: var(--blueSoft); color: var(--blue); font-weight: 900; }
+        .asb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); margin-left: auto; flex-shrink: 0; }
+        .asb-chevron { margin-left: auto; opacity: .3; }
+        .asb-brands-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .asb-brand { display: flex; align-items: center; justify-content: center; height: 34px; border: 1.5px solid var(--line); border-radius: 9px; font-size: 11px; font-weight: 800; color: var(--muted); text-decoration: none; transition: all .15s; }
+        .asb-brand:hover, .asb-brand.active { border-color: var(--blue); color: var(--blue); background: var(--blueSoft); }
+        .asb-footer { padding: 14px 18px; border-top: 1px solid var(--line); background: var(--soft); flex-shrink: 0; }
+      `}</style>
     </aside>
   );
 }
