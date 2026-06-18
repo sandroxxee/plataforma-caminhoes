@@ -8,6 +8,13 @@ export type ApiAuthResult =
   | { success: true; keyId: string; keyName: string }
   | { success: false; error: string; status: number }
 
+type ApiKeyRow = {
+  id: string
+  name: string
+  is_active: boolean
+  request_count: number
+}
+
 /**
  * Gera hash SHA-256 de uma string (usado na validação e na criação de chaves)
  */
@@ -46,11 +53,11 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
 
   const keyHash = await hashApiKey(rawKey)
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await (supabaseAdmin
     .from('api_keys')
     .select('id, name, is_active, request_count')
     .eq('key_hash', keyHash)
-    .single()
+    .single() as unknown as Promise<{ data: ApiKeyRow | null; error: unknown }>)
 
   if (error || !data) {
     return {
@@ -97,10 +104,8 @@ export async function generateApiKey(): Promise<{
   const randomHex = Array.from(randomBytes)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-
   const rawKey = `pk_live_${randomHex}`
   const keyHash = await hashApiKey(rawKey)
   const keyPrefix = rawKey.slice(0, 15)
-
   return { rawKey, keyHash, keyPrefix }
 }
