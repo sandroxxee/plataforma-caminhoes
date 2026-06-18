@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MapPin, CheckCircle, ShieldCheck, TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { MapPin, CheckCircle, ShieldCheck, TrendingDown } from "lucide-react";
 import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
 import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
@@ -45,34 +45,12 @@ async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   return data as Truck;
 }
 
-function FipeBadge({ preco, precoFipe }: { preco: number | null; precoFipe: number | null }) {
-  if (!preco || !precoFipe || precoFipe <= 0) return null;
-
-  const diff = ((preco - precoFipe) / precoFipe) * 100;
-  const absDiff = Math.abs(diff);
-
-  let label: string;
-  let icon: React.ReactNode;
-  let style: React.CSSProperties;
-
-  if (diff < -3) {
-    label = `${absDiff.toFixed(0)}% abaixo da FIPE`;
-    icon = <TrendingDown size={13} strokeWidth={2.5} aria-hidden="true" />;
-    style = { background: "#dcfce7", color: "#15803d" };
-  } else if (diff > 3) {
-    label = `${absDiff.toFixed(0)}% acima da FIPE`;
-    icon = <TrendingUp size={13} strokeWidth={2.5} aria-hidden="true" />;
-    style = { background: "#fee2e2", color: "#b91c1c" };
-  } else {
-    label = "Na faixa da FIPE";
-    icon = <Minus size={13} strokeWidth={2.5} aria-hidden="true" />;
-    style = { background: "#fef9c3", color: "#92400e" };
-  }
-
+function FipeBadge({ abaixoFipe }: { abaixoFipe: boolean }) {
+  if (!abaixoFipe) return null;
   return (
-    <span className="fipe-badge" style={style}>
-      {icon}
-      {label}
+    <span className="fipe-badge">
+      <TrendingDown size={13} strokeWidth={2.5} aria-hidden="true" />
+      Abaixo da FIPE
     </span>
   );
 }
@@ -118,16 +96,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function AnuncioDetalhePage({ params }: PageProps) {
   const { id } = await params;
 
-  // Extrai o UUID do parâmetro (aceita UUID puro OU slug-completo-terminando-em-uuid)
   const { tipo, valor: uuid } = extrairIdDoParametroAnuncio(id);
-
-  // Parâmetro sem UUID reconhecível → 404 imediato
   if (tipo !== "uuid") notFound();
 
   const truck = await getApprovedTruck(id);
   if (!truck) notFound();
 
-  // Garante que a URL seja sempre o slug canônico
   const canonicalPath = getCanonicalPath(truck);
   const currentPath   = `/anuncios/${id}`;
   if (currentPath !== canonicalPath) {
@@ -143,6 +117,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   const shareText    = `${textos.emoji} ${title}${shareYear ? ` ${shareYear}` : ""}${location ? ` · ${location}` : ""}\n${formatMoney(truck.preco)}`;
   const specs        = getSpecs(truck);
   const initialViews = truck.views ?? 0;
+  const abaixoFipe   = (truck as any).abaixo_fipe === true;
 
   return (
     <main className="market-page">
@@ -177,7 +152,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               </p>
             )}
             <strong className="detail-price-mobile">{formatMoney(truck.preco)}</strong>
-            <FipeBadge preco={truck.preco} precoFipe={(truck as any).preco_fipe} />
+            <FipeBadge abaixoFipe={abaixoFipe} />
           </div>
 
           <div className="detail-card detail-desc-card">
@@ -210,7 +185,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               </p>
             )}
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
-            <FipeBadge preco={truck.preco} precoFipe={(truck as any).preco_fipe} />
+            <FipeBadge abaixoFipe={abaixoFipe} />
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
 
             <AnuncioAsideActions
@@ -274,10 +249,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         body.public-theme-dark .detail-status-badge{background:#14532d;color:#86efac}
         .detail-price{display:block;color:var(--blue);font-size:clamp(28px,3.5vw,40px);line-height:1;letter-spacing:-.05em;margin:4px 0 6px}
         .detail-price-mobile{display:block;color:var(--blue);font-size:28px;letter-spacing:-.04em;line-height:1;margin-top:8px}
-        .fipe-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:950;letter-spacing:.01em;margin-bottom:10px}
-        body.public-theme-dark .fipe-badge[style*="#dcfce7"]{background:#14532d!important;color:#86efac!important}
-        body.public-theme-dark .fipe-badge[style*="#fee2e2"]{background:#450a0a!important;color:#fca5a5!important}
-        body.public-theme-dark .fipe-badge[style*="#fef9c3"]{background:#431407!important;color:#fde68a!important}
+        .fipe-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:950;letter-spacing:.01em;margin-bottom:10px;background:#dcfce7;color:#15803d}
+        body.public-theme-dark .fipe-badge{background:#14532d;color:#86efac}
         .detail-aside-hint{margin:0 0 16px;color:var(--muted);font-size:13px;font-weight:750;line-height:1.5}
         .detail-whatsapp{min-height:52px;border-radius:14px;background:#25d366;color:#073b1d;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:950;font-size:15px;margin-bottom:10px;box-shadow:0 8px 20px rgba(37,211,102,.28);transition:transform .18s,box-shadow .18s;text-decoration:none}
         .detail-whatsapp:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,211,102,.36)}
