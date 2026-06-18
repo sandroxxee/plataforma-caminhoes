@@ -62,60 +62,27 @@ export function SiteFooter() {
         <p>© 2026 Caminhões à Venda · A negociação e verificação do veículo são de responsabilidade das partes.</p>
       </div>
 
-      <style jsx>{`
-        .site-footer {
-          background: var(--surface);
-          border-top: 1px solid var(--line);
-          margin-top: 64px;
-        }
+      <style>{`
+        .site-footer { background:var(--surface); border-top:1px solid var(--line); margin-top:64px; }
         .footer-inner {
-          width: min(1280px, calc(100vw - 40px));
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
-          gap: 48px;
-          padding: 52px 0 48px;
+          width:min(1280px,calc(100vw - 40px)); margin:0 auto;
+          display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;
+          gap:48px; padding:52px 0 48px;
         }
         .footer-logo { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
         .footer-brand { font-size:17px; font-weight:950; letter-spacing:-.03em; color:var(--text); }
         .footer-desc { font-size:13px; color:var(--muted); line-height:1.65; margin:0 0 16px; font-weight:600; max-width:26ch; }
         .footer-badges { display:flex; gap:10px; }
         .badge-item { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; color:var(--blue); background:var(--blueSoft); padding:5px 10px; border-radius:99px; }
-
-        .footer-section strong {
-          display:block; font-size:11px; font-weight:900; color:var(--text);
-          text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;
-          padding-bottom:8px; border-bottom:1px solid var(--line);
-        }
-        .footer-section a {
-          display:block; margin-top:10px; color:var(--muted);
-          font-size:13px; font-weight:700; text-decoration:none; transition:color .15s;
-        }
+        .footer-section strong { display:block; font-size:11px; font-weight:900; color:var(--text); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+        .footer-section a { display:block; margin-top:10px; color:var(--muted); font-size:13px; font-weight:700; text-decoration:none; transition:color .15s; }
         .footer-section a:hover { color:var(--blue); }
         .contact-link { display:flex !important; align-items:center; gap:8px; }
-
-        .footer-bottom {
-          border-top:1px solid var(--line);
-          background:var(--soft);
-          padding:18px 0;
-        }
-        .footer-bottom p {
-          width:min(1280px, calc(100vw - 40px));
-          margin:0 auto; font-size:12px; color:var(--muted); font-weight:700;
-        }
-
-        @media (max-width:1100px) {
-          .footer-inner { grid-template-columns:1fr 1fr 1fr; gap:32px; }
-          .footer-about { grid-column:1/-1; }
-          .footer-desc { max-width:none; }
-        }
-        @media (max-width:640px) {
-          .footer-inner { grid-template-columns:1fr 1fr; gap:28px; padding:36px 0 32px; }
-          .footer-about { grid-column:1/-1; }
-        }
-        @media (max-width:400px) {
-          .footer-inner { grid-template-columns:1fr; }
-        }
+        .footer-bottom { border-top:1px solid var(--line); background:var(--soft); padding:18px 0; }
+        .footer-bottom p { width:min(1280px,calc(100vw - 40px)); margin:0 auto; font-size:12px; color:var(--muted); font-weight:700; }
+        @media (max-width:1100px) { .footer-inner { grid-template-columns:1fr 1fr 1fr; gap:32px; } .footer-about { grid-column:1/-1; } .footer-desc { max-width:none; } }
+        @media (max-width:640px) { .footer-inner { grid-template-columns:1fr 1fr; gap:28px; padding:36px 0 32px; } .footer-about { grid-column:1/-1; } }
+        @media (max-width:400px) { .footer-inner { grid-template-columns:1fr; } }
       `}</style>
     </footer>
   );
