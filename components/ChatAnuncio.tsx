@@ -18,29 +18,21 @@ const styles = `
 .chat-btn { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:12px 20px; cursor:pointer; font-size:1rem; }
 .chat-btn:disabled { opacity:.5; cursor:not-allowed; }
 .chat-success { text-align:center; padding:32px; color:#4ade80; font-size:1.1rem; font-weight:700; }
+.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; align-self:flex-start; }
 `
 
 export default function ChatAnuncio() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const [publicado, setPublicado] = useState(false)
-  const [dados, setDados] = useState<Record<string, unknown>>({})
+  const [iniciado, setIniciado] = useState(false)
 
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, status, append } = useChat({
     api: '/api/anunciar-chat',
-    body: { dados },
-    initialMessages: [
-      {
-        id: 'init',
-        role: 'assistant',
-        content: 'Ola! Qual seu nome, WhatsApp e cidade?',
-      },
-    ],
     onFinish: async (message) => {
       if (message.content.includes('ANUNCIO_CONFIRMADO')) {
         try {
           const jsonStr = message.content.replace('ANUNCIO_CONFIRMADO', '').trim()
           const anuncioData = JSON.parse(jsonStr) as Record<string, unknown>
-          setDados(anuncioData)
           const supabase = createClient()
           await supabase.from('anuncios_chat').insert([anuncioData])
           setPublicado(true)
@@ -53,9 +45,23 @@ export default function ChatAnuncio() {
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
+  // Dispara a primeira mensagem do Gemini ao carregar a pagina
+  useEffect(() => {
+    if (!iniciado) {
+      setIniciado(true)
+      append({ role: 'user', content: 'oi' })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Filtra a mensagem inicial 'oi' do usuario para nao exibir
+  const mensagensVisiveis = messages.filter(
+    (m, i) => !(i === 0 && m.role === 'user' && m.content === 'oi')
+  )
 
   return (
     <div className="chat-wrap">
@@ -67,11 +73,12 @@ export default function ChatAnuncio() {
         ) : (
           <>
             <div className="chat-messages">
-              {messages.map((m) => (
+              {mensagensVisiveis.map((m) => (
                 <div key={m.id} className={`msg ${m.role === 'assistant' ? 'msg-agent' : 'msg-user'}`}>
                   {m.content}
                 </div>
               ))}
+              {isLoading && <div className="chat-loading">digitando...</div>}
               <div ref={bottomRef} />
             </div>
             <form className="chat-form" onSubmit={handleSubmit}>
