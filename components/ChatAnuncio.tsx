@@ -26,7 +26,7 @@ export default function ChatAnuncio() {
   const [dados, setDados] = useState<Record<string, unknown>>({})
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    api: '/anunciar/chat',
+    api: '/api/anunciar-chat',
     body: { dados },
     initialMessages: [
       {
