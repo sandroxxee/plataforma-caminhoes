@@ -4,16 +4,17 @@ import Link from "next/link";
 type Brand = { name: string; slug: string; logo: string };
 
 const brands: Brand[] = [
-  { name: "Todas",    slug: "",             logo: "" },
-  { name: "Mercedes", slug: "Mercedes-Benz", logo: "https://img.logo.dev/mercedes-benz.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "Scania",   slug: "Scania",        logo: "https://img.logo.dev/scania.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "Volvo",    slug: "Volvo",         logo: "https://img.logo.dev/volvotrucks.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "VW",       slug: "Volkswagen",    logo: "https://img.logo.dev/vw.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "Ford",     slug: "Ford",          logo: "https://img.logo.dev/ford.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "Iveco",    slug: "Iveco",         logo: "https://img.logo.dev/iveco.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "DAF",      slug: "DAF",           logo: "https://img.logo.dev/daf.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "MAN",      slug: "MAN",           logo: "https://img.logo.dev/man.eu?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
-  { name: "Agrale",   slug: "Agrale",        logo: "https://img.logo.dev/agrale.com.br?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=64&format=png" },
+  { name: "Todas",         slug: "",              logo: "" },
+  { name: "Scania",        slug: "Scania",        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Scania_AB_logo.svg/320px-Scania_AB_logo.svg.png" },
+  { name: "Volvo",         slug: "Volvo",         logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Volvo_trucks_logo.svg/320px-Volvo_trucks_logo.svg.png" },
+  { name: "Mercedes",      slug: "Mercedes-Benz", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Benz_Logo_2010.svg/320px-Mercedes-Benz_Logo_2010.svg.png" },
+  { name: "DAF",           slug: "DAF",           logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/DAF_Trucks_logo.svg/320px-DAF_Trucks_logo.svg.png" },
+  { name: "MAN",           slug: "MAN",           logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/MAN_Logo.svg/320px-MAN_Logo.svg.png" },
+  { name: "Iveco",         slug: "Iveco",         logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Iveco_logo.svg/320px-Iveco_logo.svg.png" },
+  { name: "Ford",          slug: "Ford",          logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_Motor_Company_Logo.svg/320px-Ford_Motor_Company_Logo.svg.png" },
+  { name: "VW",            slug: "Volkswagen",    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Volkswagen_logo_2019.svg/320px-Volkswagen_logo_2019.svg.png" },
+  { name: "Randon",        slug: "Randon",        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Randon_logo.svg/320px-Randon_logo.svg.png" },
+  { name: "Agrale",        slug: "Agrale",        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Agrale_logo.svg/320px-Agrale_logo.svg.png" },
 ];
 
 const ALL_ICON = (
@@ -61,24 +62,10 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
           const active = b.slug === "" ? !marcaAtiva : marcaAtiva === b.slug;
           const href = b.slug === "" ? buildHref(undefined) : buildHref(b.slug);
           return (
-            <Link key={b.slug || "todas"} href={href} className={`bf-item${active ? " active" : ""}`}>
+            <Link key={b.slug || "all"} href={href} className={`bf-item${active ? " active" : ""}`}>
               <div className="bf-logo">
                 <BrandLogo brand={b} />
-                <span
-                  className="bf-fallback"
-                  style={{
-                    display: "none",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 38,
-                    height: 38,
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 800,
-                    color: "rgba(255,255,255,0.6)",
-                    letterSpacing: "0.02em",
-                  }}
-                >
+                <span className="bf-fallback" style={{ display: "none", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, color: "#a78bfa" }}>
                   {b.name.slice(0, 2).toUpperCase()}
                 </span>
               </div>
@@ -92,31 +79,13 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
         .bf-row::-webkit-scrollbar { display:none; }
         .bf-item { display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; flex-shrink:0; transition:transform .18s; }
         .bf-item:hover { transform:translateY(-3px); }
-        .bf-logo {
-          width:58px; height:58px; border-radius:18px;
-          display:flex; align-items:center; justify-content:center;
-          background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.08);
-          backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-          box-shadow:0 2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.08) inset,0 8px 24px rgba(0,0,0,.15);
-          transition:border-color .18s,box-shadow .18s,background .18s;
-          position:relative; overflow:hidden;
-        }
-        .bf-logo::before {
-          content:""; position:absolute; top:0; left:0; right:0; height:50%;
-          background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 100%);
-          border-radius:18px 18px 0 0; pointer-events:none;
-        }
-        .bf-item.active .bf-logo {
-          background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3);
-          box-shadow:0 4px 16px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.2) inset,0 0 0 2px rgba(96,165,250,.4);
-        }
+        .bf-logo { width:58px; height:58px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.08); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 2px 8px rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.08) inset,0 8px 24px rgba(0,0,0,.15); transition:border-color .18s,box-shadow .18s,background .18s; position:relative; overflow:hidden; }
+        .bf-logo::before { content:""; position:absolute; top:0; left:0; right:0; height:50%; background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 100%); border-radius:18px 18px 0 0; pointer-events:none; }
+        .bf-item.active .bf-logo { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3); box-shadow:0 4px 16px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.2) inset,0 0 0 2px rgba(96,165,250,.4); }
         .bf-item:hover .bf-logo { border-color:rgba(255,255,255,.2); box-shadow:0 8px 24px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.15) inset; }
         .bf-name { font-size:10px; font-weight:800; color:var(--muted); letter-spacing:.03em; text-align:center; transition:color .18s; }
         .bf-item.active .bf-name { color:#93c5fd; }
-        @media(max-width:560px) {
-          .bf-logo { width:52px; height:52px; border-radius:16px; }
-          .bf-name { font-size:9px; }
-        }
+        @media(max-width:560px) { .bf-logo { width:52px; height:52px; border-radius:16px; } .bf-name { font-size:9px; } }
       `}</style>
     </>
   );
