@@ -6,18 +6,31 @@ interface Mensagem {
   texto: string;
 }
 
+interface DadosColetados {
+  etapa1_cadastro: string | null;
+  etapa2_intencao: string | null;
+  etapa3_veiculo: string | null;
+  etapa4_valores: string | null;
+}
+
 export default function ChatFlutuante() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [input, setInput] = useState<string>('');
   const [mensagensTela, setMensagensTela] = useState<Mensagem[]>([
-    { enviadoPor: 'bot', texto: 'Ola! Sou seu assistente virtual. Posso te ajudar a criar um anuncio para o seu veiculo. Como posso ajudar hoje?' }
+    { enviadoPor: 'bot', texto: 'Ola! Sou seu assistente virtual. Vou te ajudar a criar um anuncio. Como posso ajudar hoje?' }
   ]);
   const [historicoApi, setHistoricoApi] = useState<Record<string, unknown>[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
+  const [confirmacaoFinal, setConfirmacaoFinal] = useState<boolean>(false);
+  const [dadosColetados, setDadosColetados] = useState<DadosColetados>({
+    etapa1_cadastro: null,
+    etapa2_intencao: null,
+    etapa3_veiculo: null,
+    etapa4_valores: null
+  });
 
   const finalDasMensagensRef = useRef<HTMLDivElement | null>(null);
 
-  // Escuta o evento disparado pelo BotaoAnunciar
   useEffect(() => {
     const abrirChat = () => setIsOpen(true);
     window.addEventListener('abrir-chat-gemini', abrirChat);
@@ -43,15 +56,25 @@ export default function ChatFlutuante() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mensagem: mensagemUsuario,
-          historico: historicoApi
+          historico: historicoApi,
+          dadosColetados
         })
       });
 
-      const dados = await res.json() as { textoBot?: string; historicoAtualizado?: Record<string, unknown>[]; error?: string };
+      const dados = await res.json() as {
+        textoBot?: string;
+        historicoAtualizado?: Record<string, unknown>[];
+        error?: string;
+      };
 
       if (dados.textoBot) {
         setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: dados.textoBot! }]);
         setHistoricoApi(dados.historicoAtualizado ?? []);
+
+        if (dados.textoBot.toLowerCase().includes('confirma a publica')) {
+          setConfirmacaoFinal(true);
+          console.log('Etapa de confirmacao final atingida. Dados:', dadosColetados);
+        }
       }
     } catch (erro) {
       console.error('Erro no chat:', erro);
@@ -63,7 +86,6 @@ export default function ChatFlutuante() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans">
-      {/* BOTAO FLUTUANTE */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="bg-zinc-900 hover:bg-zinc-800 text-white p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center border border-zinc-700"
@@ -79,10 +101,8 @@ export default function ChatFlutuante() {
         )}
       </button>
 
-      {/* JANELA DO CHAT */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[330px] sm:w-[380px] h-[500px] bg-white rounded-2xl shadow-2xl border border-zinc-100 flex flex-col overflow-hidden transition-all duration-300">
-          {/* Cabecalho */}
+        <div className="absolute bottom-20 right-0 w-[330px] sm:w-[380px] h-[500px] bg-white rounded-2xl shadow-2xl border border-zinc-100 flex flex-col overflow-hidden">
           <div className="bg-zinc-900 text-white p-4 flex items-center justify-between border-b border-zinc-800">
             <div>
               <h3 className="font-semibold text-sm tracking-wide">Assistente Virtual</h3>
@@ -91,9 +111,11 @@ export default function ChatFlutuante() {
                 Online agora
               </p>
             </div>
+            {confirmacaoFinal && (
+              <span className="text-xs bg-emerald-600 text-white px-2 py-1 rounded-full">Pronto para publicar</span>
+            )}
           </div>
 
-          {/* Mensagens */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-zinc-50/50">
             {mensagensTela.map((msg, index) => (
               <div key={index} className={`flex ${msg.enviadoPor === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -118,7 +140,6 @@ export default function ChatFlutuante() {
             <div ref={finalDasMensagensRef} />
           </div>
 
-          {/* Form Input */}
           <form onSubmit={enviarMensagem} className="p-3 bg-white border-t border-zinc-100 flex gap-2 items-center">
             <input
               type="text"
