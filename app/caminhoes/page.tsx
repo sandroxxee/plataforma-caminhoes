@@ -9,15 +9,17 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Carretas à Venda | Caminhões à Venda",
-  description: "Graneleiras, porta-containers, pranchas, frigoríficas e tanques. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/carretas" },
+  title: "Caminhões à Venda | Caminhões à Venda",
+  description: "Caminhões usados e seminovos de todas as marcas. Toco, truck, bi-truck, cavalo mecânico. Negociação direta pelo WhatsApp.",
+  alternates: { canonical: "/caminhoes" },
 };
 
 type PageProps = {
   searchParams: Promise<{
     estado?: string;
     marca?: string;
+    tracao?: string;
+    carroceria?: string;
     faixa?: string;
     pmin?: string;
     pmax?: string;
@@ -25,19 +27,21 @@ type PageProps = {
   }>
 };
 
-export default async function CarretasPage({ searchParams }: PageProps) {
-  const { estado, marca, faixa, pmin, pmax, q: searchQ } = await searchParams;
+export default async function CaminhoesPage({ searchParams }: PageProps) {
+  const { estado, marca, tracao, carroceria, faixa, pmin, pmax, q: searchQ } = await searchParams;
   const supabase = await createClient();
 
   let query = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
-    .eq("perfil", "Carretas")
+    .eq("perfil", "Caminhões")
     .order("created_at", { ascending: false });
 
   if (estado) query = query.eq("estado", estado);
   if (marca) query = query.ilike("marca", marca);
+  if (tracao) query = query.eq("tracao", tracao);
+  if (carroceria) query = query.eq("carroceria", carroceria);
   if (pmin) query = query.gte("preco", Number(pmin));
   if (pmax) query = query.lte("preco", Number(pmax));
   if (searchQ) query = query.or(`titulo.ilike.%${searchQ}%,marca.ilike.%${searchQ}%,modelo.ilike.%${searchQ}%`);
@@ -48,11 +52,11 @@ export default async function CarretasPage({ searchParams }: PageProps) {
       .from("trucks")
       .select("marca,estado")
       .eq("status", "aprovado")
-      .eq("perfil", "Carretas")
+      .eq("perfil", "Caminhões")
       .eq("vendido", false),
   ]);
 
-  const carretas = (data || []) as TruckCardData[];
+  const caminhoes = (data || []) as TruckCardData[];
 
   const marcasDisponiveis = [...new Set(
     (facetData || []).map((t) => t.marca).filter(Boolean)
@@ -62,7 +66,7 @@ export default async function CarretasPage({ searchParams }: PageProps) {
     (facetData || []).map((t) => t.estado).filter(Boolean)
   )].sort() as string[];
 
-  const hasFilters = !!(estado || marca || faixa || pmin || pmax || searchQ);
+  const hasFilters = !!(estado || marca || tracao || carroceria || faixa || pmin || pmax || searchQ);
 
   return (
     <main className="market-page">
@@ -76,8 +80,8 @@ export default async function CarretasPage({ searchParams }: PageProps) {
             marcaFiltro={marca || ""}
             estadoFiltro={estado || ""}
             hasFilters={hasFilters}
-            total={carretas.length}
-            categoriaAtiva="carretas"
+            total={caminhoes.length}
+            categoriaAtiva="caminhoes"
             marcasDisponiveis={marcasDisponiveis}
             estadosDisponiveis={estadosDisponiveis}
             precoMin={pmin ? Number(pmin) : 0}
@@ -87,21 +91,21 @@ export default async function CarretasPage({ searchParams }: PageProps) {
           <div className="category-content">
             <div className="category-header">
               <div>
-                <h1 className="category-title">Carretas à Venda</h1>
-                <p className="category-sub">Graneleiras, porta-containers, pranchas, frigoríficas e muito mais.</p>
+                <h1 className="category-title">Caminhões à Venda</h1>
+                <p className="category-sub">Toco, truck, bi-truck, cavalo mecânico — todas as marcas e modelos.</p>
               </div>
-              <Link href="/anunciar" className="category-btn">Anunciar Carreta</Link>
+              <Link href="/anunciar" className="category-btn">Anunciar Caminhão</Link>
             </div>
 
-            {carretas.length > 0 ? (
+            {caminhoes.length > 0 ? (
               <div className="category-grid">
-                {carretas.map(item => <TruckCard key={item.id} truck={item} />)}
+                {caminhoes.map(item => <TruckCard key={item.id} truck={item} />)}
               </div>
             ) : (
               <div className="category-empty">
-                <span>🚚</span>
-                <strong>Nenhuma carreta encontrada com esses filtros</strong>
-                <Link href="/carretas" className="category-btn-outline">Limpar Filtros</Link>
+                <span>🚛</span>
+                <strong>Nenhum caminhão encontrado com esses filtros</strong>
+                <Link href="/caminhoes" className="category-btn-outline">Limpar Filtros</Link>
               </div>
             )}
           </div>
