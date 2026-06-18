@@ -165,6 +165,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           </span>
         )}
 
+        {/* Preço + cidade no overlay — Única ocorrência da cidade */}
         <div className="tc-overlay">
           <span className="tc-price">{formatMoney(truck.preco)}</span>
           {location && (
@@ -192,7 +193,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           </span>
         )}
 
-        {/* Ano com ícone Calendar laranja + tração/câmbio */}
+        {/* Ano com ícone Calendar + tração/câmbio — SEM cidade aqui */}
         {(ano || metaParts.length > 0) && (
           <p className="tc-meta">
             {ano && (
@@ -204,14 +205,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
             {metaParts.map((p) => (
               <span key={p} className="tc-meta-sep">· {p}</span>
             ))}
-          </p>
-        )}
-
-        {/* Localização com MapPin laranja no corpo */}
-        {location && (
-          <p className="tc-location">
-            <MapPin size={16} color={ORANGE} strokeWidth={2} aria-hidden="true" />
-            {location}
           </p>
         )}
 
@@ -268,16 +261,11 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         .tc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .tc-name { margin: 0; font-size: 13.5px; font-weight: 900; color: var(--text); line-height: 1.3; letter-spacing: -.03em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* Meta: ano + tração/câmbio */
         .tc-meta { margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 12px; color: var(--muted); }
         .tc-meta-item { display: inline-flex; align-items: center; gap: 4px; }
         .tc-meta-item b { color: var(--text); font-weight: 900; }
         .tc-meta-sep { font-weight: 700; }
 
-        /* Localização no corpo */
-        .tc-location { margin: 0; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--muted); }
-
-        /* Verificado */
         .tc-verificado { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #c2410c; background: #fff7ed; padding: 2px 8px; border-radius: 999px; width: fit-content; }
         body.public-theme-dark .tc-verificado { background: #431407; color: #fb923c; }
 
