@@ -1,4 +1,3 @@
-"use client";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
@@ -83,85 +82,6 @@ export default async function CarretasPage({ searchParams }: PageProps) {
       </div>
 
       <SiteFooter />
-
-      <style>{`
-        .category-layout {
-          display: flex;
-          gap: 32px;
-          padding: 32px 0;
-          align-items: flex-start;
-        }
-        .category-content {
-          flex: 1;
-          min-width: 0;
-        }
-        .category-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-          gap: 20px;
-        }
-        .category-title {
-          font-size: 32px;
-          font-weight: 950;
-          letter-spacing: -0.04em;
-          margin: 0 0 4px;
-        }
-        .category-sub {
-          color: var(--muted);
-          font-weight: 700;
-          margin: 0;
-        }
-        .category-btn {
-          background: var(--blue);
-          color: white;
-          padding: 0 24px;
-          height: 48px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          font-weight: 900;
-          text-decoration: none;
-          transition: all 0.2s;
-        }
-        .category-btn:hover { background: var(--blue2); transform: translateY(-2px); }
-        .category-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 20px;
-        }
-        .category-empty {
-          padding: 80px 24px;
-          text-align: center;
-          background: var(--surface);
-          border-radius: 24px;
-          border: 1px solid var(--line);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 16px;
-        }
-        .category-empty span { font-size: 48px; }
-        .category-empty strong { font-size: 18px; font-weight: 900; }
-        .category-btn-outline {
-          border: 1.5px solid var(--line);
-          padding: 0 24px;
-          height: 44px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          font-weight: 800;
-          text-decoration: none;
-          color: var(--text);
-        }
-        @media (max-width: 900px) {
-          .category-layout { flex-direction: column; gap: 24px; }
-          .category-header { flex-direction: column; align-items: flex-start; }
-          .category-btn { width: 100%; justify-content: center; }
-          .category-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        }
-      `}</style>
     </main>
   );
 }

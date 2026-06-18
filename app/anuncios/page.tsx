@@ -1,4 +1,3 @@
-"use client";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
@@ -8,10 +7,13 @@ import { AnunciosSidebar } from "./AnunciosSidebar";
 import { LoadMore } from "./LoadMore";
 import Link from "next/link";
 import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
+import type { Metadata } from "next";
 
 export const revalidate = 30;
 
-import type { Metadata } from "next";
+type PageProps = {
+  searchParams: Promise<{ faixa?: string; marca?: string; estado?: string; q?: string }>;
+};
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const { marca, estado, q } = await searchParams;
@@ -40,9 +42,6 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 }
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
-type PageProps = {
-  searchParams: Promise<{ faixa?: string; marca?: string; estado?: string; q?: string }>;
-};
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
   const { faixa, marca, estado, q } = await searchParams;
@@ -97,19 +96,9 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
     <main className="market-page">
       <PublicHeader />
 
-      <div className="mp-shell">
-        <AnunciosSidebar
-          q={busca}
-          faixaIdx={faixaIdx}
-          marcaFiltro={marcaFiltro}
-          estadoFiltro={estadoFiltro}
-          hasFilters={hasFilters}
-          total={total ?? trucks.length}
-          categoriaAtiva="anuncios"
-        />
-
-        <section className="mp-main">
-          <AnunciosFilters
+      <div className="mp-shell-wrap">
+        <div className="mp-shell">
+          <AnunciosSidebar
             q={busca}
             faixaIdx={faixaIdx}
             marcaFiltro={marcaFiltro}
@@ -119,85 +108,42 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             categoriaAtiva="anuncios"
           />
 
-          {trucks.length === 0 ? (
-            <div className="market-empty">
-              <strong>Nenhum anúncio encontrado</strong>
-              <p>Tente outros filtros ou veja todos.</p>
-              <Link href="/anuncios" className="market-empty-btn">
-                Ver todos
-              </Link>
-            </div>
-          ) : (
-            <LoadMore
-              key={`${busca}-${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
-              initialTrucks={trucks}
-              total={total ?? trucks.length}
-              pageSize={24}
+          <section className="mp-main">
+            <AnunciosFilters
               q={busca}
-              marca={marcaFiltro}
-              estado={estadoFiltro}
-              faixa={faixaIdx}
+              faixaIdx={faixaIdx}
+              marcaFiltro={marcaFiltro}
+              estadoFiltro={estadoFiltro}
+              hasFilters={hasFilters}
+              total={total ?? trucks.length}
+              categoriaAtiva="anuncios"
             />
-          )}
-        </section>
+
+            {trucks.length === 0 ? (
+              <div className="market-empty">
+                <strong>Nenhum anúncio encontrado</strong>
+                <p>Tente outros filtros ou veja todos.</p>
+                <Link href="/anuncios" className="market-empty-btn">
+                  Ver todos
+                </Link>
+              </div>
+            ) : (
+              <LoadMore
+                key={`${busca}-${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
+                initialTrucks={trucks}
+                total={total ?? trucks.length}
+                pageSize={24}
+                q={busca}
+                marca={marcaFiltro}
+                estado={estadoFiltro}
+                faixa={faixaIdx}
+              />
+            )}
+          </section>
+        </div>
       </div>
 
       <SiteFooter />
-
-      <style>{`
-        .mp-shell {
-          width: min(1400px, calc(100vw - 32px));
-          margin: 0 auto;
-          display: flex;
-          gap: 32px;
-          padding: 32px 0 64px;
-          align-items: flex-start;
-        }
-
-        .mp-main {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .market-empty {
-          margin-top: 60px;
-          text-align: center;
-          padding: 80px 24px;
-          background: var(--surface);
-          border-radius: 24px;
-          border: 1px solid var(--line);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
-        
-        .market-empty strong { font-size: 20px; font-weight: 900; }
-        .market-empty p { color: var(--muted); font-weight: 700; }
-        
-        .market-empty-btn {
-          margin-top: 12px;
-          display: inline-flex;
-          height: 48px;
-          padding: 0 32px;
-          border-radius: 14px;
-          background: var(--blue);
-          color: #fff;
-          font-weight: 900;
-          align-items: center;
-          text-decoration: none;
-          transition: all 0.2s;
-        }
-        .market-empty-btn:hover { background: var(--blue2); transform: translateY(-2px); }
-
-        @media (max-width: 900px) {
-          .mp-shell {
-            flex-direction: column;
-            gap: 12px;
-            padding: 16px 0;
-          }
-        }
-      `}</style>
     </main>
   );
 }

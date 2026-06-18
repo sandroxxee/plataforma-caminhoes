@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 const PROTECTED_ROUTES = ["/painel", "/conta", "/anunciar", "/admin"];
 const AUTH_ROUTES = ["/login", "/cadastro"];
 
-export async function middleware(request: NextRequest) {
+// O Next.js 16.2.9 (Turbopack) espera que o arquivo proxy.ts exporte uma função chamada 'proxy'
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   const supabase = await createClient();
@@ -25,13 +26,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/painel", request.url));
   }
 
-  // Atualiza a sessão do Supabase para garantir que os cookies estejam sincronizados
-  // Isso é importante para ambientes de produção com balanceadores de carga
-  // ou quando os cookies precisam ser atualizados após certas operações.
-  const response = NextResponse.next();
-  // await supabase.auth.getSession(); // Removido para performance // Força a atualização dos cookies
-  return response;
+  return NextResponse.next();
 }
+
+// Mantendo o alias 'middleware' por compatibilidade caso o Turbopack mude de ideia
+export const middleware = proxy;
 
 export const config = {
   matcher: [
