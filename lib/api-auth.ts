@@ -1,11 +1,8 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
+import { createPublicClient } from '@/lib/supabase/public'
 
-// Client com service_role para bypassar RLS na tabela api_keys
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Reutiliza o singleton com service_role de public.ts — sem criar novo cliente
+const supabaseAdmin = createPublicClient()
 
 export type ApiAuthResult =
   | { success: true; keyId: string; keyName: string }
@@ -103,7 +100,7 @@ export async function generateApiKey(): Promise<{
 
   const rawKey = `pk_live_${randomHex}`
   const keyHash = await hashApiKey(rawKey)
-  const keyPrefix = rawKey.slice(0, 15) // ex: "pk_live_3f9a2b1"
+  const keyPrefix = rawKey.slice(0, 15)
 
   return { rawKey, keyHash, keyPrefix }
 }
