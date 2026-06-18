@@ -29,7 +29,7 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
 
   let query = supabase
     .from("trucks")
-    .select("id, user_id, marca, modelo, ano_modelo, preco, quilometragem, cidade, estado, carroceria, tracao, whatsapp, descricao, status")
+    .select("id, user_id, marca, modelo, ano_modelo, preco, quilometragem, cidade, estado, carroceria, tracao, whatsapp, descricao, status, abaixo_fipe")
     .eq("id", id);
 
   if (!isAdmin) {
@@ -39,6 +39,8 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
   const { data: truck } = await query.single();
 
   if (!truck) redirect("/painel/anuncios");
+
+  const abaixoFipe = (truck as any).abaixo_fipe === true;
 
   return (
     <PanelLayout
@@ -120,6 +122,23 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
             </div>
           )}
 
+          {/* Toggle: Abaixo da FIPE */}
+          <div style={{ ...styles.field, gridColumn: "1 / -1" }}>
+            <label style={styles.fipeToggleLabel}>
+              <input
+                type="checkbox"
+                name="abaixo_fipe"
+                value="true"
+                defaultChecked={abaixoFipe}
+                style={styles.fipeCheckbox}
+              />
+              <span style={styles.fipeToggleText}>
+                <span style={styles.fipeBadgePreview}>📉 Abaixo da FIPE</span>
+                <span style={styles.fipeHint}>Marque se o preço deste anúncio está abaixo da tabela FIPE</span>
+              </span>
+            </label>
+          </div>
+
           <div style={{ ...styles.field, gridColumn: "1 / -1" }}>
             <label style={styles.label}>Descrição</label>
             <textarea style={{ ...styles.input, minHeight: 130, resize: "vertical", paddingTop: 13 }} name="descricao" defaultValue={truck.descricao || ""} />
@@ -167,4 +186,9 @@ const styles: Record<string, CSSProperties> = {
   helpText: { color: "#a7afb7", margin: 0, lineHeight: 1.6 },
   primaryButton: { border: 0, padding: "13px 18px", borderRadius: 14, background: "#22c55e", color: "#06140b", fontWeight: 900, cursor: "pointer" },
   secondaryButton: { display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "11px 14px", borderRadius: 14, border: "1px solid #343a40", background: "#2a2f34", color: "#e8eaed", textDecoration: "none", fontWeight: 900 },
+  fipeToggleLabel: { display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", borderRadius: 14, border: "1px solid #22c55e30", background: "#0d1f12", cursor: "pointer" },
+  fipeCheckbox: { width: 20, height: 20, accentColor: "#22c55e", cursor: "pointer", flexShrink: 0 },
+  fipeToggleText: { display: "flex", flexDirection: "column", gap: 3 },
+  fipeBadgePreview: { color: "#86efac", fontWeight: 900, fontSize: 14 },
+  fipeHint: { color: "#6b7280", fontWeight: 700, fontSize: 12 },
 };
