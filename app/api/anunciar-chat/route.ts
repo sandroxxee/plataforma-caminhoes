@@ -1,20 +1,20 @@
-import { GoogleGenAI, Type } from '@google/genai'
+import { GoogleGenAI, Type, FunctionDeclaration, Tool } from '@google/genai'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 
-const ferramentas = [
+const ferramentas: Tool[] = [
   {
     functionDeclarations: [
       {
         name: 'cadastrar_anuncio',
-        description: 'Dispare quando tiver coletado todos os dados do anuncio: modelo, preco, km, cidade e contato do vendedor.',
+        description: 'Dispare quando tiver coletado todos os dados do anuncio: nome, whatsapp, cidade, tipo (vender/comprar), modelo, km, mecanica, tipo_vendedor, preco e se aceita troca.',
         parameters: {
           type: Type.OBJECT,
           properties: {
             nome: { type: Type.STRING, description: 'Nome do vendedor' },
-            whatsapp: { type: Type.STRING, description: 'WhatsApp ou telefone com DDD' },
+            whatsapp: { type: Type.STRING, description: 'WhatsApp com DDD' },
             cidade: { type: Type.STRING, description: 'Cidade do vendedor' },
             tipo: { type: Type.STRING, description: 'vender ou comprar' },
             modelo: { type: Type.STRING, description: 'Marca, modelo e ano do veiculo' },
@@ -26,7 +26,7 @@ const ferramentas = [
           },
           required: ['nome', 'whatsapp', 'modelo']
         }
-      }
+      } as FunctionDeclaration
     ]
   }
 ]
@@ -38,19 +38,20 @@ export async function POST(req: Request) {
     const chat = ai.chats.create({
       model: 'gemini-1.5-flash',
       config: {
-        systemInstruction: `Voce e um atendente simpatico da plataforma CaminhoesBR.
-Sua tarefa e criar anuncios de caminhoes conversando naturalmente.
+        systemInstruction: `Voce e um atendente simpatico da plataforma CaminhoesBR especializado em anuncios de caminhoes.
+Converse de forma natural, limpa e profissional.
+Sua tarefa e coletar os dados para publicar um anuncio, pedindo uma informacao de cada vez.
 
-Colete nesta ordem, uma informacao por vez:
+Colete nesta ordem:
 1. Nome, WhatsApp e cidade
 2. Vai vender ou comprar?
 3. Marca, modelo, ano e km
 4. Estado da mecanica e se e particular ou revenda
 5. Valor pedido e se aceita troca
-6. Mostre um resumo e confirme: Posso publicar o anuncio?
-7. Se confirmar: chame a funcao cadastrar_anuncio com todos os dados
+6. Faca um resumo e pergunte: Posso publicar o anuncio?
+7. Se confirmar: chame a funcao cadastrar_anuncio com todos os dados coletados
 
-Regras: sem asteriscos, seja breve, uma pergunta por vez.`,
+Sempre conduza a conversa de forma leve, pedindo uma informacao de cada vez.`,
         tools: ferramentas
       },
       history: historico ?? []
@@ -60,21 +61,32 @@ Regras: sem asteriscos, seja breve, uma pergunta por vez.`,
 
     if (response.functionCalls && response.functionCalls.length > 0) {
       const chamada = response.functionCalls[0]
-      const args = chamada.args as Record<string, unknown>
+      const nomeFuncao = chamada.name
+      const argumentos = chamada.args as Record<string, unknown>
 
-      const supabase = await createClient()
-      const { error } = await supabase.from('anuncios_chat').insert([args])
+      let resultadoDoBanco: Record<string, unknown>
 
-      const resultado = error
-        ? { status: 'erro', mensagem: error.message }
-        : { status: 'sucesso' }
+      if (nomeFuncao === 'cadastrar_anuncio') {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+          .from('anuncios_chat')
+          .insert([argumentos])
+          .select('id')
+          .single()
+
+        resultadoDoBanco = error
+          ? { status: 'erro', mensagem: error.message }
+          : { status: 'sucesso', id_anuncio: data?.id }
+      } else {
+        resultadoDoBanco = { status: 'funcao_desconhecida' }
+      }
 
       response = await chat.sendMessage({
         message: [
           {
             functionResponse: {
-              name: chamada.name,
-              response: { result: resultado }
+              name: nomeFuncao,
+              response: { result: resultadoDoBanco }
             }
           }
         ]
