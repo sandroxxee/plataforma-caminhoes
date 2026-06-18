@@ -94,24 +94,19 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   return (
     <main className="market-page">
-      {/* Cabeçalho público com busca principal e CTA */}
       <PublicHeader />
 
       <div className="mp-shell">
-        {/* Sidebar fixa com filtros completos (desktop) */}
-        <aside className="mp-sidebar">
-          <AnunciosSidebar
-            q={busca}
-            faixaIdx={faixaIdx}
-            marcaFiltro={marcaFiltro}
-            estadoFiltro={estadoFiltro}
-            hasFilters={hasFilters}
-            total={total ?? trucks.length}
-            categoriaAtiva="anuncios"
-          />
-        </aside>
+        <AnunciosSidebar
+          q={busca}
+          faixaIdx={faixaIdx}
+          marcaFiltro={marcaFiltro}
+          estadoFiltro={estadoFiltro}
+          hasFilters={hasFilters}
+          total={total ?? trucks.length}
+          categoriaAtiva="anuncios"
+        />
 
-        {/* Área principal com grid e filtros compactos (topo) */}
         <section className="mp-main">
           <AnunciosFilters
             q={busca}
@@ -127,18 +122,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             <div className="market-empty">
               <strong>Nenhum anúncio encontrado</strong>
               <p>Tente outros filtros ou veja todos.</p>
-              <Link
-                href="/anuncios"
-                style={{
-                  marginTop: 8,
-                  display: "inline-flex",
-                  padding: "10px 20px",
-                  borderRadius: 10,
-                  background: "var(--blue)",
-                  color: "#fff",
-                  fontWeight: 800,
-                }}
-              >
+              <Link href="/anuncios" className="market-empty-btn">
                 Ver todos
               </Link>
             </div>
@@ -159,47 +143,57 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <SiteFooter />
 
-      <style>{`
+      <style jsx>{`
         .mp-shell {
           width: min(1400px, calc(100vw - 32px));
           margin: 0 auto;
-          display: grid;
-          grid-template-columns: 260px 1fr;
-          gap: 24px;
-          padding-top: 24px;
-          padding-bottom: 64px;
+          display: flex;
+          gap: 32px;
+          padding: 32px 0 64px;
           align-items: flex-start;
         }
 
-        .mp-sidebar {
-          position: sticky;
-          top: 88px;
-          background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: 18px;
-          overflow: hidden;
-          box-shadow: var(--shadow);
-          max-height: calc(100vh - 120px);
-        }
-
         .mp-main {
+          flex: 1;
           min-width: 0;
         }
 
         .market-empty {
-          margin-top: 40px;
+          margin-top: 60px;
           text-align: center;
+          padding: 80px 24px;
+          background: var(--surface);
+          border-radius: 24px;
+          border: 1px solid var(--line);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
         }
+        
+        .market-empty strong { font-size: 20px; font-weight: 900; }
+        .market-empty p { color: var(--muted); font-weight: 700; }
+        
+        .market-empty-btn {
+          margin-top: 12px;
+          display: inline-flex;
+          height: 48px;
+          padding: 0 32px;
+          border-radius: 14px;
+          background: var(--blue);
+          color: #fff;
+          font-weight: 900;
+          align-items: center;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .market-empty-btn:hover { background: var(--blue2); transform: translateY(-2px); }
 
         @media (max-width: 900px) {
           .mp-shell {
-            grid-template-columns: 1fr;
+            flex-direction: column;
             gap: 12px;
-            padding-top: 12px;
-          }
-
-          .mp-sidebar {
-            display: none;
+            padding: 16px 0;
           }
         }
       `}</style>
