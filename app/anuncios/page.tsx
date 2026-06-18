@@ -26,16 +26,16 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
   if (marcaFiltro && estadoFiltro) {
     title = `Caminhões ${marcaFiltro} à Venda em ${estadoFiltro}`;
-    description = `Confira os melhores anúncios de caminhões ${marcaFiltro} usados e seminovos em ${estadoFiltro}. Fale direto com o vendedor pelo WhatsApp.`;
+    description = `Confira os melhores anúncios de caminhões ${marcaFiltro} usados e seminovos em ${estadoFiltro}.`;
   } else if (marcaFiltro) {
     title = `Caminhões ${marcaFiltro} à Venda | Anúncios de ${marcaFiltro}`;
-    description = `Procurando caminhão ${marcaFiltro}? Veja as melhores ofertas de ${marcaFiltro} usados e seminovos em todo o Brasil.`;
+    description = `Procurando caminhão ${marcaFiltro}? Veja as melhores ofertas em todo o Brasil.`;
   } else if (estadoFiltro) {
     title = `Caminhões à Venda em ${estadoFiltro} | Ofertas em ${estadoFiltro}`;
-    description = `Veja anúncios de caminhões e implementos à venda em ${estadoFiltro}. Compre com segurança e fale direto pelo WhatsApp.`;
+    description = `Veja anúncios de caminhões e implementos à venda em ${estadoFiltro}.`;
   } else if (busca) {
     title = `Busca por "${busca}" | Caminhões à Venda`;
-    description = `Resultados de busca para "${busca}" em nosso marketplace de caminhões e implementos.`;
+    description = `Resultados de busca para "${busca}" em nosso marketplace.`;
   }
 
   return { title, description };
@@ -55,11 +55,10 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
   const supabase = await createClient();
 
+  // Busca anúncios
   let query = supabase
     .from("trucks")
-    .select(
-      `id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`
-    )
+    .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,perfil,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("vendido", false)
     .order("created_at", { ascending: false })
@@ -69,14 +68,29 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   if (estadoFiltro) query = query.eq("estado", estadoFiltro);
   if (min > 0) query = query.gte("preco", min);
   if (max !== Infinity) query = query.lte("preco", max);
-  if (busca)
-    query = query.or(
-      `titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`
-    );
+  if (busca) query = query.or(`titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`);
 
-  const { data } = await query;
+  // Marcas e estados com anúncios (para a sidebar)
+  const [{ data }, { data: facetData }] = await Promise.all([
+    query,
+    supabase
+      .from("trucks")
+      .select("marca,estado")
+      .eq("status", "aprovado")
+      .eq("vendido", false),
+  ]);
+
   const trucks = (data || []) as Truck[];
 
+  const marcasComAnuncios = [...new Set(
+    (facetData || []).map((t) => t.marca).filter(Boolean)
+  )].sort() as string[];
+
+  const estadosComAnuncios = [...new Set(
+    (facetData || []).map((t) => t.estado).filter(Boolean)
+  )].sort() as string[];
+
+  // Total com filtros
   let countQ = supabase
     .from("trucks")
     .select("*", { count: "exact", head: true })
@@ -86,10 +100,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   if (estadoFiltro) countQ = countQ.eq("estado", estadoFiltro);
   if (min > 0) countQ = countQ.gte("preco", min);
   if (max !== Infinity) countQ = countQ.lte("preco", max);
-  if (busca)
-    countQ = countQ.or(
-      `titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`
-    );
+  if (busca) countQ = countQ.or(`titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`);
   const { count: total } = await countQ;
 
   return (
@@ -106,6 +117,8 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
             hasFilters={hasFilters}
             total={total ?? trucks.length}
             categoriaAtiva="anuncios"
+            marcasDisponiveis={marcasComAnuncios}
+            estadosDisponiveis={estadosComAnuncios}
           />
 
           <section className="mp-main">
@@ -123,9 +136,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
               <div className="market-empty">
                 <strong>Nenhum anúncio encontrado</strong>
                 <p>Tente outros filtros ou veja todos.</p>
-                <Link href="/anuncios" className="market-empty-btn">
-                  Ver todos
-                </Link>
+                <Link href="/anuncios" className="market-empty-btn">Ver todos</Link>
               </div>
             ) : (
               <LoadMore
