@@ -44,7 +44,6 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
 
   return (
     <aside className="asb">
-      {/* Cabeçalho */}
       <div className="asb-header">
         <div className="asb-title"><Filter size={16} /><span>Filtros</span></div>
         {hasFilters && (
@@ -53,17 +52,12 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
       </div>
 
       <div className="asb-scroll">
-
-        {/* Categorias */}
         <section className="asb-section">
-          <label className="asb-label">Categoria</label>
+          <span className="asb-label">Categoria</span>
           <div className="asb-list">
             {CATEGORIAS.map((cat) => (
-              <Link
-                key={cat.id}
-                href={cat.id === "anuncios" ? "/anuncios" : `/${cat.id}`}
-                className={`asb-item ${categoriaAtiva === cat.id ? "active" : ""}`}
-              >
+              <Link key={cat.id} href={cat.id === "anuncios" ? "/anuncios" : `/${cat.id}`}
+                className={`asb-item${categoriaAtiva === cat.id ? " active" : ""}`}>
                 <cat.icon size={15} />
                 <span>{cat.label}</span>
                 {categoriaAtiva === cat.id && <span className="asb-dot" />}
@@ -72,128 +66,49 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           </div>
         </section>
 
-        {/* Faixa de Preço */}
         <section className="asb-section">
-          <label className="asb-label">Faixa de Preço</label>
+          <span className="asb-label">Faixa de Preço</span>
           <div className="asb-list">
-            <Link
-              href={getUrl({ faixa: undefined })}
-              className={`asb-item ${faixaIdx === 0 ? "active" : ""}`}
-            >
+            <Link href={getUrl({ faixa: undefined })} className={`asb-item${faixaIdx === 0 ? " active" : ""}` }>
               Todos os preços
             </Link>
             {FAIXAS.map((f, idx) => (
-              <Link
-                key={idx}
-                href={getUrl({ faixa: idx + 1 })}
-                className={`asb-item ${faixaIdx === idx + 1 ? "active" : ""}`}
-              >
+              <Link key={idx} href={getUrl({ faixa: idx + 1 })} className={`asb-item${faixaIdx === idx + 1 ? " active" : ""}`}>
                 {f.label}
               </Link>
             ))}
           </div>
         </section>
 
-        {/* Marcas */}
         <section className="asb-section">
-          <label className="asb-label">Marca</label>
-          <div className="asb-brands">
-            <Link href={getUrl({ marca: undefined })} className={`asb-brand ${!marcaFiltro ? "active" : ""}`}>Todas</Link>
+          <span className="asb-label">Marca</span>
+          <div className="asb-brands-grid">
+            <Link href={getUrl({ marca: undefined })} className={`asb-brand${!marcaFiltro ? " active" : ""}`}>Todas</Link>
             {MARCAS_VALIDAS.slice(0, 14).map((m) => (
-              <Link key={m} href={getUrl({ marca: m })} className={`asb-brand ${marcaFiltro === m ? "active" : ""}`}>{m}</Link>
+              <Link key={m} href={getUrl({ marca: m })} className={`asb-brand${marcaFiltro === m ? " active" : ""}`}>{m}</Link>
             ))}
           </div>
         </section>
 
-        {/* Estado */}
         <section className="asb-section">
-          <label className="asb-label">Estado</label>
+          <span className="asb-label">Estado</span>
           <div className="asb-list">
-            <Link href={getUrl({ estado: undefined })} className={`asb-item ${!estadoFiltro ? "active" : ""}`}>
+            <Link href={getUrl({ estado: undefined })} className={`asb-item${!estadoFiltro ? " active" : ""}`}>
               Brasil (Todos)
             </Link>
             {ESTADOS.map((uf) => (
-              <Link key={uf} href={getUrl({ estado: uf })} className={`asb-item ${estadoFiltro === uf ? "active" : ""}`}>
+              <Link key={uf} href={getUrl({ estado: uf })} className={`asb-item${estadoFiltro === uf ? " active" : ""}`}>
                 <span>{uf}</span>
                 <ChevronRight size={13} className="asb-chevron" />
               </Link>
             ))}
           </div>
         </section>
-
       </div>
 
-      {/* Rodapé */}
       <div className="asb-footer">
         <SalvarBusca total={total} />
       </div>
-
-      <style jsx>{`
-        .asb {
-          display: flex; flex-direction: column;
-          height: 100%; background: var(--surface);
-          border-radius: var(--radius); border: 1.5px solid var(--line);
-          box-shadow: var(--shadow); overflow: hidden;
-        }
-        .asb-header {
-          padding: 16px 18px;
-          border-bottom: 1px solid var(--line);
-          background: var(--soft);
-          display: flex; align-items: center; justify-content: space-between;
-          flex-shrink: 0;
-        }
-        .asb-title { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 14px; color: var(--text); }
-        .asb-clear { font-size: 12px; font-weight: 800; color: var(--blue); text-decoration: none; }
-        .asb-clear:hover { text-decoration: underline; }
-
-        .asb-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0; }
-
-        .asb-section {
-          padding: 18px 18px 0;
-          border-bottom: 1px solid var(--line);
-          padding-bottom: 18px;
-        }
-        .asb-label {
-          display: block; font-size: 10px; font-weight: 900;
-          color: var(--muted); text-transform: uppercase; letter-spacing: .09em;
-          margin-bottom: 10px;
-        }
-
-        .asb-list { display: flex; flex-direction: column; gap: 2px; }
-        .asb-item {
-          display: flex; align-items: center; gap: 10px;
-          padding: 9px 12px; border-radius: 10px;
-          font-size: 13px; font-weight: 700; color: var(--text);
-          text-decoration: none; transition: all .15s; position: relative;
-        }
-        .asb-item:hover { background: var(--soft); color: var(--blue); }
-        .asb-item.active { background: var(--blueSoft); color: var(--blue); font-weight: 900; }
-        .asb-dot {
-          width: 7px; height: 7px; border-radius: 50%;
-          background: var(--blue); margin-left: auto; flex-shrink: 0;
-        }
-        .asb-chevron { margin-left: auto; opacity: .3; }
-
-        .asb-brands {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
-        }
-        .asb-brand {
-          display: flex; align-items: center; justify-content: center;
-          height: 34px; border: 1.5px solid var(--line); border-radius: 9px;
-          font-size: 11px; font-weight: 800; color: var(--muted);
-          text-decoration: none; transition: all .15s; text-align: center;
-        }
-        .asb-brand:hover, .asb-brand.active {
-          border-color: var(--blue); color: var(--blue); background: var(--blueSoft);
-        }
-
-        .asb-footer {
-          padding: 14px 18px;
-          border-top: 1px solid var(--line);
-          background: var(--soft);
-          flex-shrink: 0;
-        }
-      `}</style>
     </aside>
   );
 }
