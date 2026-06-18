@@ -143,7 +143,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <SiteFooter />
 
-      <style jsx>{`
+      <style>{`
         .mp-shell {
           width: min(1400px, calc(100vw - 32px));
           margin: 0 auto;

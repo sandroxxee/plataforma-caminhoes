@@ -83,7 +83,7 @@ export default async function CarretasPage({ searchParams }: PageProps) {
 
       <SiteFooter />
 
-      <style jsx>{`
+      <style>{`
         .category-layout {
           display: flex;
           gap: 32px;
@@ -92,6 +92,7 @@ export default async function CarretasPage({ searchParams }: PageProps) {
         }
         .category-content {
           flex: 1;
+          min-width: 0;
         }
         .category-header {
           display: flex;
