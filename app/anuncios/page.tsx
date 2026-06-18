@@ -10,11 +10,33 @@ import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
 
 export const revalidate = 30;
 
-export const metadata = {
-  title: "Caminhões à Venda | Todos os anúncios",
-  description:
-    "Veja todos os caminhões disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.",
-};
+import type { Metadata } from "next";
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { marca, estado, q } = await searchParams;
+  const marcaFiltro = MARCAS_VALIDAS.includes(marca || "") ? marca! : "";
+  const estadoFiltro = ESTADOS_VALIDOS.includes(estado || "") ? estado! : "";
+  const busca = (q || "").trim().slice(0, 100);
+
+  let title = "Caminhões à Venda | Todos os anúncios";
+  let description = "Veja todos os caminhões disponíveis. Filtre por marca, estado ou faixa de preço e fale direto pelo WhatsApp.";
+
+  if (marcaFiltro && estadoFiltro) {
+    title = `Caminhões ${marcaFiltro} à Venda em ${estadoFiltro}`;
+    description = `Confira os melhores anúncios de caminhões ${marcaFiltro} usados e seminovos em ${estadoFiltro}. Fale direto com o vendedor pelo WhatsApp.`;
+  } else if (marcaFiltro) {
+    title = `Caminhões ${marcaFiltro} à Venda | Anúncios de ${marcaFiltro}`;
+    description = `Procurando caminhão ${marcaFiltro}? Veja as melhores ofertas de ${marcaFiltro} usados e seminovos em todo o Brasil.`;
+  } else if (estadoFiltro) {
+    title = `Caminhões à Venda em ${estadoFiltro} | Ofertas em ${estadoFiltro}`;
+    description = `Veja anúncios de caminhões e implementos à venda em ${estadoFiltro}. Compre com segurança e fale direto pelo WhatsApp.`;
+  } else if (busca) {
+    title = `Busca por "${busca}" | Caminhões à Venda`;
+    description = `Resultados de busca para "${busca}" em nosso marketplace de caminhões e implementos.`;
+  }
+
+  return { title, description };
+}
 
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 type PageProps = {

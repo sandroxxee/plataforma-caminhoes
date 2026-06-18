@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ContactForm } from "@/components/ContactForm";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -43,6 +44,11 @@ export default function ContatoPage() {
                 <span style={{ fontSize:13,color:"var(--muted)",fontWeight:700 }}>contato@caminhoesavenda.com</span>
               </div>
             </a>
+          </div>
+
+          <div style={{ marginBottom: 48 }}>
+            <h2 style={{ margin: "0 0 20px", fontSize: 20, fontWeight: 950, letterSpacing: "-.02em" }}>Envie uma mensagem</h2>
+            <ContactForm />
           </div>
 
           <div style={{ padding:"24px",borderRadius:16,background:"var(--soft)",border:"1px solid var(--line)" }}>

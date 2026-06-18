@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 const PROTECTED_ROUTES = ["/painel", "/conta", "/anunciar", "/admin"];
 const AUTH_ROUTES = ["/login", "/cadastro"];
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   const supabase = await createClient();
@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
   // Isso é importante para ambientes de produção com balanceadores de carga
   // ou quando os cookies precisam ser atualizados após certas operações.
   const response = NextResponse.next();
-  await supabase.auth.getSession(); // Força a atualização dos cookies
+  // await supabase.auth.getSession(); // Removido para performance // Força a atualização dos cookies
   return response;
 }
 

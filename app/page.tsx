@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { FeaturedAds } from "@/components/theme/FeaturedAds";
 import { HeroMarketplace } from "@/components/theme/HeroMarketplace";
 import { BrandsSection } from "@/components/theme/BrandsSection";
-import { StatsSection } from "@/components/theme/StatsSection";
+// import { StatsSection } from "@/components/theme/StatsSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import type { TruckCardData } from "@/components/theme/TruckCard";
 
@@ -60,8 +60,8 @@ export default async function HomePage() {
         {/* Hero com imagem e CTAs */}
         <HeroMarketplace />
 
-        {/* Números de impacto */}
-        <StatsSection />
+        {/* Números de impacto removidos a pedido do usuário */}
+        {/* <StatsSection /> */}
 
         {/* Buscar por marca */}
         <BrandsSection />

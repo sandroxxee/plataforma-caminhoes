@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MapPin, CheckCircle, ShieldCheck, TrendingDown } from "lucide-react";
+import { MapPin, CheckCircle, ShieldCheck, TrendingDown, Info, FileText, Map as MapIcon } from "lucide-react";
 import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
 import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
@@ -23,6 +23,7 @@ import {
 import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
 import { ChatWidget } from "@/components/ChatWidget";
 import { RelatedAds } from "@/components/theme/RelatedAds";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const revalidate = 300;
 
@@ -155,11 +156,60 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <FipeBadge abaixoFipe={abaixoFipe} />
           </div>
 
-          <div className="detail-card detail-desc-card">
-            <h2 className="detail-section-title">{textos.sobre}</h2>
-            <p className="detail-desc-text">
-              {truck.descricao?.trim() || `Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
-            </p>
+          <div className="detail-tabs-wrap">
+            <Tabs defaultValue="sobre" className="w-full">
+              <TabsList className="detail-tabs-list">
+                <TabsTrigger value="sobre" className="detail-tab-trigger">
+                  <Info size={16} /> Sobre
+                </TabsTrigger>
+                {specs.length > 0 && (
+                  <TabsTrigger value="ficha" className="detail-tab-trigger">
+                    <FileText size={16} /> Ficha Técnica
+                  </TabsTrigger>
+                )}
+                <TabsTrigger value="localizacao" className="detail-tab-trigger">
+                  <MapIcon size={16} /> Localização
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="sobre" className="detail-tab-content">
+                <div className="detail-card detail-desc-card">
+                  <h2 className="detail-section-title">{textos.sobre}</h2>
+                  <p className="detail-desc-text">
+                    {truck.descricao?.trim() || `Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
+                  </p>
+                </div>
+              </TabsContent>
+
+              {specs.length > 0 && (
+                <TabsContent value="ficha" className="detail-tab-content">
+                  <div className="detail-card detail-specs-card">
+                    <h2 className="detail-section-title">{textos.ficha}</h2>
+                    <dl className="detail-specs-dl">
+                      {specs.map((spec) => (
+                        <div key={spec.label} className="detail-spec-row">
+                          <dt>{spec.label}</dt>
+                          <dd>{spec.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                </TabsContent>
+              )}
+
+              <TabsContent value="localizacao" className="detail-tab-content">
+                <div className="detail-card detail-location-card">
+                  <h2 className="detail-section-title">Localização do Veículo</h2>
+                  <div className="detail-location-info">
+                    <MapPin size={24} className="text-blue-500" />
+                    <div>
+                      <p className="text-lg font-bold">{location || "Localização não informada"}</p>
+                      <p className="text-muted-foreground text-sm">Entre em contato com o vendedor para agendar uma visita e ver o veículo pessoalmente.</p>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
 
           <div className="detail-card detail-safety">
@@ -197,17 +247,21 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             />
           </div>
 
+          {/* Desktop Specs (Opcional, se quiser manter visível no desktop) */}
           {specs.length > 0 && (
-            <div className="detail-card detail-specs-card">
+            <div className="detail-card detail-specs-card-desktop">
               <h2 className="detail-section-title">{textos.ficha}</h2>
               <dl className="detail-specs-dl">
-                {specs.map((spec) => (
+                {specs.slice(0, 6).map((spec) => (
                   <div key={spec.label} className="detail-spec-row">
                     <dt>{spec.label}</dt>
                     <dd>{spec.value}</dd>
                   </div>
                 ))}
               </dl>
+              {specs.length > 6 && (
+                <p className="text-xs text-muted-foreground mt-3 font-bold text-center">Veja a ficha completa nas abas ao lado.</p>
+              )}
             </div>
           )}
         </aside>
@@ -233,13 +287,14 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-breadcrumb span[aria-hidden]{color:var(--line)}
         .detail-breadcrumb span:last-child{color:var(--text)}
         .detail-gallery-card{padding:14px;margin-bottom:14px}
-        .detail-desc-card{padding:22px;margin-bottom:14px}
+        .detail-desc-card{padding:22px;}
         .detail-aside-header{padding:22px;margin-bottom:14px}
         .detail-specs-card{padding:22px}
-        .detail-safety{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;color:var(--muted);margin-top:0}
+        .detail-specs-card-desktop{padding:22px; margin-top: 14px;}
+        .detail-location-card{padding:22px}
+        .detail-location-info{display:flex;gap:16px;align-items:center;margin-top:10px}
+        .detail-safety{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;color:var(--muted);margin-top:14px}
         .detail-mobile-header{padding:18px 20px 14px;margin-bottom:14px;display:none}
-        .detail-gallery-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-        .detail-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:var(--blueSoft);color:var(--blue);font-size:12px;font-weight:950}
         .detail-h1{margin:10px 0 6px;font-size:clamp(22px,2.8vw,34px);line-height:1.1;letter-spacing:-.04em}
         .detail-h1-aside{font-size:clamp(18px,2vw,26px)}
         .detail-location{display:flex;align-items:center;gap:5px;margin:0 0 10px;color:var(--muted);font-size:14px;font-weight:750}
@@ -252,9 +307,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .fipe-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:950;letter-spacing:.01em;margin-bottom:10px;background:#dcfce7;color:#15803d}
         body.public-theme-dark .fipe-badge{background:#14532d;color:#86efac}
         .detail-aside-hint{margin:0 0 16px;color:var(--muted);font-size:13px;font-weight:750;line-height:1.5}
-        .detail-whatsapp{min-height:52px;border-radius:14px;background:#25d366;color:#073b1d;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:950;font-size:15px;margin-bottom:10px;box-shadow:0 8px 20px rgba(37,211,102,.28);transition:transform .18s,box-shadow .18s;text-decoration:none}
-        .detail-whatsapp:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,211,102,.36)}
-        .detail-whatsapp:active{transform:scale(.97)}
         .detail-safety-icon{flex-shrink:0;margin-top:2px;color:var(--blue)}
         .detail-safety strong{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
         .detail-safety p{margin:0;font-size:13px;font-weight:700;line-height:1.5}
@@ -264,14 +316,36 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-spec-row dt{color:var(--muted);font-weight:800}
         .detail-spec-row dd{font-weight:950;text-align:right}
         .detail-aside{position:sticky;top:80px;align-self:start}
+
+        /* Tabs Styles */
+        .detail-tabs-wrap { margin-top: 14px; }
+        .detail-tabs-list {
+          display: flex; gap: 8px; background: var(--soft);
+          padding: 6px; border-radius: 16px; margin-bottom: 14px;
+          border: 1px solid var(--line);
+        }
+        .detail-tab-trigger {
+          flex: 1; display: flex; align-items: center; justify-content: center;
+          gap: 8px; height: 40px; border-radius: 12px;
+          font-size: 14px; font-weight: 800; color: var(--muted);
+          transition: all 0.2s; border: none; background: transparent; cursor: pointer;
+        }
+        .detail-tab-trigger[data-state="active"] {
+          background: var(--surface); color: var(--blue);
+          box-shadow: var(--shadow);
+        }
+        .detail-tab-content { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
         @media(max-width:900px){
           .detail-aside{position:static}
           .detail-aside-header .detail-h1,.detail-aside-header .detail-location,.detail-aside-header .detail-status-badge,.detail-aside-header .detail-price,.detail-aside-header .fipe-badge{display:none}
           .detail-mobile-header{display:block}
+          .detail-specs-card-desktop { display: none; }
         }
         @media(max-width:560px){
           .detail-gallery-card,.detail-desc-card,.detail-aside-header,.detail-specs-card,.detail-safety{padding:16px}
-          .detail-whatsapp{min-height:56px;font-size:16px}
+          .detail-tab-trigger { font-size: 12px; gap: 4px; }
         }
       `}</style>
     </main>
