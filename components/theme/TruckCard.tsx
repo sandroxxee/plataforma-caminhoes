@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef } from "react";
-import { MapPin, MessageCircle, Eye, TrendingDown } from "lucide-react";
+import { MapPin, MessageCircle, Eye, TrendingDown, Calendar, ShieldCheck } from "lucide-react";
 import {
   formatMoney,
   getCardTitle,
@@ -17,6 +17,8 @@ import {
 } from "@/lib/truck-utils";
 
 export type { TruckCardData, TruckImage };
+
+const ORANGE = "#f97316";
 
 function isSupabaseUrl(url: string) {
   return url.includes(".supabase.co/storage/v1/object/public/");
@@ -52,15 +54,14 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const novo        = isNew((truck as any).created_at);
   const destaque    = !!(truck as any).destaque;
   const abaixoFipe  = (truck as any).abaixo_fipe === true;
+  const verificado  = !!(truck as any).verificado;
 
   const marcaModelo = cardTitle;
   const ano         = truck.ano_modelo || truck.ano_fabricacao || null;
   const tracao      = (truck as any).tracao as string | null | undefined;
   const cambio      = (truck as any).cambio as string | null | undefined;
 
-  // Linha meta: "2020 · 8x2 · Automático" — sem labels
   const metaParts = [
-    ano    ? String(ano) : null,
     tracao || null,
     cambio || null,
   ].filter(Boolean) as string[];
@@ -114,12 +115,15 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
                 <TrendingDown size={12} strokeWidth={2.5} /> Abaixo da FIPE
               </span>
             )}
-            {metaParts.length > 0 && (
-              <p className="tc-preview-meta">{metaParts.join(" · ")}</p>
+            {(ano || metaParts.length > 0) && (
+              <p className="tc-preview-meta">
+                {ano && <span className="tc-preview-meta-item"><Calendar size={13} color={ORANGE} /> {ano}</span>}
+                {metaParts.map((p) => <span key={p} className="tc-preview-meta-item">{p}</span>)}
+              </p>
             )}
             {location && (
               <p className="tc-preview-loc">
-                <MapPin size={11} strokeWidth={2} /> {location}
+                <MapPin size={13} color={ORANGE} strokeWidth={2} /> {location}
               </p>
             )}
             <div className="tc-preview-actions">
@@ -161,7 +165,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           </span>
         )}
 
-        {/* Preço + localização overlay */}
         <div className="tc-overlay">
           <span className="tc-price">{formatMoney(truck.preco)}</span>
           {location && (
@@ -172,7 +175,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           )}
         </div>
 
-        {/* Badges: Destaque / Novo — SEM FIPE na foto */}
         <span className="tc-badges">
           {destaque && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
           {novo     && <span className="tc-badge tc-badge-novo">Novo</span>}
@@ -184,21 +186,41 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
         <p className="tc-name">{marcaModelo}</p>
 
-        {/* Selo FIPE — só no corpo */}
         {abaixoFipe && (
           <span className="tc-fipe-body">
             <TrendingDown size={11} strokeWidth={2.5} /> Abaixo da FIPE
           </span>
         )}
 
-        {/* Meta: Ano · Tração · Câmbio sem labels */}
-        {metaParts.length > 0 && (
+        {/* Ano com ícone Calendar laranja + tração/câmbio */}
+        {(ano || metaParts.length > 0) && (
           <p className="tc-meta">
-            <b>{metaParts[0]}</b>
-            {metaParts.slice(1).map((p) => (
-              <span key={p}> · {p}</span>
+            {ano && (
+              <span className="tc-meta-item">
+                <Calendar size={16} color={ORANGE} strokeWidth={2} aria-hidden="true" />
+                <b>{ano}</b>
+              </span>
+            )}
+            {metaParts.map((p) => (
+              <span key={p} className="tc-meta-sep">· {p}</span>
             ))}
           </p>
+        )}
+
+        {/* Localização com MapPin laranja no corpo */}
+        {location && (
+          <p className="tc-location">
+            <MapPin size={16} color={ORANGE} strokeWidth={2} aria-hidden="true" />
+            {location}
+          </p>
+        )}
+
+        {/* Verificado com ShieldCheck laranja */}
+        {verificado && (
+          <span className="tc-verificado">
+            <ShieldCheck size={16} color={ORANGE} strokeWidth={2} />
+            Verificado
+          </span>
         )}
 
         {views != null && views > 0 && (
@@ -221,26 +243,20 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       </div>
 
       <style>{`
-        /* ─── Card base ─── */
         .tc { isolation: isolate; position: relative; z-index: 0; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
         .tc:hover { z-index: 100; transform: translateY(-2px); box-shadow: var(--shadow2); }
         .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
 
-        /* ─── Badges foto — SEM FIPE ─── */
         .tc-badges { position: absolute; top: 9px; left: 9px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; z-index: 3; }
         .tc-badge { display: inline-flex; align-items: center; gap: 3px; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .03em; line-height: 1; backdrop-filter: blur(4px); }
         .tc-badge-destaque { background: rgba(234,179,8,.92); color: #7c5c00; }
         .tc-badge-novo { background: rgba(34,197,94,.9); color: #fff; }
 
-        /* ─── Selo FIPE corpo ─── */
         .tc-fipe-body { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 900; letter-spacing: .03em; width: fit-content; }
         body.public-theme-dark .tc-fipe-body { background: #14532d; color: #86efac; }
-
-        /* ─── Selo FIPE popover ─── */
         .tc-fipe-inline { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 9px; border-radius: 999px; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 900; width: fit-content; }
         body.public-theme-dark .tc-fipe-inline { background: #14532d; color: #86efac; }
 
-        /* ─── Foto ─── */
         .tc-photo { display: block; position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--soft); text-decoration: none; flex-shrink: 0; }
         .tc-photo img { transition: transform .35s ease; }
         .tc:hover .tc-photo img { transform: scale(1.04); }
@@ -249,24 +265,30 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         .tc-price { font-size: clamp(17px, 2vw, 21px); font-weight: 950; letter-spacing: -.04em; color: #fff; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
         .tc-loc { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.85); text-shadow: 0 1px 4px rgba(0,0,0,.4); white-space: nowrap; }
 
-        /* ─── Corpo ─── */
-        .tc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+        .tc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .tc-name { margin: 0; font-size: 13.5px; font-weight: 900; color: var(--text); line-height: 1.3; letter-spacing: -.03em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* Meta linha */
-        .tc-meta { margin: 0; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: -.01em; }
-        .tc-meta b { color: var(--text); font-weight: 900; }
+        /* Meta: ano + tração/câmbio */
+        .tc-meta { margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 12px; color: var(--muted); }
+        .tc-meta-item { display: inline-flex; align-items: center; gap: 4px; }
+        .tc-meta-item b { color: var(--text); font-weight: 900; }
+        .tc-meta-sep { font-weight: 700; }
+
+        /* Localização no corpo */
+        .tc-location { margin: 0; display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--muted); }
+
+        /* Verificado */
+        .tc-verificado { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #c2410c; background: #fff7ed; padding: 2px 8px; border-radius: 999px; width: fit-content; }
+        body.public-theme-dark .tc-verificado { background: #431407; color: #fb923c; }
 
         .tc-views { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: var(--muted); white-space: nowrap; }
 
-        /* ─── Botões ─── */
         .tc-actions { display: flex; gap: 7px; margin-top: auto; }
         .tc-btn { flex: 1; display: flex; align-items: center; justify-content: center; height: 36px; border-radius: 8px; background: var(--blue); color: #fff; font-size: 12px; font-weight: 900; text-decoration: none; letter-spacing: -.01em; box-shadow: 0 3px 10px rgba(24,119,242,.28); transition: background .18s, transform .18s, box-shadow .18s; }
         .tc-btn:hover { background: var(--blue2, #1d4ed8); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(24,119,242,.38); }
         .tc-btn-wa { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #25d366; color: #fff; box-shadow: 0 3px 10px rgba(37,211,102,.35); transition: background .18s, transform .18s; flex-shrink: 0; }
         .tc-btn-wa:hover { background: #20b858; transform: translateY(-1px); }
 
-        /* ─── Popover ─── */
         .tc-preview { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); width: 320px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow3); z-index: 200; overflow: visible; animation: tc-pop .18s ease; pointer-events: auto; }
         @keyframes tc-pop { from { opacity:0; transform:translateX(-50%) translateY(6px) scale(.97); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
         .tc-preview-photo { position: relative; width: 100%; height: 180px; background: var(--soft); overflow: hidden; border-radius: 18px 18px 0 0; }
@@ -274,8 +296,9 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         .tc-preview-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; }
         .tc-preview-title { margin:0; font-size:14px; font-weight:800; color:var(--text); line-height:1.3; letter-spacing:-.02em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
         .tc-preview-price { font-size:22px; font-weight:950; color:var(--blue); letter-spacing:-.04em; line-height:1; }
-        .tc-preview-meta { margin:0; font-size:12px; font-weight:700; color:var(--muted); }
-        .tc-preview-loc { margin:0; display:flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:var(--muted); }
+        .tc-preview-meta { margin:0; display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:12px; font-weight:700; color:var(--muted); }
+        .tc-preview-meta-item { display:inline-flex; align-items:center; gap:4px; }
+        .tc-preview-loc { margin:0; display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--muted); }
         .tc-preview-actions { display:flex; gap:8px; margin-top:4px; }
         .tc-preview-btn-detail { flex:1; height:38px; border-radius:10px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; text-decoration:none; transition:background .14s; }
         .tc-preview-btn-detail:hover { background:var(--blue2, #1d4ed8); }
