@@ -1,8 +1,6 @@
 import { streamText } from 'ai'
 import { google } from '@ai-sdk/google'
 
-export const runtime = 'edge'
-
 export async function POST(req: Request) {
   const { messages, dados } = await req.json()
 
@@ -18,15 +16,15 @@ Siga EXATAMENTE esta ordem, uma mensagem por vez:
 4. Pergunta: como esta a mecanica? E particular ou revenda?
 5. Pergunta: qual o valor? Aceita troca? Manda as fotos!
 6. Exiba resumo completo e pergunte: Confirma a publicacao?
-7. Se confirmar: responda so "ANUNCIO_CONFIRMADO" seguido do JSON com todos os dados
+7. Se confirmar: responda so ANUNCIO_CONFIRMADO seguido do JSON com todos os dados
 
 REGRAS:
-- Sem asteriscos, markdown ou formatacao especial
-- Tom simples e direto, como um atendente humano
-- Uma etapa por mensagem, nunca pule etapas
+- Sem asteriscos ou formatacao especial
+- Tom simples e direto
+- Uma etapa por mensagem
 - Se nao souber um campo, aceite e continue
 
-Dados coletados ate agora: ${JSON.stringify(dados ?? {})}`,
+Dados coletados: ${JSON.stringify(dados ?? {})}`,
     messages,
   })
 
