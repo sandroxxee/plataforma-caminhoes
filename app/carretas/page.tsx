@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
-import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
+import { AnunciosSidebar } from "../anuncios/AnunciosSidebar";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -14,79 +14,152 @@ export const metadata: Metadata = {
   alternates: { canonical: "/carretas" },
 };
 
-const ESTADOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
-type PageProps = { searchParams: Promise<{ estado?: string }> };
+type PageProps = { 
+  searchParams: Promise<{ 
+    estado?: string;
+    marca?: string;
+    faixa?: string;
+    q?: string;
+  }> 
+};
 
 export default async function CarretasPage({ searchParams }: PageProps) {
-  const { estado } = await searchParams;
-  const estadoFiltro = ESTADOS.includes(estado || "") ? estado! : "";
+  const { estado, marca, faixa, q: searchQ } = await searchParams;
   const supabase = await createClient();
 
-  let q = supabase
+  let query = supabase
     .from("trucks")
     .select(`id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,whatsapp,destaque,views,created_at,truck_images(image_url,principal,ordem)`)
     .eq("status", "aprovado")
     .eq("perfil", "Carretas")
-    .order("created_at", { ascending: false })
-    .limit(48);
-  if (estadoFiltro) q = q.eq("estado", estadoFiltro);
+    .order("created_at", { ascending: false });
 
-  const { data } = await q;
+  if (estado) query = query.eq("estado", estado);
+  if (marca) query = query.eq("marca", marca);
+  if (searchQ) query = query.ilike("titulo", `%${searchQ}%`);
+
+  const { data } = await query.limit(48);
   const carretas = (data || []) as TruckCardData[];
 
   return (
-    <div className="car-page">
+    <main className="market-page">
       <PublicHeader />
-      <div className="car-cta">
-        <div className="car-cta-inner">
-          <div>
-            <h1 className="car-title">Carretas à Venda</h1>
-            <p className="car-sub">Graneleiras, porta-containers, pranchas, frigoríficas e tanques. Direto pelo WhatsApp.</p>
+      
+      <div className="market-container">
+        <div className="category-layout">
+          <AnunciosSidebar 
+            q={searchQ || ""} 
+            faixaIdx={Number(faixa) || 0} 
+            marcaFiltro={marca || ""} 
+            estadoFiltro={estado || ""} 
+            hasFilters={!!(estado || marca || faixa || searchQ)}
+            total={carretas.length}
+            categoriaAtiva="carretas"
+          />
+
+          <div className="category-content">
+            <div className="category-header">
+              <div>
+                <h1 className="category-title">Carretas à Venda</h1>
+                <p className="category-sub">Explore as melhores ofertas de carretas em todo o Brasil.</p>
+              </div>
+              <Link href="/anunciar" className="category-btn">Anunciar Carreta</Link>
+            </div>
+
+            {carretas.length > 0 ? (
+              <div className="category-grid">
+                {carretas.map(item => <TruckCard key={item.id} truck={item} />)}
+              </div>
+            ) : (
+              <div className="category-empty">
+                <span>🚛</span>
+                <strong>Nenhuma carreta encontrada com esses filtros</strong>
+                <Link href="/carretas" className="category-btn-outline">Limpar Filtros</Link>
+              </div>
+            )}
           </div>
-          <Link href="/painel/anuncios/novo/carreta" className="car-anuncie">+ Anunciar carreta</Link>
         </div>
       </div>
-      <div className="car-container">
-        <CategoryBrandsBar categoria="carretas" labelSingular="Carretas" />
-        <div className="car-estados">
-          <Link href="/carretas" className={`car-est${!estadoFiltro ? " car-est--on" : ""}`}>Todos</Link>
-          {ESTADOS.map(uf => (
-            <Link key={uf} href={`/carretas?estado=${uf}`} className={`car-est${estadoFiltro===uf ? " car-est--on" : ""}`}>{uf}</Link>
-          ))}
-        </div>
-        {carretas.length > 0 ? (
-          <>
-            <p className="car-count">{carretas.length} carreta{carretas.length!==1?"s":""}</p>
-            <div className="car-grid">{carretas.map(item => <TruckCard key={item.id} truck={item} />)}</div>
-          </>
-        ) : (
-          <div className="car-empty">
-            <span>🚛</span>
-            <strong>Nenhuma carreta encontrada</strong>
-            <Link href="/carretas" className="car-anuncie" style={{marginTop:8}}>Ver todas</Link>
-          </div>
-        )}
-      </div>
+
       <SiteFooter />
-      <style>{`
-        .car-page{min-height:100vh;background:var(--bg);color:var(--text);padding-bottom:64px}
-        .car-cta{background:var(--surface);border-bottom:1px solid var(--line)}
-        .car-cta-inner{width:min(1280px,calc(100vw - 32px));margin:0 auto;padding:28px 0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
-        .car-title{margin:0 0 4px;font-size:clamp(26px,3.5vw,38px);letter-spacing:-.04em;line-height:1.05}
-        .car-sub{margin:0;color:var(--muted);font-size:14px;font-weight:600;max-width:54ch}
-        .car-anuncie{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;border-radius:12px;background:var(--blue);color:#fff;font-weight:900;font-size:14px;white-space:nowrap;text-decoration:none;flex-shrink:0;transition:background .14s}
-        .car-anuncie:hover{background:var(--blue2)}
-        .car-container{width:min(1280px,calc(100vw - 32px));margin:0 auto;padding-top:20px}
-        .car-estados{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-        .car-est{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);font-size:12px;font-weight:800;text-decoration:none;transition:border-color .12s,color .12s}
-        .car-est:hover,.car-est--on{border-color:var(--blue);color:var(--blue);background:var(--blueSoft)}
-        .car-count{margin:0 0 14px;font-size:13px;color:var(--muted);font-weight:700}
-        .car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-        .car-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:72px 24px;text-align:center;color:var(--muted);background:var(--surface);border-radius:20px;border:1px solid var(--line)}
-        .car-empty span{font-size:48px}
-        .car-empty strong{font-size:18px;color:var(--text)}
-        @media(max-width:680px){.car-cta-inner{flex-direction:column;align-items:flex-start}.car-anuncie{width:100%}.car-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+
+      <style jsx>{`
+        .category-layout {
+          display: flex;
+          gap: 32px;
+          padding: 32px 0;
+          align-items: flex-start;
+        }
+        .category-content {
+          flex: 1;
+        }
+        .category-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+          gap: 20px;
+        }
+        .category-title {
+          font-size: 32px;
+          font-weight: 950;
+          letter-spacing: -0.04em;
+          margin: 0 0 4px;
+        }
+        .category-sub {
+          color: var(--muted);
+          font-weight: 700;
+          margin: 0;
+        }
+        .category-btn {
+          background: var(--blue);
+          color: white;
+          padding: 0 24px;
+          height: 48px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          font-weight: 900;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .category-btn:hover { background: var(--blue2); transform: translateY(-2px); }
+        .category-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+        }
+        .category-empty {
+          padding: 80px 24px;
+          text-align: center;
+          background: var(--surface);
+          border-radius: 24px;
+          border: 1px solid var(--line);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+        }
+        .category-empty span { font-size: 48px; }
+        .category-empty strong { font-size: 18px; font-weight: 900; }
+        .category-btn-outline {
+          border: 1.5px solid var(--line);
+          padding: 0 24px;
+          height: 44px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          font-weight: 800;
+          text-decoration: none;
+          color: var(--text);
+        }
+        @media (max-width: 900px) {
+          .category-layout { flex-direction: column; gap: 24px; }
+          .category-header { flex-direction: column; align-items: flex-start; }
+          .category-btn { width: 100%; justify-content: center; }
+          .category-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
       `}</style>
-    </div>
+    </main>
   );
 }
