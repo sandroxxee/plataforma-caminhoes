@@ -1,6 +1,6 @@
 'use client'
 
-import { useChat } from 'ai/react'
+import { useChat } from '@ai-sdk/react'
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -23,9 +23,9 @@ const styles = `
 export default function ChatAnuncio() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const [publicado, setPublicado] = useState(false)
-  const [dados, setDados] = useState({})
+  const [dados, setDados] = useState<Record<string, unknown>>({})
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
     api: '/anunciar/chat',
     body: { dados },
     initialMessages: [
@@ -39,17 +39,19 @@ export default function ChatAnuncio() {
       if (message.content.includes('ANUNCIO_CONFIRMADO')) {
         try {
           const jsonStr = message.content.replace('ANUNCIO_CONFIRMADO', '').trim()
-          const anuncioData = JSON.parse(jsonStr)
+          const anuncioData = JSON.parse(jsonStr) as Record<string, unknown>
           setDados(anuncioData)
           const supabase = createClient()
           await supabase.from('anuncios_chat').insert([anuncioData])
           setPublicado(true)
-        } catch {
-          // JSON ainda incompleto, aguarda proxima mensagem
+        } catch (_e) {
+          // JSON ainda incompleto
         }
       }
     },
   })
+
+  const isLoading = status === 'streaming' || status === 'submitted'
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
