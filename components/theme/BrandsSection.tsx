@@ -1,16 +1,16 @@
 import Link from "next/link";
 
 const MARCAS = [
-  { nome: "Scania",        slug: "scania",        svg: "https://upload.wikimedia.org/wikipedia/commons/2/24/Scania_logo.svg" },
-  { nome: "Volvo",         slug: "volvo",         svg: "https://upload.wikimedia.org/wikipedia/commons/5/58/Volvo-PB.svg" },
-  { nome: "Mercedes-Benz", slug: "mercedes-benz", svg: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" },
-  { nome: "DAF",           slug: "daf",           svg: "https://upload.wikimedia.org/wikipedia/commons/2/21/DAF_Logo.svg" },
-  { nome: "MAN",           slug: "man",           svg: "https://upload.wikimedia.org/wikipedia/commons/8/89/MAN_Logo.svg" },
-  { nome: "Iveco",         slug: "iveco",         svg: "https://upload.wikimedia.org/wikipedia/commons/4/45/Iveco_Logo.svg" },
-  { nome: "Ford",          slug: "ford",          svg: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Ford_Motor_Company_Logo.svg" },
-  { nome: "Volkswagen",    slug: "volkswagen",    svg: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg" },
-  { nome: "Randon",        slug: "randon",        svg: null },
-  { nome: "Agrale",        slug: "agrale",        svg: null },
+  { nome: "Scania",        slug: "scania",        logo: "https://img.logo.dev/scania.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Volvo",         slug: "volvo",         logo: "https://img.logo.dev/volvo.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Mercedes-Benz", slug: "mercedes-benz", logo: "https://img.logo.dev/mercedes-benz.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "DAF",           slug: "daf",           logo: "https://img.logo.dev/daf.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "MAN",           slug: "man",           logo: "https://img.logo.dev/man.eu?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Iveco",         slug: "iveco",         logo: "https://img.logo.dev/iveco.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Ford",          slug: "ford",          logo: "https://img.logo.dev/ford.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Volkswagen",    slug: "volkswagen",    logo: "https://img.logo.dev/volkswagen.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Randon",        slug: "randon",        logo: null },
+  { nome: "Agrale",        slug: "agrale",        logo: null },
 ];
 
 export function BrandsSection() {
@@ -26,19 +26,25 @@ export function BrandsSection() {
             key={m.slug}
             href={`/caminhoes/marca/${m.slug}`}
             className="brand-chip"
-            title={`Caminh\u00f5es ${m.nome} \u00e0 venda`}
+            title={`Caminhões ${m.nome} à venda`}
           >
-            {m.svg ? (
+            {m.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={m.svg}
+                src={m.logo}
                 alt={m.nome}
                 className="brand-chip-logo"
                 width={56}
                 height={32}
                 loading="lazy"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = "none";
+                  const span = e.currentTarget.nextSibling as HTMLElement;
+                  if (span) span.style.display = "flex";
+                }}
               />
-            ) : (
+            ) : null}
+            {(!m.logo) && (
               <span className="brand-chip-initial">{m.nome.slice(0, 2).toUpperCase()}</span>
             )}
             <span className="brand-chip-name">{m.nome}</span>
