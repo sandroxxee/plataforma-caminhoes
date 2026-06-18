@@ -2,9 +2,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { MapPin, Camera, Heart, Star, BadgeCheck, Clock, Eye } from "lucide-react";
+import { MapPin, Camera, Heart, Star, ShieldCheck, Clock, Eye, Calendar } from "lucide-react";
 import type { TruckCardData, TruckImage } from "@/lib/truck-utils";
 import { formatMoney, getCardTitle, getLocation, getTruckUrl } from "@/lib/truck-utils";
+
+const ORANGE = "#f97316";
 
 type Props = {
   truck: TruckCardData & {
@@ -32,7 +34,7 @@ export function TruckCard({ truck }: Props) {
 
   const phone = (truck.whatsapp || "").replace(/\D/g, "");
   const waText = encodeURIComponent(
-    `Olá, tenho interesse no caminhão ${title}. Pode me passar mais informações?`
+    `Ol\u00e1, tenho interesse no caminh\u00e3o ${title}. Pode me passar mais informa\u00e7\u00f5es?`
   );
   const waLink = phone ? `https://wa.me/${phone}?text=${waText}` : "";
 
@@ -42,6 +44,9 @@ export function TruckCard({ truck }: Props) {
   const tempoResposta = truck.tempo_resposta ?? null;
   const visualizacoes = truck.visualizacoes ?? null;
   const destaque = truck.destaque ?? false;
+
+  const ano = truck.ano_modelo || truck.ano_fabricacao || null;
+  const metaExtra = [truck.carroceria || truck.tracao].filter(Boolean).join(" · ");
 
   return (
     <article
@@ -86,7 +91,7 @@ export function TruckCard({ truck }: Props) {
 
         {/* Ribbon destaque */}
         {destaque && (
-          <span className="tc-ribbon" aria-label="Anúncio em destaque">⭐ Destaque</span>
+          <span className="tc-ribbon" aria-label="An\u00FAncio em destaque">⭐ Destaque</span>
         )}
 
         {/* Contador de fotos */}
@@ -97,16 +102,16 @@ export function TruckCard({ truck }: Props) {
           </span>
         )}
 
-        {/* Visualizações */}
+        {/* Visualiza\u00e7\u00f5es */}
         {visualizacoes !== null && visualizacoes > 0 && (
-          <span className="tc-views-badge" aria-label={`${visualizacoes} visualizações`}>
+          <span className="tc-views-badge" aria-label={`${visualizacoes} visualiza\u00e7\u00f5es`}>
             <Eye size={10} aria-hidden="true" />
             {visualizacoes}
           </span>
         )}
       </Link>
 
-      {/* Botão favoritar */}
+      {/* Bot\u00e3o favoritar */}
       <button
         className={`tc-fav ${favorito ? "tc-fav--ativo" : ""}`}
         aria-label={favorito ? "Remover dos favoritos" : "Salvar nos favoritos"}
@@ -117,9 +122,9 @@ export function TruckCard({ truck }: Props) {
 
       {/* Body */}
       <div className="tc-body">
-        {/* Avaliações */}
+        {/* Avalia\u00e7\u00f5es */}
         {numAvaliacoes > 0 && (
-          <div className="tc-rating" aria-label={`Avaliação: ${avaliacao} de 5`}>
+          <div className="tc-rating" aria-label={`Avalia\u00e7\u00e3o: ${avaliacao} de 5`}>
             {[1, 2, 3, 4, 5].map((s) => (
               <Star
                 key={s}
@@ -135,17 +140,32 @@ export function TruckCard({ truck }: Props) {
 
         <h2 className="tc-name">{title}</h2>
 
+        {/* Meta: Ano com \u00edcone Calendar laranja */}
         <p className="tc-meta">
-          {[truck.ano_modelo || truck.ano_fabricacao, truck.carroceria || truck.tracao]
-            .filter(Boolean)
-            .join(" · ")}
+          {ano && (
+            <span className="tc-meta-item">
+              <Calendar size={16} color={ORANGE} aria-hidden="true" />
+              {ano}
+            </span>
+          )}
+          {metaExtra && (
+            <span className="tc-meta-item tc-meta-extra">{metaExtra}</span>
+          )}
         </p>
+
+        {/* Localiza\u00e7\u00e3o com \u00edcone MapPin laranja no body */}
+        {location && (
+          <p className="tc-location">
+            <MapPin size={16} color={ORANGE} aria-hidden="true" />
+            {location}
+          </p>
+        )}
 
         {/* Trust indicators */}
         <div className="tc-trust">
           {verificado && (
             <span className="tc-badge tc-badge--verificado">
-              <BadgeCheck size={12} />
+              <ShieldCheck size={16} color={ORANGE} />
               Verificado
             </span>
           )}
@@ -157,7 +177,7 @@ export function TruckCard({ truck }: Props) {
           )}
         </div>
 
-        {/* Ações */}
+        {/* A\u00e7\u00f5es */}
         <div className="tc-actions">
           <Link href={truckUrl} className="tc-btn">Ver detalhes</Link>
           {waLink && (
@@ -265,7 +285,7 @@ export function TruckCard({ truck }: Props) {
         /* Body */
         .tc-body { padding: 10px 12px 12px; }
 
-        /* Avaliações */
+        /* Avalia\u00e7\u00f5es */
         .tc-rating {
           display: flex; align-items: center; gap: 2px;
           margin-bottom: 4px;
@@ -284,7 +304,21 @@ export function TruckCard({ truck }: Props) {
           color: var(--fg, #111);
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
+
+        /* Meta: ano + extra */
         .tc-meta {
+          display: flex; align-items: center; flex-wrap: wrap;
+          gap: 6px; margin: 0 0 5px;
+          font-size: 12px; color: var(--muted, #6b7280);
+        }
+        .tc-meta-item {
+          display: inline-flex; align-items: center; gap: 4px;
+        }
+        .tc-meta-extra::before { content: "\u00b7"; margin-right: 2px; }
+
+        /* Localiza\u00e7\u00e3o no body */
+        .tc-location {
+          display: flex; align-items: center; gap: 5px;
           font-size: 12px; color: var(--muted, #6b7280);
           margin: 0 0 8px;
         }
@@ -294,18 +328,18 @@ export function TruckCard({ truck }: Props) {
           display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;
         }
         .tc-badge {
-          display: inline-flex; align-items: center; gap: 3px;
+          display: inline-flex; align-items: center; gap: 4px;
           font-size: 10px; font-weight: 600;
           padding: 2px 7px; border-radius: 999px;
         }
         .tc-badge--verificado {
-          background: #d1fae5; color: #065f46;
+          background: #fff7ed; color: #c2410c;
         }
         .tc-badge--resposta {
           background: #e0f2fe; color: #0369a1;
         }
 
-        /* Ações */
+        /* A\u00e7\u00f5es */
         .tc-actions {
           display: flex; gap: 7px;
         }
@@ -333,7 +367,7 @@ export function TruckCard({ truck }: Props) {
         @media (prefers-color-scheme: dark) {
           .tc { background: var(--card, #1e293b); }
           .tc-fav { background: rgba(30,41,59,.9); color: #64748b; }
-          .tc-badge--verificado { background: #064e3b; color: #6ee7b7; }
+          .tc-badge--verificado { background: #431407; color: #fb923c; }
           .tc-badge--resposta { background: #0c4a6e; color: #7dd3fc; }
         }
       `}</style>
