@@ -34,7 +34,7 @@ function fmtViews(n: number) {
 }
 
 const WaIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
     <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.532 5.856L.054 23.454a.5.5 0 0 0 .622.579l5.7-1.493A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.368l-.36-.214-3.73.978.996-3.642-.235-.374A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
   </svg>
@@ -44,18 +44,21 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const title      = getTitle(truck);
   const cardTitle  = getCardTitle(truck);
   const image      = getTruckImage(truck);
-  const year       = truck.ano_modelo || truck.ano_fabricacao || null;
-  const type       = truck.carroceria || truck.tracao || null;
   const location   = getLocation(truck);
   const truckUrl   = getTruckUrl(truck);
   const waLink     = getWhatsappLink(truck);
-  const meta       = [year, type].filter(Boolean).join(" \u2022 ");
   const photoCount = (truck.truck_images || []).length;
   const views      = (truck as any).views as number | null | undefined;
 
   const novo        = isNew((truck as any).created_at);
   const destaque    = !!(truck as any).destaque;
   const abaixoFipe  = (truck as any).abaixo_fipe === true;
+
+  // Campos individuais para exibição estruturada
+  const marcaModelo = cardTitle; // ex: "Volkswagen 19-360"
+  const ano         = truck.ano_modelo || truck.ano_fabricacao || null;
+  const tracao      = (truck as any).tracao as string | null | undefined;
+  const carroceria  = truck.carroceria || null;
 
   const [preview, setPreview] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,9 +72,10 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   }
 
   const specs = [
-    year     && { label: "Ano",   value: String(year) },
-    type     && { label: "Tipo",  value: type },
-    location && { label: "Local", value: location },
+    ano       && { label: "Ano",      value: String(ano) },
+    tracao    && { label: "Tração",   value: tracao },
+    carroceria && { label: "Carroceria", value: carroceria },
+    location  && { label: "Local",    value: location },
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (
@@ -82,8 +86,9 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
       onFocus={openPreview}
       onBlur={closePreview}
     >
+      {/* ── Popover preview ── */}
       {preview && (
-        <div className="tc-preview" role="tooltip" aria-label={`Pr\u00e9-visualiza\u00e7\u00e3o: ${title}`}>
+        <div className="tc-preview" role="tooltip" aria-label={`Pré-visualização: ${title}`}>
           <div className="tc-preview-photo">
             {image ? (
               isSupabaseUrl(image) ? (
@@ -137,6 +142,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         </div>
       )}
 
+      {/* ── Foto (SEM botão WA) ── */}
       <Link className="tc-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
         {image ? (
           isSupabaseUrl(image) ? (
@@ -158,6 +164,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           </span>
         )}
 
+        {/* Preço + localização no overlay */}
         <div className="tc-overlay">
           <span className="tc-price">{formatMoney(truck.preco)}</span>
           {location && (
@@ -168,6 +175,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           )}
         </div>
 
+        {/* Badge fotos */}
         {photoCount > 0 && (
           <span className="tc-photo-badge" aria-label={`${photoCount} fotos`}>
             <Camera size={11} strokeWidth={2.5} aria-hidden="true" />
@@ -175,6 +183,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           </span>
         )}
 
+        {/* Badges Destaque / Novo / FIPE */}
         <span className="tc-badges">
           {destaque   && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
           {novo       && <span className="tc-badge tc-badge-novo">Novo</span>}
@@ -187,21 +196,33 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         </span>
       </Link>
 
-      {waLink && (
-        <a href={waLink} target="_blank" rel="noopener noreferrer" className="tc-wa" aria-label="WhatsApp">
-          <WaIcon />
-        </a>
-      )}
-
+      {/* ── Corpo do card ── */}
       <div className="tc-body">
-        <p className="tc-name">{cardTitle}</p>
+
+        {/* Marca + Modelo */}
+        <p className="tc-name">{marcaModelo}</p>
+
+        {/* Selo FIPE abaixo do nome */}
         {abaixoFipe && (
           <span className="tc-fipe-body">
             <TrendingDown size={11} strokeWidth={2.5} /> Abaixo da FIPE
           </span>
         )}
-        <div className="tc-meta-row">
-          {meta && <p className="tc-meta">{meta}</p>}
+
+        {/* Linha: Ano  |  Tração */}
+        <div className="tc-info-row">
+          {ano && (
+            <span className="tc-info-pill">
+              <span className="tc-info-label">Ano</span>
+              <span className="tc-info-val">{ano}</span>
+            </span>
+          )}
+          {tracao && (
+            <span className="tc-info-pill">
+              <span className="tc-info-label">Tração</span>
+              <span className="tc-info-val">{tracao}</span>
+            </span>
+          )}
           {views != null && views > 0 && (
             <span className="tc-views">
               <Eye size={11} strokeWidth={2.5} aria-hidden="true" />
@@ -209,7 +230,18 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
             </span>
           )}
         </div>
-        <Link className="tc-btn" href={truckUrl}>Ver detalhes</Link>
+
+        {/* Botões: Ver detalhes + WhatsApp */}
+        <div className="tc-actions">
+          <Link className="tc-btn" href={truckUrl}>Ver detalhes</Link>
+          {waLink && (
+            <a href={waLink} target="_blank" rel="noopener noreferrer"
+              className="tc-btn-wa" aria-label="Contato via WhatsApp">
+              <WaIcon />
+            </a>
+          )}
+        </div>
+
       </div>
 
       <style>{`
@@ -218,217 +250,71 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         .tc:hover { z-index: 100; transform: translateY(-2px); box-shadow: var(--shadow2); }
         .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
 
-        /* ─── Badges (Destaque / Novo / FIPE) ─── */
-        .tc-badges {
-          position: absolute; top: 9px; left: 9px;
-          display: flex; flex-direction: column; gap: 4px;
-          pointer-events: none; z-index: 3;
-        }
-        .tc-badge {
-          display: inline-flex; align-items: center; gap: 3px;
-          height: 22px; padding: 0 8px; border-radius: 999px;
-          font-size: 10px; font-weight: 900;
-          letter-spacing: .03em; line-height: 1;
-          backdrop-filter: blur(4px);
-        }
+        /* ─── Badges (Destaque / Novo / FIPE) na foto ─── */
+        .tc-badges { position: absolute; top: 9px; left: 9px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; z-index: 3; }
+        .tc-badge { display: inline-flex; align-items: center; gap: 3px; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .03em; line-height: 1; backdrop-filter: blur(4px); }
         .tc-badge-destaque { background: rgba(234,179,8,.92); color: #7c5c00; }
         .tc-badge-novo { background: rgba(34,197,94,.9); color: #fff; }
         .tc-badge-fipe { background: rgba(34,197,94,.92); color: #052e16; }
 
-        /* ─── Selo FIPE no corpo do card ─── */
-        .tc-fipe-body {
-          display: inline-flex; align-items: center; gap: 4px;
-          height: 20px; padding: 0 8px; border-radius: 999px;
-          background: #dcfce7; color: #15803d;
-          font-size: 10px; font-weight: 900; letter-spacing: .03em;
-          width: fit-content;
-        }
+        /* ─── Selo FIPE no corpo ─── */
+        .tc-fipe-body { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 900; letter-spacing: .03em; width: fit-content; }
         body.public-theme-dark .tc-fipe-body { background: #14532d; color: #86efac; }
 
-        /* ─── Selo FIPE no popover preview ─── */
-        .tc-fipe-inline {
-          display: inline-flex; align-items: center; gap: 4px;
-          height: 22px; padding: 0 9px; border-radius: 999px;
-          background: #dcfce7; color: #15803d;
-          font-size: 11px; font-weight: 900;
-          margin-bottom: 10px; width: fit-content;
-        }
+        /* ─── Selo FIPE no popover ─── */
+        .tc-fipe-inline { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 9px; border-radius: 999px; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 900; margin-bottom: 10px; width: fit-content; }
         body.public-theme-dark .tc-fipe-inline { background: #14532d; color: #86efac; }
 
-        /* ─── Foto + overlay ─── */
-        .tc-photo {
-          display: block; position: relative;
-          width: 100%; aspect-ratio: 16/9; overflow: hidden;
-          background: var(--soft); text-decoration: none; flex-shrink: 0;
-        }
+        /* ─── Foto ─── */
+        .tc-photo { display: block; position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--soft); text-decoration: none; flex-shrink: 0; }
         .tc-photo img { transition: transform .35s ease; }
         .tc:hover .tc-photo img { transform: scale(1.04); }
-        .tc-no-photo {
-          width: 100%; height: 100%;
-          display: flex; align-items: center; justify-content: center;
-          color: var(--muted); opacity: .35;
-        }
-        .tc-overlay {
-          position: absolute; inset: auto 0 0 0;
-          background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.3) 60%, transparent 100%);
-          padding: 28px 10px 10px;
-          display: flex; align-items: flex-end; justify-content: space-between; gap: 6px;
-          z-index: 2;
-        }
+        .tc-no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); opacity: .35; }
+        .tc-overlay { position: absolute; inset: auto 0 0 0; background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.3) 60%, transparent 100%); padding: 28px 10px 10px; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; z-index: 2; }
+        .tc-price { font-size: clamp(17px, 2vw, 21px); font-weight: 950; letter-spacing: -.04em; color: #fff; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
+        .tc-loc { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.85); text-shadow: 0 1px 4px rgba(0,0,0,.4); white-space: nowrap; }
+        .tc-photo-badge { position: absolute; bottom: 9px; right: 9px; z-index: 3; display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 800; backdrop-filter: blur(4px); }
 
-        /* ─── Preço ─── */
-        .tc-price {
-          font-size: clamp(17px, 2vw, 21px);
-          font-weight: 950;
-          letter-spacing: -.04em;
-          color: #fff;
-          line-height: 1;
-          text-shadow: 0 2px 8px rgba(0,0,0,.45);
-        }
-        .tc-loc {
-          display: inline-flex; align-items: center; gap: 3px;
-          font-size: 11px; font-weight: 700; color: rgba(255,255,255,.85);
-          text-shadow: 0 1px 4px rgba(0,0,0,.4); white-space: nowrap;
-        }
+        /* ─── Corpo ─── */
+        .tc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
 
-        /* ─── Badge de fotos ─── */
-        .tc-photo-badge {
-          position: absolute; bottom: 9px; right: 9px; z-index: 3;
-          display: inline-flex; align-items: center; gap: 4px;
-          height: 22px; padding: 0 8px; border-radius: 999px;
-          background: rgba(0,0,0,.55); color: #fff;
-          font-size: 11px; font-weight: 800; backdrop-filter: blur(4px);
-        }
+        /* Nome (Marca + Modelo) */
+        .tc-name { margin: 0; font-size: 13.5px; font-weight: 900; color: var(--text); line-height: 1.3; letter-spacing: -.03em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* ─── Botão WhatsApp ─── */
-        .tc-wa {
-          position: absolute; top: 9px; right: 9px; z-index: 4;
-          display: inline-flex; align-items: center; justify-content: center;
-          width: 36px; height: 36px; border-radius: 999px;
-          background: #25d366;
-          box-shadow: 0 3px 10px rgba(37,211,102,.45);
-          transition: background .18s, transform .18s, box-shadow .18s;
-          color: #fff;
-        }
-        .tc-wa:hover {
-          background: #20b858;
-          transform: scale(1.1);
-          box-shadow: 0 5px 16px rgba(37,211,102,.55);
-        }
+        /* ─── Linha Ano | Tração ─── */
+        .tc-info-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .tc-info-pill { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 6px; background: var(--soft); border: 1px solid var(--line); }
+        .tc-info-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+        .tc-info-val { font-size: 11px; font-weight: 900; color: var(--text); }
+        .tc-views { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: var(--muted); white-space: nowrap; margin-left: auto; }
 
-        /* ─── Corpo do card ─── */
-        .tc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .tc-name {
-          margin: 0; font-size: 13px; font-weight: 800; color: var(--text);
-          line-height: 1.35; letter-spacing: -.02em;
-          display: -webkit-box; -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical; overflow: hidden;
-        }
+        /* ─── Botões ─── */
+        .tc-actions { display: flex; gap: 7px; margin-top: auto; }
+        .tc-btn { flex: 1; display: flex; align-items: center; justify-content: center; height: 36px; border-radius: 8px; background: var(--blue); color: #fff; font-size: 12px; font-weight: 900; text-decoration: none; letter-spacing: -.01em; box-shadow: 0 3px 10px rgba(24,119,242,.28); transition: background .18s, transform .18s, box-shadow .18s; }
+        .tc-btn:hover { background: var(--blue2, #1d4ed8); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(24,119,242,.38); }
+        .tc-btn-wa { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #25d366; color: #fff; box-shadow: 0 3px 10px rgba(37,211,102,.35); transition: background .18s, transform .18s; flex-shrink: 0; }
+        .tc-btn-wa:hover { background: #20b858; transform: translateY(-1px); }
 
-        /* ─── Views + meta ─── */
-        .tc-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-        .tc-meta { margin: 0; font-size: 11px; font-weight: 700; color: var(--muted); }
-        .tc-views {
-          display: inline-flex; align-items: center; gap: 3px;
-          font-size: 11px; font-weight: 800; color: var(--muted);
-          white-space: nowrap; flex-shrink: 0;
-        }
-
-        /* ─── Botão "Ver detalhes" ─── */
-        .tc-btn {
-          display: flex; align-items: center; justify-content: center;
-          height: 36px; border-radius: 8px;
-          background: var(--blue); color: #fff;
-          font-size: 12px; font-weight: 900;
-          text-decoration: none; letter-spacing: -.01em;
-          box-shadow: 0 3px 10px rgba(24,119,242,.28);
-          transition: background .18s, transform .18s, box-shadow .18s;
-          margin-top: auto;
-        }
-        .tc-btn:hover {
-          background: var(--blue2, #1d4ed8);
-          transform: translateY(-1px);
-          box-shadow: 0 5px 16px rgba(24,119,242,.38);
-        }
-
-        /* ─── Popover preview ─── */
-        .tc-preview {
-          position: absolute; bottom: calc(100% + 12px);
-          left: 50%; transform: translateX(-50%);
-          width: 320px; background: var(--surface);
-          border: 1px solid var(--line); border-radius: 18px;
-          box-shadow: var(--shadow3); z-index: 200;
-          overflow: visible; animation: tc-pop .18s ease;
-          pointer-events: auto;
-        }
-        @keyframes tc-pop {
-          from { opacity:0; transform:translateX(-50%) translateY(6px) scale(.97); }
-          to   { opacity:1; transform:translateX(-50%) translateY(0)   scale(1); }
-        }
-        .tc-preview-photo {
-          position: relative; width: 100%; height: 180px;
-          background: var(--soft); overflow: hidden; border-radius: 18px 18px 0 0;
-        }
-        .tc-preview-no-photo {
-          width:100%; height:100%;
-          display:flex; align-items:center; justify-content:center;
-          color:var(--muted); opacity:.4;
-        }
-        .tc-preview-count {
-          position:absolute; bottom:8px; left:10px;
-          display:inline-flex; align-items:center; gap:4px;
-          height:22px; padding:0 9px; border-radius:999px;
-          background:rgba(0,0,0,.55); color:#fff;
-          font-size:11px; font-weight:800; backdrop-filter:blur(4px);
-        }
+        /* ─── Popover ─── */
+        .tc-preview { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); width: 320px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow3); z-index: 200; overflow: visible; animation: tc-pop .18s ease; pointer-events: auto; }
+        @keyframes tc-pop { from { opacity:0; transform:translateX(-50%) translateY(6px) scale(.97); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
+        .tc-preview-photo { position: relative; width: 100%; height: 180px; background: var(--soft); overflow: hidden; border-radius: 18px 18px 0 0; }
+        .tc-preview-no-photo { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--muted); opacity:.4; }
+        .tc-preview-count { position:absolute; bottom:8px; left:10px; display:inline-flex; align-items:center; gap:4px; height:22px; padding:0 9px; border-radius:999px; background:rgba(0,0,0,.55); color:#fff; font-size:11px; font-weight:800; backdrop-filter:blur(4px); }
         .tc-preview-body { padding: 14px 16px 16px; }
-        .tc-preview-title {
-          margin:0 0 4px; font-size:14px; font-weight:800; color:var(--text);
-          line-height:1.3; letter-spacing:-.02em;
-          display:-webkit-box; -webkit-line-clamp:2;
-          -webkit-box-orient:vertical; overflow:hidden;
-        }
-        .tc-preview-price {
-          display:block; font-size:22px; font-weight:950;
-          color:var(--blue); letter-spacing:-.04em;
-          line-height:1; margin-bottom:8px;
-        }
+        .tc-preview-title { margin:0 0 4px; font-size:14px; font-weight:800; color:var(--text); line-height:1.3; letter-spacing:-.02em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .tc-preview-price { display:block; font-size:22px; font-weight:950; color:var(--blue); letter-spacing:-.04em; line-height:1; margin-bottom:8px; }
         .tc-preview-specs { display:grid; gap:5px; margin-bottom:14px; }
-        .tc-preview-spec {
-          display:flex; justify-content:space-between; align-items:center; gap:8px;
-          font-size:12px; padding:6px 10px;
-          background:var(--soft); border-radius:8px;
-        }
-        .tc-preview-spec span   { color:var(--muted); font-weight:700; }
+        .tc-preview-spec { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:12px; padding:6px 10px; background:var(--soft); border-radius:8px; }
+        .tc-preview-spec span { color:var(--muted); font-weight:700; }
         .tc-preview-spec strong { font-weight:900; color:var(--text); }
         .tc-preview-actions { display:flex; gap:8px; }
-        .tc-preview-btn-detail {
-          flex:1; height:38px; border-radius:10px;
-          background:var(--blue); color:#fff;
-          display:flex; align-items:center; justify-content:center;
-          font-size:13px; font-weight:800;
-          text-decoration:none; transition:background .14s;
-        }
+        .tc-preview-btn-detail { flex:1; height:38px; border-radius:10px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; text-decoration:none; transition:background .14s; }
         .tc-preview-btn-detail:hover { background:var(--blue2, #1d4ed8); }
-        .tc-preview-btn-wa {
-          display:inline-flex; align-items:center; gap:6px;
-          height:38px; padding:0 13px; border-radius:10px;
-          background:rgba(37,211,102,.12);
-          border:1.5px solid rgba(37,211,102,.3);
-          color:#16a34a; font-size:13px; font-weight:800;
-          text-decoration:none; white-space:nowrap;
-          transition:background .14s; flex-shrink:0;
-        }
+        .tc-preview-btn-wa { display:inline-flex; align-items:center; gap:6px; height:38px; padding:0 13px; border-radius:10px; background:rgba(37,211,102,.12); border:1.5px solid rgba(37,211,102,.3); color:#16a34a; font-size:13px; font-weight:800; text-decoration:none; white-space:nowrap; transition:background .14s; flex-shrink:0; }
         .tc-preview-btn-wa:hover { background:rgba(37,211,102,.22); }
         body.public-theme-dark .tc-preview-btn-wa { color:#4ade80; }
-        .tc-preview-arrow {
-          position:absolute; bottom:-7px; left:50%;
-          transform:translateX(-50%) rotate(45deg);
-          width:14px; height:14px;
-          background:var(--surface);
-          border-right:1px solid var(--line);
-          border-bottom:1px solid var(--line);
-        }
+        .tc-preview-arrow { position:absolute; bottom:-7px; left:50%; transform:translateX(-50%) rotate(45deg); width:14px; height:14px; background:var(--surface); border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
         @media (max-width:900px) { .tc-preview { display:none; } }
       `}</style>
     </article>
