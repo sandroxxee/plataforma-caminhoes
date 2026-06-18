@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 
@@ -24,12 +24,34 @@ export function TruckGallery({ title, images }: Props) {
     .filter((img) => img.image_url)
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
-  const principal =
-    validImages.find((img) => img.principal)?.image_url ||
-    validImages[0]?.image_url ||
-    "";
+  const principalIndex = validImages.findIndex((img) => img.principal) ?? 0;
+  const startIndex = principalIndex >= 0 ? principalIndex : 0;
 
-  const [selected, setSelected] = useState(principal);
+  const [currentIndex, setCurrentIndex] = useState(startIndex);
+  const [selected, setSelected] = useState(
+    validImages[startIndex]?.image_url || ""
+  );
+
+  const goToIndex = useCallback(
+    (index: number) => {
+      setCurrentIndex(index);
+      setSelected(validImages[index]?.image_url || "");
+    },
+    [validImages]
+  );
+
+  // Autoplay: troca a foto a cada 5 segundos
+  useEffect(() => {
+    if (validImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % validImages.length;
+        setSelected(validImages[next]?.image_url || "");
+        return next;
+      });
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [validImages.length]);
 
   return (
     <div style={styles.gallery}>
@@ -45,7 +67,6 @@ export function TruckGallery({ title, images }: Props) {
               style={{ objectFit: "contain", objectPosition: "center", padding: 10 }}
             />
           ) : (
-            // imagem não-Supabase: fetchpriority high para ser tratada como LCP
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={selected}
@@ -63,14 +84,14 @@ export function TruckGallery({ title, images }: Props) {
       {validImages.length > 1 && (
         <div style={styles.thumbGrid}>
           {validImages.map((image, index) => {
-            const active = image.image_url === selected;
+            const active = index === currentIndex;
             const url = image.image_url || "";
 
             return (
               <button
                 key={`${url}-${index}`}
                 type="button"
-                onClick={() => setSelected(url)}
+                onClick={() => goToIndex(index)}
                 style={{
                   ...styles.thumbButton,
                   border: active
