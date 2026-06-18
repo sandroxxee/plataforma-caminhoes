@@ -18,10 +18,10 @@ const styles = `
 .chat-btn { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:12px 20px; cursor:pointer; font-size:1rem; }
 .chat-btn:disabled { opacity:.5; cursor:not-allowed; }
 .chat-success { text-align:center; padding:32px; color:#4ade80; font-size:1.1rem; font-weight:700; }
-.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; }
-.chat-inicio { display:flex; flex-direction:column; align-items:center; gap:16px; padding:40px 0; }
-.chat-inicio p { color:#94a3b8; text-align:center; font-size:1rem; }
-.btn-iniciar { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:14px 28px; cursor:pointer; font-size:1rem; }
+.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; align-self:flex-start; }
+.chat-inicio { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; flex:1; padding:40px 0; }
+.chat-inicio p { color:#94a3b8; text-align:center; }
+.btn-iniciar { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:16px 32px; cursor:pointer; font-size:1.1rem; }
 `
 
 export default function ChatAnuncio() {
@@ -39,18 +39,16 @@ export default function ChatAnuncio() {
           const supabase = createClient()
           await supabase.from('anuncios_chat').insert([anuncioData])
           setPublicado(true)
-        } catch (_e) {
-          // aguarda
-        }
+        } catch (_e) {}
       }
     },
   })
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
-  function iniciarChat() {
+  async function iniciarConversa() {
     setIniciado(true)
-    append({ role: 'user', content: 'iniciar' })
+    await append({ role: 'user', content: 'iniciar' })
   }
 
   useEffect(() => {
@@ -66,14 +64,13 @@ export default function ChatAnuncio() {
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="chat-box">
         <div className="chat-header">🚛 Criar Anuncio</div>
-
         {publicado ? (
           <div className="chat-success">Anuncio publicado! Obrigado, ate logo!</div>
         ) : !iniciado ? (
           <div className="chat-inicio">
-            <p>Clique abaixo para comecar a criar seu anuncio de caminhao com ajuda da IA.</p>
-            <button className="btn-iniciar" onClick={iniciarChat}>
-              Iniciar atendimento
+            <p>Nosso assistente vai te ajudar a criar seu anuncio em poucos minutos!</p>
+            <button className="btn-iniciar" onClick={iniciarConversa}>
+              Criar Anuncio Agora
             </button>
           </div>
         ) : (
