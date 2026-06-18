@@ -1,0 +1,54 @@
+"use client";
+
+import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
+
+const STORAGE_KEY = "public-theme";
+type PublicTheme = "light" | "dark";
+
+function applyPublicTheme(theme: PublicTheme) {
+  document.documentElement.setAttribute("data-public-theme", theme);
+  document.body.classList.toggle("public-theme-dark", theme === "dark");
+  document.body.classList.toggle("public-theme-light", theme === "light");
+}
+
+function clearPublicThemeClasses() {
+  document.body.classList.remove("public-theme-dark", "public-theme-light");
+}
+
+export function ThemeTogglePublic() {
+  const [theme, setTheme] = useState<PublicTheme>("light");
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem(STORAGE_KEY) as PublicTheme | null;
+    const initialTheme: PublicTheme = savedTheme === "dark" ? "dark" : "light";
+
+    setTheme(initialTheme);
+    applyPublicTheme(initialTheme);
+
+    return clearPublicThemeClasses;
+  }, []);
+
+  function toggleTheme() {
+    const nextTheme: PublicTheme = theme === "dark" ? "light" : "dark";
+
+    setTheme(nextTheme);
+    applyPublicTheme(nextTheme);
+    window.localStorage.setItem(STORAGE_KEY, nextTheme);
+  }
+
+  const isDark = theme === "dark";
+
+  return (
+    <button
+      type="button"
+      className="public-theme-toggle"
+      aria-label={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
+      aria-pressed={isDark}
+      title={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
+      onClick={toggleTheme}
+    >
+      {isDark ? <Sun size={15} aria-hidden="true" /> : <Moon size={15} aria-hidden="true" />}
+    </button>
+  );
+}

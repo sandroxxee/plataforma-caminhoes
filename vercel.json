@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/disparar-alertas",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

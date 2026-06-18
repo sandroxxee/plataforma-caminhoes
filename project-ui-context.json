@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-06-16T07:06:07.225Z",
+  "root": "C:\\Users\\sandr\\plataforma-caminhoes",
+  "files": [
+    {
+      "name": "header",
+      "file": "components/PublicHeaderClient.tsx",
+      "exists": true
+    },
+    {
+      "name": "searchBar",
+      "file": "components/SearchBar.tsx",
+      "exists": true
+    },
+    {
+      "name": "truckCard",
+      "file": "components/TruckCard.tsx",
+      "exists": true
+    },
+    {
+      "name": "siteFooter",
+      "file": "components/SiteFooter.tsx",
+      "exists": true
+    },
+    {
+      "name": "hero",
+      "file": "components/theme/HeroMarketplace.tsx",
+      "exists": true
+    },
+    {
+      "name": "featuredAds",
+      "file": "components/theme/FeaturedAds.tsx",
+      "exists": true
+    },
+    {
+      "name": "anunciosPage",
+      "file": "app/anuncios/page.tsx",
+      "exists": true
+    },
+    {
+      "name": "homePage",
+      "file": "app/page.tsx",
+      "exists": true
+    },
+    {
+      "name": "globals",
+      "file": "app/globals.css",
+      "exists": true
+    }
+  ],
+  "features": [
+    "Toggle de tema claro/escuro no header",
+    "Menu principal com itens de navegação e estado ativo",
+    "CTA destacado \"Anunciar grátis\" no header",
+    "Menu mobile hamburger para telas pequenas",
+    "Dropdown de buscas recentes",
+    "Sugestões de termos populares",
+    "Card exibe preço em destaque",
+    "Card mostra localização do anúncio",
+    "Botão de contato WhatsApp diretamente no card",
+    "Badge de contagem de fotos no card",
+    "Overlay de preço sobre imagem do anúncio",
+    "Footer com seção de categorias",
+    "Footer com links para marcas",
+    "Footer com link para anunciar",
+    "Footer com contatos e suporte",
+    "Hero de homepage com imagem destacada",
+    "Hero com CTA primário para ver anúncios",
+    "Hero com CTA secundário para anunciar",
+    "Página de anúncios com sidebar de filtros",
+    "Paginação/Load More na página de anúncios",
+    "Detecção de filtros ativos para a listagem"
+  ],
+  "themeNotes": [
+    "Paleta base com variável --blue para CTA e destaques",
+    "Uso consistente de --surface para fundos de cards e seções",
+    "Sombreamento suave em elementos de destaque",
+    "Cards com cantos arredondados e visual mais moderno",
+    "Elementos com sombra leve para profundidade"
+  ],
+  "missingFeatures": [
+    "Ausência de sistema de avaliações/reviews para vendedores ou anúncios",
+    "Não há marcação de vendedor verificado nos cards",
+    "Não há botão de favoritos/salvar anúncio",
+    "Não há comparação lado a lado de anúncios",
+    "Não há visualização de mapa ou busca por distância",
+    "Não há indicadores de tempo de resposta do anunciante",
+    "Não há preview rápido de detalhes sem entrar na página do anúncio"
+  ]
+}

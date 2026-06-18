@@ -1,0 +1,18 @@
+[
+  { "nome": "Mercedes-Benz", "slug": "mercedes-benz", "categoria": "caminhoes", "logo": "/logos/mercedes-benz.svg" },
+  { "nome": "Scania",         "slug": "scania",        "categoria": "caminhoes", "logo": "/logos/scania.svg" },
+  { "nome": "Volvo",          "slug": "volvo",         "categoria": "caminhoes", "logo": "/logos/volvo.svg" },
+  { "nome": "Volkswagen",     "slug": "volkswagen",    "categoria": "caminhoes", "logo": "/logos/volkswagen.svg" },
+  { "nome": "Ford",           "slug": "ford",          "categoria": "caminhoes", "logo": "/logos/ford.svg" },
+  { "nome": "Iveco",          "slug": "iveco",         "categoria": "caminhoes", "logo": "/logos/iveco.svg" },
+  { "nome": "DAF",            "slug": "daf",           "categoria": "caminhoes", "logo": "/logos/daf.svg" },
+  { "nome": "MAN",            "slug": "man",           "categoria": "caminhoes", "logo": "/logos/man.svg" },
+  { "nome": "Agrale",         "slug": "agrale",        "categoria": "caminhoes", "logo": "/logos/agrale.svg" },
+  { "nome": "Randon",         "slug": "randon",        "categoria": "implementos", "logo": "/logos/randon.svg" },
+  { "nome": "Guerra",         "slug": "guerra",        "categoria": "implementos", "logo": "/logos/guerra.svg" },
+  { "nome": "Librelato",      "slug": "librelato",     "categoria": "implementos", "logo": "/logos/librelato.svg" },
+  { "nome": "Caterpillar",    "slug": "caterpillar",   "categoria": "maquinas",    "logo": "/logos/caterpillar.svg" },
+  { "nome": "Komatsu",        "slug": "komatsu",       "categoria": "maquinas",    "logo": "/logos/komatsu.svg" },
+  { "nome": "John Deere",     "slug": "john-deere",    "categoria": "maquinas",    "logo": "/logos/john-deere.svg" },
+  { "nome": "Hitachi",        "slug": "hitachi",       "categoria": "maquinas",    "logo": "/logos/hitachi.svg" }
+]

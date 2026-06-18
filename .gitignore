@@ -1,0 +1,11 @@
+node_modules
+.next
+.env.local
+.vercel
+dist
+out
+package-lock.json
+project-status.json
+project-status.md
+project-overview.md
+*.png

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUA MARCA AQUI | Loja de Caminhões Usados</title>
+  <meta name="description" content="Template visual para loja, garagem ou revenda de caminhões usados no Brasil." />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface-2: #f5f6f7;
+      --surface-3: #e4e6eb;
+      --text: #050505;
+      --muted: #65676b;
+      --border: #dddfe2;
+      --blue: #1877f2;
+      --blue-dark: #0f5fc8;
+      --blue-soft: #e7f3ff;
+      --green: #31a24c;
+      --green-dark: #248a3d;
+      --yellow: #f7b928;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      --shadow-strong: 0 12px 35px rgba(0, 0, 0, 0.13);
+      --radius: 18px;
+      --radius-lg: 26px;
+      --container: 1240px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    img { max-width: 100%; display: block; }
+    .container { width: min(100% - 28px, var(--container)); margin-inline: auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .nav {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: max-content;
+    }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--blue), #55a6ff);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      box-shadow: 0 8px 18px rgba(24,119,242,.24);
+    }
+    .brand strong {
+      display: block;
+      font-size: 18px;
+      letter-spacing: -.03em;
+    }
+    .brand span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: -2px;
+    }
+    .search-top {
+      flex: 1;
+      max-width: 420px;
+      height: 44px;
+      border: 0;
+      outline: 0;
+      border-radius: 999px;
+      background: var(--surface-2);
+      padding: 0 18px;
+      color: var(--text);
+    }
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .menu a {
+      padding: 10px 13px;
+      border-radius: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+      transition: .18s ease;
+      white-space: nowrap;
+    }
+    .menu a:hover, .menu a.active {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+    .btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      transition: .18s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-blue { background: var(--blue); color: #fff; box-shadow: 0 7px 16px rgba(24,119,242,.22); }
+    .btn-green { background: var(--green); color: #fff; box-shadow: 0 7px 16px rgba(49,162,76,.22); }
+    .btn-light { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+    .mobile-btn { display: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); font-size: 22px; }
+
+    .hero { padding: 26px 0 18px; }
+    .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 18px; align-items: stretch; }
+    .hero-main {
+      background: linear-gradient(135deg, #ffffff 0%, #eef5ff 55%, #dcecff 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 4vw, 48px);
+      position: relative;
+      overflow: hidden;
+      min-height: 430px;
+    }
+    .hero-main::after {
+      content: ""; position: absolute; right: -80px; bottom: -80px; width: 380px; height: 380px; border-radius: 50%; background: rgba(24,119,242,.11);
+    }
+    .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 800; margin-bottom: 16px; }
+    .hero h1 { max-width: 760px; font-size: clamp(36px, 5.5vw, 68px); line-height: .95; letter-spacing: -.065em; margin-bottom: 18px; position: relative; z-index: 2; }
+    .hero h1 span { color: var(--blue); }
+    .hero p { color: var(--muted); font-size: clamp(16px, 1.5vw, 19px); max-width: 650px; margin-bottom: 24px; position: relative; z-index: 2; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; position: relative; z-index: 2; }
+    .replace-box { margin-top: 24px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; position: relative; z-index: 2; }
+    .replace-item { background: rgba(255,255,255,.75); border: 1px dashed #9bbff0; border-radius: 16px; padding: 14px; }
+    .replace-item strong { display: block; color: var(--blue); font-size: 15px; }
+    .replace-item span { display: block; color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .hero-truck { position: absolute; right: 4%; bottom: 6%; width: min(43%, 390px); height: 200px; z-index: 1; opacity: .95; pointer-events: none; }
+    .fake-truck-body { position: absolute; left: 6%; bottom: 48px; width: 70%; height: 74px; border-radius: 19px 14px 10px 10px; background: linear-gradient(145deg, #e4e6eb, #9ca3af 55%, #2f3744 56%); box-shadow: 0 18px 35px rgba(0,0,0,.17); }
+    .fake-truck-cab { position: absolute; right: 8%; bottom: 48px; width: 31%; height: 86px; border-radius: 17px 24px 10px 10px; background: linear-gradient(145deg, #ffffff, #b8c0cc 58%, #1f2937 59%); box-shadow: 0 18px 35px rgba(0,0,0,.15); }
+    .fake-truck-cab::before { content: ""; position: absolute; right: 18px; top: 14px; width: 38px; height: 25px; background: #1877f2; border-radius: 7px; }
+    .fake-wheel { position: absolute; bottom: 29px; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle, #e4e6eb 0 24%, #111827 25% 59%, #030712 60%); }
+    .fake-wheel.one { left: 20%; }
+    .fake-wheel.two { right: 18%; }
+
+    .hero-side { display: grid; gap: 14px; }
+    .side-card, .seller-mini, .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 22px; }
+    .side-card h2, .section-title h2, .section-card h2 { letter-spacing: -.045em; line-height: 1; }
+    .side-card p, .section-card p { color: var(--muted); margin-top: 8px; }
+    .quick-list { display: grid; gap: 10px; margin-top: 16px; }
+    .quick-item { display: flex; align-items: flex-start; gap: 10px; background: var(--surface-2); border-radius: 14px; padding: 12px; border: 1px solid var(--border); }
+    .quick-icon { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-weight: 900; flex: 0 0 auto; }
+    .quick-item strong { display: block; font-size: 14px; }
+    .quick-item span { display: block; color: var(--muted); font-size: 13px; }
+
+    section { scroll-margin-top: 86px; }
+    .section { padding: 24px 0; }
+    .section-title { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 16px; }
+    .section-title h2 { font-size: clamp(28px, 3vw, 44px); }
+    .section-title p { color: var(--muted); margin-top: 7px; max-width: 620px; }
+    .filters { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 14px; display: grid; grid-template-columns: 1.4fr repeat(4, 1fr) auto; gap: 10px; margin-bottom: 18px; }
+    .field { width: 100%; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 12px; min-height: 46px; padding: 0 13px; outline: none; }
+    textarea.field { padding: 13px; min-height: 112px; resize: vertical; }
+    .market-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .ad-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; transition: .2s ease; }
+    .ad-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-strong); }
+    .ad-photo { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: linear-gradient(145deg, #e4e6eb, #f5f6f7); display: grid; place-items: center; }
+    .ad-photo::before { content: ""; position: absolute; width: 74%; height: 35%; left: 8%; bottom: 33%; border-radius: 17px 13px 9px 9px; background: linear-gradient(145deg, #f7f8fa, #aeb6c2 55%, #2c3440 56%); box-shadow: 0 16px 30px rgba(0,0,0,.12); }
+    .ad-photo::after { content: ""; position: absolute; width: 28%; height: 36%; right: 9%; bottom: 33%; border-radius: 14px 21px 9px 9px; background: linear-gradient(145deg, #fff, #b6bfca 58%, #111827 59%); }
+    .photo-label { position: absolute; left: 10px; top: 10px; background: rgba(5,5,5,.78); color: #fff; border-radius: 999px; padding: 6px 9px; font-size: 12px; font-weight: 800; z-index: 2; }
+    .template-label { position: absolute; right: 10px; bottom: 10px; background: var(--blue); color: #fff; border-radius: 999px; padding: 6px 9px; font-size: 11px; font-weight: 900; z-index: 2; }
+    .ad-content { padding: 12px; }
+    .ad-price { font-size: 20px; font-weight: 900; letter-spacing: -.035em; margin-bottom: 5px; }
+    .ad-title { font-size: 16px; line-height: 1.15; margin-bottom: 6px; }
+    .ad-meta { color: var(--muted); font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+    .ad-desc { color: var(--muted); font-size: 13px; min-height: 38px; margin-bottom: 12px; }
+    .ad-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ad-actions .btn { padding: 10px 9px; font-size: 13px; border-radius: 10px; }
+    .vendor-grid, .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .vendor-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
+    .avatar { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(145deg, var(--blue), #65adff); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 21px; margin-bottom: 12px; }
+    .vendor-card h3 { margin-bottom: 5px; }
+    .vendor-card p { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+    .vendor-stats { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--muted); font-size: 12px; font-weight: 800; }
+    .about-location { display: grid; grid-template-columns: .95fr 1.05fr; gap: 14px; }
+    .map-box { min-height: 330px; border-radius: var(--radius-lg); background: linear-gradient(90deg, rgba(24,119,242,.07) 1px, transparent 1px), linear-gradient(rgba(24,119,242,.07) 1px, transparent 1px), #eef5ff; background-size: 34px 34px; border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; overflow: hidden; display: grid; place-items: center; text-align: center; padding: 24px; }
+    .pin { width: 78px; height: 78px; border-radius: 50% 50% 50% 8px; background: var(--blue); transform: rotate(-45deg); display: grid; place-items: center; color: #fff; box-shadow: 0 12px 25px rgba(24,119,242,.28); margin: 0 auto 18px; }
+    .pin span { transform: rotate(45deg); font-size: 28px; }
+    .location-text { position: relative; z-index: 2; max-width: 440px; }
+    .location-text h3 { font-size: 28px; letter-spacing: -.04em; margin-bottom: 8px; }
+    .location-text p { color: var(--muted); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .full { grid-column: 1 / -1; }
+    .final-cta { padding: 26px 0 40px; }
+    .cta-card { border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--blue), #0d5fd4); color: #fff; padding: clamp(24px, 4vw, 44px); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; box-shadow: var(--shadow-strong); overflow: hidden; position: relative; }
+    .cta-card::after { content: ""; position: absolute; right: -90px; bottom: -100px; width: 330px; height: 330px; border-radius: 50%; background: rgba(255,255,255,.13); }
+    .cta-card h2 { font-size: clamp(28px, 4vw, 48px); line-height: 1; letter-spacing: -.05em; margin-bottom: 10px; position: relative; z-index: 2; }
+    .cta-card p { color: rgba(255,255,255,.82); max-width: 680px; position: relative; z-index: 2; }
+    .cta-card .btn { background: #fff; color: var(--blue); position: relative; z-index: 2; }
+    .footer { background: #fff; border-top: 1px solid var(--border); padding: 30px 0; }
+    .footer-grid { display: grid; grid-template-columns: 1.25fr repeat(3, .75fr); gap: 18px; }
+    .footer h3 { margin-bottom: 10px; }
+    .footer p, .footer a { color: var(--muted); font-size: 14px; }
+    .footer-links { display: grid; gap: 7px; }
+    .dream { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text) !important; font-weight: 800; display: inline-block; }
+    .float-whats { position: fixed; right: 18px; bottom: 18px; z-index: 80; width: 58px; height: 58px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; font-size: 27px; box-shadow: 0 12px 26px rgba(49,162,76,.34); }
+    @media (max-width: 1120px) { .hero-grid, .about-location { grid-template-columns: 1fr; } .market-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } .filters { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) { .search-top { display: none; } .menu { position: fixed; top: 76px; left: 14px; right: 14px; background: #fff; border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow-strong); padding: 10px; display: none; flex-direction: column; align-items: stretch; } .menu.open { display: flex; } .menu a { text-align: center; } .mobile-btn { display: block; } .hero-truck { display: none; } .replace-box, .vendor-grid, .info-grid { grid-template-columns: 1fr; } .market-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .cta-card { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 580px) { .container { width: min(100% - 20px, var(--container)); } .brand span { display: none; } .hero-main, .side-card, .section-card { border-radius: 20px; padding: 18px; } .hero-actions, .ad-actions { grid-template-columns: 1fr; } .hero-actions .btn, .cta-card .btn { width: 100%; } .market-grid, .filters, .form-grid, .footer-grid { grid-template-columns: 1fr; } .ad-card { border-radius: 16px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="#inicio"><div class="brand-mark">🚛</div><div><strong>SUA MARCA AQUI</strong><span>Loja de caminhões usados</span></div></a>
+      <input class="search-top" type="search" placeholder="Buscar caminhões, implementos, marcas e cidades" />
+      <nav class="menu" id="menu"><a href="#anuncios" class="active">Anúncios</a><a href="#vendedores">Vendedores</a><a href="#quem-somos">Quem somos</a><a href="#localizacao">Localização</a><a href="#anunciar">Anunciar</a></nav>
+      <a class="btn btn-blue" href="#contato">Contato</a><button class="mobile-btn" id="mobileBtn">☰</button>
+    </div>
+  </header>
+  <main id="inicio">
+    <section class="hero"><div class="container hero-grid"><div class="hero-main"><span class="pill">Modelo pronto para loja, garagem ou revenda</span><h1><span>SUA MARCA AQUI</span> vendendo caminhões com aparência de marketplace.</h1><p>Use este visual para apresentar sua loja com anúncios organizados, vendedores, localização, WhatsApp, informações claras e exemplos reais de caminhões usados brasileiros.</p><div class="hero-actions"><a class="btn btn-blue" href="#anuncios">Ver anúncios</a><a class="btn btn-green" href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20loja." target="_blank" rel="noopener">SEU NÚMERO AQUI</a><a class="btn btn-light" href="#anunciar">Quero anunciar</a></div><div class="replace-box"><div class="replace-item"><strong>SUA MARCA AQUI</strong><span>Troque pelo nome da loja ou garagem.</span></div><div class="replace-item"><strong>SEU CAMINHÃO AQUI</strong><span>Fotos e anúncios da loja.</span></div><div class="replace-item"><strong>SEU NÚMERO AQUI</strong><span>WhatsApp comercial da revenda.</span></div></div><div class="hero-truck" aria-hidden="true"><div class="fake-truck-body"></div><div class="fake-truck-cab"></div><div class="fake-wheel one"></div><div class="fake-wheel two"></div></div></div><aside class="hero-side"><div class="side-card"><h2>Para oferecer para uma loja.</h2><p>Estrutura pensada para mostrar valor comercial: estoque, vendedores, quem somos, localização e contato rápido.</p><div class="quick-list"><div class="quick-item"><div class="quick-icon">✓</div><div><strong>Visual estilo marketplace</strong><span>Cores claras, azul forte e cards parecidos com compra e venda online.</span></div></div><div class="quick-item"><div class="quick-icon">✓</div><div><strong>Anúncios de caminhões brasileiros</strong><span>Scania, Volvo, Mercedes, VW, Iveco, DAF e implementos.</span></div></div><div class="quick-item"><div class="quick-icon">✓</div><div><strong>Pronto para personalizar</strong><span>Marca, número, cidade, equipe, fotos e estoque.</span></div></div></div></div><div class="side-card"><span class="pill">Oferta para revendas</span><h2>Transforme a loja em uma vitrine digital.</h2><p>Um site simples de entender, com aparência profissional, para aumentar confiança e facilitar o contato pelo WhatsApp.</p></div></aside></div></section>
+    <section class="section" id="anuncios"><div class="container"><div class="section-title"><div><h2>Anúncios da loja</h2><p>Exemplos de caminhões usados brasileiros. Troque pelos anúncios reais da sua loja.</p></div><a class="btn btn-blue" href="#anunciar">Anunciar veículo</a></div><div class="filters"><input class="field" id="searchInput" type="search" placeholder="Buscar no estoque" /><select class="field" id="brandFilter"><option value="">Marca</option><option>Mercedes-Benz</option><option>Scania</option><option>Volvo</option><option>Volkswagen</option><option>Iveco</option><option>DAF</option><option>Randon</option></select><select class="field" id="typeFilter"><option value="">Tipo</option><option>Cavalo mecânico</option><option>Truck</option><option>Toco</option><option>Bitruck</option><option>Implemento</option></select><select class="field" id="tractionFilter"><option value="">Tração</option><option>4x2</option><option>6x2</option><option>6x4</option><option>8x2</option><option>8x4</option><option>3 eixos</option></select><select class="field" id="cityFilter"><option value="">Cidade</option><option>Xanxerê - SC</option><option>Chapecó - SC</option><option>Concórdia - SC</option><option>Cascavel - PR</option><option>Curitiba - PR</option><option>São Paulo - SP</option></select><button class="btn btn-light" id="clearFilters">Limpar</button></div><div class="market-grid" id="adGrid"></div></div></section>
+    <section class="section" id="vendedores"><div class="container"><div class="section-title"><div><h2>Vendedores</h2><p>Mostre a equipe da loja, gere confiança e direcione o cliente para o WhatsApp certo.</p></div></div><div class="vendor-grid"><article class="vendor-card"><div class="avatar">SM</div><h3>SEU NOME AQUI</h3><p>Atendimento comercial para caminhões, trucks, cavalos mecânicos e implementos.</p><div class="vendor-stats"><span class="chip">✓ Vendedor da loja</span><span class="chip">WhatsApp rápido</span></div><a class="btn btn-green" href="https://wa.me/5500000000000" target="_blank" rel="noopener">Chamar vendedor</a></article><article class="vendor-card"><div class="avatar">VL</div><h3>VENDEDOR 2</h3><p>Responsável por negociação, propostas, troca e envio de fotos ou vídeos.</p><div class="vendor-stats"><span class="chip">✓ Fotos e vídeos</span><span class="chip">Propostas</span></div><a class="btn btn-green" href="https://wa.me/5500000000000" target="_blank" rel="noopener">Chamar vendedor</a></article><article class="vendor-card"><div class="avatar">LG</div><h3>LOJA / GARAGEM</h3><p>Contato principal da empresa para consultar estoque, anunciar ou falar sobre parceria.</p><div class="vendor-stats"><span class="chip">✓ Estoque atualizado</span><span class="chip">Atendimento geral</span></div><a class="btn btn-blue" href="#contato">Ver contato</a></article></div></div></section>
+    <section class="section" id="quem-somos"><div class="container about-location"><div class="section-card"><span class="pill">Quem somos</span><h2>Uma vitrine digital para caminhões usados.</h2><p>Aqui entra a história da loja: tempo de mercado, cidade, especialidade, tipos de caminhões vendidos, atendimento e compromisso com informação clara.</p><div class="quick-list"><div class="quick-item"><div class="quick-icon">1</div><div><strong>Especialidade</strong><span>Cavalos mecânicos, trucks, tocos, bitrucks e implementos.</span></div></div><div class="quick-item"><div class="quick-icon">2</div><div><strong>Atendimento</strong><span>Consulta rápida de fotos, vídeos, disponibilidade e negociação.</span></div></div><div class="quick-item"><div class="quick-icon">3</div><div><strong>Confiança</strong><span>Anúncios com dados claros para o comprador não perder tempo.</span></div></div></div></div><div class="section-card"><span class="pill">Por que ter esse site?</span><h2>Menos conversa perdida. Mais lead interessado.</h2><p>O cliente vê o caminhão, entende a ficha básica e chama no WhatsApp já sabendo o que quer consultar. Isso ajuda a loja a parecer mais organizada e confiável.</p><div class="info-grid" style="margin-top:16px;"><div class="quick-item"><div class="quick-icon">✓</div><div><strong>Estoque</strong><span>Organizado por marca, tipo, cidade e tração.</span></div></div><div class="quick-item"><div class="quick-icon">✓</div><div><strong>Vendedores</strong><span>Equipe visível e contato separado.</span></div></div><div class="quick-item"><div class="quick-icon">✓</div><div><strong>Marca</strong><span>Loja com presença digital própria.</span></div></div></div></div></div></section>
+    <section class="section" id="localizacao"><div class="container about-location"><div class="map-box"><div class="location-text"><div class="pin"><span>📍</span></div><h3>SUA LOCALIZAÇÃO AQUI</h3><p>Exemplo: BR-000, Bairro, Cidade - UF. Substitua pelo endereço da loja, garagem ou pátio de atendimento.</p></div></div><div class="section-card" id="contato"><span class="pill">Contato da loja</span><h2>Fale com a equipe comercial.</h2><p>Adicione aqui o telefone principal, WhatsApp, horário de atendimento e links da loja.</p><div class="quick-list"><div class="quick-item"><div class="quick-icon">☎</div><div><strong>SEU NÚMERO AQUI</strong><span>WhatsApp comercial da loja.</span></div></div><div class="quick-item"><div class="quick-icon">⌚</div><div><strong>Horário de atendimento</strong><span>Segunda a sexta, 08h às 18h. Sábado, 08h às 12h.</span></div></div><div class="quick-item"><div class="quick-icon">🌐</div><div><strong>Seu site ou rede social</strong><span>www.sualoja.com.br / Instagram / Facebook</span></div></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;"><a class="btn btn-green" href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20loja." target="_blank" rel="noopener">Chamar no WhatsApp</a><a class="btn btn-light" href="#anuncios">Ver estoque</a></div></div></div></section>
+    <section class="section" id="anunciar"><div class="container about-location"><div class="section-card"><span class="pill">Anunciar caminhão</span><h2>Receba caminhões para anunciar na loja.</h2><p>Esse formulário pode ser usado para captar veículos de clientes, parceiros e vendedores. O envio abre no WhatsApp com os dados preenchidos.</p><form id="announceForm"><div class="form-grid"><input class="field" name="nome" placeholder="Nome" required /><input class="field" name="telefone" placeholder="WhatsApp" required /><input class="field" name="marca" placeholder="Marca" required /><input class="field" name="modelo" placeholder="Modelo" required /><input class="field" name="ano" placeholder="Ano/modelo" /><input class="field" name="valor" placeholder="Valor pedido" /><input class="field" name="cidade" placeholder="Cidade/UF" /><input class="field" name="config" placeholder="Tração / carroceria" /><textarea class="field full" name="descricao" placeholder="Descrição rápida do caminhão"></textarea><button class="btn btn-green full" type="submit">Enviar dados no WhatsApp</button></div></form></div><div class="section-card"><span class="pill">Como vender para uma loja</span><h2>Texto pronto para apresentação comercial.</h2><p><strong>“Esse site funciona como uma vitrine da sua loja na internet. O cliente entra, vê os caminhões organizados, conhece os vendedores, encontra a localização e chama no WhatsApp. A marca da loja aparece no topo, os anúncios ficam padronizados e o estoque ganha uma aparência mais profissional.”</strong></p><div class="quick-list"><div class="quick-item"><div class="quick-icon">✓</div><div><strong>SUA MARCA AQUI</strong><span>Nome, logo, cores e identidade da loja.</span></div></div><div class="quick-item"><div class="quick-icon">✓</div><div><strong>SEU CAMINHÃO AQUI</strong><span>Fotos reais do estoque e detalhes comerciais.</span></div></div><div class="quick-item"><div class="quick-icon">✓</div><div><strong>SEU NÚMERO AQUI</strong><span>WhatsApp do vendedor ou da empresa.</span></div></div></div></div></div></section>
+    <section class="final-cta"><div class="container"><div class="cta-card"><div><h2>Sua loja com cara de marketplace.</h2><p>Personalize com marca, fotos, vendedores, localização e estoque real. Ideal para apresentar caminhões usados com mais confiança e gerar contato direto.</p></div><a class="btn" href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20quero%20um%20site%20para%20minha%20loja%20de%20caminh%C3%B5es." target="_blank" rel="noopener">Pedir orçamento</a></div></div></section>
+  </main>
+  <footer class="footer"><div class="container footer-grid"><div><h3>SUA MARCA AQUI</h3><p>Loja, garagem ou revenda de caminhões usados. Anúncios organizados, vendedores, localização e WhatsApp.</p><p class="dream">Toda realidade um dia foi sonhada.</p></div><div><h3>Loja</h3><div class="footer-links"><a href="#quem-somos">Quem somos</a><a href="#localizacao">Localização</a><a href="#vendedores">Vendedores</a></div></div><div><h3>Estoque</h3><div class="footer-links"><a href="#anuncios">Caminhões</a><a href="#anuncios">Implementos</a><a href="#anunciar">Anunciar</a></div></div><div><h3>Contato</h3><div class="footer-links"><a href="https://wa.me/5500000000000" target="_blank" rel="noopener">SEU NÚMERO AQUI</a><a href="#">www.sualoja.com.br</a><a href="#">Facebook / Instagram</a></div></div></div></footer>
+  <a class="float-whats" href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20loja." target="_blank" rel="noopener">☘</a>
+  <script>
+    const ads=[{title:'Scania R440 6x4',brand:'Scania',type:'Cavalo mecânico',traction:'6x4',year:'2014',city:'Xanxerê - SC',price:'R$ 380.000',tag:'SEU CAMINHÃO AQUI',desc:'Cavalo mecânico usado, pronto para trabalhar, bom para transporte pesado e viagens longas.'},{title:'Volvo FH 440 6x2',brand:'Volvo',type:'Cavalo mecânico',traction:'6x2',year:'2012',city:'Chapecó - SC',price:'R$ 310.000',tag:'Anúncio da loja',desc:'Caminhão conhecido no mercado brasileiro, boa configuração para estrada e frete.'},{title:'Mercedes-Benz Axor 2544',brand:'Mercedes-Benz',type:'Cavalo mecânico',traction:'6x2',year:'2011',city:'Concórdia - SC',price:'R$ 295.000',tag:'Disponível',desc:'Modelo forte, fácil de vender e bastante procurado por quem trabalha no trecho.'},{title:'VW Constellation 24.280',brand:'Volkswagen',type:'Truck',traction:'8x2',year:'2020',city:'Cascavel - PR',price:'R$ 249.000',tag:'Truck',desc:'Truck usado brasileiro com ótima aceitação para baú, tanque, graneleiro ou carga geral.'},{title:'Ford Cargo 2422',brand:'Ford',type:'Truck',traction:'6x2',year:'2010',city:'Curitiba - PR',price:'R$ 185.000',tag:'Usado brasileiro',desc:'Caminhão tradicional, simples de entender, procurado para trabalho urbano e regional.'},{title:'Iveco Tector 240E28',brand:'Iveco',type:'Truck',traction:'6x2',year:'2017',city:'São Paulo - SP',price:'R$ 220.000',tag:'Oportunidade',desc:'Boa opção para quem procura truck com configuração versátil e visual comercial.'},{title:'DAF XF 105 6x4',brand:'DAF',type:'Cavalo mecânico',traction:'6x4',year:'2019',city:'Chapecó - SC',price:'R$ 395.000',tag:'Destaque',desc:'Cavalo mecânico moderno, forte para serviço pesado e com presença no anúncio.'},{title:'Randon Graneleira 3 Eixos',brand:'Randon',type:'Implemento',traction:'3 eixos',year:'2015',city:'Xanxerê - SC',price:'R$ 115.000',tag:'Implemento',desc:'Implemento usado para compor estoque da loja com caminhões e carretas.'}];
+    const adGrid=document.getElementById('adGrid'),searchInput=document.getElementById('searchInput'),brandFilter=document.getElementById('brandFilter'),typeFilter=document.getElementById('typeFilter'),tractionFilter=document.getElementById('tractionFilter'),cityFilter=document.getElementById('cityFilter'),clearFilters=document.getElementById('clearFilters');
+    function wa(text){return `https://wa.me/5500000000000?text=${encodeURIComponent(text)}`}
+    function renderAds(){const q=searchInput.value.toLowerCase().trim(),brand=brandFilter.value,type=typeFilter.value,traction=tractionFilter.value,city=cityFilter.value;const filtered=ads.filter(ad=>{const all=`${ad.title} ${ad.brand} ${ad.type} ${ad.traction} ${ad.city} ${ad.year}`.toLowerCase();return(!q||all.includes(q))&&(!brand||ad.brand===brand)&&(!type||ad.type===type)&&(!traction||ad.traction===traction)&&(!city||ad.city===city)});adGrid.innerHTML=filtered.map(ad=>`<article class="ad-card"><div class="ad-photo"><span class="photo-label">${ad.tag}</span><span class="template-label">Foto real aqui</span></div><div class="ad-content"><div class="ad-price">${ad.price}</div><h3 class="ad-title">${ad.title}</h3><div class="ad-meta">${ad.year} • ${ad.type} • ${ad.city}</div><p class="ad-desc">${ad.desc}</p><div class="ad-actions"><a class="btn btn-light" href="#contato">Ver detalhes</a><a class="btn btn-green" href="${wa('Olá, tenho interesse no anúncio: '+ad.title)}" target="_blank" rel="noopener">WhatsApp</a></div></div></article>`).join('')||`<div class="section-card" style="grid-column:1/-1;"><h2>Nenhum anúncio encontrado</h2><p>Limpe os filtros ou busque por outra marca, cidade ou configuração.</p></div>`}
+    function resetFilters(){searchInput.value='';brandFilter.value='';typeFilter.value='';tractionFilter.value='';cityFilter.value='';renderAds()}
+    [searchInput,brandFilter,typeFilter,tractionFilter,cityFilter].forEach(el=>el.addEventListener('input',renderAds));clearFilters.addEventListener('click',resetFilters);renderAds();
+    const mobileBtn=document.getElementById('mobileBtn'),menu=document.getElementById('menu');mobileBtn.addEventListener('click',()=>menu.classList.toggle('open'));menu.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>menu.classList.remove('open')));
+    document.getElementById('announceForm').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.currentTarget);const lines=['Olá, quero anunciar um caminhão na loja.','',`Nome: ${data.get('nome')||''}`,`WhatsApp: ${data.get('telefone')||''}`,`Marca: ${data.get('marca')||''}`,`Modelo: ${data.get('modelo')||''}`,`Ano/modelo: ${data.get('ano')||''}`,`Valor: ${data.get('valor')||''}`,`Cidade/UF: ${data.get('cidade')||''}`,`Configuração: ${data.get('config')||''}`,`Descrição: ${data.get('descricao')||''}`];window.open(`https://wa.me/5500000000000?text=${encodeURIComponent(lines.join('\n'))}`,'_blank')});
+  </script>
+</body>
+</html>
