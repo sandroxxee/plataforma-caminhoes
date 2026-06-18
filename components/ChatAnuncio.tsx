@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
-type Mensagem = { role: 'user' | 'bot'; texto: string }
+type MensagemTela = { enviadoPor: 'user' | 'bot'; texto: string }
 type HistoricoItem = { role: string; parts: { text?: string }[] }
 
 const styles = `
@@ -18,7 +18,7 @@ const styles = `
 .chat-input:focus { border-color:#22c55e; }
 .chat-btn { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:12px 20px; cursor:pointer; font-size:1rem; }
 .chat-btn:disabled { opacity:.5; cursor:not-allowed; }
-.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; align-self:flex-start; }
+.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; align-self:flex-start; font-style:italic; }
 .chat-inicio { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; flex:1; padding:40px 0; }
 .chat-inicio p { color:#94a3b8; text-align:center; font-size:1rem; }
 .btn-iniciar { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:16px 32px; cursor:pointer; font-size:1.1rem; }
@@ -26,18 +26,18 @@ const styles = `
 
 export default function ChatAnuncio() {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [input, setInput] = useState('')
   const [iniciado, setIniciado] = useState(false)
   const [carregando, setCarregando] = useState(false)
-  const [input, setInput] = useState('')
-  const [mensagens, setMensagens] = useState<Mensagem[]>([])
-  const [historico, setHistorico] = useState<HistoricoItem[]>([])
+  const [mensagensTela, setMensagensTela] = useState<MensagemTela[]>([])
+  const [historicoApi, setHistoricoApi] = useState<HistoricoItem[]>([])
 
-  async function enviar(texto: string) {
+  async function enviarMensagem(texto: string) {
     if (!texto.trim() || carregando) return
     setCarregando(true)
 
     if (texto !== 'iniciar') {
-      setMensagens(prev => [...prev, { role: 'user', texto }])
+      setMensagensTela(prev => [...prev, { enviadoPor: 'user', texto }])
     }
     setInput('')
 
@@ -45,19 +45,18 @@ export default function ChatAnuncio() {
       const res = await fetch('/api/anunciar-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mensagem: texto, historico })
+        body: JSON.stringify({ mensagem: texto, historico: historicoApi })
       })
 
-      const data = await res.json() as { textoBot?: string; historicoAtualizado?: HistoricoItem[]; error?: string }
+      const dados = await res.json() as { textoBot?: string; historicoAtualizado?: HistoricoItem[]; error?: string }
 
-      if (data.textoBot) {
-        setMensagens(prev => [...prev, { role: 'bot', texto: data.textoBot! }])
+      if (dados.textoBot) {
+        setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: dados.textoBot! }])
+        setHistoricoApi(dados.historicoAtualizado ?? [])
       }
-      if (data.historicoAtualizado) {
-        setHistorico(data.historicoAtualizado)
-      }
-    } catch {
-      setMensagens(prev => [...prev, { role: 'bot', texto: 'Erro ao conectar. Tente novamente.' }])
+    } catch (erro) {
+      console.error('Erro ao falar com o bot:', erro)
+      setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: 'Erro ao conectar. Tente novamente.' }])
     }
 
     setCarregando(false)
@@ -65,12 +64,12 @@ export default function ChatAnuncio() {
 
   function iniciar() {
     setIniciado(true)
-    enviar('iniciar')
+    enviarMensagem('iniciar')
   }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [mensagens])
+  }, [mensagensTela])
 
   return (
     <div className="chat-wrap">
@@ -85,15 +84,15 @@ export default function ChatAnuncio() {
         ) : (
           <>
             <div className="chat-messages">
-              {mensagens.map((m, i) => (
-                <div key={i} className={`msg ${m.role === 'bot' ? 'msg-bot' : 'msg-user'}`}>
-                  {m.texto}
+              {mensagensTela.map((msg, i) => (
+                <div key={i} className={`msg ${msg.enviadoPor === 'bot' ? 'msg-bot' : 'msg-user'}`}>
+                  {msg.texto}
                 </div>
               ))}
-              {carregando && <div className="chat-loading">digitando...</div>}
+              {carregando && <div className="chat-loading">Digitando...</div>}
               <div ref={bottomRef} />
             </div>
-            <form className="chat-form" onSubmit={e => { e.preventDefault(); enviar(input) }}>
+            <form className="chat-form" onSubmit={e => { e.preventDefault(); enviarMensagem(input) }}>
               <input
                 className="chat-input"
                 value={input}
