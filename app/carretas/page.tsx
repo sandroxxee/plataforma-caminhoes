@@ -1,3 +1,4 @@
+"use client";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";

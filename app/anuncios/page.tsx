@@ -1,3 +1,4 @@
+"use client";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
