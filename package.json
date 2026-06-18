@@ -20,10 +20,12 @@
   },
   "prepare": "npm run install-hooks",
   "dependencies": {
+    "@ai-sdk/google": "^1.0.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
+    "ai": "^4.0.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.511.0",
     "next": "16.2.9",
