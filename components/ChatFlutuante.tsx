@@ -25,7 +25,7 @@ interface Mensagem {
   texto: string;
 }
 
-type HistoricoMsg = { role: 'user' | 'assistant'; content: string };
+type HistoricoMsg = { role: string; parts: { text: string }[] };
 
 interface Props {
   truck?: TruckContext;
@@ -39,11 +39,10 @@ export default function ChatFlutuante({ truck }: Props) {
   const [carregando, setCarregando] = useState(false);
   const finalRef = useRef<HTMLDivElement>(null);
 
-  // Mensagem inicial dinâmica baseada no veículo
   useEffect(() => {
     const saudacao = truck?.marca
-      ? `Olá! Sou o assistente deste anúncio. Pode me perguntar sobre o ${truck.marca} ${truck.modelo ?? ''} — preço, km, motor, localização ou qualquer dúvida!`
-      : 'Olá! Sou o assistente virtual. Como posso ajudar?';
+      ? `Opa! Tenho dúvidas sobre este ${truck.marca} ${truck.modelo ?? ''}? Me pergunte sobre preço, km, motor ou qualquer detalhe do veículo!`
+      : 'Opa! Qual é o seu nome, o seu número de contato e de qual cidade você está falando? E me conta: você quer comprar ou vender um caminhão hoje?';
     setMensagensTela([{ enviadoPor: 'bot', texto: saudacao }]);
   }, [truck?.marca, truck?.modelo]);
 
@@ -79,8 +78,8 @@ export default function ChatFlutuante({ truck }: Props) {
       setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: textoBot }]);
       setHistorico(prev => [
         ...prev,
-        { role: 'user', content: mensagemUsuario },
-        { role: 'assistant', content: textoBot },
+        { role: 'user', parts: [{ text: mensagemUsuario }] },
+        { role: 'model', parts: [{ text: textoBot }] },
       ]);
     } catch {
       setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: 'Ops, tive um problema técnico. Tente novamente.' }]);
@@ -173,7 +172,7 @@ export default function ChatFlutuante({ truck }: Props) {
                 <p className="cf-header-title">
                   {truck?.marca ? `${truck.marca} ${truck.modelo ?? ''}` : 'Assistente Virtual'}
                 </p>
-                <span className="cf-header-status"><span className="cf-dot" />Pergunte sobre este veículo</span>
+                <span className="cf-header-status"><span className="cf-dot" />{truck?.marca ? 'Pergunte sobre este veículo' : 'Online agora'}</span>
               </div>
             </div>
 
@@ -201,7 +200,7 @@ export default function ChatFlutuante({ truck }: Props) {
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Pergunte sobre o veículo..."
+                placeholder={truck?.marca ? 'Pergunte sobre o veículo...' : 'Digite sua mensagem...'}
                 autoComplete="off"
               />
               <button className="cf-send" type="submit" disabled={!input.trim() || carregando}>
