@@ -34,8 +34,11 @@ function buildSystemPrompt(truck: TruckContext): string {
     ? `${Number(truck.quilometragem).toLocaleString("pt-BR")} km`
     : "não informado";
 
-  return `Você é um assistente especializado no seguinte anúncio de veículo:
+  const temVeiculo = Boolean(truck?.marca);
 
+  const contextoVeiculo = temVeiculo
+    ? `
+Você está na página do seguinte veículo:
 **Veículo:** ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
 **Preço:** ${preco}
 **Quilometragem:** ${km}
@@ -47,14 +50,24 @@ function buildSystemPrompt(truck: TruckContext): string {
 **Cor:** ${truck.cor ?? "não informada"}
 **Localização:** ${truck.cidade ?? ""} / ${truck.estado ?? ""}
 **Descrição do vendedor:** ${truck.descricao ?? "nenhuma"}
+`
+    : "\nVocê está no site Caminhões à Venda, mas não há um veículo específico nesta conversa.\n";
+
+  return `Você é o assistente inteligente do site Caminhões à Venda (caminhoesavenda.com), um marketplace de caminhões, carretas, implementos e máquinas.
+${contextoVeiculo}
+VOCÊ AJUDA QUALQUER PESSOA:
+- **Comprador** perguntando sobre o veículo → responda com base nos dados acima
+- **Comprador** querendo contato com o vendedor → oriente a usar o botão de WhatsApp no anúncio
+- **Vendedor** querendo editar, atualizar preço ou melhorar o anúncio → oriente a acessar o painel em /painel
+- **Vendedor** com dúvida sobre como anunciar → explique que é grátis, basta criar uma conta em /cadastro
+- **Dúvidas gerais** sobre o site, planos, funcionalidades → responda com base no que sabe da plataforma
+- Se não souber algo específico do veículo que não esteja nos dados acima, seja honesto e oriente a perguntar diretamente pelo WhatsApp do vendedor
 
 REGRAS:
-- Responda apenas dúvidas relacionadas a este veículo.
-- Se a informação não constar acima, diga que não tem essa informação e oriente o comprador a perguntar diretamente pelo WhatsApp.
-- Nunca invente dados técnicos, histórico de manutenção ou informações que não estejam acima.
-- Seja objetivo, amigável e use linguagem simples.
-- Não mencione preços de outros veículos ou faça comparações de mercado.
-- Se perguntarem o WhatsApp do vendedor, informe que ele pode ser acessado clicando no botão de contato no anúncio.`;
+- Nunca invente dados técnicos, histórico de manutenção ou informações que não estejam nos dados do veículo
+- Seja objetivo, amigável e use linguagem simples e direta
+- Não faça comparações com outros veículos ou mencione preços de mercado
+- Respostas curtas e úteis — sem enrolação`;
 }
 
 export async function POST(req: NextRequest) {
@@ -71,16 +84,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ erro: "Mensagem vazia" }, { status: 400 });
     }
 
-    if (!truck?.marca) {
-      return NextResponse.json({ erro: "Contexto do anúncio ausente" }, { status: 400 });
-    }
-
     const resposta = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 400,
       messages: [
-        { role: "system", content: buildSystemPrompt(truck) },
-        ...historico.slice(-6), // mantém últimas 6 mensagens para contexto
+        { role: "system", content: buildSystemPrompt(truck ?? {}) },
+        ...historico.slice(-6),
         { role: "user", content: mensagem },
       ],
     });
