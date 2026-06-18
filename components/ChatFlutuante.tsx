@@ -14,8 +14,15 @@ export default function ChatFlutuante() {
   ]);
   const [historicoApi, setHistoricoApi] = useState<Record<string, unknown>[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
-  
+
   const finalDasMensagensRef = useRef<HTMLDivElement | null>(null);
+
+  // Escuta o evento disparado pelo BotaoAnunciar
+  useEffect(() => {
+    const abrirChat = () => setIsOpen(true);
+    window.addEventListener('abrir-chat-gemini', abrirChat);
+    return () => window.removeEventListener('abrir-chat-gemini', abrirChat);
+  }, []);
 
   useEffect(() => {
     finalDasMensagensRef.current?.scrollIntoView({ behavior: 'smooth' });
