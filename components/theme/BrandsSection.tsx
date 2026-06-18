@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const MARCAS = [
@@ -44,7 +46,7 @@ export function BrandsSection() {
                 }}
               />
             ) : null}
-            {(!m.logo) && (
+            {!m.logo && (
               <span className="brand-chip-initial">{m.nome.slice(0, 2).toUpperCase()}</span>
             )}
             <span className="brand-chip-name">{m.nome}</span>
@@ -57,46 +59,28 @@ export function BrandsSection() {
           display: flex; align-items: center; justify-content: space-between;
           margin-bottom: 14px;
         }
-        .brands-title {
-          font-size: 18px; font-weight: 800; letter-spacing: -.025em;
-          margin: 0; color: var(--text);
-        }
-        .brands-link {
-          font-size: 13px; font-weight: 800; color: var(--blue);
-          text-decoration: none; white-space: nowrap;
-        }
+        .brands-title { font-size: 18px; font-weight: 800; letter-spacing: -.025em; margin: 0; color: var(--text); }
+        .brands-link { font-size: 13px; font-weight: 800; color: var(--blue); text-decoration: none; white-space: nowrap; }
         .brands-link:hover { text-decoration: underline; }
-        .brands-grid {
-          display: grid;
-          grid-template-columns: repeat(10, 1fr);
-          gap: 10px;
-        }
+        .brands-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; }
         .brand-chip {
           display: flex; flex-direction: column; align-items: center;
-          justify-content: center; gap: 8px;
-          padding: 16px 8px;
+          justify-content: center; gap: 8px; padding: 16px 8px;
           background: var(--surface); border: 1.5px solid var(--line);
           border-radius: 16px; text-decoration: none;
           transition: border-color .15s, box-shadow .15s, transform .15s;
           box-shadow: var(--shadow);
         }
-        .brand-chip:hover {
-          border-color: var(--blue); box-shadow: var(--shadow2);
-          transform: translateY(-2px);
-        }
+        .brand-chip:hover { border-color: var(--blue); box-shadow: var(--shadow2); transform: translateY(-2px); }
         .brand-chip-logo {
-          width: 56px; height: 32px;
-          object-fit: contain; object-position: center;
-          display: block; filter: grayscale(1) opacity(.65);
-          transition: filter .15s;
+          width: 56px; height: 32px; object-fit: contain; object-position: center;
+          display: block; filter: grayscale(1) opacity(.65); transition: filter .15s;
         }
         .brand-chip:hover .brand-chip-logo { filter: grayscale(0) opacity(1); }
         .brand-chip-initial {
-          width: 48px; height: 32px;
-          display: flex; align-items: center; justify-content: center;
+          width: 48px; height: 32px; display: flex; align-items: center; justify-content: center;
           font-size: 15px; font-weight: 900; color: var(--muted);
-          background: var(--soft); border-radius: 8px;
-          transition: color .15s, background .15s;
+          background: var(--soft); border-radius: 8px; transition: color .15s, background .15s;
         }
         .brand-chip:hover .brand-chip-initial { color: var(--blue); background: var(--blueSoft); }
         .brand-chip-name {
@@ -104,9 +88,7 @@ export function BrandsSection() {
           letter-spacing: .01em; text-align: center; white-space: nowrap;
         }
         .brand-chip:hover .brand-chip-name { color: var(--blue); }
-        @media (max-width: 1024px) {
-          .brands-grid { grid-template-columns: repeat(5, 1fr); }
-        }
+        @media (max-width: 1024px) { .brands-grid { grid-template-columns: repeat(5, 1fr); } }
         @media (max-width: 560px) {
           .brands-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
           .brand-chip { padding: 10px 4px; border-radius: 12px; gap: 6px; }
