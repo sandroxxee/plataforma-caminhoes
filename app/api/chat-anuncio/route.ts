@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 
 export const runtime = "nodejs";
 
-const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY ?? "" });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 type TruckContext = {
   marca?: string | null;
@@ -24,7 +24,10 @@ type TruckContext = {
   whatsapp?: string | null;
 };
 
-type Mensagem = { role: "user" | "assistant"; content: string };
+type HistoricoMsg = {
+  role: string;
+  parts: { text: string }[];
+};
 
 function buildSystemPrompt(truck: TruckContext): string {
   const preco = truck.preco
@@ -38,43 +41,44 @@ function buildSystemPrompt(truck: TruckContext): string {
 
   const contextoVeiculo = temVeiculo
     ? `
-Você está na página do seguinte veículo:
-Veículo: ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
-Preço: ${preco}
+Voce esta na pagina do seguinte veiculo:
+Veiculo: ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
+Preco: ${preco}
 Quilometragem: ${km}
-Motor: ${truck.motor ?? "não informado"}
-Câmbio: ${truck.cambio ?? "não informado"}
-Combustível: ${truck.combustivel ?? "não informado"}
-Carroceria: ${truck.carroceria ?? "não informado"}
-Tração: ${truck.tracao ?? "não informado"}
-Cor: ${truck.cor ?? "não informada"}
-Localização: ${truck.cidade ?? ""} / ${truck.estado ?? ""}
-Descrição do vendedor: ${truck.descricao ?? "nenhuma"}
+Motor: ${truck.motor ?? "nao informado"}
+Cambio: ${truck.cambio ?? "nao informado"}
+Combustivel: ${truck.combustivel ?? "nao informado"}
+Carroceria: ${truck.carroceria ?? "nao informado"}
+Tracao: ${truck.tracao ?? "nao informado"}
+Cor: ${truck.cor ?? "nao informada"}
+Localizacao: ${truck.cidade ?? ""} / ${truck.estado ?? ""}
+Descricao do vendedor: ${truck.descricao ?? "nenhuma"}
 `
-    : "\nVocê está no site Caminhões à Venda, mas não há um veículo específico nesta conversa.\n";
+    : "\nVoce esta no site Caminhoes a Venda, mas nao ha um veiculo especifico nesta conversa.\n";
 
-  return `Você é o assistente inteligente do site Caminhões à Venda (caminhoesavenda.com), um marketplace de caminhões, carretas, implementos e máquinas.
+  return `Voce e o assistente inteligente do site Caminhoes a Venda (caminhoesavenda.com), um marketplace de caminhoes, carretas, implementos e maquinas.
 ${contextoVeiculo}
-VOCÊ AJUDA QUALQUER PESSOA:
-- Comprador perguntando sobre o veículo: responda com base nos dados acima
-- Comprador querendo contato com o vendedor: oriente a usar o botão de WhatsApp no anúncio
-- Vendedor querendo editar, atualizar preço ou melhorar o anúncio: oriente a acessar o painel em /painel
-- Vendedor com dúvida sobre como anunciar: explique que é grátis, basta criar uma conta em /cadastro
-- Dúvidas gerais sobre o site, planos, funcionalidades: responda com base no que sabe da plataforma
-- Se não souber algo específico do veículo que não esteja nos dados acima, seja honesto e oriente a perguntar diretamente pelo WhatsApp do vendedor
+VOCE AJUDA QUALQUER PESSOA:
+- Comprador perguntando sobre o veiculo: responda com base nos dados acima
+- Comprador querendo contato com o vendedor: oriente a usar o botao de WhatsApp no anuncio
+- Vendedor querendo editar, atualizar preco ou melhorar o anuncio: oriente a acessar o painel em /painel
+- Vendedor com duvida sobre como anunciar: explique que e gratis, basta criar uma conta em /cadastro
+- Duvidas gerais sobre o site: responda com base no que sabe da plataforma
+- Se nao souber algo especifico do veiculo que nao esteja nos dados acima, seja honesto e oriente a perguntar pelo WhatsApp do vendedor
 
 REGRAS:
-- Nunca invente dados técnicos, histórico de manutenção ou informações que não estejam nos dados do veículo
-- Seja objetivo, amigável e use linguagem simples e direta
-- Não faça comparações com outros veículos ou mencione preços de mercado
-- Respostas curtas e úteis, sem enrolação`;
+- Nunca invente dados tecnicos ou informacoes que nao estejam nos dados do veiculo acima
+- Seja objetivo, amigavel e use linguagem simples e direta
+- Nao faca comparacoes com outros veiculos ou mencione precos de mercado
+- Respostas curtas e uteis, sem enrolacao
+- Nunca use markdown, asteriscos ou formatacao especial`;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json() as {
       mensagem: string;
-      historico: Mensagem[];
+      historico: HistoricoMsg[];
       truck: TruckContext;
     };
 
@@ -84,30 +88,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ erro: "Mensagem vazia" }, { status: 400 });
     }
 
-    const systemPrompt = buildSystemPrompt(truck ?? {});
-
-    // Monta histórico no formato do Gemini
-    const contents = [
-      ...historico.slice(-6).map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      })),
-      { role: "user", parts: [{ text: mensagem }] },
-    ];
-
-    const result = await genai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents,
+    const chat = ai.chats.create({
+      model: "gemini-1.5-flash",
       config: {
-        systemInstruction: systemPrompt,
-        maxOutputTokens: 400,
-        temperature: 0.7,
+        systemInstruction: buildSystemPrompt(truck ?? {}),
+        temperature: 0.5,
       },
+      history: historico.slice(-6),
     });
 
-    const texto = result.text ?? "Não consegui processar sua pergunta.";
+    const response = await chat.sendMessage({ message: mensagem });
 
-    return NextResponse.json({ resposta: texto });
+    return NextResponse.json({ resposta: response.text ?? "Nao consegui processar sua pergunta." });
   } catch (err) {
     console.error("[chat-anuncio]", err);
     return NextResponse.json({ erro: "Erro interno" }, { status: 500 });
