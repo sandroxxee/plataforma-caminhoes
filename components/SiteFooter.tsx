@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Truck, Shield, Mail, Phone } from "lucide-react";
+import { Shield, Mail, Phone } from "lucide-react";
 
 export function SiteFooter() {
   return (
@@ -8,7 +8,6 @@ export function SiteFooter() {
 
         <section className="footer-section footer-about">
           <div className="footer-logo">
-            <Truck size={20} />
             <strong className="footer-brand">Caminhões à Venda</strong>
           </div>
           <div className="footer-badges">
