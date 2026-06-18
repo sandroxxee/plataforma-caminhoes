@@ -11,6 +11,7 @@ type Props = {
   precoMax?: number;
   estado?: string;
   termoBusca?: string;
+  total?: number;
 };
 
 export function SalvarBusca({ marca, anoMin, anoMax, precoMax, estado, termoBusca }: Props) {
@@ -27,7 +28,7 @@ export function SalvarBusca({ marca, anoMin, anoMax, precoMax, estado, termoBusc
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setErro("Faça login para salvar a busca.");
+      setErro("Fa\u00e7a login para salvar a busca.");
       setSalvando(false);
       return;
     }
@@ -58,7 +59,7 @@ export function SalvarBusca({ marca, anoMin, anoMax, precoMax, estado, termoBusc
       {salvo ? (
         <div className="salvo-ok">
           <CheckCircle size={15} />
-          <span>Alerta criado! Você receberá e-mail quando aparecer algo novo.</span>
+          <span>Alerta criado! Voc\u00ea receber\u00e1 e-mail quando aparecer algo novo.</span>
         </div>
       ) : (
         <>
@@ -67,8 +68,8 @@ export function SalvarBusca({ marca, anoMin, anoMax, precoMax, estado, termoBusc
             <span>
               Salvar alerta:
               {marca && <strong> {marca}</strong>}
-              {anoMin && anoMax && <strong> {anoMin}–{anoMax}</strong>}
-              {precoMax && <strong> até R${precoMax.toLocaleString("pt-BR")}</strong>}
+              {anoMin && anoMax && <strong> {anoMin}\u2013{anoMax}</strong>}
+              {precoMax && <strong> at\u00e9 R${precoMax.toLocaleString("pt-BR")}</strong>}
               {estado && <strong> {estado}</strong>}
             </span>
           </div>
