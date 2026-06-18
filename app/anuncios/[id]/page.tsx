@@ -23,6 +23,7 @@ import {
 import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
 import { RelatedAds } from "@/components/theme/RelatedAds";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ChatFlutuante from "@/components/ChatFlutuante";
 
 export const revalidate = 300;
 
@@ -129,7 +130,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       <div className="market-container detail-layout">
         <div>
           <nav className="detail-breadcrumb" aria-label="Navegação">
-            <Link href="/">Início</Link>
+            <Link href="/">Ínicio</Link>
             <span aria-hidden="true">›</span>
             <Link href="/anuncios">Anúncios</Link>
             <span aria-hidden="true">›</span>
@@ -272,6 +273,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       />
 
       <SiteFooter />
+
+      <ChatFlutuante truck={truck} />
 
       <style>{`
         .detail-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--muted);padding:14px 0 8px}
