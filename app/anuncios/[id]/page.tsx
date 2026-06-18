@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MapPin, CheckCircle, ShieldCheck } from "lucide-react";
+import { MapPin, CheckCircle, ShieldCheck, TrendingDown, TrendingUp, Minus } from "lucide-react";
 import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
 import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
@@ -43,6 +43,38 @@ async function getApprovedTruck(parametro: string): Promise<Truck | null> {
 
   if (error || !data) return null;
   return data as Truck;
+}
+
+function FipeBadge({ preco, precoFipe }: { preco: number | null; precoFipe: number | null }) {
+  if (!preco || !precoFipe || precoFipe <= 0) return null;
+
+  const diff = ((preco - precoFipe) / precoFipe) * 100;
+  const absDiff = Math.abs(diff);
+
+  let label: string;
+  let icon: React.ReactNode;
+  let style: React.CSSProperties;
+
+  if (diff < -3) {
+    label = `${absDiff.toFixed(0)}% abaixo da FIPE`;
+    icon = <TrendingDown size={13} strokeWidth={2.5} aria-hidden="true" />;
+    style = { background: "#dcfce7", color: "#15803d" };
+  } else if (diff > 3) {
+    label = `${absDiff.toFixed(0)}% acima da FIPE`;
+    icon = <TrendingUp size={13} strokeWidth={2.5} aria-hidden="true" />;
+    style = { background: "#fee2e2", color: "#b91c1c" };
+  } else {
+    label = "Na faixa da FIPE";
+    icon = <Minus size={13} strokeWidth={2.5} aria-hidden="true" />;
+    style = { background: "#fef9c3", color: "#92400e" };
+  }
+
+  return (
+    <span className="fipe-badge" style={style}>
+      {icon}
+      {label}
+    </span>
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -96,8 +128,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   if (!truck) notFound();
 
   // Garante que a URL seja sempre o slug canônico
-  // Ex: UUID puro → redireciona para slug completo
-  // Ex: slug antigo com UUID embutido mas diferente do canônico → redireciona
   const canonicalPath = getCanonicalPath(truck);
   const currentPath   = `/anuncios/${id}`;
   if (currentPath !== canonicalPath) {
@@ -147,6 +177,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               </p>
             )}
             <strong className="detail-price-mobile">{formatMoney(truck.preco)}</strong>
+            <FipeBadge preco={truck.preco} precoFipe={(truck as any).preco_fipe} />
           </div>
 
           <div className="detail-card detail-desc-card">
@@ -179,6 +210,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               </p>
             )}
             <strong className="detail-price">{formatMoney(truck.preco)}</strong>
+            <FipeBadge preco={truck.preco} precoFipe={(truck as any).preco_fipe} />
             <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
 
             <AnuncioAsideActions
@@ -240,8 +272,12 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-desc-text{margin:0;color:var(--muted);font-weight:700;line-height:1.7;white-space:pre-wrap}
         .detail-status-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:950;letter-spacing:.03em}
         body.public-theme-dark .detail-status-badge{background:#14532d;color:#86efac}
-        .detail-price{display:block;color:var(--blue);font-size:clamp(28px,3.5vw,40px);line-height:1;letter-spacing:-.05em;margin:4px 0 10px}
+        .detail-price{display:block;color:var(--blue);font-size:clamp(28px,3.5vw,40px);line-height:1;letter-spacing:-.05em;margin:4px 0 6px}
         .detail-price-mobile{display:block;color:var(--blue);font-size:28px;letter-spacing:-.04em;line-height:1;margin-top:8px}
+        .fipe-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:950;letter-spacing:.01em;margin-bottom:10px}
+        body.public-theme-dark .fipe-badge[style*="#dcfce7"]{background:#14532d!important;color:#86efac!important}
+        body.public-theme-dark .fipe-badge[style*="#fee2e2"]{background:#450a0a!important;color:#fca5a5!important}
+        body.public-theme-dark .fipe-badge[style*="#fef9c3"]{background:#431407!important;color:#fde68a!important}
         .detail-aside-hint{margin:0 0 16px;color:var(--muted);font-size:13px;font-weight:750;line-height:1.5}
         .detail-whatsapp{min-height:52px;border-radius:14px;background:#25d366;color:#073b1d;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:950;font-size:15px;margin-bottom:10px;box-shadow:0 8px 20px rgba(37,211,102,.28);transition:transform .18s,box-shadow .18s;text-decoration:none}
         .detail-whatsapp:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,211,102,.36)}
@@ -257,7 +293,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-aside{position:sticky;top:80px;align-self:start}
         @media(max-width:900px){
           .detail-aside{position:static}
-          .detail-aside-header .detail-h1,.detail-aside-header .detail-location,.detail-aside-header .detail-status-badge,.detail-aside-header .detail-price{display:none}
+          .detail-aside-header .detail-h1,.detail-aside-header .detail-location,.detail-aside-header .detail-status-badge,.detail-aside-header .detail-price,.detail-aside-header .fipe-badge{display:none}
           .detail-mobile-header{display:block}
         }
         @media(max-width:560px){
