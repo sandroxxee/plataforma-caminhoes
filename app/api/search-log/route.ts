@@ -21,7 +21,11 @@ export async function POST(req: NextRequest) {
     } else {
       await supabase.from("search_logs").insert({ term: clean, count: 1 });
     }
-  } catch (_) {}
+  } catch (error) {
+    console.error("Error logging search term:", error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return NextResponse.json({ ok: false, error: errorMessage }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 const PROTECTED_ROUTES = ["/painel", "/conta", "/anunciar", "/admin"];
 const AUTH_ROUTES = ["/login", "/cadastro"];
@@ -6,11 +7,9 @@ const AUTH_ROUTES = ["/login", "/cadastro"];
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Le o cookie de sessao do Supabase
-  const cookieHeader = request.headers.get("cookie") || "";
-  const hasSession =
-    cookieHeader.includes("sb-") ||
-    cookieHeader.includes("supabase-auth-token");
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const hasSession = !!user;
 
   // Redireciona usuario nao logado para /login
   const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
@@ -26,7 +25,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/painel", request.url));
   }
 
-  return NextResponse.next();
+  // Atualiza a sessão do Supabase para garantir que os cookies estejam sincronizados
+  // Isso é importante para ambientes de produção com balanceadores de carga
+  // ou quando os cookies precisam ser atualizados após certas operações.
+  const response = NextResponse.next();
+  await supabase.auth.getSession(); // Força a atualização dos cookies
+  return response;
 }
 
 export const config = {
