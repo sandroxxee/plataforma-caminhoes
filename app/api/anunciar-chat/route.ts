@@ -1,38 +1,36 @@
 import { google } from '@ai-sdk/google'
-import { streamText } from 'ai'
-
-const PERGUNTAS = [
-  'Qual seu nome, WhatsApp e cidade?',
-  'Vai vender ou comprar?',
-  'Qual a marca, modelo e ano? Quantos km tem?',
-  'Como esta a mecanica? E particular ou revenda?',
-  'Qual o valor? Aceita troca? Pode mandar as fotos!',
-]
+import { streamText, type CoreMessage } from 'ai'
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
 
-  // messages[0] = boas vindas (assistant), depois alternando user/assistant
-  // numero de respostas do usuario = quantidade de mensagens com role 'user'
-  const respostasUsuario = messages.filter((m: { role: string }) => m.role === 'user').length
+  // Remove a mensagem inicial hardcoded do cliente (role: assistant, id: 'init')
+  // para nao confundir o Gemini com mensagem fora do padrao
+  const historico: CoreMessage[] = (messages as CoreMessage[]).filter(
+    (m) => !(m.role === 'assistant' && (m as { id?: string }).id === 'init')
+  )
 
-  // Se ainda tem perguntas a fazer
-  if (respostasUsuario < PERGUNTAS.length) {
-    const proximaPergunta = PERGUNTAS[respostasUsuario]
-    return new Response(
-      `0:${JSON.stringify(proximaPergunta)}\n`,
-      { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
-    )
-  }
-
-  // Todas respondidas: pede resumo e confirmacao ao Gemini
   const result = await streamText({
     model: google('gemini-1.5-flash'),
-    system: `Voce e um atendente de plataforma de caminhoes.
-Com base no historico da conversa, faca um resumo simples dos dados do anuncio e pergunte: Confirma a publicacao?
-Se o usuario confirmar, responda ANUNCIO_CONFIRMADO seguido de um JSON com todos os dados.
-Sem asteriscos ou formatacao especial.`,
-    messages,
+    system: `Voce e um atendente simpatico da plataforma de caminhoes CaminhoesBR.
+Sua tarefa e coletar dados para criar um anuncio conversando naturalmente.
+
+Colete nesta ordem, avancando conforme o usuario responde:
+1. Nome, WhatsApp e cidade
+2. Vai vender ou comprar?
+3. Marca, modelo, ano e km
+4. Estado da mecanica e se e particular ou revenda
+5. Valor pedido, aceita troca e fotos
+6. Mostre um resumo e pergunte: Confirma a publicacao?
+7. Se confirmar: escreva ANUNCIO_CONFIRMADO e um JSON com os dados
+
+REGRAS:
+- Leia todo o historico antes de responder
+- Nunca repita pergunta ja respondida
+- Avance sempre para o proximo topico
+- Sem asteriscos ou markdown
+- Seja breve e direto`,
+    messages: historico,
   })
 
   return result.toDataStreamResponse()
