@@ -53,11 +53,14 @@ export async function validateApiKey(req: NextRequest): Promise<ApiAuthResult> {
 
   const keyHash = await hashApiKey(rawKey)
 
-  const { data, error } = await (supabaseAdmin
+  const result = await supabaseAdmin
     .from('api_keys')
     .select('id, name, is_active, request_count')
     .eq('key_hash', keyHash)
-    .single() as unknown as Promise<{ data: ApiKeyRow | null; error: unknown }>)
+    .single()
+
+  const data = result.data as ApiKeyRow | null
+  const error = result.error
 
   if (error || !data) {
     return {
