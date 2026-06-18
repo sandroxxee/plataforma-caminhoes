@@ -28,6 +28,26 @@ const ALL_ICON = (
   </svg>
 );
 
+function BrandLogo({ brand }: { brand: Brand }) {
+  if (!brand.logo) return ALL_ICON;
+  return (
+    <Image
+      src={brand.logo}
+      alt={brand.name}
+      width={38}
+      height={38}
+      style={{ objectFit: "contain", borderRadius: 8 }}
+      unoptimized
+      onError={(e) => {
+        const target = e.currentTarget as HTMLImageElement;
+        target.style.display = "none";
+        const fallback = target.parentElement?.querySelector(".bf-fallback") as HTMLElement | null;
+        if (fallback) fallback.style.display = "flex";
+      }}
+    />
+  );
+}
+
 type Props = {
   marcaAtiva: string;
   buildHref: (marca: string | undefined) => string;
@@ -43,16 +63,24 @@ export function BrandFilter({ marcaAtiva, buildHref }: Props) {
           return (
             <Link key={b.slug || "todas"} href={href} className={`bf-item${active ? " active" : ""}`}>
               <div className="bf-logo">
-                {b.logo ? (
-                  <Image
-                    src={b.logo}
-                    alt={b.name}
-                    width={38}
-                    height={38}
-                    style={{ objectFit: "contain", borderRadius: 8 }}
-                    unoptimized
-                  />
-                ) : ALL_ICON}
+                <BrandLogo brand={b} />
+                <span
+                  className="bf-fallback"
+                  style={{
+                    display: "none",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 38,
+                    height: 38,
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 800,
+                    color: "rgba(255,255,255,0.6)",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {b.name.slice(0, 2).toUpperCase()}
+                </span>
               </div>
               <span className="bf-name">{b.name}</span>
             </Link>
