@@ -32,17 +32,15 @@ type HistoricoMsg = {
 function buildSystemPrompt(truck: TruckContext): string {
   const preco = truck.preco
     ? `R$ ${Number(truck.preco).toLocaleString("pt-BR")}`
-    : "não informado";
+    : "nao informado";
   const km = truck.quilometragem
     ? `${Number(truck.quilometragem).toLocaleString("pt-BR")} km`
-    : "não informado";
+    : "nao informado";
 
   const temVeiculo = Boolean(truck?.marca);
 
   const contextoVeiculo = temVeiculo
-    ? `
-Voce esta na pagina do seguinte veiculo:
-Veiculo: ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
+    ? `Veiculo: ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
 Preco: ${preco}
 Quilometragem: ${km}
 Motor: ${truck.motor ?? "nao informado"}
@@ -52,56 +50,59 @@ Carroceria: ${truck.carroceria ?? "nao informado"}
 Tracao: ${truck.tracao ?? "nao informado"}
 Cor: ${truck.cor ?? "nao informada"}
 Localizacao: ${truck.cidade ?? ""} / ${truck.estado ?? ""}
-Descricao do vendedor: ${truck.descricao ?? "nenhuma"}
-`
-    : "\nVoce esta no site Caminhoes a Venda, mas nao ha um veiculo especifico nesta conversa.\n";
+Descricao: ${truck.descricao ?? "nenhuma"}`
+    : "Nao ha veiculo especifico nesta conversa.";
 
-  return `Voce e o assistente inteligente do site Caminhoes a Venda (caminhoesavenda.com), um marketplace de caminhoes, carretas, implementos e maquinas.
+  return `Voce e o assistente do site Caminhoes a Venda (caminhoesavenda.com).
+
 ${contextoVeiculo}
-VOCE AJUDA QUALQUER PESSOA:
-- Comprador perguntando sobre o veiculo: responda com base nos dados acima
-- Comprador querendo contato com o vendedor: oriente a usar o botao de WhatsApp no anuncio
-- Vendedor querendo editar, atualizar preco ou melhorar o anuncio: oriente a acessar o painel em /painel
-- Vendedor com duvida sobre como anunciar: explique que e gratis, basta criar uma conta em /cadastro
-- Duvidas gerais sobre o site: responda com base no que sabe da plataforma
-- Se nao souber algo especifico do veiculo que nao esteja nos dados acima, seja honesto e oriente a perguntar pelo WhatsApp do vendedor
 
-REGRAS:
-- Nunca invente dados tecnicos ou informacoes que nao estejam nos dados do veiculo acima
-- Seja objetivo, amigavel e use linguagem simples e direta
-- Nao faca comparacoes com outros veiculos ou mencione precos de mercado
-- Respostas curtas e uteis, sem enrolacao
-- Nunca use markdown, asteriscos ou formatacao especial`;
+AJUDE QUALQUER PESSOA:
+- Comprador com duvida sobre o veiculo: responda com base nos dados acima
+- Comprador quer contato com vendedor: oriente a usar o botao WhatsApp no anuncio
+- Vendedor quer editar anuncio: oriente a acessar /painel
+- Vendedor quer anunciar: explique que e gratis em /cadastro
+- Duvidas gerais: responda sobre a plataforma
+- Se nao souber algo do veiculo: oriente a perguntar pelo WhatsApp
+
+REGRAS: Nunca invente dados. Seja direto, amigavel e use linguagem simples. Sem markdown ou asteriscos.`;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json() as {
       mensagem: string;
-      historico: HistoricoMsg[];
-      truck: TruckContext;
+      historico?: HistoricoMsg[];
+      truck?: TruckContext;
     };
 
-    const { mensagem, historico = [], truck } = body;
+    const { mensagem, historico = [], truck = {} } = body;
 
     if (!mensagem?.trim()) {
       return NextResponse.json({ erro: "Mensagem vazia" }, { status: 400 });
     }
 
+    // Filtra historico valido e com pares user/model alternados
+    const historicoValido = historico
+      .filter(m => m?.role && m?.parts?.[0]?.text)
+      .slice(-6);
+
     const chat = ai.chats.create({
       model: "gemini-1.5-flash",
       config: {
-        systemInstruction: buildSystemPrompt(truck ?? {}),
+        systemInstruction: buildSystemPrompt(truck),
         temperature: 0.5,
       },
-      history: historico.slice(-6),
+      ...(historicoValido.length > 0 ? { history: historicoValido } : {}),
     });
 
     const response = await chat.sendMessage({ message: mensagem });
+    const texto = response.text ?? "Nao consegui processar sua pergunta.";
 
-    return NextResponse.json({ resposta: response.text ?? "Nao consegui processar sua pergunta." });
+    return NextResponse.json({ resposta: texto });
   } catch (err) {
-    console.error("[chat-anuncio]", err);
-    return NextResponse.json({ erro: "Erro interno" }, { status: 500 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[chat-anuncio] erro:", msg);
+    return NextResponse.json({ erro: msg }, { status: 500 });
   }
 }
