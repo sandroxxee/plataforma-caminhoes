@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Truck, Container, Wrench, Bus, Tractor, Package, X } from "lucide-react";
+import { Truck, Container, Wrench, Bus, Tractor, Package, X, MapPin, Tag, Filter } from "lucide-react";
 import { SalvarBusca } from "@/components/SalvarBusca";
 import { MARCAS_VALIDAS } from "@/lib/constants";
 
@@ -10,16 +10,16 @@ type Categoria = { label: string; href: string; iconName: string };
 
 const CATEGORIAS: Categoria[] = [
   { label: "Todos",       href: "/anuncios",    iconName: "truck" },
-  { label: "Caminh\u00f5es",   href: "/caminhoes",   iconName: "truck" },
+  { label: "Caminhões",   href: "/caminhoes",   iconName: "truck" },
   { label: "Carretas",    href: "/carretas",    iconName: "container" },
   { label: "Implementos", href: "/implementos", iconName: "wrench" },
-  { label: "\u00d4nibus",      href: "/onibus",      iconName: "bus" },
-  { label: "M\u00e1quinas",    href: "/maquinas",    iconName: "tractor" },
-  { label: "Pe\u00e7as",       href: "/pecas",       iconName: "package" },
+  { label: "Ônibus",      href: "/onibus",      iconName: "bus" },
+  { label: "Máquinas",    href: "/maquinas",    iconName: "tractor" },
+  { label: "Peças",       href: "/pecas",       iconName: "package" },
 ];
 
 function CatIcon({ name }: { name: string }) {
-  const s = 15;
+  const s = 16;
   if (name === "container") return <Container size={s} />;
   if (name === "wrench")    return <Wrench size={s} />;
   if (name === "bus")       return <Bus size={s} />;
@@ -28,7 +28,6 @@ function CatIcon({ name }: { name: string }) {
   return <Truck size={s} />;
 }
 
-// Mapa marca -> arquivo SVG local em /public/marcas/
 const MARCAS_SVG: Record<string, string> = {
   "Mercedes-Benz": "/marcas/mercedes-benz.svg",
   "Scania":        "/marcas/scania.svg",
@@ -44,11 +43,9 @@ const MARCAS_SVG: Record<string, string> = {
 function MarcaIcon({ marca }: { marca: string }) {
   const src = MARCAS_SVG[marca];
   if (src) {
-    return <Image src={src} alt={marca} width={24} height={24} className="asb-logo" unoptimized />;
+    return <Image src={src} alt={marca} width={20} height={20} className="asb-logo" unoptimized />;
   }
-  return (
-    <span className="asb-ico">{marca[0]}</span>
-  );
+  return <span className="asb-ico-text">{marca[0]}</span>;
 }
 
 const ESTADOS = [
@@ -58,15 +55,14 @@ const ESTADOS = [
   { label: "MG", value: "MG" }, { label: "MS", value: "MS" },
   { label: "MT", value: "MT" }, { label: "GO", value: "GO" },
   { label: "BA", value: "BA" }, { label: "RJ", value: "RJ" },
-  { label: "ES", value: "ES" },
 ];
 
 const FAIXAS = [
-  { label: "Todos os pre\u00e7os", min: 0, max: Infinity },
-  { label: "At\u00e9 R$100k",     min: 0,       max: 100_000 },
-  { label: "R$100k\u2013200k",   min: 100_000, max: 200_000 },
-  { label: "R$200k\u2013400k",   min: 200_000, max: 400_000 },
-  { label: "Acima R$400k",  min: 400_000, max: Infinity },
+  { label: "Todos os preços", min: 0, max: Infinity },
+  { label: "Até R$ 100k",     min: 0,       max: 100_000 },
+  { label: "R$ 100k – 200k",   min: 100_000, max: 200_000 },
+  { label: "R$ 200k – 400k",   min: 200_000, max: 400_000 },
+  { label: "Acima de R$ 400k",  min: 400_000, max: Infinity },
 ];
 
 function buildHref(q: string, faixaIdx: number, marcaFiltro: string, estadoFiltro: string, overrides: Record<string, string | number | undefined>) {
@@ -94,6 +90,11 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
 
   return (
     <div className="asb-root">
+      <div className="asb-header">
+        <Filter size={18} />
+        <span>Filtros</span>
+      </div>
+
       <div className="asb-section">
         <p className="asb-label">Categorias</p>
         <nav className="asb-list">
@@ -103,34 +104,30 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
             return (
               <Link key={c.href} href={c.href} className={`asb-item${active ? " active" : ""}`}>
                 <span className="asb-ico"><CatIcon name={c.iconName} /></span>
-                {c.label}
+                <span className="asb-text">{c.label}</span>
               </Link>
             );
           })}
         </nav>
       </div>
 
-      <div className="asb-div" />
-
       <div className="asb-section">
-        <p className="asb-label">Marcas</p>
-        <nav className="asb-list">
-          <Link href={buildHref(q, faixaIdx, "", estadoFiltro, { marca: undefined })} className={`asb-item${!marcaFiltro ? " active" : ""}`}>
-            <span className="asb-ico asb-ico-star">&#9733;</span>Todas
+        <p className="asb-label">Marcas Populares</p>
+        <nav className="asb-list-grid">
+          <Link href={buildHref(q, faixaIdx, "", estadoFiltro, { marca: undefined })} className={`asb-brand-item${!marcaFiltro ? " active" : ""}`}>
+            Todas
           </Link>
-          {MARCAS_VALIDAS.map((m) => (
-            <Link key={m} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: m })} className={`asb-item${marcaFiltro === m ? " active" : ""}`}>
+          {MARCAS_VALIDAS.slice(0, 12).map((m) => (
+            <Link key={m} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: m })} className={`asb-brand-item${marcaFiltro === m ? " active" : ""}`}>
               <MarcaIcon marca={m} />
-              {m}
+              <span className="asb-brand-name">{m}</span>
             </Link>
           ))}
         </nav>
       </div>
 
-      <div className="asb-div" />
-
       <div className="asb-section">
-        <p className="asb-label">Estado</p>
+        <p className="asb-label"><MapPin size={12} /> Localização</p>
         <div className="asb-chips">
           {ESTADOS.map((e) => (
             <Link key={e.value || "t"} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { estado: e.value || undefined })} className={`asb-chip${estadoFiltro === e.value ? " active" : ""}`}>
@@ -140,49 +137,155 @@ export function AnunciosSidebar({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
         </div>
       </div>
 
-      <div className="asb-div" />
-
       <div className="asb-section">
-        <p className="asb-label">Faixa de pre\u00e7o</p>
+        <p className="asb-label"><Tag size={12} /> Preço</p>
         <nav className="asb-list">
           {FAIXAS.map((f, idx) => (
-            <Link key={idx} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })} className={`asb-item asb-price${faixaIdx === idx ? " active" : ""}`}>
-              {f.label}
+            <Link key={idx} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })} className={`asb-item${faixaIdx === idx ? " active" : ""}`}>
+              <span className="asb-text">{f.label}</span>
             </Link>
           ))}
         </nav>
       </div>
 
       {hasFilters && (
-        <>
-          <div className="asb-div" />
-          <div className="asb-section">
-            <SalvarBusca marca={marcaFiltro || undefined} estado={estadoFiltro || undefined} precoMax={precoMaxAtivo} />
-            <Link href="/anuncios" className="asb-clear"><X size={12} />Limpar filtros</Link>
-          </div>
-        </>
+        <div className="asb-footer">
+          <SalvarBusca marca={marcaFiltro || undefined} estado={estadoFiltro || undefined} precoMax={precoMaxAtivo} />
+          <Link href="/anuncios" className="asb-clear">
+            <X size={14} /> Limpar Filtros
+          </Link>
+        </div>
       )}
 
-      <style>{`
-        .asb-root { display:flex; flex-direction:column; }
-        .asb-section { padding:14px; }
-        .asb-div { height:1px; background:var(--line); }
-        .asb-label { margin:0 0 8px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
-        .asb-list { display:flex; flex-direction:column; gap:1px; }
-        .asb-item { display:flex; align-items:center; gap:9px; height:36px; padding:0 8px; border-radius:9px; font-size:13px; font-weight:700; color:var(--text); text-decoration:none; transition:background .12s,color .12s; }
-        .asb-item:hover { background:var(--soft); color:var(--blue); }
-        .asb-item.active { background:var(--blueSoft); color:var(--blue); font-weight:900; }
-        .asb-price { font-size:12px; }
-        .asb-ico { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:5px; background:var(--soft); color:var(--muted); font-size:11px; flex-shrink:0; }
-        .asb-ico-star { font-size:13px; }
-        .asb-item.active .asb-ico { background:var(--blueSoft); color:var(--blue); }
-        .asb-logo { border-radius:4px; object-fit:contain; flex-shrink:0; }
-        .asb-chips { display:flex; gap:4px; flex-wrap:wrap; }
-        .asb-chip { display:inline-flex; align-items:center; height:26px; padding:0 9px; border-radius:999px; border:1.5px solid var(--line); background:var(--soft); color:var(--muted); font-size:11px; font-weight:800; text-decoration:none; transition:.12s; }
-        .asb-chip:hover { border-color:var(--blue); color:var(--blue); }
-        .asb-chip.active { border-color:var(--blue); background:var(--blueSoft); color:var(--blue); }
-        .asb-clear { display:inline-flex; align-items:center; gap:5px; margin-top:8px; height:32px; padding:0 12px; border-radius:999px; border:1.5px solid rgba(239,68,68,.3); background:rgba(239,68,68,.07); color:#f87171; font-size:12px; font-weight:800; text-decoration:none; transition:.14s; }
-        .asb-clear:hover { background:rgba(239,68,68,.14); }
+      <style jsx>{`
+        .asb-root {
+          background: var(--surface);
+          border: 1px solid var(--line);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: var(--shadow);
+        }
+        .asb-header {
+          padding: 20px;
+          background: var(--soft);
+          border-bottom: 1px solid var(--line);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 900;
+          font-size: 15px;
+          color: var(--text);
+        }
+        .asb-section {
+          padding: 20px;
+          border-bottom: 1px solid var(--line);
+        }
+        .asb-section:last-child { border-bottom: none; }
+        .asb-label {
+          margin: 0 0 14px;
+          font-size: 12px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--muted);
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .asb-list { display: flex; flex-direction: column; gap: 4px; }
+        .asb-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          height: 42px;
+          padding: 0 12px;
+          border-radius: 12px;
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--text);
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .asb-item:hover { background: var(--soft); color: var(--blue); }
+        .asb-item.active { background: var(--blueSoft); color: var(--blue); }
+        
+        .asb-ico {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 8px;
+          background: var(--soft);
+          color: var(--muted);
+          transition: all 0.2s;
+        }
+        .asb-item.active .asb-ico { background: white; color: var(--blue); box-shadow: 0 2px 8px rgba(37,99,235,0.1); }
+        
+        .asb-list-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .asb-brand-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 12px 4px;
+          border-radius: 12px;
+          border: 1.5px solid var(--line);
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .asb-brand-item:hover { border-color: var(--blue); background: var(--blueSoft); }
+        .asb-brand-item.active { border-color: var(--blue); background: var(--blueSoft); }
+        .asb-brand-name { font-size: 11px; font-weight: 800; color: var(--muted); text-align: center; }
+        .asb-brand-item.active .asb-brand-name { color: var(--blue); }
+        .asb-ico-text { font-size: 14px; font-weight: 900; color: var(--muted); }
+
+        .asb-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .asb-chip {
+          display: inline-flex;
+          align-items: center;
+          height: 30px;
+          padding: 0 12px;
+          border-radius: 99px;
+          border: 1.5px solid var(--line);
+          background: var(--bg);
+          color: var(--muted);
+          font-size: 12px;
+          font-weight: 800;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .asb-chip:hover { border-color: var(--blue); color: var(--blue); }
+        .asb-chip.active { border-color: var(--blue); background: var(--blue); color: white; }
+
+        .asb-footer {
+          padding: 20px;
+          background: var(--soft);
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .asb-clear {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 42px;
+          border-radius: 12px;
+          border: 1.5px solid #fecaca;
+          background: #fff;
+          color: #ef4444;
+          font-size: 13px;
+          font-weight: 900;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+        .asb-clear:hover { background: #fef2f2; transform: translateY(-1px); }
       `}</style>
     </div>
   );

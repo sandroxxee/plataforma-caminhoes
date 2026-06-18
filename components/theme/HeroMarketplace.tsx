@@ -2,6 +2,7 @@ import "./HeroMarketplace.css";
 import Link from "next/link";
 import { getHomeContent } from "@/lib/site-content";
 import { createClient } from "@/lib/supabase/server";
+import { Search } from "lucide-react";
 
 export async function HeroMarketplace() {
   const supabase = await createClient();
@@ -24,18 +25,27 @@ export async function HeroMarketplace() {
             Compre e venda <span className="hero-title-accent">caminhões com confiança</span>
           </h1>
           <p className="hero-sub">
-            Anúncios aprovados, contato direto pelo WhatsApp<br className="hero-br" />
-            com vendedores verificados. Sem intermediários.
+            Anúncios aprovados, contato direto pelo WhatsApp com vendedores verificados. Sem intermediários.
           </p>
-          <div className="hero-actions">
-            <Link href="/anuncios" className="hero-btn-primary">
-              <span>🔍 Ver caminhões disponíveis</span>
-            </Link>
-            <Link href="/anunciar" className="hero-btn-secondary">
-              <span>➕ Anunciar grátis</span>
-            </Link>
-          </div>
         </div>
+      </div>
+
+      {/* Barra de Busca estilo Marketplace (fora da imagem) */}
+      <div className="hero-search-bar">
+        <div className="search-input-wrap">
+          <Search className="search-icon" size={20} />
+          <input 
+            type="text" 
+            placeholder="O que você está procurando? (Ex: Scania R450, Volvo FH...)" 
+            className="search-input"
+          />
+        </div>
+        <Link href="/anuncios" className="search-btn">
+          Ver Ofertas
+        </Link>
+        <Link href="/anunciar" className="anunciar-btn">
+          Anunciar Grátis
+        </Link>
       </div>
     </div>
   );
