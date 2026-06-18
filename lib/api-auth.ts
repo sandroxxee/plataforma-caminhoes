@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server'
 import { createPublicClient } from '@/lib/supabase/public'
 
 // Reutiliza o singleton com service_role de public.ts — sem criar novo cliente
-const supabaseAdmin = createPublicClient()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabaseAdmin = createPublicClient() as any
 
 export type ApiAuthResult =
   | { success: true; keyId: string; keyName: string }
