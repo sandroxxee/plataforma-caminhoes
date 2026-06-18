@@ -1,34 +1,51 @@
 'use client';
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
 
+type TruckContext = {
+  marca?: string | null;
+  modelo?: string | null;
+  ano_modelo?: number | null;
+  ano_fabricacao?: number | null;
+  preco?: number | null;
+  quilometragem?: number | null;
+  motor?: string | null;
+  cambio?: string | null;
+  combustivel?: string | null;
+  carroceria?: string | null;
+  tracao?: string | null;
+  cor?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  descricao?: string | null;
+  whatsapp?: string | null;
+};
+
 interface Mensagem {
   enviadoPor: 'user' | 'bot';
   texto: string;
 }
 
-interface DadosColetados {
-  etapa1_cadastro: string | null;
-  etapa2_intencao: string | null;
-  etapa3_veiculo: string | null;
-  etapa4_valores: string | null;
+type HistoricoMsg = { role: 'user' | 'assistant'; content: string };
+
+interface Props {
+  truck?: TruckContext;
 }
 
-export default function ChatFlutuante() {
+export default function ChatFlutuante({ truck }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [mensagensTela, setMensagensTela] = useState<Mensagem[]>([
-    { enviadoPor: 'bot', texto: 'Olá! Sou o assistente virtual. Vou te ajudar a criar um anúncio rapidinho. Pode começar!' }
-  ]);
-  const [historicoApi, setHistoricoApi] = useState<Record<string, unknown>[]>([]);
+  const [mensagensTela, setMensagensTela] = useState<Mensagem[]>([]);
+  const [historico, setHistorico] = useState<HistoricoMsg[]>([]);
   const [carregando, setCarregando] = useState(false);
-  const [confirmacaoFinal, setConfirmacaoFinal] = useState(false);
-  const [dadosColetados, setDadosColetados] = useState<DadosColetados>({
-    etapa1_cadastro: null,
-    etapa2_intencao: null,
-    etapa3_veiculo: null,
-    etapa4_valores: null
-  });
   const finalRef = useRef<HTMLDivElement>(null);
+
+  // Mensagem inicial dinâmica baseada no veículo
+  useEffect(() => {
+    const saudacao = truck?.marca
+      ? `Olá! Sou o assistente deste anúncio. Pode me perguntar sobre o ${truck.marca} ${truck.modelo ?? ''} — preço, km, motor, localização ou qualquer dúvida!`
+      : 'Olá! Sou o assistente virtual. Como posso ajudar?';
+    setMensagensTela([{ enviadoPor: 'bot', texto: saudacao }]);
+  }, [truck?.marca, truck?.modelo]);
 
   useEffect(() => {
     const abrir = () => setIsOpen(true);
@@ -43,24 +60,28 @@ export default function ChatFlutuante() {
   const enviarMensagem = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim() || carregando) return;
-    const mensagemUsuario = input;
+    const mensagemUsuario = input.trim();
     setInput('');
     setMensagensTela(prev => [...prev, { enviadoPor: 'user', texto: mensagemUsuario }]);
     setCarregando(true);
     try {
-      const res = await fetch('/api/anunciar-chat', {
+      const res = await fetch('/api/chat-anuncio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mensagem: mensagemUsuario, historico: historicoApi, dadosColetados })
+        body: JSON.stringify({
+          mensagem: mensagemUsuario,
+          historico: historico.slice(-6),
+          truck: truck ?? {},
+        }),
       });
-      const dados = await res.json() as { textoBot?: string; historicoAtualizado?: Record<string, unknown>[]; };
-      if (dados.textoBot) {
-        setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: dados.textoBot! }]);
-        setHistoricoApi(dados.historicoAtualizado ?? []);
-        if (dados.textoBot.toLowerCase().includes('confirma a publica')) {
-          setConfirmacaoFinal(true);
-        }
-      }
+      const json = await res.json() as { resposta?: string; erro?: string };
+      const textoBot = json.resposta ?? 'Não consegui processar sua pergunta. Tente novamente.';
+      setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: textoBot }]);
+      setHistorico(prev => [
+        ...prev,
+        { role: 'user', content: mensagemUsuario },
+        { role: 'assistant', content: textoBot },
+      ]);
     } catch {
       setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: 'Ops, tive um problema técnico. Tente novamente.' }]);
     } finally {
@@ -98,7 +119,6 @@ export default function ChatFlutuante() {
         .cf-header-status { font-size: 11px; color: #a1a1aa; display: flex; align-items: center; gap: 5px; }
         .cf-dot { width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block; animation: cf-pulse 1.5s infinite; }
         @keyframes cf-pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-        .cf-badge { font-size: 11px; background: #059669; color: #fff; padding: 3px 10px; border-radius: 999px; }
         .cf-msgs { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #fafafa; }
         .cf-msg { display: flex; }
         .cf-msg.user { justify-content: flex-end; }
@@ -106,7 +126,7 @@ export default function ChatFlutuante() {
         .cf-bubble {
           max-width: 82%; padding: 10px 14px;
           font-size: 13px; line-height: 1.55;
-          border-radius: 16px;
+          border-radius: 16px; white-space: pre-wrap;
         }
         .cf-msg.user .cf-bubble { background: #18181b; color: #fff; border-top-right-radius: 4px; }
         .cf-msg.bot .cf-bubble { background: #fff; color: #18181b; border: 1px solid #e4e4e7; border-top-left-radius: 4px; }
@@ -150,10 +170,11 @@ export default function ChatFlutuante() {
           <div className="cf-box">
             <div className="cf-header">
               <div>
-                <p className="cf-header-title">Assistente Virtual</p>
-                <span className="cf-header-status"><span className="cf-dot" />Online agora</span>
+                <p className="cf-header-title">
+                  {truck?.marca ? `${truck.marca} ${truck.modelo ?? ''}` : 'Assistente Virtual'}
+                </p>
+                <span className="cf-header-status"><span className="cf-dot" />Pergunte sobre este veículo</span>
               </div>
-              {confirmacaoFinal && <span className="cf-badge">Pronto para publicar</span>}
             </div>
 
             <div className="cf-msgs">
@@ -180,7 +201,7 @@ export default function ChatFlutuante() {
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Digite sua mensagem..."
+                placeholder="Pergunte sobre o veículo..."
                 autoComplete="off"
               />
               <button className="cf-send" type="submit" disabled={!input.trim() || carregando}>
