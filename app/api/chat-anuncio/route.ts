@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Content } from "@google/genai";
 
 export const runtime = "nodejs";
 
@@ -27,40 +27,33 @@ type TruckContext = {
 function buildSystemPrompt(truck: TruckContext): string {
   const preco = truck.preco
     ? `R$ ${Number(truck.preco).toLocaleString("pt-BR")}`
-    : "nao informado";
+    : "não informado";
   const km = truck.quilometragem
     ? `${Number(truck.quilometragem).toLocaleString("pt-BR")} km`
-    : "nao informado";
+    : "não informado";
 
-  const temVeiculo = Boolean(truck?.marca);
+  return `Você é um assistente especializado no seguinte anúncio de veículo:
 
-  const contextoVeiculo = temVeiculo
-    ? `Veiculo: ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
-Preco: ${preco}
+Veículo: ${truck.marca} ${truck.modelo} ${truck.ano_modelo ?? truck.ano_fabricacao ?? ""}
+Preço: ${preco}
 Quilometragem: ${km}
-Motor: ${truck.motor ?? "nao informado"}
-Cambio: ${truck.cambio ?? "nao informado"}
-Combustivel: ${truck.combustivel ?? "nao informado"}
-Carroceria: ${truck.carroceria ?? "nao informado"}
-Tracao: ${truck.tracao ?? "nao informado"}
-Cor: ${truck.cor ?? "nao informada"}
-Localizacao: ${truck.cidade ?? ""} / ${truck.estado ?? ""}
-Descricao: ${truck.descricao ?? "nenhuma"}`
-    : "Nao ha veiculo especifico nesta conversa.";
+Motor: ${truck.motor ?? "não informado"}
+Câmbio: ${truck.cambio ?? "não informado"}
+Combustível: ${truck.combustivel ?? "não informado"}
+Carroceria: ${truck.carroceria ?? "não informado"}
+Tração: ${truck.tracao ?? "não informado"}
+Cor: ${truck.cor ?? "não informada"}
+Localização: ${truck.cidade ?? ""} / ${truck.estado ?? ""}
+Descrição do vendedor: ${truck.descricao ?? "nenhuma"}
 
-  return `Voce e o assistente do site Caminhoes a Venda (caminhoesavenda.com).
-
-${contextoVeiculo}
-
-AJUDE QUALQUER PESSOA:
-- Comprador com duvida sobre o veiculo: responda com base nos dados acima
-- Comprador quer contato com vendedor: oriente a usar o botao WhatsApp no anuncio
-- Vendedor quer editar anuncio: oriente a acessar /painel
-- Vendedor quer anunciar: explique que e gratis em /cadastro
-- Duvidas gerais: responda sobre a plataforma
-- Se nao souber algo do veiculo: oriente a perguntar pelo WhatsApp
-
-REGRAS: Nunca invente dados. Seja direto, amigavel e use linguagem simples. Sem markdown ou asteriscos.`;
+REGRAS ABSOLUTAS:
+- Nunca use asteriscos, markdown, negrito ou qualquer tipo de formatação especial nas suas respostas.
+- Responda apenas dúvidas relacionadas a este veículo.
+- Se a informação não constar acima, diga de forma direta que não tem essa informação e oriente o comprador a perguntar diretamente pelo WhatsApp.
+- Nunca invente dados técnicos, histórico de manutenção ou informações que não estejam acima.
+- Seja objetivo, amigável e use linguagem simples.
+- Não mencione preços de outros veículos ou faça comparações de mercado.
+- Se perguntarem o WhatsApp do vendedor, informe que ele pode ser acessado clicando no botão de contato no anúncio.`;
 }
 
 export async function POST(req: NextRequest) {
@@ -77,11 +70,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ erro: "Mensagem vazia" }, { status: 400 });
     }
 
-    // Converte historico do front (role/content) para formato Gemini (role/parts)
+    if (!truck?.marca) {
+      return NextResponse.json({ erro: "Contexto do anúncio ausente" }, { status: 400 });
+    }
+
+    // Filtra e converte o histórico do frontend para o formato do Gemini
     const historicoFiltrado = historico
       .filter(msg => msg.content && msg.content.trim() !== "")
       .map((msg) => ({
-        role: msg.role === "assistant" ? "model" : "user",
+        role: (msg.role === "assistant" ? "model" : "user") as "user" | "model",
         parts: [{ text: msg.content }],
       }));
 
@@ -90,7 +87,7 @@ export async function POST(req: NextRequest) {
       historicoFiltrado.shift();
     }
 
-    const conteudosDoChat = [
+    const conteudosDoChat: Content[] = [
       ...historicoFiltrado,
       { role: "user", parts: [{ text: mensagem }] },
     ];
@@ -99,13 +96,13 @@ export async function POST(req: NextRequest) {
       model: "gemini-1.5-flash",
       contents: conteudosDoChat,
       config: {
-        systemInstruction: buildSystemPrompt(truck ?? {}),
+        systemInstruction: buildSystemPrompt(truck),
         temperature: 0.2,
         maxOutputTokens: 400,
       },
     });
 
-    const texto = resposta.text ?? "Nao consegui processar sua pergunta.";
+    const texto = resposta.text ?? "Não consegui processar sua pergunta.";
 
     return NextResponse.json({ resposta: texto });
   } catch (err) {
