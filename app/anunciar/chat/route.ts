@@ -1,5 +1,5 @@
 import { streamText } from 'ai'
-import { openai } from '@ai-sdk/openai'
+import { google } from '@ai-sdk/google'
 
 export const runtime = 'edge'
 
@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const { messages, dados } = await req.json()
 
   const result = await streamText({
-    model: openai('gpt-4o-mini'),
+    model: google('gemini-1.5-flash'),
     system: `Voce e um atendente da plataforma de caminhoes. Crie anuncios conversando com o usuario.
 
 Siga EXATAMENTE esta ordem, uma mensagem por vez:
