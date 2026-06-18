@@ -18,7 +18,10 @@ const styles = `
 .chat-btn { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:12px 20px; cursor:pointer; font-size:1rem; }
 .chat-btn:disabled { opacity:.5; cursor:not-allowed; }
 .chat-success { text-align:center; padding:32px; color:#4ade80; font-size:1.1rem; font-weight:700; }
-.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; align-self:flex-start; }
+.chat-loading { color:#64748b; font-size:.9rem; padding:8px 0; }
+.chat-inicio { display:flex; flex-direction:column; align-items:center; gap:16px; padding:40px 0; }
+.chat-inicio p { color:#94a3b8; text-align:center; font-size:1rem; }
+.btn-iniciar { background:#22c55e; color:#052e16; font-weight:900; border:none; border-radius:12px; padding:14px 28px; cursor:pointer; font-size:1rem; }
 `
 
 export default function ChatAnuncio() {
@@ -45,22 +48,17 @@ export default function ChatAnuncio() {
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
-  // Dispara a primeira mensagem do Gemini ao carregar a pagina
-  useEffect(() => {
-    if (!iniciado) {
-      setIniciado(true)
-      append({ role: 'user', content: 'oi' })
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  function iniciarChat() {
+    setIniciado(true)
+    append({ role: 'user', content: 'iniciar' })
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Filtra a mensagem inicial 'oi' do usuario para nao exibir
   const mensagensVisiveis = messages.filter(
-    (m, i) => !(i === 0 && m.role === 'user' && m.content === 'oi')
+    (m, i) => !(i === 0 && m.role === 'user' && m.content === 'iniciar')
   )
 
   return (
@@ -68,8 +66,16 @@ export default function ChatAnuncio() {
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="chat-box">
         <div className="chat-header">🚛 Criar Anuncio</div>
+
         {publicado ? (
           <div className="chat-success">Anuncio publicado! Obrigado, ate logo!</div>
+        ) : !iniciado ? (
+          <div className="chat-inicio">
+            <p>Clique abaixo para comecar a criar seu anuncio de caminhao com ajuda da IA.</p>
+            <button className="btn-iniciar" onClick={iniciarChat}>
+              Iniciar atendimento
+            </button>
+          </div>
         ) : (
           <>
             <div className="chat-messages">
