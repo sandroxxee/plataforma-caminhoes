@@ -1,7 +1,11 @@
 'use client'
 
-import ChatAnuncio from '@/components/ChatAnuncio'
+import ChatFlutuante from '@/components/ChatFlutuante'
 
 export default function ChatAnuncioPage() {
-  return <ChatAnuncio />
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <ChatFlutuante />
+    </div>
+  )
 }

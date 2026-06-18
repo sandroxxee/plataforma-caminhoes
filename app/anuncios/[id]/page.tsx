@@ -21,7 +21,6 @@ import {
   getPerfilTextos,
 } from "./anuncio-utils";
 import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
-import { ChatWidget } from "@/components/ChatWidget";
 import { RelatedAds } from "@/components/theme/RelatedAds";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -247,7 +246,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             />
           </div>
 
-          {/* Desktop Specs (Opcional, se quiser manter visível no desktop) */}
           {specs.length > 0 && (
             <div className="detail-card detail-specs-card-desktop">
               <h2 className="detail-section-title">{textos.ficha}</h2>
@@ -274,12 +272,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
       />
 
       <SiteFooter />
-
-      <ChatWidget
-        truckId={truck.id}
-        truckTitulo={title}
-        vendedorId={truck.user_id ?? ""}
-      />
 
       <style>{`
         .detail-breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--muted);padding:14px 0 8px}
@@ -316,8 +308,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-spec-row dt{color:var(--muted);font-weight:800}
         .detail-spec-row dd{font-weight:950;text-align:right}
         .detail-aside{position:sticky;top:80px;align-self:start}
-
-        /* Tabs Styles */
         .detail-tabs-wrap { margin-top: 14px; }
         .detail-tabs-list {
           display: flex; gap: 8px; background: var(--soft);
@@ -336,7 +326,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         }
         .detail-tab-content { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-
         @media(max-width:900px){
           .detail-aside{position:static}
           .detail-aside-header .detail-h1,.detail-aside-header .detail-location,.detail-aside-header .detail-status-badge,.detail-aside-header .detail-price,.detail-aside-header .fipe-badge{display:none}

@@ -5,7 +5,6 @@ import { ClientShell } from "@/components/ClientShell";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import BotaoAnunciarFlutuante from "@/components/BotaoAnunciarFlutuante";
 import ChatFlutuante from "@/components/ChatFlutuante";
 import "./globals.css";
 
@@ -115,7 +114,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <CookieBanner />
         <Analytics />
         <SpeedInsights />
-        <BotaoAnunciarFlutuante />
         <ChatFlutuante />
       </body>
     </html>
