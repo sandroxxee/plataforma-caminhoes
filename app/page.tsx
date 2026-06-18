@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
-import { HeroMarketplace } from "@/components/theme/HeroMarketplace";
 import { BrandsSection } from "@/components/theme/BrandsSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { TruckCard } from "@/components/theme/TruckCard";
@@ -52,33 +51,10 @@ export default async function HomePage() {
 
       <div className="market-main">
 
-        {/* HERO */}
-        <HeroMarketplace />
-
-        {/* CATEGORIAS */}
-        <section className="market-container">
-          <div className="market-section">
-            <div className="market-section-head">
-              <div>
-                <span>Navegue por categoria</span>
-                <h2>O que você procura?</h2>
-              </div>
-            </div>
-            <div className="home-cats">
-              {CATEGORIAS.map((c) => (
-                <Link key={c.href} href={c.href} className="home-cat-card">
-                  <span className="home-cat-emoji">{c.emoji}</span>
-                  <strong>{c.label}</strong>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* MARCAS */}
         <BrandsSection />
 
-        {/* ÚLTIMOS ANÚNCIOS */}
+        {/* ÚTIMOS ANÚNEIOS */}
         <section className="market-container">
           <div className="market-section">
             <div className="market-section-head">
@@ -108,7 +84,7 @@ export default async function HomePage() {
               <h2>Tudo para comprar e vender veículos pesados</h2>
               <p>O <strong>Caminhões à Venda</strong> é a plataforma especializada para quem compra ou vende caminhões, carretas, implementos, máquinas e peças no Brasil.</p>
               <ul className="home-sobre-list">
-                <li>📋 Anúncie seu veículo em minutos com fotos e contato direto pelo WhatsApp</li>
+                <li>📋 Anuncie seu veículo em minutos com fotos e contato direto pelo WhatsApp</li>
                 <li>🔍 Busque por marca, modelo, estado e faixa de preço</li>
                 <li>🏢 Revendas com estoque completo em um só lugar</li>
                 <li>📍 Encontre veículos perto de você no mapa</li>
@@ -140,22 +116,6 @@ export default async function HomePage() {
       <SiteFooter />
 
       <style>{`
-        .home-cats {
-          display: grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap: 12px;
-        }
-        .home-cat-card {
-          display: flex; flex-direction: column; align-items: center;
-          gap: 10px; padding: 22px 10px;
-          background: var(--soft); border-radius: var(--radius);
-          border: 1.5px solid var(--line);
-          font-weight: 900; font-size: 13px; color: var(--text);
-          text-decoration: none; text-align: center; transition: all .18s;
-        }
-        .home-cat-card:hover { border-color: var(--blue); color: var(--blue); background: var(--blueSoft); transform: translateY(-2px); box-shadow: var(--shadow2); }
-        .home-cat-emoji { font-size: 28px; line-height: 1; }
-
         .home-sobre {
           display: grid; grid-template-columns: 1fr 280px;
           gap: 32px; align-items: start;
@@ -188,14 +148,10 @@ export default async function HomePage() {
         .home-sobre-cat span { font-size: 22px; }
 
         @media (max-width: 900px) {
-          .home-cats { grid-template-columns: repeat(3, 1fr); }
           .home-sobre { grid-template-columns: 1fr; padding: 24px 20px; }
           .home-sobre-cats { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 640px) {
-          .home-cats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-          .home-cat-card { padding: 16px 8px; font-size: 12px; }
-          .home-cat-emoji { font-size: 24px; }
           .home-sobre-cats { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
