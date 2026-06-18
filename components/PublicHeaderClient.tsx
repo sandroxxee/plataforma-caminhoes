@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Truck, Wrench, Handshake, LayoutDashboard, LogIn,
-  Search, X, Menu, Map, Settings, Package,
+  Search, X, Menu, Settings, Package,
 } from "lucide-react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
@@ -55,13 +55,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         .ph-logo {
           display: flex; align-items: center; gap: 10px;
           text-decoration: none; flex-shrink: 0;
-        }
-        .ph-logo-icon {
-          width: 40px; height: 40px; border-radius: 14px;
-          background: linear-gradient(135deg, #1877f2 0%, #0ea5e9 100%);
-          display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 2px 10px rgba(24,119,242,.35);
-          flex-shrink: 0;
         }
         .ph-logo-text {
           font-weight: 800; font-size: 15px;
@@ -172,8 +165,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           .ph-nav { display: none; }
           .ph-hamburger { display: flex; }
           .ph-search { display: none; }
-          .ph-logo-text { display: none; }
-          .ph-logo-icon { width: 36px; height: 36px; border-radius: 11px; }
           .ph-root { padding: 0 14px; gap: 10px; height: 58px; }
           .public-cta { display: none; }
         }
@@ -181,9 +172,6 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
 
       <header className="ph-root">
         <Link href="/" className="ph-logo" aria-label="Caminhões à Venda">
-          <div className="ph-logo-icon">
-            <Truck size={20} color="white" strokeWidth={2} aria-hidden="true" />
-          </div>
           <div className="ph-logo-text">
             Caminhões<br /><span>à Venda</span>
           </div>
