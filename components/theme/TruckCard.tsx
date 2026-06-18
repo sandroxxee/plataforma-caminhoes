@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef } from "react";
-import { MapPin, Camera, MessageCircle, Eye } from "lucide-react";
+import { MapPin, Camera, MessageCircle, Eye, TrendingDown } from "lucide-react";
 import {
   formatMoney,
   getCardTitle,
@@ -53,8 +53,9 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const photoCount = (truck.truck_images || []).length;
   const views      = (truck as any).views as number | null | undefined;
 
-  const novo     = isNew((truck as any).created_at);
-  const destaque = !!(truck as any).destaque;
+  const novo        = isNew((truck as any).created_at);
+  const destaque    = !!(truck as any).destaque;
+  const abaixoFipe  = (truck as any).abaixo_fipe === true;
 
   const [preview, setPreview] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -104,6 +105,11 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           <div className="tc-preview-body">
             <p className="tc-preview-title">{cardTitle}</p>
             <strong className="tc-preview-price">{formatMoney(truck.preco)}</strong>
+            {abaixoFipe && (
+              <span className="tc-fipe-inline">
+                <TrendingDown size={12} strokeWidth={2.5} /> Abaixo da FIPE
+              </span>
+            )}
             {specs.length > 0 && (
               <div className="tc-preview-specs">
                 {specs.map((s) => (
@@ -170,8 +176,14 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         )}
 
         <span className="tc-badges">
-          {destaque && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
-          {novo     && <span className="tc-badge tc-badge-novo">Novo</span>}
+          {destaque   && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
+          {novo       && <span className="tc-badge tc-badge-novo">Novo</span>}
+          {abaixoFipe && (
+            <span className="tc-badge tc-badge-fipe">
+              <TrendingDown size={10} strokeWidth={2.5} style={{ display: "inline", verticalAlign: "middle" }} />
+              {" "}FIPE
+            </span>
+          )}
         </span>
       </Link>
 
@@ -183,6 +195,11 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
       <div className="tc-body">
         <p className="tc-name">{cardTitle}</p>
+        {abaixoFipe && (
+          <span className="tc-fipe-body">
+            <TrendingDown size={11} strokeWidth={2.5} /> Abaixo da FIPE
+          </span>
+        )}
         <div className="tc-meta-row">
           {meta && <p className="tc-meta">{meta}</p>}
           {views != null && views > 0 && (
@@ -201,14 +218,14 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         .tc:hover { z-index: 100; transform: translateY(-2px); box-shadow: var(--shadow2); }
         .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
 
-        /* ─── Badges (Destaque / Novo) ─── */
+        /* ─── Badges (Destaque / Novo / FIPE) ─── */
         .tc-badges {
           position: absolute; top: 9px; left: 9px;
           display: flex; flex-direction: column; gap: 4px;
           pointer-events: none; z-index: 3;
         }
         .tc-badge {
-          display: inline-flex; align-items: center;
+          display: inline-flex; align-items: center; gap: 3px;
           height: 22px; padding: 0 8px; border-radius: 999px;
           font-size: 10px; font-weight: 900;
           letter-spacing: .03em; line-height: 1;
@@ -216,6 +233,27 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         }
         .tc-badge-destaque { background: rgba(234,179,8,.92); color: #7c5c00; }
         .tc-badge-novo { background: rgba(34,197,94,.9); color: #fff; }
+        .tc-badge-fipe { background: rgba(34,197,94,.92); color: #052e16; }
+
+        /* ─── Selo FIPE no corpo do card ─── */
+        .tc-fipe-body {
+          display: inline-flex; align-items: center; gap: 4px;
+          height: 20px; padding: 0 8px; border-radius: 999px;
+          background: #dcfce7; color: #15803d;
+          font-size: 10px; font-weight: 900; letter-spacing: .03em;
+          width: fit-content;
+        }
+        body.public-theme-dark .tc-fipe-body { background: #14532d; color: #86efac; }
+
+        /* ─── Selo FIPE no popover preview ─── */
+        .tc-fipe-inline {
+          display: inline-flex; align-items: center; gap: 4px;
+          height: 22px; padding: 0 9px; border-radius: 999px;
+          background: #dcfce7; color: #15803d;
+          font-size: 11px; font-weight: 900;
+          margin-bottom: 10px; width: fit-content;
+        }
+        body.public-theme-dark .tc-fipe-inline { background: #14532d; color: #86efac; }
 
         /* ─── Foto + overlay ─── */
         .tc-photo {
@@ -238,7 +276,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           z-index: 2;
         }
 
-        /* ─── Preço — maior e mais legível ─── */
+        /* ─── Preço ─── */
         .tc-price {
           font-size: clamp(17px, 2vw, 21px);
           font-weight: 950;
@@ -262,7 +300,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           font-size: 11px; font-weight: 800; backdrop-filter: blur(4px);
         }
 
-        /* ─── Botão WhatsApp — maior e mais verde ─── */
+        /* ─── Botão WhatsApp ─── */
         .tc-wa {
           position: absolute; top: 9px; right: 9px; z-index: 4;
           display: inline-flex; align-items: center; justify-content: center;
@@ -296,7 +334,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           white-space: nowrap; flex-shrink: 0;
         }
 
-        /* ─── Botão "Ver detalhes" — mais destacado ─── */
+        /* ─── Botão "Ver detalhes" ─── */
         .tc-btn {
           display: flex; align-items: center; justify-content: center;
           height: 36px; border-radius: 8px;
@@ -353,7 +391,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
         .tc-preview-price {
           display:block; font-size:22px; font-weight:950;
           color:var(--blue); letter-spacing:-.04em;
-          line-height:1; margin-bottom:12px;
+          line-height:1; margin-bottom:8px;
         }
         .tc-preview-specs { display:grid; gap:5px; margin-bottom:14px; }
         .tc-preview-spec {
