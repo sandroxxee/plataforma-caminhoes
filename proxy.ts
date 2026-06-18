@@ -2,17 +2,20 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 const PROTECTED_ROUTES = ["/painel", "/conta", "/anunciar", "/admin"];
+const PUBLIC_EXCEPTIONS = ["/anunciar/chat", "/anunciar-gratis"];
 const AUTH_ROUTES = ["/login", "/cadastro"];
 
-// O Next.js 16.2.9 (Turbopack) espera que o arquivo proxy.ts exporte uma função chamada 'proxy'
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Rotas publicas que comecam com prefixo protegido mas sao liberadas
+  const isException = PUBLIC_EXCEPTIONS.some((r) => pathname.startsWith(r));
+  if (isException) return NextResponse.next();
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const hasSession = !!user;
 
-  // Redireciona usuario nao logado para /login
   const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
   if (!hasSession && isProtected) {
     const loginUrl = new URL("/login", request.url);
@@ -20,7 +23,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redireciona usuario ja logado para /painel
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
   if (hasSession && isAuthRoute) {
     return NextResponse.redirect(new URL("/painel", request.url));
@@ -29,7 +31,6 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Mantendo o alias 'middleware' por compatibilidade caso o Turbopack mude de ideia
 export const middleware = proxy;
 
 export const config = {
