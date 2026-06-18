@@ -1,6 +1,11 @@
 import { GoogleGenAI, Type, FunctionDeclaration, Tool } from '@google/genai'
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+)
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 
@@ -8,23 +13,28 @@ const ferramentas: Tool[] = [
   {
     functionDeclarations: [
       {
-        name: 'cadastrar_anuncio',
-        description: 'Dispare quando tiver coletado todos os dados do anuncio: nome, whatsapp, cidade, tipo (vender/comprar), modelo, km, mecanica, tipo_vendedor, preco e se aceita troca.',
+        name: 'cadastrar_pessoa',
+        description: 'Dispare assim que coletar o nome e o whatsapp de um novo usuario para registra-lo.',
         parameters: {
           type: Type.OBJECT,
           properties: {
-            nome: { type: Type.STRING, description: 'Nome do vendedor' },
-            whatsapp: { type: Type.STRING, description: 'WhatsApp com DDD' },
-            cidade: { type: Type.STRING, description: 'Cidade do vendedor' },
-            tipo: { type: Type.STRING, description: 'vender ou comprar' },
-            modelo: { type: Type.STRING, description: 'Marca, modelo e ano do veiculo' },
-            km: { type: Type.STRING, description: 'Quilometragem' },
-            mecanica: { type: Type.STRING, description: 'Estado da mecanica' },
-            tipo_vendedor: { type: Type.STRING, description: 'particular ou revenda' },
-            preco: { type: Type.NUMBER, description: 'Preco de venda em reais' },
-            aceita_troca: { type: Type.STRING, description: 'sim ou nao' },
+            nome: { type: Type.STRING, description: 'Nome completo' },
+            whatsapp: { type: Type.STRING, description: 'Numero de telefone ou WhatsApp com DDD' }
           },
-          required: ['nome', 'whatsapp', 'modelo']
+          required: ['nome', 'whatsapp']
+        }
+      } as FunctionDeclaration,
+      {
+        name: 'cadastrar_anuncio',
+        description: 'Dispare quando o usuario trouxer os dados para criar o anuncio do veiculo.',
+        parameters: {
+          type: Type.OBJECT,
+          properties: {
+            modelo: { type: Type.STRING, description: 'Modelo do caminhao ou veiculo (ex: Volvo VM 270)' },
+            preco: { type: Type.NUMBER, description: 'Preco de venda em reais (apenas numeros)' },
+            descricao: { type: Type.STRING, description: 'Detalhes opcionais sobre o estado do veiculo' }
+          },
+          required: ['modelo']
         }
       } as FunctionDeclaration
     ]
@@ -38,20 +48,11 @@ export async function POST(req: Request) {
     const chat = ai.chats.create({
       model: 'gemini-1.5-flash',
       config: {
-        systemInstruction: `Voce e um atendente simpatico da plataforma CaminhoesBR especializado em anuncios de caminhoes.
-Converse de forma natural, limpa e profissional.
-Sua tarefa e coletar os dados para publicar um anuncio, pedindo uma informacao de cada vez.
-
-Colete nesta ordem:
-1. Nome, WhatsApp e cidade
-2. Vai vender ou comprar?
-3. Marca, modelo, ano e km
-4. Estado da mecanica e se e particular ou revenda
-5. Valor pedido e se aceita troca
-6. Faca um resumo e pergunte: Posso publicar o anuncio?
-7. Se confirmar: chame a funcao cadastrar_anuncio com todos os dados coletados
-
-Sempre conduza a conversa de forma leve, pedindo uma informacao de cada vez.`,
+        systemInstruction: `Voce e um assistente virtual e negociador especializado na plataforma de caminhoes CaminhoesBR.
+Converse de maneira natural, limpa e profissional.
+Se o usuario quiser se cadastrar, peca o nome e o contato. Coletou? Chame 'cadastrar_pessoa'.
+Se o usuario quiser vender ou anunciar, descubra o modelo e detalhes. Coletou? Chame 'cadastrar_anuncio'.
+Sempre conduza a conversa de forma leve, pedindo uma informacao de cada vez para parecer um chat humano.`,
         tools: ferramentas
       },
       history: historico ?? []
@@ -66,17 +67,30 @@ Sempre conduza a conversa de forma leve, pedindo uma informacao de cada vez.`,
 
       let resultadoDoBanco: Record<string, unknown>
 
-      if (nomeFuncao === 'cadastrar_anuncio') {
-        const supabase = await createClient()
+      if (nomeFuncao === 'cadastrar_pessoa') {
         const { data, error } = await supabase
-          .from('anuncios_chat')
-          .insert([argumentos])
-          .select('id')
-          .single()
+          .from('usuarios')
+          .insert([{ nome: argumentos.nome, whatsapp: argumentos.whatsapp }])
+          .select()
 
         resultadoDoBanco = error
           ? { status: 'erro', mensagem: error.message }
-          : { status: 'sucesso', id_anuncio: data?.id }
+          : { status: 'sucesso', id_usuario: (data as Record<string, unknown>[])[0]?.id }
+
+      } else if (nomeFuncao === 'cadastrar_anuncio') {
+        const { data, error } = await supabase
+          .from('anuncios_chat')
+          .insert([{
+            modelo: argumentos.modelo,
+            preco: argumentos.preco ?? null,
+            descricao: argumentos.descricao ?? ''
+          }])
+          .select()
+
+        resultadoDoBanco = error
+          ? { status: 'erro', mensagem: error.message }
+          : { status: 'sucesso', id_anuncio: (data as Record<string, unknown>[])[0]?.id }
+
       } else {
         resultadoDoBanco = { status: 'funcao_desconhecida' }
       }
