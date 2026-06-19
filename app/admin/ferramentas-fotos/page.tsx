@@ -1,14 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-
-type Foto = {
-  url: string
-  nome: string
-}
 
 type Anuncio = {
   id: string
@@ -20,18 +15,22 @@ type Anuncio = {
 }
 
 const FRASES_PREMIUM = [
-  '🚛 Oportunidade premium! Caminhão ideal para você. Chame agora!',
-  '🔥 Raridade no mercado! Este caminhão não vai durar. Fale já!',
-  '⭐ Seleção premium de caminhões para o seu negócio. Entre em contato!',
-  '💼 Oportunidade única! Caminhão revisado e pronto pra rodar. Chame agora!',
-  '🏆 Os melhores caminhões estão aqui. Não perca essa chance!',
-  '🚀 Caminhão de alta performance esperando por você. Consulte agora!',
-  '💎 Premium e na sua mão. Caminhão top de linha disponível. Chame já!',
-  '✅ Estoque selecionado! Caminhões premium para o seu gosto. Fale conosco!',
+  '\uD83D\uDE9B Oportunidade premium! Caminh\u00E3o ideal para voc\u00EA. Chame agora!',
+  '\uD83D\uDD25 Raridade no mercado! Este caminh\u00E3o n\u00E3o vai durar. Fale j\u00E1!',
+  '\u2B50 Sele\u00E7\u00E3o premium de caminh\u00F5es para o seu neg\u00F3cio. Entre em contato!',
+  '\uD83D\uDCBC Oportunidade \u00FAnica! Caminh\u00E3o revisado e pronto pra rodar. Chame agora!',
+  '\uD83C\uDFC6 Os melhores caminh\u00F5es est\u00E3o aqui. N\u00E3o perca essa chance!',
+  '\uD83D\uDE80 Caminh\u00E3o de alta performance esperando por voc\u00EA. Consulte agora!',
+  '\uD83D\uDC8E Premium e na sua m\u00E3o. Caminh\u00E3o top de linha dispon\u00EDvel. Chame j\u00E1!',
+  '\u2705 Estoque selecionado! Caminh\u00F5es premium para o seu gosto. Fale conosco!',
 ]
 
 export default function FerramentasFotosPage() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
   const [anuncios, setAnuncios] = useState<Anuncio[]>([])
   const [selecionado, setSelecionado] = useState<Anuncio | null>(null)
   const [fotosSelecionadas, setFotosSelecionadas] = useState<Set<string>>(new Set())
@@ -67,15 +66,13 @@ export default function FerramentasFotosPage() {
 
   function selecionarTodas() {
     if (!selecionado) return
-    const todas = new Set(selecionado.fotos)
-    setFotosSelecionadas(todas)
+    setFotosSelecionadas(new Set(selecionado.fotos))
   }
 
   function limparSelecao() {
     setFotosSelecionadas(new Set())
   }
 
-  // Download fotos SOLTAS (sem pasta, sem zip)
   async function baixarFotosSoltas() {
     if (fotosSelecionadas.size === 0) return
     setLoading(true)
@@ -87,7 +84,6 @@ export default function FerramentasFotosPage() {
         const res = await fetch(url)
         const blob = await res.blob()
         saveAs(blob, nome)
-        // pequeno delay para o browser não bloquear múltiplos downloads
         await new Promise(r => setTimeout(r, 300))
       } catch (e) {
         console.error('Erro ao baixar foto:', url, e)
@@ -96,7 +92,6 @@ export default function FerramentasFotosPage() {
     setLoading(false)
   }
 
-  // Download ZIP com todas as fotos selecionadas
   async function baixarZip() {
     if (fotosSelecionadas.size === 0) return
     setLoading(true)
@@ -124,10 +119,8 @@ export default function FerramentasFotosPage() {
     setLoading(false)
   }
 
-  // Copiar frase premium
   function copiarFrase() {
-    const frase = FRASES_PREMIUM[fraseIndex]
-    navigator.clipboard.writeText(frase).then(() => {
+    navigator.clipboard.writeText(FRASES_PREMIUM[fraseIndex]).then(() => {
       setCopiado(true)
       setTimeout(() => setCopiado(false), 2000)
     })
@@ -137,7 +130,6 @@ export default function FerramentasFotosPage() {
     setFraseIndex(i => (i + 1) % FRASES_PREMIUM.length)
   }
 
-  // Compartilhar via WhatsApp
   function compartilharWhatsApp() {
     const frase = encodeURIComponent(FRASES_PREMIUM[fraseIndex])
     window.open(`https://wa.me/?text=${frase}`, '_blank')
@@ -147,18 +139,17 @@ export default function FerramentasFotosPage() {
     <div className="min-h-screen bg-gray-950 text-white p-6">
       <div className="max-w-6xl mx-auto">
 
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-orange-400 mb-1">📸 Ferramentas de Fotos</h1>
+          <h1 className="text-3xl font-bold text-orange-400 mb-1">\uD83D\uDCF8 Ferramentas de Fotos</h1>
           <p className="text-gray-400 text-sm">Baixe fotos soltas ou em ZIP e compartilhe com frases premium</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Coluna 1 — Lista de Anúncios */}
+          {/* Lista de An\u00FAncios */}
           <div className="lg:col-span-1">
             <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-              <h2 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">Anúncios</h2>
+              <h2 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">An\u00FAncios</h2>
               <input
                 type="text"
                 placeholder="Buscar por marca, modelo..."
@@ -178,22 +169,21 @@ export default function FerramentasFotosPage() {
                     }`}
                   >
                     <div className="font-medium truncate">{a.titulo || `${a.marca} ${a.modelo}`}</div>
-                    <div className="text-xs opacity-70">{a.marca} • {a.ano} • {a.fotos?.length ?? 0} fotos</div>
+                    <div className="text-xs opacity-70">{a.marca} \u2022 {a.ano} \u2022 {a.fotos?.length ?? 0} fotos</div>
                   </button>
                 ))}
                 {anunciosFiltrados.length === 0 && (
-                  <p className="text-gray-600 text-sm text-center py-4">Nenhum anúncio encontrado</p>
+                  <p className="text-gray-600 text-sm text-center py-4">Nenhum an\u00FAncio encontrado</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Coluna 2 — Grade de Fotos */}
+          {/* Grade de Fotos + A\u00E7\u00F5es */}
           <div className="lg:col-span-2 space-y-4">
 
             {selecionado ? (
               <>
-                {/* Ações de seleção */}
                 <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
                   <div className="flex items-center justify-between flex-wrap gap-3">
                     <div>
@@ -201,17 +191,12 @@ export default function FerramentasFotosPage() {
                       <p className="text-xs text-gray-400">{fotosSelecionadas.size} de {selecionado.fotos?.length ?? 0} fotos selecionadas</p>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={selecionarTodas} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-white transition">
-                        Todas
-                      </button>
-                      <button onClick={limparSelecao} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-white transition">
-                        Limpar
-                      </button>
+                      <button onClick={selecionarTodas} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-white transition">Todas</button>
+                      <button onClick={limparSelecao} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-white transition">Limpar</button>
                     </div>
                   </div>
                 </div>
 
-                {/* Grade de fotos */}
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {(selecionado.fotos || []).map((url, i) => (
                     <button
@@ -226,31 +211,30 @@ export default function FerramentasFotosPage() {
                       <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
                       {fotosSelecionadas.has(url) && (
                         <div className="absolute inset-0 bg-orange-500/30 flex items-center justify-center">
-                          <span className="text-2xl">✓</span>
+                          <span className="text-2xl">\u2713</span>
                         </div>
                       )}
                     </button>
                   ))}
                 </div>
 
-                {/* Botões de Download */}
                 {fotosSelecionadas.size > 0 && (
                   <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                    <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">⬇️ Download ({fotosSelecionadas.size} fotos)</h3>
+                    <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">\u2B07\uFE0F Download ({fotosSelecionadas.size} fotos)</h3>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <button
                         onClick={baixarFotosSoltas}
                         disabled={loading}
-                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2"
+                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl font-semibold text-sm transition"
                       >
-                        {loading ? '⏳ Baixando...' : '📥 Baixar Fotos Soltas'}
+                        {loading ? '\u23F3 Baixando...' : '\uD83D\uDCE5 Baixar Fotos Soltas'}
                       </button>
                       <button
                         onClick={baixarZip}
                         disabled={loading}
-                        className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2"
+                        className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl font-semibold text-sm transition"
                       >
-                        {loading ? '⏳ Gerando ZIP...' : '🗜️ Baixar como ZIP'}
+                        {loading ? '\u23F3 Gerando ZIP...' : '\uD83D\uDDDC\uFE0F Baixar como ZIP'}
                       </button>
                     </div>
                   </div>
@@ -258,23 +242,20 @@ export default function FerramentasFotosPage() {
               </>
             ) : (
               <div className="bg-gray-900 rounded-2xl p-12 border border-gray-800 text-center">
-                <p className="text-4xl mb-3">🚛</p>
-                <p className="text-gray-400">Selecione um anúncio para ver as fotos</p>
+                <p className="text-4xl mb-3">\uD83D\uDE9B</p>
+                <p className="text-gray-400">Selecione um an\u00FAncio para ver as fotos</p>
               </div>
             )}
 
             {/* Frases Premium */}
             <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-              <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">💬 Frase Premium para Compartilhar</h3>
+              <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">\uD83D\uDCAC Frase Premium</h3>
               <div className="bg-gray-800 rounded-xl p-4 mb-3 border border-orange-500/30">
                 <p className="text-white font-medium text-sm leading-relaxed">{FRASES_PREMIUM[fraseIndex]}</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={proximaFrase}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-white transition"
-                >
-                  🔄 Próxima Frase
+                <button onClick={proximaFrase} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-white transition">
+                  \uD83D\uDD04 Pr\u00F3xima
                 </button>
                 <button
                   onClick={copiarFrase}
@@ -282,13 +263,10 @@ export default function FerramentasFotosPage() {
                     copiado ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'
                   }`}
                 >
-                  {copiado ? '✅ Copiado!' : '📋 Copiar Frase'}
+                  {copiado ? '\u2705 Copiado!' : '\uD83D\uDCCB Copiar'}
                 </button>
-                <button
-                  onClick={compartilharWhatsApp}
-                  className="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg text-sm text-white transition"
-                >
-                  📲 WhatsApp
+                <button onClick={compartilharWhatsApp} className="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg text-sm text-white transition">
+                  \uD83D\uDCF2 WhatsApp
                 </button>
               </div>
             </div>
