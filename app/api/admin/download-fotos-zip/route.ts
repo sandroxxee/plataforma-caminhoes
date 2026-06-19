@@ -25,10 +25,10 @@ export async function POST(req: NextRequest) {
       })
     )
 
-    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' })
+    const zipUint8 = await zip.generateAsync({ type: 'uint8array' })
     const nome = (nomeArquivo || 'fotos-caminhao').replace(/[^a-z0-9-_]/gi, '-').toLowerCase()
 
-    return new NextResponse(zipBuffer, {
+    return new NextResponse(zipUint8, {
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="${nome}.zip"`,
