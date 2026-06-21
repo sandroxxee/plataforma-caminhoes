@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { SlidersHorizontal, X, Search, Truck, Container, Wrench, Bus, Tractor, Package } from "lucide-react";
+import { SlidersHorizontal, X, Search, Truck, Container, Wrench, Bus, Tractor, Package, Star } from "lucide-react";
 import { SalvarBusca } from "@/components/SalvarBusca";
 import { MARCAS_VALIDAS } from "@/lib/constants";
 
@@ -108,45 +108,67 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
   return (
     <>
       <style>{`
-        .af-mobile-bar { display:none; gap:8px; align-items:center; margin-bottom:16px; }
-        .af-desktop-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-        .af-search-wrap { position:relative; display:flex; align-items:center; flex:1; max-width:480px; }
-        .af-search-icon { position:absolute; left:13px; color:var(--muted); pointer-events:none; }
-        .af-search { width:100%; height:42px; padding:0 38px 0 38px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text); font-size:14px; font-weight:700; outline:none; transition:border-color .15s; }
-        .af-search:focus { border-color:var(--blue); }
-        .af-search::placeholder { color:var(--muted); font-weight:600; }
-        .af-search-clear { position:absolute; right:10px; width:22px; height:22px; border-radius:999px; border:none; background:var(--soft); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .af-mobile-bar { display:none; gap:10px; align-items:center; margin-bottom:20px; }
+        .af-desktop-bar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+        .af-search-wrap { position:relative; display:flex; align-items:center; flex:1; max-width:520px; }
+        .af-search-icon { position:absolute; left:16px; color:var(--muted); pointer-events:none; opacity: 0.6; }
+        .af-search {
+          width:100%; height:46px; padding:0 44px;
+          border-radius:14px; border:1px solid rgba(148,163,184,0.15);
+          background:#ffffff; color:var(--text); font-size:14px; font-weight:700;
+          outline:none; transition:all .2s;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .af-search:focus { border-color:var(--blue); box-shadow: 0 4px 16px rgba(24,119,242,0.1); background:#fff; }
+        .af-search::placeholder { color:var(--muted); font-weight:600; opacity: 0.5; }
+        .af-search-clear { position:absolute; right:12px; width:24px; height:24px; border-radius:999px; border:none; background:var(--soft); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition: .2s; }
+        .af-search-clear:hover { background: #e2e8f0; color: var(--text); }
         .af-count { margin:0; font-size:14px; font-weight:700; color:var(--muted); white-space:nowrap; }
-        .af-count strong { color:var(--text); font-size:16px; }
-        .af-filtered { color:var(--blue); }
-        .af-clear-inline { display:inline-flex; align-items:center; gap:4px; margin-left:10px; height:28px; padding:0 10px; border-radius:999px; border:1.5px solid rgba(239,68,68,.3); background:rgba(239,68,68,.07); color:#f87171; font-size:11px; font-weight:800; text-decoration:none; }
-        .af-drawer-btn { display:inline-flex; align-items:center; gap:6px; height:42px; padding:0 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text); font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap; }
-        .af-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; border-radius:999px; background:var(--blue); color:#fff; font-size:11px; font-weight:900; padding:0 4px; }
-        .af-overlay { position:fixed; inset:0; z-index:199; background:rgba(0,0,0,.45); backdrop-filter:blur(2px); }
-        .af-drawer { position:fixed; top:0; left:0; bottom:0; width:min(320px,85vw); z-index:200; background:var(--surface); border-right:1px solid var(--line); box-shadow: 20px 0 50px rgba(0,0,0,0.15); transform:translateX(-100%); transition:transform .35s cubic-bezier(0.16, 1, 0.3, 1); display:flex; flex-direction:column; overflow:hidden; }
+        .af-count strong { color:var(--text); font-size:16px; font-weight:900; }
+        .af-filtered { color:var(--blue); margin-left: 4px; }
+        .af-clear-inline { display:inline-flex; align-items:center; gap:6px; margin-left:12px; height:32px; padding:0 12px; border-radius:999px; border:1px solid rgba(239,68,68,0.15); background:rgba(239,68,68,0.05); color:#ef4444; font-size:12px; font-weight:800; text-decoration:none; transition: .2s; }
+        .af-clear-inline:hover { background: rgba(239,68,68,0.1); transform: translateY(-1px); }
+        .af-drawer-btn {
+          display:inline-flex; align-items:center; gap:8px; height:46px; padding:0 18px;
+          border-radius:14px; border:1px solid rgba(148,163,184,0.15);
+          background:#ffffff; color:var(--text); font-size:14px; font-weight:800;
+          cursor:pointer; white-space:nowrap; transition: .2s;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .af-drawer-btn:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-1px); }
+        .af-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; border-radius:999px; background:var(--blue); color:#fff; font-size:11px; font-weight:900; padding:0 5px; }
+        .af-overlay { position:fixed; inset:0; z-index:199; background:rgba(15,23,42,0.4); backdrop-filter:blur(4px); transition: opacity .3s; }
+        .af-drawer {
+          position:fixed; top:0; left:0; bottom:0; width:min(340px,85vw);
+          z-index:200; background:#ffffff;
+          border-right:1px solid rgba(148,163,184,0.1);
+          box-shadow: 20px 0 60px rgba(0,0,0,0.08);
+          transform:translateX(-100%); transition:transform .4s cubic-bezier(0.16, 1, 0.3, 1);
+          display:flex; flex-direction:column; overflow:hidden;
+        }
         .af-drawer.open { transform:translateX(0); }
-        .af-drawer-head { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid var(--line); flex-shrink:0; background: var(--soft); }
-        .af-drawer-title { font-size:18px; font-weight:900; letter-spacing: -0.02em; }
-        .af-drawer-close { width:40px; height:40px; border-radius:12px; border:none; background:var(--surface); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: var(--shadow); }
-        .af-drawer-body { overflow-y:auto; flex:1; padding-bottom: 40px; }
-        .af-dsection { padding:20px; }
-        .af-ddiv { height:1px; background:var(--line); margin: 0 20px; }
-        .af-dlabel { margin:0 0 12px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; color:var(--blue); opacity: 0.8; }
+        .af-drawer-head { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid rgba(148,163,184,0.08); flex-shrink:0; background: #fff; }
+        .af-drawer-title { font-size:18px; font-weight:800; letter-spacing: -0.02em; color: var(--text); }
+        .af-drawer-close { width:44px; height:44px; border-radius:14px; border:none; background:var(--soft); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; transition: .2s; }
+        .af-drawer-close:hover { background: #e2e8f0; transform: rotate(90deg); }
+        .af-drawer-body { overflow-y:auto; flex:1; padding: 10px 0 40px; }
+        .af-dsection { padding:20px 24px; }
+        .af-ddiv { height:1px; background:rgba(148,163,184,0.06); margin: 0 24px; }
+        .af-dlabel { margin:0 0 16px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); opacity: 0.5; }
         .af-dlist { display:flex; flex-direction:column; gap:4px; }
-        .af-ditem { display:flex; align-items:center; gap:12px; height:44px; padding:0 12px; border-radius:12px; font-size:14px; font-weight:750; color:var(--text); text-decoration:none; transition: all .2s; border: 1px solid transparent; }
-        .af-ditem:hover { background:var(--soft); color:var(--blue); }
-        .af-ditem.active { background:var(--blueSoft); color:var(--blue); font-weight:900; border-color: rgba(59,130,246,0.2); }
-        .af-dprice { font-size:13px; }
-        .af-dico { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; background:var(--surface); color:var(--muted); font-size:11px; flex-shrink:0; box-shadow: var(--shadow); transition: all 0.2s; }
-        .af-dico-star { font-size:14px; }
-        .af-ditem.active .af-dico { background:var(--blue); color:#fff; transform: scale(1.05); }
-        .af-logo { border-radius:6px; object-fit:contain; flex-shrink:0; background: #fff; padding: 2px; }
-        .af-chips { display:flex; gap:8px; flex-wrap:wrap; }
-        .af-chip { display:inline-flex; align-items:center; height:32px; padding:0 14px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--muted); font-size:12px; font-weight:800; text-decoration:none; transition:.2s; }
-        .af-chip:hover { border-color:var(--blue); color:var(--blue); transform: translateY(-1px); }
-        .af-chip.active { border-color:var(--blue); background:var(--blue); color:#fff; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
-        .af-dclear { display:inline-flex; align-items:center; gap:8px; width: 100%; justify-content: center; height:46px; border-radius:14px; border:1.5px solid rgba(239,68,68,0.2); background:rgba(239,68,68,0.05); color:#ef4444; font-size:13px; font-weight:900; text-decoration:none; transition: all 0.2s; }
-        .af-dclear:hover { background: rgba(239,68,68,0.1); transform: translateY(-1px); }
+        .af-ditem { display:flex; align-items:center; gap:12px; height:48px; padding:0 14px; border-radius:14px; font-size:15px; font-weight:700; color:var(--text); text-decoration:none; transition: all .2s; border: 1px solid transparent; }
+        .af-ditem:hover { background:rgba(24,119,242,0.05); color:var(--blue); }
+        .af-ditem.active { background:var(--blueSoft); color:var(--blue); font-weight:800; }
+        .af-dprice { font-size:14px; }
+        .af-dico { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:#fff; border: 1px solid rgba(148,163,184,0.1); color:var(--muted); flex-shrink:0; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.2s; }
+        .af-ditem.active .af-dico { background:var(--blue); color:#fff; border-color: var(--blue); transform: scale(1.05); box-shadow: 0 4px 12px rgba(24,119,242,0.3); }
+        .af-logo { border-radius:8px; object-fit:contain; flex-shrink:0; background: #fff; padding: 3px; border: 1px solid rgba(148,163,184,0.08); }
+        .af-chips { display:flex; gap:10px; flex-wrap:wrap; }
+        .af-chip { display:inline-flex; align-items:center; height:36px; padding:0 16px; border-radius:12px; border:1px solid rgba(148,163,184,0.15); background:#fff; color:var(--muted); font-size:13px; font-weight:800; text-decoration:none; transition:.2s; }
+        .af-chip:hover { border-color:var(--blue); color:var(--blue); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .af-chip.active { border-color:var(--blue); background:var(--blue); color:#fff; box-shadow: 0 8px 20px rgba(24,119,242,0.25); }
+        .af-dclear { display:inline-flex; align-items:center; gap:10px; width: 100%; justify-content: center; height:50px; border-radius:16px; border:1px solid rgba(239,68,68,0.2); background:rgba(239,68,68,0.04); color:#ef4444; font-size:14px; font-weight:900; text-decoration:none; transition: all .2s; }
+        .af-dclear:hover { background: rgba(239,68,68,0.08); transform: translateY(-1px); border-color: #ef4444; }
         @media(max-width:900px){ .af-mobile-bar{ display:flex; } .af-desktop-bar{ display:none; } }
       `}</style>
 
@@ -209,7 +231,7 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
             <p className="af-dlabel">Marcas</p>
             <nav className="af-dlist">
               <Link href={buildHref(q, faixaIdx, "", estadoFiltro, { marca: undefined })} className={`af-ditem${!marcaFiltro ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
-                <span className="af-dico af-dico-star">&#9733;</span>Todas
+                <span className="af-dico"><Star size={14} /></span>Todas
               </Link>
               {MARCAS_VALIDAS.map((m) => (
                 <Link key={m} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: m })} className={`af-ditem${marcaFiltro === m ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>

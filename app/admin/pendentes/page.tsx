@@ -31,10 +31,10 @@ type Truck = {
 };
 
 const PERFIL_LABEL: Record<string, { label: string; color: string; bg: string }> = {
-  Máquinas:  { label: "Máquina",   color: "#fde68a", bg: "#3a2b10" },
-  Peças:     { label: "Peça",      color: "#bfdbfe", bg: "#1e2f4a" },
-  Carretas:  { label: "Carreta",   color: "#d9f99d", bg: "#1a2e10" },
-  Implementos:{ label: "Implemento", color: "#e9d5ff", bg: "#2e1a3a" },
+  Máquinas:  { label: "Máquina",   color: "#92400e", bg: "#fef3c7" },
+  Peças:     { label: "Peça",      color: "#1e40af", bg: "#dbeafe" },
+  Carretas:  { label: "Carreta",   color: "#166534", bg: "#dcfce7" },
+  Implementos:{ label: "Implemento", color: "#6b21a8", bg: "#f3e8ff" },
 };
 
 function getMainImage(truck: Truck) {
@@ -147,23 +147,23 @@ export default async function AdminPendentesPage() {
 }
 
 const styles: Record<string, CSSProperties> = {
-  topButton: { padding: "12px 16px", borderRadius: 14, background: "#22c55e", color: "#06140b", textDecoration: "none", fontWeight: 900 },
-  empty: { padding: 26, borderRadius: 22, background: "#1f2327", border: "1px solid #343a40", color: "#a7afb7", fontWeight: 800 },
-  grid: { display: "grid", gap: 18 },
-  card: { display: "grid", gridTemplateColumns: "260px 1fr", overflow: "hidden", borderRadius: 24, background: "#1f2327", border: "1px solid #343a40", boxShadow: "0 16px 34px rgba(0,0,0,.18)" },
-  imageWrap: { minHeight: 220, background: "#15181b", borderRight: "1px solid #343a40" },
-  image: { width: "100%", height: "100%", objectFit: "contain", objectPosition: "center center", display: "block", background: "#15181b" },
-  noImage: { height: "100%", minHeight: 220, display: "grid", placeItems: "center", color: "#8f99a3", fontWeight: 900 },
-  body: { padding: 22 },
+  topButton: { padding: "12px 20px", borderRadius: 14, background: "#1877f2", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: 14, boxShadow: "0 4px 12px rgba(24,119,242,0.2)" },
+  empty: { padding: 32, borderRadius: 24, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", color: "#64748b", fontWeight: 700, textAlign: "center" },
+  grid: { display: "grid", gap: 20 },
+  card: { display: "grid", gridTemplateColumns: "280px 1fr", overflow: "hidden", borderRadius: 24, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", boxShadow: "0 4px 20px rgba(15,23,42,0.04)" },
+  imageWrap: { minHeight: 240, background: "#f8fafc", borderRight: "1px solid rgba(148,163,184,0.08)" },
+  image: { width: "100%", height: "100%", objectFit: "contain", display: "block" },
+  noImage: { height: "100%", minHeight: 240, display: "grid", placeItems: "center", color: "#94a3b8", fontWeight: 800 },
+  body: { padding: 24 },
   rowTop: { display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" },
-  status: { padding: "7px 12px", borderRadius: 999, background: "#3a2b10", color: "#fde68a", fontWeight: 900, fontSize: 12 },
-  price: { color: "#22c55e", fontSize: 24 },
-  cardTitle: { margin: "14px 0 10px", fontSize: 26, color: "#f4f4f5" },
-  meta: { display: "flex", flexWrap: "wrap", gap: 8, color: "#cbd5df" },
-  desc: { color: "#a7afb7", lineHeight: 1.55 },
-  actions: { display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 },
-  approve: { border: 0, padding: "12px 16px", borderRadius: 13, background: "#22c55e", color: "#06140b", fontWeight: 900, cursor: "pointer" },
-  reject: { border: 0, padding: "12px 16px", borderRadius: 13, background: "#ef4444", color: "#ffffff", fontWeight: 900, cursor: "pointer" },
-  edit: { padding: "12px 16px", borderRadius: 13, background: "#2a2f34", border: "1px solid #343a40", color: "#e8eaed", textDecoration: "none", fontWeight: 900 },
-  delete: { border: 0, padding: "12px 16px", borderRadius: 13, background: "#35191b", color: "#fecaca", fontWeight: 900, cursor: "pointer" },
+  status: { padding: "7px 14px", borderRadius: 999, background: "#fef3c7", color: "#92400e", fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' },
+  price: { color: "#1877f2", fontSize: 26, fontWeight: 900, letterSpacing: '-0.03em' },
+  cardTitle: { margin: "14px 0 10px", fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: '-0.02em' },
+  meta: { display: "flex", flexWrap: "wrap", gap: 8, color: "#64748b", fontWeight: 700, fontSize: 14 },
+  desc: { color: "#475569", lineHeight: 1.6, fontSize: 14, marginTop: 12 },
+  actions: { display: "flex", flexWrap: "wrap", gap: 10, marginTop: 20 },
+  approve: { border: 0, padding: "12px 20px", borderRadius: 14, background: "#1877f2", color: "#ffffff", fontWeight: 800, cursor: "pointer" },
+  reject: { border: 0, padding: "12px 20px", borderRadius: 14, background: "#fee2e2", color: "#ef4444", fontWeight: 800, cursor: "pointer" },
+  edit: { padding: "12px 20px", borderRadius: 14, background: "#f1f5f9", border: "1px solid rgba(148,163,184,0.1)", color: "#475569", textDecoration: "none", fontWeight: 800 },
+  delete: { border: 0, padding: "12px 20px", borderRadius: 14, background: "#fef2f2", color: "#b91c1c", fontWeight: 800, cursor: "pointer" },
 };

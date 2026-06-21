@@ -8,6 +8,8 @@ import { TruckCard } from "@/components/theme/TruckCard";
 import type { TruckCardData } from "@/components/theme/TruckCard";
 import Link from "next/link";
 
+import { Truck, Container, Wrench, Tractor, Package, Store } from "lucide-react";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -19,12 +21,12 @@ export const metadata: Metadata = {
 };
 
 const CATEGORIAS = [
-  { href: "/caminhoes",    emoji: "🚛", label: "Caminhões" },
-  { href: "/carretas",    emoji: "🚚", label: "Carretas" },
-  { href: "/implementos", emoji: "⚙️",  label: "Implementos" },
-  { href: "/maquinas",    emoji: "🏗️", label: "Máquinas" },
-  { href: "/pecas",       emoji: "🔧", label: "Peças" },
-  { href: "/revendas",    emoji: "🏢", label: "Revendas" },
+  { href: "/caminhoes",   icon: <Truck size={32} strokeWidth={1.5} />, label: "Caminhões" },
+  { href: "/carretas",    icon: <Container size={32} strokeWidth={1.5} />, label: "Carretas" },
+  { href: "/implementos", icon: <Wrench size={32} strokeWidth={1.5} />,  label: "Implementos" },
+  { href: "/maquinas",    icon: <Tractor size={32} strokeWidth={1.5} />, label: "Máquinas" },
+  { href: "/pecas",       icon: <Package size={32} strokeWidth={1.5} />, label: "Peças" },
+  { href: "/revendas",    icon: <Store size={32} strokeWidth={1.5} />, label: "Revendas" },
 ];
 
 export default async function HomePage() {
@@ -98,7 +100,7 @@ export default async function HomePage() {
             <div className="sobre-cats-grid">
               {CATEGORIAS.map((c) => (
                 <Link key={c.href} href={c.href} className="cat-chip">
-                  <span className="cat-emoji">{c.emoji}</span>
+                  <span className="cat-icon-wrap">{c.icon}</span>
                   <strong className="cat-label">{c.label}</strong>
                 </Link>
               ))}
@@ -236,8 +238,8 @@ export default async function HomePage() {
           gap: 12px; text-decoration: none; text-align: center;
           transition: all 0.2s;
         }
-        .cat-chip:hover { background: #fff; border-color: #2563eb; box-shadow: 0 12px 30px rgba(37,99,235,0.1); transform: translateY(-4px); }
-        .cat-emoji { font-size: 32px; }
+        .cat-chip:hover { background: #fff; border-color: var(--blue); box-shadow: 0 12px 40px rgba(24,119,242,0.12); transform: translateY(-4px); }
+        .cat-icon-wrap { color: var(--blue); opacity: 0.8; }
         .cat-label { font-size: 14px; font-weight: 800; color: #0f172a; }
 
         @media (max-width: 1024px) {

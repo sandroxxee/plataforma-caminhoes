@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { PanelSubnav } from "@/components/PanelSubnav";
+import { Truck, Zap } from "lucide-react";
 
 type Props = {
   children: ReactNode;
@@ -25,7 +26,10 @@ export function PanelLayout({ children, userName, role = "anunciante", title, ac
         <div className="pl-hero-inner">
           <div className="pl-avatar">{initial}</div>
           <div className="pl-hero-info">
-            <span className="pl-role-badge">{isAdmin ? "⚡ Admin" : "🚛 Anunciante"}</span>
+            <span className="pl-role-badge">
+              {isAdmin ? <Zap size={10} style={{ marginRight: 4 }} /> : <Truck size={10} style={{ marginRight: 4 }} />}
+              {isAdmin ? "Admin" : "Anunciante"}
+            </span>
             <h1 className="pl-welcome">Olá, {displayName}</h1>
           </div>
           {actions && <div className="pl-hero-actions">{actions}</div>}
@@ -37,70 +41,49 @@ export function PanelLayout({ children, userName, role = "anunciante", title, ac
       <style>{`
         .pl-root {
           min-height: 100vh;
-          background: #080d18;
-          color: var(--text);
+          background: #f8fafc;
+          color: #0f172a;
           padding-bottom: 80px;
+          font-family: var(--font-manrope), sans-serif;
         }
 
         /* Hero */
         .pl-hero {
-          background: linear-gradient(135deg, #0d1829 0%, #0a2016 60%, #0d1829 100%);
-          border-bottom: 1px solid rgba(34,197,94,.1);
-          padding: 22px 0 26px;
-          position: relative; overflow: hidden;
-        }
-        .pl-hero::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(34,197,94,.06), transparent);
-          pointer-events: none;
-        }
-        .pl-hero-admin {
-          background: linear-gradient(135deg, #0d1234 0%, #130d2e 60%, #0d1234 100%);
-          border-bottom-color: rgba(129,140,248,.1);
-        }
-        .pl-hero-admin::before {
-          background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(129,140,248,.06), transparent);
+          background: #ffffff;
+          border-bottom: 1px solid rgba(148,163,184,0.12);
+          padding: 32px 0;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
 
         .pl-hero-inner {
           width: min(1280px, calc(100vw - 32px));
           margin: 0 auto;
-          display: flex; align-items: center; gap: 14px;
+          display: flex; align-items: center; gap: 18px;
           position: relative; z-index: 1;
         }
 
         /* Avatar */
         .pl-avatar {
-          width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
-          background: linear-gradient(135deg, #22c55e, #16a34a);
-          color: #052e16; font-size: 20px; font-weight: 900;
+          width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+          background: var(--blueSoft);
+          color: var(--blue); font-size: 24px; font-weight: 800;
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 0 0 3px rgba(34,197,94,.2), 0 4px 16px rgba(34,197,94,.2);
-        }
-        .pl-hero-admin .pl-avatar {
-          background: linear-gradient(135deg, #818cf8, #6366f1);
-          color: #1e1b4b;
-          box-shadow: 0 0 0 3px rgba(129,140,248,.2), 0 4px 16px rgba(129,140,248,.2);
+          border: 2px solid #fff;
+          box-shadow: 0 4px 12px rgba(24,119,242,0.12);
         }
 
         .pl-hero-info { flex: 1; min-width: 0; }
         .pl-role-badge {
           display: inline-flex; align-items: center;
-          height: 20px; padding: 0 9px; border-radius: 999px;
-          background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.25);
-          color: #86efac; font-size: 10px; font-weight: 900;
-          letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px;
-        }
-        .pl-hero-admin .pl-role-badge {
-          background: rgba(129,140,248,.12);
-          border-color: rgba(129,140,248,.25);
-          color: #c7d2fe;
+          height: 22px; padding: 0 10px; border-radius: 999px;
+          background: #f1f5f9; border: 1px solid rgba(148,163,184,0.15);
+          color: #64748b; font-size: 10px; font-weight: 800;
+          letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px;
         }
         .pl-welcome {
-          margin: 0; color: #fff;
-          font-size: clamp(18px, 2.5vw, 26px);
-          font-weight: 900; letter-spacing: -.04em; line-height: 1.1;
+          margin: 0; color: #0f172a;
+          font-size: clamp(20px, 3vw, 32px);
+          font-weight: 800; letter-spacing: -.03em; line-height: 1.1;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .pl-hero-actions { margin-left: auto; flex-shrink: 0; }
@@ -109,22 +92,14 @@ export function PanelLayout({ children, userName, role = "anunciante", title, ac
         .pl-body {
           width: min(1280px, calc(100vw - 32px));
           margin: 0 auto;
-          padding-top: 28px;
-        }
-
-        .pl-action-btn {
-          display: inline-flex; align-items: center; justify-content: center;
-          height: 38px; padding: 0 16px; border-radius: 12px;
-          background: #22c55e; color: #052e16;
-          font-weight: 900; font-size: 13px;
-          text-decoration: none; white-space: nowrap;
+          padding-top: 32px;
         }
 
         @media (max-width: 560px) {
-          .pl-hero { padding: 16px 0 20px; }
-          .pl-avatar { width: 42px; height: 42px; font-size: 17px; }
-          .pl-welcome { font-size: 17px; }
-          .pl-body { padding-top: 18px; }
+          .pl-hero { padding: 24px 0; }
+          .pl-avatar { width: 48px; height: 48px; font-size: 20px; }
+          .pl-welcome { font-size: 18px; }
+          .pl-body { padding-top: 24px; }
         }
       `}</style>
     </div>

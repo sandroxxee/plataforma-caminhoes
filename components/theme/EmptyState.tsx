@@ -1,13 +1,15 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { Search } from "lucide-react";
 
 interface EmptyStateLink {
   href: string;
   label: string;
-  emoji?: string;
+  icon?: ReactNode;
 }
 
 interface EmptyStateProps {
-  emoji?: string;
+  icon?: ReactNode;
   title: string;
   description?: string;
   /** Link principal de CTA (ex: limpar filtro, ver todos) */
@@ -21,7 +23,7 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  emoji = "🔍",
+  icon,
   title,
   description,
   primaryHref,
@@ -32,7 +34,9 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="es-wrap">
-      <span className="es-emoji" role="img" aria-hidden="true">{emoji}</span>
+      <div className="es-icon-wrap" aria-hidden="true">
+        {icon || <Search size={48} strokeWidth={1.5} />}
+      </div>
       <strong className="es-title">{title}</strong>
       {description && <p className="es-desc">{description}</p>}
 
@@ -44,7 +48,7 @@ export function EmptyState({
           <div className="es-suggestions-grid">
             {suggestions.map((s) => (
               <Link key={s.href} href={s.href} className="es-suggestion-chip">
-                {s.emoji && <span aria-hidden="true">{s.emoji}</span>}
+                {s.icon && <span className="es-sugg-icon">{s.icon}</span>}
                 {s.label}
               </Link>
             ))}
@@ -62,56 +66,64 @@ export function EmptyState({
       <style>{`
         .es-wrap {
           display: flex; flex-direction: column; align-items: center;
-          gap: 12px; padding: 64px 24px 72px;
+          gap: 16px; padding: 80px 24px;
           text-align: center;
-          background: var(--surface);
-          border-radius: 20px;
-          border: 1px solid var(--line);
-          margin-top: 8px;
+          background: #ffffff;
+          border-radius: 24px;
+          border: 1px solid rgba(148,163,184,0.12);
+          margin-top: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
-        .es-emoji { font-size: 52px; line-height: 1; margin-bottom: 4px; }
+        .es-icon-wrap {
+          color: var(--blue);
+          margin-bottom: 8px;
+          opacity: 0.8;
+        }
         .es-title {
-          font-size: 20px; font-weight: 900;
-          color: var(--text); letter-spacing: -.02em;
+          font-size: 22px; font-weight: 800;
+          color: #0f172a; letter-spacing: -.03em;
         }
         .es-desc {
-          margin: 0; font-size: 14px; color: var(--muted);
-          font-weight: 600; max-width: 36ch; line-height: 1.55;
+          margin: 0; font-size: 15px; color: #64748b;
+          font-weight: 600; max-width: 40ch; line-height: 1.6;
         }
         .es-primary {
           display: inline-flex; align-items: center; justify-content: center;
-          height: 44px; padding: 0 24px; border-radius: 12px;
+          height: 48px; padding: 0 28px; border-radius: 14px;
           background: var(--blue); color: #fff;
-          font-weight: 900; font-size: 14px;
-          text-decoration: none; margin-top: 4px;
-          transition: background .14s;
+          font-weight: 800; font-size: 14px;
+          text-decoration: none; margin-top: 8px;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(24,119,242,0.2);
         }
-        .es-primary:hover { background: var(--blue2); }
-        .es-suggestions { width: 100%; max-width: 480px; margin-top: 8px; }
+        .es-primary:hover { background: var(--blue2); transform: translateY(-1px); }
+        .es-suggestions { width: 100%; max-width: 520px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(148,163,184,0.08); }
         .es-suggestions-label {
-          margin: 0 0 10px; font-size: 11px; font-weight: 800;
-          color: var(--muted); text-transform: uppercase; letter-spacing: .06em;
+          margin: 0 0 16px; font-size: 11px; font-weight: 800;
+          color: #94a3b8; text-transform: uppercase; letter-spacing: .1em;
         }
         .es-suggestions-grid {
-          display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+          display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
         }
         .es-suggestion-chip {
-          display: inline-flex; align-items: center; gap: 6px;
-          height: 34px; padding: 0 14px;
-          border-radius: 999px; border: 1.5px solid var(--line);
-          background: var(--bg); color: var(--text);
+          display: inline-flex; align-items: center; gap: 8px;
+          height: 38px; padding: 0 16px;
+          border-radius: 12px; border: 1px solid rgba(148,163,184,0.15);
+          background: #ffffff; color: #475569;
           font-size: 13px; font-weight: 700;
           text-decoration: none;
-          transition: border-color .12s, color .12s, background .12s;
+          transition: all 0.2s;
         }
         .es-suggestion-chip:hover {
-          border-color: var(--blue); color: var(--blue); background: var(--blueSoft);
+          border-color: var(--blue); color: var(--blue); background: var(--blueSoft); transform: translateY(-1px);
         }
+        .es-sugg-icon { display: flex; align-items: center; color: var(--blue); opacity: 0.7; }
         .es-announce {
-          margin: 0; font-size: 13px; color: var(--muted); font-weight: 600;
+          margin-top: 24px; font-size: 14px; color: #64748b; font-weight: 600;
         }
         .es-announce-link {
           color: var(--blue); font-weight: 800; text-decoration: none;
+          margin-left: 4px;
         }
         .es-announce-link:hover { text-decoration: underline; }
       `}</style>

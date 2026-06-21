@@ -6,6 +6,8 @@ import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
 import { EmptyState } from "@/components/theme/EmptyState";
 import Link from "next/link";
 
+import { Truck, Container, Wrench, Tractor, Package } from "lucide-react";
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -91,7 +93,7 @@ export default async function ImplementosPage({ searchParams }: PageProps) {
           </>
         ) : (
           <EmptyState
-            emoji="🔧"
+            icon={<Wrench size={48} strokeWidth={1.5} />}
             title="Nenhum implemento encontrado"
             description={
               tipoFiltro || estadoFiltro
@@ -101,10 +103,10 @@ export default async function ImplementosPage({ searchParams }: PageProps) {
             primaryHref="/implementos"
             primaryLabel="Ver todos os implementos"
             suggestions={[
-              { href: "/carretas",  label: "Carretas",  emoji: "🚛" },
-              { href: "/anuncios",  label: "Caminhões", emoji: "🚚" },
-              { href: "/maquinas",  label: "Máquinas",  emoji: "🚧" },
-              { href: "/pecas",     label: "Peças",     emoji: "⚙️" },
+              { href: "/carretas",  label: "Carretas",  icon: <Container size={16} /> },
+              { href: "/anuncios",  label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
+              { href: "/pecas",     label: "Peças",     icon: <Package size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/implemento"
             announceLabel="Anuncie seu implemento"
