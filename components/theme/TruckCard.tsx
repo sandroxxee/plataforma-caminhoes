@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useRef } from "react";
-import { MapPin, MessageCircle, Eye, TrendingDown, Calendar, ShieldCheck } from "lucide-react";
+import { MapPin, MessageCircle, Eye, TrendingDown, Calendar, ShieldCheck, Truck } from "lucide-react";
 import {
   formatMoney,
   getCardTitle,
@@ -17,16 +16,6 @@ import {
 } from "@/lib/truck-utils";
 
 export type { TruckCardData, TruckImage };
-
-function isSupabaseUrl(url: string) {
-  return url.includes(".supabase.co/storage/v1/object/public/");
-}
-
-function isNew(created_at?: string | null) {
-  if (!created_at) return false;
-  const diff = Date.now() - new Date(created_at).getTime();
-  return diff < 3 * 24 * 60 * 60 * 1000;
-}
 
 function fmtViews(n: number) {
   if (n >= 1000) return `${(n / 1000).toFixed(1).replace(".0", "")}k`;
@@ -49,7 +38,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const waLink     = getWhatsappLink(truck);
   const views      = (truck as any).views as number | null | undefined;
 
-  const novo        = isNew((truck as any).created_at);
   const destaque    = !!(truck as any).destaque;
   const abaixoFipe  = (truck as any).abaixo_fipe === true;
   const verificado  = !!(truck as any).verificado;
@@ -67,7 +55,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function openPreview() {
-    timerRef.current = setTimeout(() => setPreview(true), 350);
+    timerRef.current = setTimeout(() => setPreview(true), 400);
   }
   function closePreview() {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -76,228 +64,234 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
   return (
     <article
-      className={`group relative bg-white border border-slate-100 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col ${destaque ? "ring-2 ring-amber-400/20 border-amber-100" : ""}`}
+      className={`tcp-card ${destaque ? 'is-featured' : ''}`}
       onMouseEnter={openPreview}
       onMouseLeave={closePreview}
     >
-      {/* ── Popover preview (Premium Apple Style) ── */}
-      {preview && (
-        <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-80 bg-white border border-slate-100 rounded-2xl shadow-2xl z-[200] overflow-hidden animate-in fade-in zoom-in duration-200 pointer-events-auto hidden md:block">
-          <div className="relative aspect-[16/10] bg-slate-50">
-            {image ? (
-              isSupabaseUrl(image) ? (
-                <Image src={image} alt={title} fill className="object-cover" />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={image} alt={title} className="w-full h-full object-cover" />
-              )
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-300">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                   <rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="13" r="3"/>
-                </svg>
-              </div>
-            )}
-          </div>
-          <div className="p-5 space-y-4">
-            <div>
-              <p className="text-slate-900 font-bold text-sm line-clamp-1 mb-1">{cardTitle}</p>
-              <strong className="text-2xl font-black text-blue-600 tracking-tight leading-none">{formatMoney(truck.preco)}</strong>
-            </div>
+      <style>{`
+        .tcp-card {
+          position: relative;
+          background: #ffffff;
+          border-radius: 24px;
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          text-decoration: none;
+          color: inherit;
+        }
+        .tcp-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 24px 48px rgba(15,23,42,0.12);
+          border-color: rgba(37,99,235,0.15);
+        }
+        .tcp-card.is-featured {
+          border-color: rgba(234,179,8,0.3);
+          box-shadow: 0 0 0 2px rgba(234,179,8,0.1), 0 2px 12px rgba(0,0,0,0.04);
+        }
 
-            <div className="flex flex-wrap gap-2">
-               {abaixoFipe && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
-                  <TrendingDown size={10} strokeWidth={3} /> Abaixo Fipe
-                </span>
-              )}
-              {verificado && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 text-[10px] font-black uppercase tracking-wider">
-                  <ShieldCheck size={10} strokeWidth={3} /> Verificado
-                </span>
-              )}
-            </div>
+        .tcp-photo {
+          display: block;
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16/10;
+          background: #f1f5f9;
+          overflow: hidden;
+        }
+        .tcp-photo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.6s ease;
+        }
+        .tcp-card:hover .tcp-photo img {
+          transform: scale(1.05);
+        }
 
-            <div className="space-y-2 pt-2 border-t border-slate-50">
-              {ano && (
-                <p className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                  <Calendar size={14} className="text-slate-400" /> Ano {ano}
-                </p>
-              )}
-              {location && (
-                <p className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                  <MapPin size={14} className="text-slate-400" /> {location}
-                </p>
-              )}
-            </div>
+        .tcp-badges {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          z-index: 10;
+        }
+        .tcp-badge {
+          height: 24px;
+          padding: 0 10px;
+          border-radius: 8px;
+          font-size: 10px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          display: flex;
+          align-items: center;
+          background: rgba(255,255,255,0.9);
+          backdrop-filter: blur(8px);
+        }
+        .tcp-badge-destaque { background: rgba(234,179,8,0.95); color: #451a03; }
+        .tcp-badge-novo { background: rgba(37,99,235,0.95); color: #fff; }
 
-            <div className="flex gap-2 pt-1">
-              <Link href={truckUrl} className="flex-1 h-11 flex items-center justify-center bg-blue-600 text-white rounded-xl text-xs font-bold transition-all hover:bg-blue-700 active:scale-95 shadow-sm shadow-blue-200">
-                Ver detalhes
-              </Link>
-              {waLink && (
-                <a href={waLink} target="_blank" rel="noopener noreferrer" className="h-11 px-4 flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl transition-all hover:bg-emerald-100 active:scale-95">
-                   <MessageCircle size={20} strokeWidth={2.5} />
-                </a>
-              )}
-            </div>
-          </div>
-          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
-        </div>
-      )}
+        .tcp-body {
+          padding: 18px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .tcp-title {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.3;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          min-height: 42px;
+        }
+        .tcp-meta {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #64748b;
+        }
+        .tcp-dot { width: 3px; height: 3px; border-radius: 50%; background: #cbd5e1; }
 
-      {/* ── Foto principal ── */}
-      <Link className="relative aspect-[16/10] overflow-hidden rounded-t-2xl bg-slate-50" href={truckUrl}>
+        .tcp-price-row {
+          margin-top: auto;
+          padding-top: 14px;
+          border-top: 1px solid #f1f5f9;
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+        }
+        .tcp-price-box { display: flex; flex-direction: column; gap: 4px; }
+        .tcp-price {
+          font-size: 21px;
+          font-weight: 900;
+          color: #2563eb;
+          letter-spacing: -0.02em;
+          line-height: 1;
+        }
+        .tcp-location {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 11px;
+          font-weight: 700;
+          color: #94a3b8;
+        }
+
+        .tcp-actions {
+          display: flex;
+          gap: 8px;
+          margin-top: 4px;
+        }
+        .tcp-btn-main {
+          flex: 1;
+          height: 44px;
+          border-radius: 14px;
+          background: #0f172a;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+        .tcp-btn-main:hover { background: #1e293b; }
+        .tcp-btn-wa {
+          width: 44px;
+          height: 44px;
+          border-radius: 14px;
+          background: #22c55e;
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(34,197,94,0.2);
+        }
+        .tcp-btn-wa:hover { transform: scale(1.05); background: #16a34a; }
+
+        .tcp-views {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          color: #94a3b8;
+          font-size: 10px;
+          font-weight: 800;
+          background: #f8fafc;
+          padding: 4px 8px;
+          border-radius: 8px;
+        }
+      `}</style>
+
+      <div className="tcp-badges">
+        {destaque && <span className="tcp-badge tcp-badge-destaque">★ Destaque</span>}
+        {verificado && <span className="tcp-badge" style={{ color: '#ea580c' }}><ShieldCheck size={12} strokeWidth={3} style={{ marginRight: '4px' }} /> Verificado</span>}
+      </div>
+
+      <Link href={truckUrl} className="tcp-photo">
         {image ? (
-          isSupabaseUrl(image) ? (
-            <Image
-              src={image}
-              alt={title}
-              width={480}
-              height={270}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={image}
-              alt={title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          )
+          <img src={image} alt={title} loading="lazy" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-300">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="13" r="3"/>
-            </svg>
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1' }}>
+            <Truck size={48} strokeWidth={1} />
           </div>
         )}
-
-        {/* Badges Premium */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2 pointer-events-none">
-          {destaque && (
-            <span className="h-6 px-2.5 flex items-center bg-amber-400 text-amber-950 text-[10px] font-black rounded-lg shadow-sm">
-              ★ DESTAQUE
-            </span>
-          )}
-          {novo && (
-            <span className="h-6 px-2.5 flex items-center bg-blue-600 text-white text-[10px] font-black rounded-lg shadow-sm">
-              NOVO
-            </span>
-          )}
-        </div>
       </Link>
 
-      {/* ── Corpo do Card ── */}
-      <div className="p-4 flex flex-col flex-1 gap-4">
-        <div className="space-y-1.5">
-          <p className="text-slate-900 font-bold text-[15px] leading-tight line-clamp-2 min-h-[40px]">
-            {cardTitle}
-          </p>
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+      <div className="tcp-body">
+        <div className="tcp-info">
+          <h3 className="tcp-title">{cardTitle}</h3>
+          <div className="tcp-meta">
             {ano && <span>{ano}</span>}
-            {metaParts.length > 0 && (
-              <>
-                <span className="w-1 h-1 rounded-full bg-slate-200" />
-                <span>{metaParts.join(" · ")}</span>
-              </>
-            )}
+            {metaParts.length > 0 && <span className="tcp-dot" />}
+            {metaParts.join(" · ")}
           </div>
         </div>
 
-        <div className="mt-auto space-y-4">
-          <div className="flex items-end justify-between gap-2 border-t border-slate-50 pt-3">
-            <div className="flex flex-col">
-              <strong className="text-xl font-black text-blue-600 tracking-tight leading-none">
-                {formatMoney(truck.preco)}
-              </strong>
-              {location && (
-                <span className="flex items-center gap-1 mt-1.5 text-[11px] font-bold text-slate-400">
-                  <MapPin size={11} className="text-slate-300" strokeWidth={2.5} />
-                  {location}
-                </span>
-              )}
-            </div>
-            {views != null && views > 0 && (
-              <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 text-slate-400 text-[10px] font-black">
-                <Eye size={12} strokeWidth={2.5} /> {fmtViews(views)}
+        <div className="tcp-price-row">
+          <div className="tcp-price-box">
+            <span className="tcp-price">{formatMoney(truck.preco)}</span>
+            {location && (
+              <span className="tcp-location">
+                <MapPin size={12} strokeWidth={2.5} />
+                {location}
               </span>
             )}
           </div>
+          {views != null && views > 0 && (
+            <div className="tcp-views">
+              <Eye size={12} strokeWidth={2.5} /> {fmtViews(views)}
+            </div>
+          )}
+        </div>
 
-          <div className="flex gap-2">
-            <Link
-              href={truckUrl}
-              className="flex-1 h-11 flex items-center justify-center bg-slate-900 text-white rounded-xl text-xs font-bold transition-all hover:bg-slate-800 active:scale-95"
-            >
-              Ver detalhes
-            </Link>
-            {waLink && (
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 flex items-center justify-center bg-emerald-500 text-white rounded-xl transition-all hover:bg-emerald-600 active:scale-95 shadow-sm shadow-emerald-200"
-                aria-label="WhatsApp"
-              >
-                <WaIcon />
-              </a>
-            )}
+        {abaixoFipe && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10b981', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', marginTop: '4px' }}>
+            <TrendingDown size={12} strokeWidth={3} /> Abaixo Fipe
           </div>
+        )}
+
+        <div className="tcp-actions">
+          <Link href={truckUrl} className="tcp-btn-main">Ver detalhes</Link>
+          {waLink && (
+            <a href={waLink} target="_blank" rel="noopener noreferrer" className="tcp-btn-wa">
+              <WaIcon />
+            </a>
+          )}
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </article>
   );
 }

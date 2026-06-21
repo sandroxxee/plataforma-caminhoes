@@ -35,23 +35,138 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-[100] h-16 w-full bg-white/80 backdrop-blur-md border-b border-slate-100/50 shadow-sm transition-all duration-300">
-        <div className="max-w-[1400px] h-full mx-auto px-4 flex items-center justify-between gap-6">
+      <style>{`
+        .ph-root {
+          position: sticky; top: 0; z-index: 100;
+          height: 64px; width: 100%;
+          background: rgba(255,255,255,0.75);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border-bottom: 1px solid rgba(0,0,0,0.05);
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.3s ease;
+        }
+        body.public-theme-dark .ph-root {
+          background: rgba(13,17,23,0.8);
+          border-bottom-color: rgba(255,255,255,0.05);
+        }
+        .ph-container {
+          width: 100%; max-width: 1400px;
+          padding: 0 20px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 24px;
+        }
+        .ph-logo {
+          display: flex; flex-direction: column; line-height: 1;
+          text-decoration: none; flex-shrink: 0;
+        }
+        .ph-logo-top {
+          font-weight: 900; font-size: 18px; color: var(--text);
+          letter-spacing: -0.04em; text-transform: uppercase; font-style: italic;
+        }
+        .ph-logo-sub {
+          font-weight: 900; font-size: 10px; color: var(--blue);
+          letter-spacing: 0.25em; text-transform: uppercase; margin-left: 2px;
+        }
+        .ph-search-wrap {
+          flex: 1; max-width: 440px; position: relative;
+        }
+        .ph-search-wrap input {
+          width: 100%; height: 38px; border-radius: 12px;
+          border: 1px solid rgba(0,0,0,0.08);
+          background: rgba(0,0,0,0.03);
+          padding: 0 16px 0 40px;
+          font-size: 14px; font-weight: 600;
+          color: var(--text); outline: none;
+          transition: all 0.2s ease;
+        }
+        body.public-theme-dark .ph-search-wrap input {
+          background: rgba(255,255,255,0.05);
+          border-color: rgba(255,255,255,0.08);
+        }
+        .ph-search-wrap input:focus {
+          background: var(--surface);
+          border-color: var(--blue);
+          box-shadow: 0 0 0 4px rgba(24,119,242,0.08);
+        }
+        .ph-search-icon {
+          position: absolute; left: 14px; top: 50%;
+          transform: translateY(-50%);
+          color: var(--muted); pointer-events: none;
+        }
+        .ph-nav { display: flex; align-items: center; gap: 4px; }
+        .ph-nav-link {
+          display: flex; align-items: center; gap: 8px;
+          padding: 8px 12px; border-radius: 10px;
+          text-decoration: none; font-weight: 700;
+          font-size: 14px; color: var(--muted);
+          white-space: nowrap; transition: all 0.2s;
+        }
+        .ph-nav-link:hover { color: var(--text); background: rgba(0,0,0,0.04); }
+        body.public-theme-dark .ph-nav-link:hover { background: rgba(255,255,255,0.05); }
+        .ph-nav-link.active { color: var(--blue); background: rgba(24,119,242,0.08); }
 
-          {/* Logo Premium */}
-          <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Caminhões à Venda">
-            <div className="flex flex-col leading-none">
-              <span className="text-slate-900 font-black text-lg tracking-tighter uppercase italic">Caminhões</span>
-              <span className="text-blue-600 font-black text-[10px] tracking-[0.2em] uppercase ml-0.5">à Venda</span>
-            </div>
+        .ph-actions { display: flex; align-items: center; gap: 12px; }
+        .ph-cta {
+          height: 38px; padding: 0 18px; border-radius: 12px;
+          background: var(--blue); color: #fff;
+          font-size: 12px; font-weight: 900; text-transform: uppercase;
+          letter-spacing: 0.05em; text-decoration: none;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 14px rgba(24,119,242,0.25);
+          transition: all 0.2s;
+        }
+        .ph-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(24,119,242,0.35); filter: brightness(1.05); }
+        .ph-cta:active { transform: scale(0.96); }
+
+        .ph-hamburger {
+          display: none; width: 40px; height: 40px; border-radius: 10px;
+          border: 0; background: rgba(0,0,0,0.04); cursor: pointer;
+          align-items: center; justify-content: center; color: var(--text);
+        }
+        body.public-theme-dark .ph-hamburger { background: rgba(255,255,255,0.05); }
+
+        .ph-mobile-menu {
+          position: fixed; inset: 0; top: 64px; z-index: 90;
+          background: var(--surface); padding: 20px;
+          display: flex; flex-direction: column; gap: 8px;
+          transform: translateY(-10px); opacity: 0; pointer-events: none;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ph-mobile-menu.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .ph-mobile-link {
+          display: flex; align-items: center; gap: 16px;
+          padding: 16px; border-radius: 16px;
+          background: rgba(0,0,0,0.02); color: var(--text);
+          font-weight: 800; font-size: 16px; text-decoration: none;
+        }
+        body.public-theme-dark .ph-mobile-link { background: rgba(255,255,255,0.03); }
+        .ph-mobile-link.active { background: rgba(24,119,242,0.08); color: var(--blue); }
+
+        @media (max-width: 1200px) {
+          .ph-nav { display: none; }
+          .ph-hamburger { display: flex; }
+        }
+        @media (max-width: 800px) {
+          .ph-search-wrap { display: none; }
+        }
+        @media (max-width: 500px) {
+          .ph-cta { display: none; }
+        }
+      `}</style>
+
+      <header className="ph-root">
+        <div className="ph-container">
+          <Link href="/" className="ph-logo">
+            <span className="ph-logo-top">Caminhões</span>
+            <span className="ph-logo-sub">à Venda</span>
           </Link>
 
-          {/* Barra de Busca Premium (Apple Style) */}
-          <div className="hidden lg:flex flex-1 max-w-md relative group">
+          <div className="ph-search-wrap">
+            <Search size={16} className="ph-search-icon" />
             <input
               type="search"
               placeholder="Buscar marca, modelo ou cidade..."
-              className="w-full h-10 pl-11 pr-4 bg-slate-50 border border-slate-100 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   const val = (e.currentTarget as HTMLInputElement).value.trim();
@@ -59,11 +174,9 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
                 }
               }}
             />
-            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
           </div>
 
-          {/* Navegação Desktop */}
-          <nav className="hidden xl:flex items-center gap-1" aria-label="Menu principal">
+          <nav className="ph-nav">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(pathname, item.href);
@@ -71,13 +184,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all duration-200
-                    ${active
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}
-                  `}
-                  aria-current={active ? "page" : undefined}
+                  className={`ph-nav-link ${active ? "active" : ""}`}
                 >
                   <Icon size={16} strokeWidth={2.5} />
                   <span>{item.label}</span>
@@ -86,69 +193,36 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
             })}
           </nav>
 
-          {/* Ações e Mobile Toggle */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:block">
-              <ThemeTogglePublic />
-            </div>
-
-            <Link
-              href="/anunciar"
-              className="hidden md:flex h-10 px-5 items-center justify-center bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all"
-            >
-              Anunciar grátis
-            </Link>
-
-            <button
-              className="xl:hidden w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-900 rounded-xl hover:bg-slate-100 transition-colors"
-              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-              onClick={() => setMenuOpen((v) => !v)}
-            >
+          <div className="ph-actions">
+            <ThemeTogglePublic />
+            <Link href="/anunciar" className="ph-cta">Anunciar grátis</Link>
+            <button className="ph-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Menu Mobile Premium (Overlay) */}
-      <div className={`
-        fixed inset-0 z-[90] bg-white transition-all duration-300 xl:hidden
-        ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}
-      `}>
-        <div className="pt-20 px-4 pb-8 h-full flex flex-col gap-2 overflow-y-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`
-                  flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all
-                  ${active ? "bg-blue-50 text-blue-600" : "text-slate-900 active:bg-slate-50"}
-                `}
-                onClick={() => setMenuOpen(false)}
-              >
-                <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${active ? "bg-white shadow-sm" : "bg-slate-50"}`}>
-                   <Icon size={24} strokeWidth={2.5} />
-                </div>
-                {item.label}
-              </Link>
-            );
-          })}
-
-          <div className="mt-auto pt-8 flex flex-col gap-4">
-             <Link
-              href="/anunciar"
-              className="h-14 flex items-center justify-center bg-blue-600 text-white rounded-2xl text-base font-black uppercase tracking-widest shadow-xl shadow-blue-500/30"
+      <div className={`ph-mobile-menu ${menuOpen ? "open" : ""}`}>
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(pathname, item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`ph-mobile-link ${active ? "active" : ""}`}
               onClick={() => setMenuOpen(false)}
             >
-              Anunciar grátis
+              <Icon size={20} strokeWidth={2.5} />
+              {item.label}
             </Link>
-            <div className="flex justify-center">
-              <ThemeTogglePublic />
-            </div>
-          </div>
+          );
+        })}
+        <div style={{ marginTop: "auto", paddingBottom: "40px" }}>
+          <Link href="/anunciar" className="ph-cta" style={{ height: "56px", fontSize: "16px" }} onClick={() => setMenuOpen(false)}>
+            Anunciar grátis agora
+          </Link>
         </div>
       </div>
     </>

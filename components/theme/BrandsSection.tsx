@@ -17,86 +17,123 @@ const MARCAS = [
 
 export function BrandsSection() {
   return (
-    <section className="market-container brands-section">
-      <div className="brands-head">
-        <h2 className="brands-title">Buscar por marca</h2>
-        <Link href="/anuncios" className="brands-link">Ver todas &rarr;</Link>
+    <div className="premium-brands">
+      <div className="brands-header">
+        <h2 className="brands-title">Marcas em destaque</h2>
+        <Link href="/anuncios" className="brands-link">Ver todas →</Link>
       </div>
-      <div className="brands-grid">
-        {MARCAS.map((m) => (
-          <Link
-            key={m.slug}
-            href={`/caminhoes/marca/${m.slug}`}
-            className="brand-chip"
-            title={`Caminhões ${m.nome} à venda`}
-          >
-            {m.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={m.logo}
-                alt={m.nome}
-                className="brand-chip-logo"
-                width={56}
-                height={32}
-                loading="lazy"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                  const span = e.currentTarget.nextSibling as HTMLElement;
-                  if (span) span.style.display = "flex";
-                }}
-              />
-            ) : null}
-            {!m.logo && (
-              <span className="brand-chip-initial">{m.nome.slice(0, 2).toUpperCase()}</span>
-            )}
-            <span className="brand-chip-name">{m.nome}</span>
-          </Link>
-        ))}
+
+      <div className="brands-scroll">
+        <div className="brands-grid">
+          {MARCAS.map((m) => (
+            <Link
+              key={m.slug}
+              href={`/caminhoes/marca/${m.slug}`}
+              className="brand-card"
+            >
+              <div className="brand-logo-box">
+                {m.logo ? (
+                  <img src={m.logo} alt={m.nome} loading="lazy" />
+                ) : (
+                  <span className="brand-initial">{m.nome.slice(0, 2)}</span>
+                )}
+              </div>
+              <span className="brand-name">{m.nome}</span>
+            </Link>
+          ))}
+        </div>
       </div>
+
       <style>{`
-        .brands-section { padding-top: 0; }
-        .brands-head {
-          display: flex; align-items: center; justify-content: space-between;
-          margin-bottom: 14px;
+        .premium-brands {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
         }
-        .brands-title { font-size: 18px; font-weight: 800; letter-spacing: -.025em; margin: 0; color: var(--text); }
-        .brands-link { font-size: 13px; font-weight: 800; color: var(--blue); text-decoration: none; white-space: nowrap; }
-        .brands-link:hover { text-decoration: underline; }
-        .brands-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; }
-        .brand-chip {
-          display: flex; flex-direction: column; align-items: center;
-          justify-content: center; gap: 8px; padding: 16px 8px;
-          background: var(--surface); border: 1.5px solid var(--line);
-          border-radius: 16px; text-decoration: none;
-          transition: border-color .15s, box-shadow .15s, transform .15s;
-          box-shadow: var(--shadow);
+        .brands-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
-        .brand-chip:hover { border-color: var(--blue); box-shadow: var(--shadow2); transform: translateY(-2px); }
-        .brand-chip-logo {
-          width: 56px; height: 32px; object-fit: contain; object-position: center;
-          display: block; filter: grayscale(1) opacity(.65); transition: filter .15s;
+        .brands-title {
+          font-size: 18px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
         }
-        .brand-chip:hover .brand-chip-logo { filter: grayscale(0) opacity(1); }
-        .brand-chip-initial {
-          width: 48px; height: 32px; display: flex; align-items: center; justify-content: center;
-          font-size: 15px; font-weight: 900; color: var(--muted);
-          background: var(--soft); border-radius: 8px; transition: color .15s, background .15s;
+        .brands-link {
+          font-size: 13px;
+          font-weight: 700;
+          color: #2563eb;
+          text-decoration: none;
         }
-        .brand-chip:hover .brand-chip-initial { color: var(--blue); background: var(--blueSoft); }
-        .brand-chip-name {
-          font-size: 11px; font-weight: 800; color: var(--muted);
-          letter-spacing: .01em; text-align: center; white-space: nowrap;
+
+        .brands-scroll {
+          overflow-x: auto;
+          padding: 4px 0 16px;
+          margin: 0 -20px;
+          padding: 4px 20px 16px;
+          scrollbar-width: none;
         }
-        .brand-chip:hover .brand-chip-name { color: var(--blue); }
-        @media (max-width: 1024px) { .brands-grid { grid-template-columns: repeat(5, 1fr); } }
-        @media (max-width: 560px) {
-          .brands-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
-          .brand-chip { padding: 10px 4px; border-radius: 12px; gap: 6px; }
-          .brand-chip-logo { width: 36px; height: 22px; }
-          .brand-chip-initial { width: 36px; height: 22px; font-size: 12px; }
-          .brand-chip-name { font-size: 10px; }
+        .brands-scroll::-webkit-scrollbar { display: none; }
+
+        .brands-grid {
+          display: flex;
+          gap: 12px;
+        }
+
+        .brand-card {
+          flex-shrink: 0;
+          width: 120px;
+          background: #fff;
+          border: 1px solid rgba(0,0,0,0.04);
+          border-radius: 20px;
+          padding: 16px 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .brand-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(15,23,42,0.08);
+          border-color: rgba(37,99,235,0.2);
+        }
+
+        .brand-logo-box {
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .brand-logo-box img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          transition: transform 0.3s;
+        }
+        .brand-card:hover .brand-logo-box img { transform: scale(1.1); }
+
+        .brand-name {
+          font-size: 11px;
+          font-weight: 800;
+          color: #64748b;
+          text-align: center;
+          transition: color 0.2s;
+        }
+        .brand-card:hover .brand-name { color: #2563eb; }
+
+        .brand-initial {
+          font-size: 14px;
+          font-weight: 900;
+          color: #94a3b8;
+          text-transform: uppercase;
         }
       `}</style>
-    </section>
+    </div>
   );
 }

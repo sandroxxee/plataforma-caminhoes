@@ -46,28 +46,33 @@ export default async function HomePage() {
   const trucks = (trucksData || []) as TruckCardData[];
 
   return (
-    <main className="market-page">
+    <main className="premium-page">
       <PublicHeader />
 
-      <div className="market-main">
+      <div className="premium-main">
 
         {/* MARCAS */}
-        <BrandsSection />
+        <div className="section-wrap">
+          <BrandsSection />
+        </div>
 
-        {/* ÚTIMOS ANÚNEIOS */}
-        <section className="market-container">
-          <div className="market-section">
-            <div className="market-section-head">
-              <div>
-                <span>Recém adicionados</span>
-                <h2>Últimos anúncios</h2>
+        {/* ÚLTIMOS ANÚNCIOS */}
+        <section className="section-wrap">
+          <div className="premium-section">
+            <div className="section-header">
+              <div className="title-box">
+                <span className="eyebrow">Recém adicionados</span>
+                <h2 className="title">Últimos anúncios</h2>
               </div>
-              <Link href="/anuncios">Ver todos →</Link>
+              <Link href="/anuncios" className="view-all">Ver todos anúncios →</Link>
             </div>
+
             {trucks.length === 0 ? (
-              <p style={{ color: "var(--muted)", fontWeight: 700 }}>Nenhum anúncio disponível no momento.</p>
+              <div className="empty-state">
+                <p>Nenhum anúncio disponível no momento.</p>
+              </div>
             ) : (
-              <div className="market-grid">
+              <div className="premium-grid">
                 {trucks.map((t) => (
                   <TruckCard key={t.id} truck={t} />
                 ))}
@@ -77,29 +82,24 @@ export default async function HomePage() {
         </section>
 
         {/* SOBRE */}
-        <section className="market-container">
-          <div className="home-sobre">
-            <div className="home-sobre-text">
-              <span className="stock-eyebrow">Plataforma completa</span>
-              <h2>Tudo para comprar e vender veículos pesados</h2>
-              <p>O <strong>Caminhões à Venda</strong> é a plataforma especializada para quem compra ou vende caminhões, carretas, implementos, máquinas e peças no Brasil.</p>
-              <ul className="home-sobre-list">
-                <li>📋 Anuncie seu veículo em minutos com fotos e contato direto pelo WhatsApp</li>
-                <li>🔍 Busque por marca, modelo, estado e faixa de preço</li>
-                <li>🏢 Revendas com estoque completo em um só lugar</li>
-                <li>📍 Encontre veículos perto de você no mapa</li>
-                <li>✅ Anúncios verificados e aprovados pela equipe</li>
-              </ul>
-              <div className="home-sobre-ctas">
-                <Link href="/anuncios" className="contact-button">Ver anúncios</Link>
-                <Link href="/anunciar" className="home-sobre-btn-outline">Anunciar grátis</Link>
+        <section className="section-wrap">
+          <div className="home-sobre-card">
+            <div className="sobre-content">
+              <span className="eyebrow blue">Plataforma completa</span>
+              <h2 className="sobre-title">Tudo para comprar e vender veículos pesados</h2>
+              <p className="sobre-desc">O <strong>Caminhões à Venda</strong> é a plataforma especializada para quem compra ou vende caminhões, carretas, implementos, máquinas e peças no Brasil.</p>
+
+              <div className="sobre-actions">
+                <Link href="/anuncios" className="btn-primary">Ver anúncios</Link>
+                <Link href="/anunciar" className="btn-outline">Anunciar grátis</Link>
               </div>
             </div>
-            <div className="home-sobre-cats">
+
+            <div className="sobre-cats-grid">
               {CATEGORIAS.map((c) => (
-                <Link key={c.href} href={c.href} className="home-sobre-cat">
-                  <span>{c.emoji}</span>
-                  <strong>{c.label}</strong>
+                <Link key={c.href} href={c.href} className="cat-chip">
+                  <span className="cat-emoji">{c.emoji}</span>
+                  <strong className="cat-label">{c.label}</strong>
                 </Link>
               ))}
             </div>
@@ -107,7 +107,7 @@ export default async function HomePage() {
         </section>
 
         {/* COMO FUNCIONA */}
-        <div className="market-container">
+        <div className="section-wrap">
           <HowItWorksSection />
         </div>
 
@@ -116,43 +116,140 @@ export default async function HomePage() {
       <SiteFooter />
 
       <style>{`
-        .home-sobre {
-          display: grid; grid-template-columns: 1fr 280px;
-          gap: 32px; align-items: start;
-          background: var(--surface); border-radius: var(--radius);
-          padding: 36px; box-shadow: var(--shadow); border: 1px solid var(--line);
+        .premium-page {
+          min-height: 100vh;
+          background: #f8fafc;
+          color: #0f172a;
         }
-        .home-sobre-text h2 { font-size: clamp(22px,2.8vw,32px); margin: 8px 0 12px; }
-        .home-sobre-text p { color: var(--muted); font-weight: 700; margin: 0 0 16px; line-height: 1.7; }
-        .home-sobre-list { padding: 0; margin: 0 0 24px; list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .home-sobre-list li { font-size: 14px; font-weight: 700; color: var(--text); }
-        .home-sobre-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-        .home-sobre-btn-outline {
-          min-height: 44px; border-radius: 10px; padding: 0 20px;
-          display: inline-flex; align-items: center;
-          border: 1.5px solid var(--line); color: var(--text);
-          font-weight: 900; text-decoration: none; transition: all .15s;
+        .premium-main {
+          display: flex;
+          flex-direction: column;
+          gap: 40px;
+          padding: 40px 0 80px;
         }
-        .home-sobre-btn-outline:hover { border-color: var(--blue); color: var(--blue); }
-        .home-sobre-cats {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        .section-wrap {
+          width: 100%;
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 0 20px;
         }
-        .home-sobre-cat {
-          display: flex; flex-direction: column; align-items: center;
-          gap: 6px; padding: 16px 8px; border-radius: var(--radius-sm);
-          background: var(--soft); border: 1.5px solid var(--line);
-          font-size: 12px; font-weight: 900; color: var(--text);
-          text-decoration: none; text-align: center; transition: all .15s;
-        }
-        .home-sobre-cat:hover { border-color: var(--blue); color: var(--blue); background: var(--blueSoft); }
-        .home-sobre-cat span { font-size: 22px; }
 
-        @media (max-width: 900px) {
-          .home-sobre { grid-template-columns: 1fr; padding: 24px 20px; }
-          .home-sobre-cats { grid-template-columns: repeat(3, 1fr); }
+        .premium-section {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .section-header {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 20px;
+        }
+        .eyebrow {
+          font-size: 11px;
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #64748b;
+          margin-bottom: 4px;
+          display: block;
+        }
+        .eyebrow.blue { color: #2563eb; }
+        .title {
+          font-size: 32px;
+          font-weight: 900;
+          letter-spacing: -0.04em;
+          margin: 0;
+          color: #0f172a;
+        }
+        .view-all {
+          font-size: 14px;
+          font-weight: 800;
+          color: #2563eb;
+          text-decoration: none;
+          padding: 10px 20px;
+          background: #eff6ff;
+          border-radius: 12px;
+          transition: all 0.2s;
+        }
+        .view-all:hover { background: #dbeafe; transform: translateX(4px); }
+
+        .premium-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 24px;
+        }
+
+        .home-sobre-card {
+          background: #ffffff;
+          border-radius: 32px;
+          padding: 48px;
+          border: 1px solid rgba(0,0,0,0.04);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 64px;
+          align-items: center;
+        }
+        .sobre-title {
+          font-size: 36px;
+          font-weight: 900;
+          letter-spacing: -0.04em;
+          line-height: 1.1;
+          margin: 12px 0 20px;
+        }
+        .sobre-desc {
+          font-size: 16px;
+          color: #64748b;
+          line-height: 1.6;
+          margin-bottom: 32px;
+        }
+        .sobre-actions {
+          display: flex;
+          gap: 16px;
+        }
+        .btn-primary {
+          height: 52px; padding: 0 32px; border-radius: 16px;
+          background: #0f172a; color: #fff; font-weight: 800;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #1e293b; transform: translateY(-2px); }
+        .btn-outline {
+          height: 52px; padding: 0 32px; border-radius: 16px;
+          background: transparent; border: 2px solid #e2e8f0;
+          color: #0f172a; font-weight: 800;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.2s;
+        }
+        .btn-outline:hover { border-color: #0f172a; }
+
+        .sobre-cats-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .cat-chip {
+          padding: 24px; border-radius: 24px;
+          background: #f8fafc; border: 1px solid #f1f5f9;
+          display: flex; flex-direction: column; align-items: center;
+          gap: 12px; text-decoration: none; text-align: center;
+          transition: all 0.2s;
+        }
+        .cat-chip:hover { background: #fff; border-color: #2563eb; box-shadow: 0 12px 30px rgba(37,99,235,0.1); transform: translateY(-4px); }
+        .cat-emoji { font-size: 32px; }
+        .cat-label { font-size: 14px; font-weight: 800; color: #0f172a; }
+
+        @media (max-width: 1024px) {
+          .home-sobre-card { grid-template-columns: 1fr; gap: 40px; padding: 32px; }
+          .title { font-size: 28px; }
+          .sobre-title { font-size: 28px; }
         }
         @media (max-width: 640px) {
-          .home-sobre-cats { grid-template-columns: repeat(2, 1fr); }
+          .premium-grid { grid-template-columns: 1fr; }
+          .sobre-cats-grid { grid-template-columns: 1fr 1fr; }
+          .sobre-actions { flex-direction: column; }
+          .premium-main { gap: 32px; padding: 24px 0; }
         }
       `}</style>
     </main>
