@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MapPin, CheckCircle, ShieldCheck, TrendingDown, Info, FileText, Map as MapIcon, Calendar, Gauge, Settings2, Truck as TruckIcon, Zap } from "lucide-react";
-import { formatMoney, getLocation, getTitle, formatKm } from "@/lib/truck-utils";
+import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
 import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
   type Truck,
@@ -19,6 +19,7 @@ import {
   getStructuredData,
   getSpecs,
   getPerfilTextos,
+  formatKm,
 } from "./anuncio-utils";
 import { AnuncioGaleria, AnuncioAsideActions } from "./AnuncioDetalheClient";
 import { RelatedAds } from "@/components/theme/RelatedAds";
