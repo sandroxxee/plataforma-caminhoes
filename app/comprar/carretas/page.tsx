@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
-import { AnunciosSidebar } from "../caminhoes/AnunciosSidebar";
+import { AnunciosSidebar } from "@/components/AnunciosSidebar";
 import { EmptyState } from "@/components/theme/EmptyState";
 import { Container, Truck, Wrench, Tractor, Package } from "lucide-react";
 import Link from "next/link";
@@ -24,11 +24,12 @@ type PageProps = {
     pmin?: string;
     pmax?: string;
     q?: string;
+    tipo?: string;
   }>
 };
 
 export default async function CarretasPage({ searchParams }: PageProps) {
-  const { estado, marca, faixa, pmin, pmax, q: searchQ } = await searchParams;
+  const { estado, marca, faixa, pmin, pmax, q: searchQ, tipo } = await searchParams;
   const supabase = await createClient();
 
   let query = supabase
@@ -72,19 +73,21 @@ export default async function CarretasPage({ searchParams }: PageProps) {
 
       <div className="market-container">
         <div className="category-layout">
-          <AnunciosSidebar
-            q={searchQ || ""}
-            faixaIdx={Number(faixa) || 0}
-            marcaFiltro={marca || ""}
-            estadoFiltro={estado || ""}
-            hasFilters={hasFilters}
-            total={carretas.length}
-            categoriaAtiva="carretas"
-            marcasDisponiveis={marcasDisponiveis}
-            estadosDisponiveis={estadosDisponiveis}
-            precoMin={pmin ? Number(pmin) : 0}
-            precoMax={pmax ? Number(pmax) : 2_000_000}
-          />
+          <div className="sticky top-24 self-start w-64">
+            <AnunciosSidebar
+              contexto="carretas"
+              q={searchQ || ""}
+              marcaFiltro={marca || ""}
+              estadoFiltro={estado || ""}
+              hasFilters={hasFilters}
+              total={carretas.length}
+              marcasDisponiveis={marcasDisponiveis}
+              estadosDisponiveis={estadosDisponiveis}
+              precoMin={pmin ? Number(pmin) : 0}
+              precoMax={pmax ? Number(pmax) : 2_000_000}
+              tipo={tipo}
+            />
+          </div>
 
           <div className="category-content">
             <div className="category-header">

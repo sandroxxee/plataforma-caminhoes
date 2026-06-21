@@ -3,7 +3,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
-import { AnunciosSidebar } from "./AnunciosSidebar";
+import { AnunciosSidebar } from "@/components/AnunciosSidebar";
 import { LoadMore } from "./LoadMore";
 import Link from "next/link";
 import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
@@ -12,7 +12,15 @@ import type { Metadata } from "next";
 export const revalidate = 30;
 
 type PageProps = {
-  searchParams: Promise<{ faixa?: string; marca?: string; estado?: string; q?: string }>;
+  searchParams: Promise<{
+    faixa?: string;
+    marca?: string;
+    estado?: string;
+    q?: string;
+    tracao?: string;
+    ano_min?: string;
+    ano_max?: string;
+  }>;
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
@@ -44,7 +52,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 type Truck = TruckCardData & { truck_images?: TruckImage[]; perfil?: string | null };
 
 export default async function AnunciosPage({ searchParams }: PageProps) {
-  const { faixa, marca, estado, q } = await searchParams;
+  const { faixa, marca, estado, q, tracao, ano_min, ano_max } = await searchParams;
 
   const faixaIdx = Math.max(0, Math.min(FAIXAS.length - 1, Number(faixa ?? 0)));
   const { min, max } = FAIXAS[faixaIdx];
@@ -109,17 +117,23 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
 
       <div className="mp-shell-wrap">
         <div className="mp-shell">
-          <AnunciosSidebar
-            q={busca}
-            faixaIdx={faixaIdx}
-            marcaFiltro={marcaFiltro}
-            estadoFiltro={estadoFiltro}
-            hasFilters={hasFilters}
-            total={total ?? trucks.length}
-            categoriaAtiva="anuncios"
-            marcasDisponiveis={marcasComAnuncios}
-            estadosDisponiveis={estadosComAnuncios}
-          />
+          <div className="sticky top-24 self-start w-64">
+            <AnunciosSidebar
+              contexto="caminhoes"
+              q={busca}
+              precoMin={min}
+              precoMax={max === Infinity ? 2_000_000 : max}
+              marcaFiltro={marcaFiltro}
+              estadoFiltro={estadoFiltro}
+              hasFilters={hasFilters}
+              total={total ?? trucks.length}
+              marcasDisponiveis={marcasComAnuncios}
+              estadosDisponiveis={estadosComAnuncios}
+              tracao={tracao}
+              ano_min={ano_min}
+              ano_max={ano_max}
+            />
+          </div>
 
           <section className="mp-main">
             <AnunciosFilters
