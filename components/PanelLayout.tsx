@@ -20,13 +20,12 @@ export function PanelLayout({ children, userName, role = "anunciante", title, ac
   const isAdmin = role === "admin";
 
   return (
-    <div className="pl-root flex flex-col min-h-screen bg-slate-50">
-      {/* Forçamos isLoggedIn true pois se o usuário está no painel, ele está logado */}
+    <div className="flex flex-col min-h-screen bg-slate-50">
       <PanelHeaderWrapper isLoggedIn={true} />
       <PanelSubnav role={role} />
 
       {/* Hero banner */}
-      <div className={`pl-hero${isAdmin ? " pl-hero-admin" : ""} bg-white border-b border-slate-200/60 py-8 shadow-sm`}>
+      <div className={`bg-white border-b border-slate-200 py-8 shadow-sm`}>
         <div className="container mx-auto px-4 max-w-7xl flex items-center gap-5">
           <div className="w-14 h-14 md:w-16 md:h-16 rounded-full flex-shrink-0 bg-blue-50 text-blue-600 text-2xl font-black flex items-center justify-center border-2 border-white shadow-lg shadow-blue-600/10">
             {initial}
@@ -44,19 +43,13 @@ export function PanelLayout({ children, userName, role = "anunciante", title, ac
         </div>
       </div>
 
-      <div className="flex-1">
-        <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl text-slate-900">
           {children}
         </div>
-      </div>
+      </main>
 
       <SiteFooter />
-
-      <style>{`
-        .pl-root {
-          font-family: var(--font-manrope), sans-serif;
-        }
-      `}</style>
     </div>
   );
 }
