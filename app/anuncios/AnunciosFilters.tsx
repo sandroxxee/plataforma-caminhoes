@@ -31,15 +31,15 @@ function CatIcon({ name }: { name: string }) {
 }
 
 const MARCAS_LOGOS: Record<string, string> = {
-  "Mercedes-Benz": "https://img.logo.dev/mercedes-benz.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "Scania":        "https://img.logo.dev/scania.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "Volvo":         "https://img.logo.dev/volvotrucks.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "Volkswagen":    "https://img.logo.dev/vw.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "Ford":          "https://img.logo.dev/ford.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "Iveco":         "https://img.logo.dev/iveco.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "DAF":           "https://img.logo.dev/daf.com?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "MAN":           "https://img.logo.dev/man.eu?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
-  "Agrale":        "https://img.logo.dev/agrale.com.br?token=pk_YPBKkuBFQVGGSPXDdBEMrg&size=32&format=png",
+  "Mercedes-Benz": "/marcas/Gemini_Generated_Image_sdthoysdthoysdth__2_-removebg-preview.png",
+  "Scania":        "/marcas/scania-removebg-preview.png",
+  "Volvo":         "/marcas/volvo-removebg-preview.png",
+  "Volkswagen":    "/marcas/volkswagen-removebg-preview.png",
+  "Ford":          "/marcas/ford-removebg-preview.png",
+  "Iveco":         "/marcas/iveco-removebg-preview.png",
+  "DAF":           "/marcas/daf-removebg-preview.png",
+  "MAN":           "",
+  "Agrale":        "/marcas/agrale-removebg-preview.png",
 };
 
 const ESTADOS = [
@@ -105,6 +105,49 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
 
   return (
     <>
+      <style>{`
+        .af-mobile-bar { display:none; gap:8px; align-items:center; margin-bottom:16px; }
+        .af-desktop-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+        .af-search-wrap { position:relative; display:flex; align-items:center; flex:1; max-width:480px; }
+        .af-search-icon { position:absolute; left:13px; color:var(--muted); pointer-events:none; }
+        .af-search { width:100%; height:42px; padding:0 38px 0 38px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text); font-size:14px; font-weight:700; outline:none; transition:border-color .15s; }
+        .af-search:focus { border-color:var(--blue); }
+        .af-search::placeholder { color:var(--muted); font-weight:600; }
+        .af-search-clear { position:absolute; right:10px; width:22px; height:22px; border-radius:999px; border:none; background:var(--soft); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .af-count { margin:0; font-size:14px; font-weight:700; color:var(--muted); white-space:nowrap; }
+        .af-count strong { color:var(--text); font-size:16px; }
+        .af-filtered { color:var(--blue); }
+        .af-clear-inline { display:inline-flex; align-items:center; gap:4px; margin-left:10px; height:28px; padding:0 10px; border-radius:999px; border:1.5px solid rgba(239,68,68,.3); background:rgba(239,68,68,.07); color:#f87171; font-size:11px; font-weight:800; text-decoration:none; }
+        .af-drawer-btn { display:inline-flex; align-items:center; gap:6px; height:42px; padding:0 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text); font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap; }
+        .af-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; border-radius:999px; background:var(--blue); color:#fff; font-size:11px; font-weight:900; padding:0 4px; }
+        .af-overlay { position:fixed; inset:0; z-index:199; background:rgba(0,0,0,.45); backdrop-filter:blur(2px); }
+        .af-drawer { position:fixed; top:0; left:0; bottom:0; width:min(320px,85vw); z-index:200; background:var(--surface); border-right:1px solid var(--line); box-shadow: 20px 0 50px rgba(0,0,0,0.15); transform:translateX(-100%); transition:transform .35s cubic-bezier(0.16, 1, 0.3, 1); display:flex; flex-direction:column; overflow:hidden; }
+        .af-drawer.open { transform:translateX(0); }
+        .af-drawer-head { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid var(--line); flex-shrink:0; background: var(--soft); }
+        .af-drawer-title { font-size:18px; font-weight:900; letter-spacing: -0.02em; }
+        .af-drawer-close { width:40px; height:40px; border-radius:12px; border:none; background:var(--surface); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: var(--shadow); }
+        .af-drawer-body { overflow-y:auto; flex:1; padding-bottom: 40px; }
+        .af-dsection { padding:20px; }
+        .af-ddiv { height:1px; background:var(--line); margin: 0 20px; }
+        .af-dlabel { margin:0 0 12px; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; color:var(--blue); opacity: 0.8; }
+        .af-dlist { display:flex; flex-direction:column; gap:4px; }
+        .af-ditem { display:flex; align-items:center; gap:12px; height:44px; padding:0 12px; border-radius:12px; font-size:14px; font-weight:750; color:var(--text); text-decoration:none; transition: all .2s; border: 1px solid transparent; }
+        .af-ditem:hover { background:var(--soft); color:var(--blue); }
+        .af-ditem.active { background:var(--blueSoft); color:var(--blue); font-weight:900; border-color: rgba(59,130,246,0.2); }
+        .af-dprice { font-size:13px; }
+        .af-dico { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; background:var(--surface); color:var(--muted); font-size:11px; flex-shrink:0; box-shadow: var(--shadow); transition: all 0.2s; }
+        .af-dico-star { font-size:14px; }
+        .af-ditem.active .af-dico { background:var(--blue); color:#fff; transform: scale(1.05); }
+        .af-logo { border-radius:6px; object-fit:contain; flex-shrink:0; background: #fff; padding: 2px; }
+        .af-chips { display:flex; gap:8px; flex-wrap:wrap; }
+        .af-chip { display:inline-flex; align-items:center; height:32px; padding:0 14px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--muted); font-size:12px; font-weight:800; text-decoration:none; transition:.2s; }
+        .af-chip:hover { border-color:var(--blue); color:var(--blue); transform: translateY(-1px); }
+        .af-chip.active { border-color:var(--blue); background:var(--blue); color:#fff; box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .af-dclear { display:inline-flex; align-items:center; gap:8px; width: 100%; justify-content: center; height:46px; border-radius:14px; border:1.5px solid rgba(239,68,68,0.2); background:rgba(239,68,68,0.05); color:#ef4444; font-size:13px; font-weight:900; text-decoration:none; transition: all 0.2s; }
+        .af-dclear:hover { background: rgba(239,68,68,0.1); transform: translateY(-1px); }
+        @media(max-width:900px){ .af-mobile-bar{ display:flex; } .af-desktop-bar{ display:none; } }
+      `}</style>
+
       {/* MOBILE BAR */}
       <div className="af-mobile-bar">
         <div className="af-search-wrap">
@@ -169,7 +212,7 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
               {MARCAS_VALIDAS.map((m) => (
                 <Link key={m} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: m })} className={`af-ditem${marcaFiltro === m ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
                   {MARCAS_LOGOS[m]
-                    ? <Image src={MARCAS_LOGOS[m]} alt={m} width={20} height={20} className="af-logo" unoptimized />
+                    ? <Image src={MARCAS_LOGOS[m]} alt={m} width={28} height={28} className="af-logo" unoptimized />
                     : <span className="af-dico">{m[0]}</span>
                   }
                   {m}
@@ -212,48 +255,6 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           )}
         </div>
       </div>
-
-      <style>{`
-        .af-mobile-bar { display:none; gap:8px; align-items:center; margin-bottom:16px; }
-        .af-desktop-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-        .af-search-wrap { position:relative; display:flex; align-items:center; flex:1; max-width:480px; }
-        .af-search-icon { position:absolute; left:13px; color:var(--muted); pointer-events:none; }
-        .af-search { width:100%; height:42px; padding:0 38px 0 38px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text); font-size:14px; font-weight:700; outline:none; transition:border-color .15s; }
-        .af-search:focus { border-color:var(--blue); }
-        .af-search::placeholder { color:var(--muted); font-weight:600; }
-        .af-search-clear { position:absolute; right:10px; width:22px; height:22px; border-radius:999px; border:none; background:var(--soft); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-        .af-count { margin:0; font-size:14px; font-weight:700; color:var(--muted); white-space:nowrap; }
-        .af-count strong { color:var(--text); font-size:16px; }
-        .af-filtered { color:var(--blue); }
-        .af-clear-inline { display:inline-flex; align-items:center; gap:4px; margin-left:10px; height:28px; padding:0 10px; border-radius:999px; border:1.5px solid rgba(239,68,68,.3); background:rgba(239,68,68,.07); color:#f87171; font-size:11px; font-weight:800; text-decoration:none; }
-        .af-drawer-btn { display:inline-flex; align-items:center; gap:6px; height:42px; padding:0 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text); font-size:13px; font-weight:800; cursor:pointer; white-space:nowrap; }
-        .af-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; border-radius:999px; background:var(--blue); color:#fff; font-size:11px; font-weight:900; padding:0 4px; }
-        .af-overlay { position:fixed; inset:0; z-index:199; background:rgba(0,0,0,.45); backdrop-filter:blur(2px); }
-        .af-drawer { position:fixed; top:0; left:0; bottom:0; width:min(320px,85vw); z-index:200; background:var(--surface); border-right:1px solid var(--line); box-shadow:var(--shadow3); transform:translateX(-100%); transition:transform .28s ease; display:flex; flex-direction:column; overflow:hidden; }
-        .af-drawer.open { transform:translateX(0); }
-        .af-drawer-head { display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--line); flex-shrink:0; }
-        .af-drawer-title { font-size:16px; font-weight:900; }
-        .af-drawer-close { width:36px; height:36px; border-radius:50%; border:none; background:var(--soft); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; }
-        .af-drawer-body { overflow-y:auto; flex:1; }
-        .af-dsection { padding:14px; }
-        .af-ddiv { height:1px; background:var(--line); }
-        .af-dlabel { margin:0 0 8px; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
-        .af-dlist { display:flex; flex-direction:column; gap:1px; }
-        .af-ditem { display:flex; align-items:center; gap:9px; height:36px; padding:0 8px; border-radius:9px; font-size:13px; font-weight:700; color:var(--text); text-decoration:none; transition:background .12s,color .12s; }
-        .af-ditem:hover { background:var(--soft); color:var(--blue); }
-        .af-ditem.active { background:var(--blueSoft); color:var(--blue); font-weight:900; }
-        .af-dprice { font-size:12px; }
-        .af-dico { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:5px; background:var(--soft); color:var(--muted); font-size:11px; flex-shrink:0; }
-        .af-dico-star { font-size:13px; }
-        .af-ditem.active .af-dico { background:var(--blueSoft); color:var(--blue); }
-        .af-logo { border-radius:4px; object-fit:contain; flex-shrink:0; }
-        .af-chips { display:flex; gap:4px; flex-wrap:wrap; }
-        .af-chip { display:inline-flex; align-items:center; height:26px; padding:0 9px; border-radius:999px; border:1.5px solid var(--line); background:var(--soft); color:var(--muted); font-size:11px; font-weight:800; text-decoration:none; transition:.12s; }
-        .af-chip:hover { border-color:var(--blue); color:var(--blue); }
-        .af-chip.active { border-color:var(--blue); background:var(--blueSoft); color:var(--blue); }
-        .af-dclear { display:inline-flex; align-items:center; gap:5px; margin-top:8px; height:32px; padding:0 12px; border-radius:999px; border:1.5px solid rgba(239,68,68,.3); background:rgba(239,68,68,.07); color:#f87171; font-size:12px; font-weight:800; text-decoration:none; }
-        @media(max-width:900px){ .af-mobile-bar{ display:flex; } .af-desktop-bar{ display:none; } }
-      `}</style>
     </>
   );
 }

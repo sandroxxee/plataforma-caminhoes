@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Gemini_Generated_Image_sdthoysdthoysdth__2_-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/agrale-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/anuncios/[id]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/agente-publico/route-novo.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/agente-publico/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/agente-publico/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/anunciar-chat/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/anunciar-chat/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daf-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ford-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/foton-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iveco-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/marcas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/marcas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scania-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/volkswagen-removebg-preview.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/volvo-removebg-preview.png" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sandroxxee&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/sandroxxee/plataforma-caminhoes.git&quot;,
+    &quot;accountId&quot;: &quot;2d8dab25-55b4-443b-9c19-8a7e1e418af6&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="groupByToolId" value="true" />
+    <option name="selectedTabId" value="CurrentFile" />
+    <option name="sortByName" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3FRH2zs8AWJoQHKcpVRuIeLBsKt" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Notification.DisplayName-DoNotAsk-Android Debug Bridge (adb)": "Android Debug Bridge (adb)",
+    "Notification.DoNotAsk-Android Debug Bridge (adb)": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "settings.sync"
+  }
+}]]></component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="open plataforma-caminhoes" />
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <EXTENSION ID="com.android.tools.idea.testartifacts.testsuite.GradleRunConfigurationExtension">
+        <com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>false</com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>
+        <android.execution.deploysToLocalDevice>false</android.execution.deploysToLocalDevice>
+      </EXTENSION>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="TestSuiteRunConfigurationType" factoryName="TestSuiteRunConfigurationFactory">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <EXTENSION ID="com.android.studio.ml.journeys.gradle.runconfiguration.GeminiEnabledTestSuiteRunConfigurationExtension">
+        <com.android.studio.ml.journeys.gradle.runconfiguration.FORWARD_GEMINI_ACCESS_TOKEN_KEY>false</com.android.studio.ml.journeys.gradle.runconfiguration.FORWARD_GEMINI_ACCESS_TOKEN_KEY>
+      </EXTENSION>
+      <EXTENSION ID="com.android.tools.idea.testartifacts.testsuite.GradleRunConfigurationExtension">
+        <com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>false</com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>
+        <android.execution.deploysToLocalDevice>false</android.execution.deploysToLocalDevice>
+      </EXTENSION>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <testEngineIds />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="" />
+      <created>1782030759834</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1782030759834</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="ADD" />
+    <option name="LAST_COMMIT_MESSAGE" value="ADD" />
+  </component>
+  <component name="dal_apis">
+    <option name="consented" value="true" />
+  </component>
+</project>

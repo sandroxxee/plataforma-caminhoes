@@ -4,8 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MapPin, CheckCircle, ShieldCheck, TrendingDown, Info, FileText, Map as MapIcon } from "lucide-react";
-import { formatMoney, getLocation, getTitle } from "@/lib/truck-utils";
+import { MapPin, CheckCircle, ShieldCheck, TrendingDown, Info, FileText, Map as MapIcon, Calendar, Gauge, Settings2, Truck as TruckIcon, Zap } from "lucide-react";
+import { formatMoney, getLocation, getTitle, formatKm } from "@/lib/truck-utils";
 import { extrairIdDoParametroAnuncio } from "@/lib/slug";
 import {
   type Truck,
@@ -53,6 +53,57 @@ function FipeBadge({ abaixoFipe }: { abaixoFipe: boolean }) {
       <TrendingDown size={13} strokeWidth={2.5} aria-hidden="true" />
       Abaixo da FIPE
     </span>
+  );
+}
+
+function AnuncioHighlights({ truck }: { truck: Truck }) {
+  const highlights = [
+    { label: "Ano", value: truck.ano_modelo || truck.ano_fabricacao, icon: <Calendar size={18} /> },
+    { label: "Quilometragem", value: formatKm(truck.quilometragem || truck.km), icon: <Gauge size={18} /> },
+    { label: "Tração", value: truck.tracao, icon: <Settings2 size={18} /> },
+    { label: "Carroceria", value: truck.carroceria, icon: <TruckIcon size={18} /> },
+  ].filter(h => h.value);
+
+  if (highlights.length === 0) return null;
+
+  return (
+    <div className="highlights-grid">
+      {highlights.map((h) => (
+        <div key={h.label} className="highlight-item">
+          <div className="highlight-icon">{h.icon}</div>
+          <div className="highlight-info">
+            <span className="highlight-label">{h.label}</span>
+            <span className="highlight-value">{h.value}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SmartDescription({ text, fallback }: { text?: string | null; fallback: string }) {
+  if (!text?.trim()) return <p className="detail-desc-text">{fallback}</p>;
+
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+
+  return (
+    <div className="smart-desc">
+      {lines.map((line, idx) => {
+        const isBullet = line.startsWith("•") || line.startsWith("-") || line.startsWith("*") || line.startsWith(">");
+        const cleanLine = isBullet ? line.replace(/^[•\-\*>]\s*/, "") : line;
+
+        if (isBullet) {
+          return (
+            <div key={idx} className="desc-bullet">
+              <Zap size={14} className="text-blue-500 mt-1 flex-shrink-0" />
+              <span>{cleanLine}</span>
+            </div>
+          );
+        }
+
+        return <p key={idx} className="detail-desc-text">{line}</p>;
+      })}
+    </div>
   );
 }
 
@@ -175,9 +226,15 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               <TabsContent value="sobre" className="detail-tab-content">
                 <div className="detail-card detail-desc-card">
                   <h2 className="detail-section-title">{textos.sobre}</h2>
-                  <p className="detail-desc-text">
-                    {truck.descricao?.trim() || `Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
-                  </p>
+
+                  <AnuncioHighlights truck={truck} />
+
+                  <div className="detail-desc-body">
+                    <SmartDescription
+                      text={truck.descricao}
+                      fallback={`Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
+                    />
+                  </div>
                 </div>
               </TabsContent>
 
@@ -294,7 +351,22 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         .detail-h1-aside{font-size:clamp(18px,2vw,26px)}
         .detail-location{display:flex;align-items:center;gap:5px;margin:0 0 10px;color:var(--muted);font-size:14px;font-weight:750}
         .detail-section-title{margin:0 0 16px;font-size:16px;font-weight:950;letter-spacing:-.02em}
-        .detail-desc-text{margin:0;color:var(--muted);font-weight:700;line-height:1.7;white-space:pre-wrap}
+        .detail-desc-text{margin:0 0 12px;color:var(--muted);font-weight:700;line-height:1.7;white-space:pre-wrap}
+        .detail-desc-text:last-child{margin-bottom:0}
+        .highlights-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+        .highlight-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--soft); border-radius: 14px; border: 1px solid var(--line); }
+        .highlight-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: var(--surface); color: var(--blue); border-radius: 10px; flex-shrink: 0; box-shadow: var(--shadow); }
+        .highlight-info { display: flex; flex-direction: column; gap: 2px; }
+        .highlight-label { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .highlight-value { font-size: 14px; font-weight: 950; color: var(--text); }
+        .smart-desc { display: flex; flex-direction: column; gap: 8px; }
+        .desc-bullet { display: flex; gap: 10px; align-items: flex-start; padding: 12px; background: rgba(59,130,246,0.05); border-radius: 12px; font-size: 14px; font-weight: 750; color: var(--text); line-height: 1.5; border-left: 3px solid var(--blue); }
+        @media(max-width:560px){
+          .highlights-grid { grid-template-columns: 1fr; gap: 8px; }
+          .highlight-item { padding: 10px; }
+          .highlight-icon { width: 32px; height: 32px; }
+          .highlight-value { font-size: 13px; }
+        }
         .detail-status-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:950;letter-spacing:.03em}
         body.public-theme-dark .detail-status-badge{background:#14532d;color:#86efac}
         .detail-price{display:block;color:var(--blue);font-size:clamp(28px,3.5vw,40px);line-height:1;letter-spacing:-.05em;margin:4px 0 6px}
