@@ -1,10 +1,9 @@
-import { PublicHeader } from "@/components/PublicHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { type TruckCardData, type TruckImage } from "@/components/theme/TruckCard";
 import { AnunciosFilters } from "./AnunciosFilters";
 import { AnunciosSidebar } from "@/components/AnunciosSidebar";
 import { LoadMore } from "./LoadMore";
+import { CategoryPageLayout } from "@/components/CategoryPageLayout";
 import Link from "next/link";
 import { MARCAS_VALIDAS, ESTADOS_VALIDOS, FAIXAS } from "@/lib/constants";
 import type { Metadata } from "next";
@@ -112,63 +111,58 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   const { count: total } = await countQ;
 
   return (
-    <main className="market-page">
-      <PublicHeader />
+    <CategoryPageLayout
+      title="Caminhões à Venda"
+      subtitle="Encontre os melhores caminhões usados e seminovos com garantia de procedência."
+      total={total ?? trucks.length}
+      sidebar={
+        <AnunciosSidebar
+          contexto="caminhoes"
+          q={busca}
+          precoMin={min}
+          precoMax={max === Infinity ? 2_000_000 : max}
+          marcaFiltro={marcaFiltro}
+          estadoFiltro={estadoFiltro}
+          hasFilters={hasFilters}
+          total={total ?? trucks.length}
+          marcasDisponiveis={marcasComAnuncios}
+          estadosDisponiveis={estadosComAnuncios}
+          tracao={tracao}
+          ano_min={ano_min}
+          ano_max={ano_max}
+        />
+      }
+    >
+      <AnunciosFilters
+        q={busca}
+        faixaIdx={faixaIdx}
+        marcaFiltro={marcaFiltro}
+        estadoFiltro={estadoFiltro}
+        hasFilters={hasFilters}
+        total={total ?? trucks.length}
+        categoriaAtiva="anuncios"
+      />
 
-      <div className="mp-shell-wrap">
-        <div className="mp-shell">
-          <div className="sticky top-24 self-start w-64">
-            <AnunciosSidebar
-              contexto="caminhoes"
-              q={busca}
-              precoMin={min}
-              precoMax={max === Infinity ? 2_000_000 : max}
-              marcaFiltro={marcaFiltro}
-              estadoFiltro={estadoFiltro}
-              hasFilters={hasFilters}
-              total={total ?? trucks.length}
-              marcasDisponiveis={marcasComAnuncios}
-              estadosDisponiveis={estadosComAnuncios}
-              tracao={tracao}
-              ano_min={ano_min}
-              ano_max={ano_max}
-            />
-          </div>
-
-          <section className="mp-main">
-            <AnunciosFilters
-              q={busca}
-              faixaIdx={faixaIdx}
-              marcaFiltro={marcaFiltro}
-              estadoFiltro={estadoFiltro}
-              hasFilters={hasFilters}
-              total={total ?? trucks.length}
-              categoriaAtiva="anuncios"
-            />
-
-            {trucks.length === 0 ? (
-              <div className="market-empty">
-                <strong>Nenhum anúncio encontrado</strong>
-                <p>Tente outros filtros ou veja todos.</p>
-                <Link href="/comprar/caminhoes" className="market-empty-btn">Ver todos</Link>
-              </div>
-            ) : (
-              <LoadMore
-                key={`${busca}-${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
-                initialTrucks={trucks}
-                total={total ?? trucks.length}
-                pageSize={24}
-                q={busca}
-                marca={marcaFiltro}
-                estado={estadoFiltro}
-                faixa={faixaIdx}
-              />
-            )}
-          </section>
+      {trucks.length === 0 ? (
+        <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center shadow-sm">
+          <strong className="text-xl block mb-2">Nenhum anúncio encontrado</strong>
+          <p className="text-slate-500 mb-6">Tente outros filtros ou veja todos.</p>
+          <Link href="/comprar/caminhoes" className="inline-flex h-12 px-6 items-center justify-center rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors">
+            Ver todos
+          </Link>
         </div>
-      </div>
-
-      <SiteFooter />
-    </main>
+      ) : (
+        <LoadMore
+          key={`${busca}-${marcaFiltro}-${estadoFiltro}-${faixaIdx}`}
+          initialTrucks={trucks}
+          total={total ?? trucks.length}
+          pageSize={24}
+          q={busca}
+          marca={marcaFiltro}
+          estado={estadoFiltro}
+          faixa={faixaIdx}
+        />
+      )}
+    </CategoryPageLayout>
   );
 }

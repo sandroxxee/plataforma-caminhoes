@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { PublicHeader } from "@/components/PublicHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
 import { AnunciosSidebar } from "@/components/AnunciosSidebar";
 import { CategoryBrandsBar } from "@/components/theme/CategoryBrandsBar";
+import { CategoryPageLayout } from "@/components/CategoryPageLayout";
 import { EmptyState } from "@/components/theme/EmptyState";
 import { Package, Tractor, Container, Truck, Wrench } from "lucide-react";
 import Link from "next/link";
@@ -67,81 +66,57 @@ export default async function PecasPage({ searchParams }: PageProps) {
   const hasFilters = !!(estado || categoria_peca || condicao || searchQ || marca);
 
   return (
-    <div className="pec-page">
-      <PublicHeader />
-      <div className="pec-cta">
-        <div className="pec-cta-inner">
-          <div>
-            <h1 className="pec-title">Peças à Venda</h1>
-            <p className="pec-sub">Motores, câmbios, eixos, suspensão, freios e muito mais. Direto pelo WhatsApp.</p>
-          </div>
-          <Link href="/painel/anuncios/novo/peca" className="pec-anuncie">+ Anunciar peça</Link>
+    <CategoryPageLayout
+      title="Peças à Venda"
+      subtitle="Motores, câmbios, eixos, suspensão, freios e muito mais."
+      total={pecas.length}
+      sidebar={
+        <AnunciosSidebar
+          contexto="pecas"
+          q={searchQ || ""}
+          marcaFiltro={marca || ""}
+          estadoFiltro={estado || ""}
+          hasFilters={hasFilters}
+          total={pecas.length}
+          marcasDisponiveis={marcasDisponiveis}
+          estadosDisponiveis={estadosDisponiveis}
+          categoria_peca={categoria_peca}
+          condicao={condicao}
+        />
+      }
+    >
+      <div className="flex flex-col gap-6">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <p className="text-slate-500 font-bold">Peças genuínas e multimarcas para seu bruto</p>
+          <Link href="/painel/anuncios/novo/peca" className="h-10 px-6 inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-colors">
+            + Anunciar peça
+          </Link>
         </div>
-      </div>
-      <div className="pec-container">
-        <div className="category-layout">
-          <div className="sticky top-24 self-start w-64">
-            <AnunciosSidebar
-              contexto="pecas"
-              q={searchQ || ""}
-              marcaFiltro={marca || ""}
-              estadoFiltro={estado || ""}
-              hasFilters={hasFilters}
-              total={pecas.length}
-              marcasDisponiveis={marcasDisponiveis}
-              estadosDisponiveis={estadosDisponiveis}
-              categoria_peca={categoria_peca}
-              condicao={condicao}
-            />
-          </div>
 
-          <div className="category-content">
-            <CategoryBrandsBar categoria="pecas" labelSingular="Peças" />
-            {pecas.length > 0 ? (
-              <>
-                <p className="pec-count">{pecas.length} peça{pecas.length!==1?"s":""}</p>
-                <div className="pec-grid">{pecas.map(item => <TruckCard key={item.id} truck={item} />)}</div>
-              </>
-            ) : (
-              <EmptyState
-                icon={<Package size={48} strokeWidth={1.5} />}
-                title="Nenhuma peça encontrada"
-                description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma peça disponível no momento."}
-                primaryHref="/comprar/pecas"
-                primaryLabel="Ver todas as peças"
-                suggestions={[
-                  { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
-                  { href: "/comprar/carretas", label: "Carretas", icon: <Container size={16} /> },
-                  { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-                  { href: "/comprar/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
-                ]}
-                announceHref="/painel/anuncios/novo/peca"
-                announceLabel="Anuncie sua peça"
-              />
-            )}
+        <CategoryBrandsBar categoria="pecas" labelSingular="Peças" />
+
+        {pecas.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pecas.map(item => <TruckCard key={item.id} truck={item} />)}
           </div>
-        </div>
+        ) : (
+          <EmptyState
+            icon={<Package size={48} strokeWidth={1.5} />}
+            title="Nenhuma peça encontrada"
+            description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma peça disponível no momento."}
+            primaryHref="/comprar/pecas"
+            primaryLabel="Ver todas as peças"
+            suggestions={[
+              { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/comprar/carretas", label: "Carretas", icon: <Container size={16} /> },
+              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/comprar/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
+            ]}
+            announceHref="/painel/anuncios/novo/peca"
+            announceLabel="Anuncie sua peça"
+          />
+        )}
       </div>
-      <SiteFooter />
-      <style>{`
-        .pec-page{min-height:100vh;background:var(--bg);color:var(--text);padding-bottom:64px}
-        .pec-cta{background:#fff;border-bottom:1px solid rgba(148,163,184,0.12);box-shadow:0 4px 12px rgba(0,0,0,0.02);margin-bottom:24px}
-        .category-layout { display: flex; gap: 32px; align-items: flex-start; }
-        .category-content { flex: 1; }
-        .pec-cta-inner{width:min(1280px,calc(100vw - 32px));margin:0 auto;padding:32px 0 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
-        .pec-title{margin:0 0 6px;font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.04em;line-height:1.05;color:#0f172a}
-        .pec-sub{margin:0;color:#64748b;font-size:15px;font-weight:600;max-width:54ch;line-height:1.6}
-        .pec-anuncie{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 24px;border-radius:14px;background:var(--blue);color:#fff;font-weight:800;font-size:14px;white-space:nowrap;text-decoration:none;flex-shrink:0;transition:all .14s;box-shadow:0 4px 12px rgba(24,119,242,0.2)}
-        .pec-anuncie:hover{background:var(--blue2);transform:translateY(-1px)}
-        .pec-container{width:min(1280px,calc(100vw - 32px));margin:0 auto}
-        .pec-count{margin:16px 0;font-size:14px;color:#64748b;font-weight:700}
-        .pec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-        @media (max-width: 900px) {
-          .category-layout { flex-direction: column; }
-          .w-64 { width: 100% !important; position: static !important; }
-        }
-        @media(max-width:680px){.pec-cta-inner{flex-direction:column;align-items:flex-start;padding:24px 0}.pec-anuncie{width:100%}.pec-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
-      `}</style>
-    </div>
+    </CategoryPageLayout>
   );
 }

@@ -4,8 +4,15 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="">
+    <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="feat: implement Premium Design System (Apple Style) across the platform">
+      <change afterPath="$PROJECT_DIR$/components/CategoryPageLayout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/comprar/caminhoes/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/caminhoes/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/comprar/carretas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/carretas/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/comprar/implementos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/implementos/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/comprar/maquinas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/maquinas/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/comprar/pecas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/pecas/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/painel/anuncios/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/painel/anuncios/page.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,11 +26,19 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;sandroxxee&quot;
-  }
+  &quot;lastFilter&quot;: {}
 }</component>
+  <component name="GitHubPullRequestState"><![CDATA[{
+  "prStates": [
+    {
+      "id": {
+        "id": "PR_kwDOSmBK_M7fWNye",
+        "number": 3
+      },
+      "lastSeen": 1782069245900
+    }
+  ]
+}]]></component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/sandroxxee/plataforma-caminhoes.git&quot;,
@@ -43,6 +58,9 @@
   &quot;fromUser&quot;: false
 }</component>
   <component name="ProjectId" id="3FRH2zs8AWJoQHKcpVRuIeLBsKt" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -62,7 +80,7 @@
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "configurable.group.editor"
+    "settings.editor.selected.configurable": "com.android.studio.ml.permissions"
   }
 }]]></component>
   <component name="RunAnythingCache">

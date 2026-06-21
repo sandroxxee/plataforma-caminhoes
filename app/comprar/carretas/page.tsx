@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { PublicHeader } from "@/components/PublicHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
 import { AnunciosSidebar } from "@/components/AnunciosSidebar";
+import { CategoryPageLayout } from "@/components/CategoryPageLayout";
 import { EmptyState } from "@/components/theme/EmptyState";
 import { Container, Truck, Wrench, Tractor, Package } from "lucide-react";
 import Link from "next/link";
@@ -68,85 +67,56 @@ export default async function CarretasPage({ searchParams }: PageProps) {
   const hasFilters = !!(estado || marca || faixa || pmin || pmax || searchQ);
 
   return (
-    <main className="market-page">
-      <PublicHeader />
-
-      <div className="market-container">
-        <div className="category-layout">
-          <div className="sticky top-24 self-start w-64">
-            <AnunciosSidebar
-              contexto="carretas"
-              q={searchQ || ""}
-              marcaFiltro={marca || ""}
-              estadoFiltro={estado || ""}
-              hasFilters={hasFilters}
-              total={carretas.length}
-              marcasDisponiveis={marcasDisponiveis}
-              estadosDisponiveis={estadosDisponiveis}
-              precoMin={pmin ? Number(pmin) : 0}
-              precoMax={pmax ? Number(pmax) : 2_000_000}
-              tipo={tipo}
-            />
-          </div>
-
-          <div className="category-content">
-            <div className="category-header">
-              <div>
-                <h1 className="category-title">Carretas à Venda</h1>
-                <p className="category-sub">Graneleiras, porta-containers, pranchas, frigoríficas e muito mais.</p>
-              </div>
-              <Link href="/anunciar" className="category-btn">Anunciar Carreta</Link>
-            </div>
-
-            {carretas.length > 0 ? (
-              <div className="category-grid">
-                {carretas.map(item => <TruckCard key={item.id} truck={item} />)}
-              </div>
-            ) : (
-              <EmptyState
-                icon={<Container size={48} strokeWidth={1.5} />}
-                title="Nenhuma carreta encontrada"
-                description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma carreta disponível no momento."}
-                primaryHref="/comprar/carretas"
-                primaryLabel="Ver todas as carretas"
-                suggestions={[
-                  { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
-                  { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-                  { href: "/comprar/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
-                  { href: "/comprar/pecas", label: "Peças", icon: <Package size={16} /> },
-                ]}
-                announceHref="/painel/anuncios/novo/carreta"
-                announceLabel="Anuncie sua carreta"
-              />
-            )}
-          </div>
+    <CategoryPageLayout
+      title="Carretas à Venda"
+      subtitle="Graneleiras, porta-containers, pranchas, frigoríficas e muito mais."
+      total={carretas.length}
+      sidebar={
+        <AnunciosSidebar
+          contexto="carretas"
+          q={searchQ || ""}
+          marcaFiltro={marca || ""}
+          estadoFiltro={estado || ""}
+          hasFilters={hasFilters}
+          total={carretas.length}
+          marcasDisponiveis={marcasDisponiveis}
+          estadosDisponiveis={estadosDisponiveis}
+          precoMin={pmin ? Number(pmin) : 0}
+          precoMax={pmax ? Number(pmax) : 2_000_000}
+          tipo={tipo}
+        />
+      }
+    >
+      <div className="flex flex-col gap-6">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <p className="text-slate-500 font-bold">Encontre a carreta ideal para seu negócio</p>
+          <Link href="/anunciar" className="h-10 px-6 inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-colors">
+            Anunciar Carreta
+          </Link>
         </div>
-      </div>
 
-      <style>{`
-        .category-header {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 24px 32px; background: #fff; border-radius: 24px;
-          border: 1px solid rgba(148,163,184,0.12); margin-bottom: 24px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-        }
-        .category-title { margin: 0 0 4px; font-size: 32px; font-weight: 800; letter-spacing: -0.03em; color: #0f172a; }
-        .category-sub { margin: 0; color: #64748b; font-size: 15px; font-weight: 600; }
-        .category-btn {
-          display: inline-flex; align-items: center; height: 46px; padding: 0 24px;
-          border-radius: 14px; background: var(--blue); color: #fff;
-          font-weight: 800; font-size: 14px; text-decoration: none;
-          transition: all 0.2s; box-shadow: 0 4px 12px rgba(24,119,242,0.2);
-        }
-        .category-btn:hover { background: var(--blue2); transform: translateY(-1px); }
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        @media (max-width: 900px) {
-          .category-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
-          .category-btn { width: 100%; justify-content: center; }
-          .category-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        }
-      `}</style>
-      <SiteFooter />
-    </main>
+        {carretas.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {carretas.map(item => <TruckCard key={item.id} truck={item} />)}
+          </div>
+        ) : (
+          <EmptyState
+            icon={<Container size={48} strokeWidth={1.5} />}
+            title="Nenhuma carreta encontrada"
+            description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma carreta disponível no momento."}
+            primaryHref="/comprar/carretas"
+            primaryLabel="Ver todas as carretas"
+            suggestions={[
+              { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/comprar/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
+              { href: "/comprar/pecas", label: "Peças", icon: <Package size={16} /> },
+            ]}
+            announceHref="/painel/anuncios/novo/carreta"
+            announceLabel="Anuncie sua carreta"
+          />
+        )}
+      </div>
+    </CategoryPageLayout>
   );
 }
