@@ -5,29 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/painel/anuncios/[id]/actions.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/forms/EditAnuncioForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosSidebar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/LoadMore.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/AnuncioDetalheClient.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/anuncio-utils.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/opengraph-image.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/opengraph-image.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/carretas/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/como-funciona/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/contato/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/implementos/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/maquinas/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/parceiros/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pecas/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/politica-de-privacidade/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/revendas/[slug]/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/revendas/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/sobre/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/PublicHeaderClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PublicHeaderClient.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/painel/anuncios/[id]/editar/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/painel/anuncios/[id]/editar/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,73 +66,13 @@
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "templates.modelproviders.configurable"
+    "settings.editor.selected.configurable": "configurable.group.editor"
   }
 }]]></component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="open plataforma-caminhoes" />
     </option>
-  </component>
-  <component name="RunManager">
-    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list />
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
-      <EXTENSION ID="com.android.tools.idea.testartifacts.testsuite.GradleRunConfigurationExtension">
-        <com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>false</com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>
-        <android.execution.deploysToLocalDevice>false</android.execution.deploysToLocalDevice>
-      </EXTENSION>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-      <GradleProfilingDisabled>false</GradleProfilingDisabled>
-      <GradleCoverageDisabled>false</GradleCoverageDisabled>
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="TestSuiteRunConfigurationType" factoryName="TestSuiteRunConfigurationFactory">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list />
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
-      <EXTENSION ID="com.android.studio.ml.journeys.gradle.runconfiguration.GeminiEnabledTestSuiteRunConfigurationExtension">
-        <com.android.studio.ml.journeys.gradle.runconfiguration.FORWARD_GEMINI_ACCESS_TOKEN_KEY>false</com.android.studio.ml.journeys.gradle.runconfiguration.FORWARD_GEMINI_ACCESS_TOKEN_KEY>
-      </EXTENSION>
-      <EXTENSION ID="com.android.tools.idea.testartifacts.testsuite.GradleRunConfigurationExtension">
-        <com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>false</com.android.tools.idea.testartifacts.testsuite.SHOW_TEST_RESULT_IN_ANDROID_TEST_SUITE_VIEW>
-        <android.execution.deploysToLocalDevice>false</android.execution.deploysToLocalDevice>
-      </EXTENSION>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <GradleProfilingDisabled>false</GradleProfilingDisabled>
-      <GradleCoverageDisabled>false</GradleCoverageDisabled>
-      <testEngineIds />
-      <method v="2" />
-    </configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
