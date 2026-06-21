@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="feat: implement Premium Design System (Apple Style) across the platform">
-      <change beforePath="$PROJECT_DIR$/components/PanelHeaderWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PanelHeaderWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/PanelLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PanelLayout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

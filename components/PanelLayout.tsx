@@ -21,25 +21,30 @@ export function PanelLayout({ children, userName, role = "anunciante", title, ac
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
+      {/* Usando Wrapper Client para evitar conflito de cookies/next-headers no build */}
       <PanelHeaderWrapper isLoggedIn={true} />
+
+      {/* Navegação secundária específica do painel */}
       <PanelSubnav role={role} />
 
-      {/* Hero banner */}
-      <div className={`bg-white border-b border-slate-200 py-8 shadow-sm`}>
-        <div className="container mx-auto px-4 max-w-7xl flex items-center gap-5">
-          <div className="w-14 h-14 md:w-16 md:h-16 rounded-full flex-shrink-0 bg-blue-50 text-blue-600 text-2xl font-black flex items-center justify-center border-2 border-white shadow-lg shadow-blue-600/10">
+      {/* Hero do Painel - Apple Style */}
+      <div className="bg-white border-b border-slate-200 py-8 shadow-sm">
+        <div className="container mx-auto px-4 max-w-7xl flex items-center gap-6">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 text-2xl font-black flex items-center justify-center border border-blue-100 shadow-sm">
             {initial}
           </div>
           <div className="flex-1 min-w-0">
-            <span className="inline-flex items-center h-6 px-3 rounded-full bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1.5">
-              {isAdmin ? <Zap size={10} className="mr-1 text-amber-500 fill-amber-500" /> : <Truck size={10} className="mr-1 text-blue-500" />}
-              {isAdmin ? "Admin" : "Anunciante"}
-            </span>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                {isAdmin ? <Zap size={10} className="mr-1 text-amber-500 fill-amber-500" /> : <Truck size={10} className="mr-1 text-blue-500" />}
+                {isAdmin ? "Administrador" : "Anunciante"}
+              </span>
+            </div>
             <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight truncate">
               Olá, {displayName}
             </h1>
           </div>
-          {actions && <div className="hidden sm:block">{actions}</div>}
+          {actions && <div className="hidden md:block">{actions}</div>}
         </div>
       </div>
 
