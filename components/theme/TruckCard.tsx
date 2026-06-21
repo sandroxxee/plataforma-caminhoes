@@ -18,8 +18,6 @@ import {
 
 export type { TruckCardData, TruckImage };
 
-const ORANGE = "#f97316";
-
 function isSupabaseUrl(url: string) {
   return url.includes(".supabase.co/storage/v1/object/public/");
 }
@@ -36,7 +34,7 @@ function fmtViews(n: number) {
 }
 
 const WaIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
     <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.532 5.856L.054 23.454a.5.5 0 0 0 .622.579l5.7-1.493A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.368l-.36-.214-3.73.978.996-3.642-.235-.374A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
   </svg>
@@ -56,7 +54,6 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const abaixoFipe  = (truck as any).abaixo_fipe === true;
   const verificado  = !!(truck as any).verificado;
 
-  const marcaModelo = cardTitle;
   const ano         = truck.ano_modelo || truck.ano_fabricacao || null;
   const tracao      = (truck as any).tracao as string | null | undefined;
   const cambio      = (truck as any).cambio as string | null | undefined;
@@ -70,7 +67,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function openPreview() {
-    timerRef.current = setTimeout(() => setPreview(true), 320);
+    timerRef.current = setTimeout(() => setPreview(true), 350);
   }
   function closePreview() {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -79,223 +76,228 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
 
   return (
     <article
-      className={`tc${destaque ? " tc-featured" : ""}`}
+      className={`group relative bg-white border border-slate-100 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col ${destaque ? "ring-2 ring-amber-400/20 border-amber-100" : ""}`}
       onMouseEnter={openPreview}
       onMouseLeave={closePreview}
-      onFocus={openPreview}
-      onBlur={closePreview}
     >
-      {/* ── Popover preview ── */}
+      {/* ── Popover preview (Premium Apple Style) ── */}
       {preview && (
-        <div className="tc-preview" role="tooltip" aria-label={`Pré-visualização: ${title}`}>
-          <div className="tc-preview-photo">
+        <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-80 bg-white border border-slate-100 rounded-2xl shadow-2xl z-[200] overflow-hidden animate-in fade-in zoom-in duration-200 pointer-events-auto hidden md:block">
+          <div className="relative aspect-[16/10] bg-slate-50">
             {image ? (
               isSupabaseUrl(image) ? (
-                <Image src={image} alt={title} width={340} height={200}
-                  style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
+                <Image src={image} alt={title} fill className="object-cover" />
               ) : (
-                <img src={image} alt={title}
-                  style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={image} alt={title} className="w-full h-full object-cover" />
               )
             ) : (
-              <div className="tc-preview-no-photo">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="2" y="7" width="20" height="13" rx="2"/>
-                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-                  <circle cx="12" cy="13" r="3"/>
+              <div className="w-full h-full flex items-center justify-center text-slate-300">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                   <rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="13" r="3"/>
                 </svg>
               </div>
             )}
           </div>
-          <div className="tc-preview-body">
-            <p className="tc-preview-title">{cardTitle}</p>
-            <strong className="tc-preview-price">{formatMoney(truck.preco)}</strong>
-            {abaixoFipe && (
-              <span className="tc-fipe-inline">
-                <TrendingDown size={12} strokeWidth={2.5} /> Abaixo da FIPE
-              </span>
-            )}
-            {(ano || metaParts.length > 0) && (
-              <p className="tc-preview-meta">
-                {ano && <span className="tc-preview-meta-item"><Calendar size={13} color={ORANGE} /> {ano}</span>}
-                {metaParts.map((p) => <span key={p} className="tc-preview-meta-item">{p}</span>)}
-              </p>
-            )}
-            {location && (
-              <p className="tc-preview-loc">
-                <MapPin size={13} color={ORANGE} strokeWidth={2} /> {location}
-              </p>
-            )}
-            <div className="tc-preview-actions">
-              <Link href={truckUrl} className="tc-preview-btn-detail" onClick={closePreview}>
+          <div className="p-5 space-y-4">
+            <div>
+              <p className="text-slate-900 font-bold text-sm line-clamp-1 mb-1">{cardTitle}</p>
+              <strong className="text-2xl font-black text-blue-600 tracking-tight leading-none">{formatMoney(truck.preco)}</strong>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+               {abaixoFipe && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
+                  <TrendingDown size={10} strokeWidth={3} /> Abaixo Fipe
+                </span>
+              )}
+              {verificado && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 text-[10px] font-black uppercase tracking-wider">
+                  <ShieldCheck size={10} strokeWidth={3} /> Verificado
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-slate-50">
+              {ano && (
+                <p className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                  <Calendar size={14} className="text-slate-400" /> Ano {ano}
+                </p>
+              )}
+              {location && (
+                <p className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                  <MapPin size={14} className="text-slate-400" /> {location}
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <Link href={truckUrl} className="flex-1 h-11 flex items-center justify-center bg-blue-600 text-white rounded-xl text-xs font-bold transition-all hover:bg-blue-700 active:scale-95 shadow-sm shadow-blue-200">
                 Ver detalhes
               </Link>
               {waLink && (
-                <a href={waLink} target="_blank" rel="noopener noreferrer"
-                  className="tc-preview-btn-wa" onClick={closePreview}>
-                  <MessageCircle size={15} strokeWidth={2} />
-                  WhatsApp
+                <a href={waLink} target="_blank" rel="noopener noreferrer" className="h-11 px-4 flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl transition-all hover:bg-emerald-100 active:scale-95">
+                   <MessageCircle size={20} strokeWidth={2.5} />
                 </a>
               )}
             </div>
           </div>
-          <div className="tc-preview-arrow" aria-hidden="true" />
+          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-r border-b border-slate-100 rotate-45" />
         </div>
       )}
 
-      {/* ── Foto ── */}
-      <Link className="tc-photo" href={truckUrl} aria-label={`Ver detalhes de ${title}`}>
+      {/* ── Foto principal ── */}
+      <Link className="relative aspect-[16/10] overflow-hidden rounded-t-2xl bg-slate-50" href={truckUrl}>
         {image ? (
           isSupabaseUrl(image) ? (
-            <Image src={image} alt={title} width={480} height={270}
-              loading="lazy" decoding="async"
+            <Image
+              src={image}
+              alt={title}
+              width={480}
+              height={270}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
+            />
           ) : (
-            <img src={image} alt={title} loading="lazy" decoding="async"
-              style={{ objectFit: "cover", width: "100%", height: "100%", display: "block" }} />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={image}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
           )
         ) : (
-          <span className="tc-no-photo">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <rect x="2" y="7" width="20" height="13" rx="2"/>
-              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-              <circle cx="12" cy="13" r="3"/>
+          <div className="w-full h-full flex items-center justify-center text-slate-300">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="13" r="3"/>
             </svg>
-          </span>
+          </div>
         )}
 
-        {/* Preço + cidade no overlay — Única ocorrência da cidade */}
-        <div className="tc-overlay">
-          <span className="tc-price">{formatMoney(truck.preco)}</span>
-          {location && (
-            <span className="tc-loc">
-              <MapPin size={10} strokeWidth={2} aria-hidden="true" />
-              {location}
+        {/* Badges Premium */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2 pointer-events-none">
+          {destaque && (
+            <span className="h-6 px-2.5 flex items-center bg-amber-400 text-amber-950 text-[10px] font-black rounded-lg shadow-sm">
+              ★ DESTAQUE
+            </span>
+          )}
+          {novo && (
+            <span className="h-6 px-2.5 flex items-center bg-blue-600 text-white text-[10px] font-black rounded-lg shadow-sm">
+              NOVO
             </span>
           )}
         </div>
-
-        <span className="tc-badges">
-          {destaque && <span className="tc-badge tc-badge-destaque">&#9733; Destaque</span>}
-          {novo     && <span className="tc-badge tc-badge-novo">Novo</span>}
-        </span>
       </Link>
 
-      {/* ── Corpo ── */}
-      <div className="tc-body">
-
-        <p className="tc-name">{marcaModelo}</p>
-
-        {abaixoFipe && (
-          <span className="tc-fipe-body">
-            <TrendingDown size={11} strokeWidth={2.5} /> Abaixo da FIPE
-          </span>
-        )}
-
-        {/* Ano com ícone Calendar + tração/câmbio — SEM cidade aqui */}
-        {(ano || metaParts.length > 0) && (
-          <p className="tc-meta">
-            {ano && (
-              <span className="tc-meta-item">
-                <Calendar size={16} color={ORANGE} strokeWidth={2} aria-hidden="true" />
-                <b>{ano}</b>
-              </span>
-            )}
-            {metaParts.map((p) => (
-              <span key={p} className="tc-meta-sep">· {p}</span>
-            ))}
+      {/* ── Corpo do Card ── */}
+      <div className="p-4 flex flex-col flex-1 gap-4">
+        <div className="space-y-1.5">
+          <p className="text-slate-900 font-bold text-[15px] leading-tight line-clamp-2 min-h-[40px]">
+            {cardTitle}
           </p>
-        )}
-
-        {/* Verificado com ShieldCheck laranja */}
-        {verificado && (
-          <span className="tc-verificado">
-            <ShieldCheck size={16} color={ORANGE} strokeWidth={2} />
-            Verificado
-          </span>
-        )}
-
-        {views != null && views > 0 && (
-          <span className="tc-views">
-            <Eye size={11} strokeWidth={2.5} aria-hidden="true" />
-            {fmtViews(views)}
-          </span>
-        )}
-
-        <div className="tc-actions">
-          <Link className="tc-btn" href={truckUrl}>Ver detalhes</Link>
-          {waLink && (
-            <a href={waLink} target="_blank" rel="noopener noreferrer"
-              className="tc-btn-wa" aria-label="Contato via WhatsApp">
-              <WaIcon />
-            </a>
-          )}
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+            {ano && <span>{ano}</span>}
+            {metaParts.length > 0 && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-slate-200" />
+                <span>{metaParts.join(" · ")}</span>
+              </>
+            )}
+          </div>
         </div>
 
+        <div className="mt-auto space-y-4">
+          <div className="flex items-end justify-between gap-2 border-t border-slate-50 pt-3">
+            <div className="flex flex-col">
+              <strong className="text-xl font-black text-blue-600 tracking-tight leading-none">
+                {formatMoney(truck.preco)}
+              </strong>
+              {location && (
+                <span className="flex items-center gap-1 mt-1.5 text-[11px] font-bold text-slate-400">
+                  <MapPin size={11} className="text-slate-300" strokeWidth={2.5} />
+                  {location}
+                </span>
+              )}
+            </div>
+            {views != null && views > 0 && (
+              <span className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 text-slate-400 text-[10px] font-black">
+                <Eye size={12} strokeWidth={2.5} /> {fmtViews(views)}
+              </span>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <Link
+              href={truckUrl}
+              className="flex-1 h-11 flex items-center justify-center bg-slate-900 text-white rounded-xl text-xs font-bold transition-all hover:bg-slate-800 active:scale-95"
+            >
+              Ver detalhes
+            </Link>
+            {waLink && (
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 flex items-center justify-center bg-emerald-500 text-white rounded-xl transition-all hover:bg-emerald-600 active:scale-95 shadow-sm shadow-emerald-200"
+                aria-label="WhatsApp"
+              >
+                <WaIcon />
+              </a>
+            )}
+          </div>
+        </div>
       </div>
 
-      <style>{`
-        .tc { isolation: isolate; position: relative; z-index: 0; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
-        .tc:hover { z-index: 100; transform: translateY(-2px); box-shadow: var(--shadow2); }
-        .tc-featured { border-color: rgba(234,179,8,.45) !important; box-shadow: 0 0 0 1.5px rgba(234,179,8,.18), var(--shadow); }
 
-        .tc-badges { position: absolute; top: 9px; left: 9px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; z-index: 3; }
-        .tc-badge { display: inline-flex; align-items: center; gap: 3px; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .03em; line-height: 1; backdrop-filter: blur(4px); }
-        .tc-badge-destaque { background: rgba(234,179,8,.92); color: #7c5c00; }
-        .tc-badge-novo { background: rgba(34,197,94,.9); color: #fff; }
 
-        .tc-fipe-body { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 900; letter-spacing: .03em; width: fit-content; }
-        body.public-theme-dark .tc-fipe-body { background: #14532d; color: #86efac; }
-        .tc-fipe-inline { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 9px; border-radius: 999px; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 900; width: fit-content; }
-        body.public-theme-dark .tc-fipe-inline { background: #14532d; color: #86efac; }
 
-        .tc-photo { display: block; position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: var(--soft); text-decoration: none; flex-shrink: 0; }
-        .tc-photo img { transition: transform .35s ease; }
-        .tc:hover .tc-photo img { transform: scale(1.04); }
-        .tc-no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); opacity: .35; }
-        .tc-overlay { position: absolute; inset: auto 0 0 0; background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.3) 60%, transparent 100%); padding: 28px 10px 10px; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; z-index: 2; }
-        .tc-price { font-size: clamp(17px, 2vw, 21px); font-weight: 950; letter-spacing: -.04em; color: #fff; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
-        .tc-loc { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.85); text-shadow: 0 1px 4px rgba(0,0,0,.4); white-space: nowrap; }
 
-        .tc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .tc-name { margin: 0; font-size: 13.5px; font-weight: 900; color: var(--text); line-height: 1.3; letter-spacing: -.03em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .tc-meta { margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 12px; color: var(--muted); }
-        .tc-meta-item { display: inline-flex; align-items: center; gap: 4px; }
-        .tc-meta-item b { color: var(--text); font-weight: 900; }
-        .tc-meta-sep { font-weight: 700; }
 
-        .tc-verificado { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #c2410c; background: #fff7ed; padding: 2px 8px; border-radius: 999px; width: fit-content; }
-        body.public-theme-dark .tc-verificado { background: #431407; color: #fb923c; }
 
-        .tc-views { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; color: var(--muted); white-space: nowrap; }
 
-        .tc-actions { display: flex; gap: 7px; margin-top: auto; }
-        .tc-btn { flex: 1; display: flex; align-items: center; justify-content: center; height: 36px; border-radius: 8px; background: var(--blue); color: #fff; font-size: 12px; font-weight: 900; text-decoration: none; letter-spacing: -.01em; box-shadow: 0 3px 10px rgba(24,119,242,.28); transition: background .18s, transform .18s, box-shadow .18s; }
-        .tc-btn:hover { background: var(--blue2, #1d4ed8); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(24,119,242,.38); }
-        .tc-btn-wa { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #25d366; color: #fff; box-shadow: 0 3px 10px rgba(37,211,102,.35); transition: background .18s, transform .18s; flex-shrink: 0; }
-        .tc-btn-wa:hover { background: #20b858; transform: translateY(-1px); }
 
-        .tc-preview { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); width: 320px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow3); z-index: 200; overflow: visible; animation: tc-pop .18s ease; pointer-events: auto; }
-        @keyframes tc-pop { from { opacity:0; transform:translateX(-50%) translateY(6px) scale(.97); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
-        .tc-preview-photo { position: relative; width: 100%; height: 180px; background: var(--soft); overflow: hidden; border-radius: 18px 18px 0 0; }
-        .tc-preview-no-photo { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--muted); opacity:.4; }
-        .tc-preview-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; }
-        .tc-preview-title { margin:0; font-size:14px; font-weight:800; color:var(--text); line-height:1.3; letter-spacing:-.02em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .tc-preview-price { font-size:22px; font-weight:950; color:var(--blue); letter-spacing:-.04em; line-height:1; }
-        .tc-preview-meta { margin:0; display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:12px; font-weight:700; color:var(--muted); }
-        .tc-preview-meta-item { display:inline-flex; align-items:center; gap:4px; }
-        .tc-preview-loc { margin:0; display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:var(--muted); }
-        .tc-preview-actions { display:flex; gap:8px; margin-top:4px; }
-        .tc-preview-btn-detail { flex:1; height:38px; border-radius:10px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; text-decoration:none; transition:background .14s; }
-        .tc-preview-btn-detail:hover { background:var(--blue2, #1d4ed8); }
-        .tc-preview-btn-wa { display:inline-flex; align-items:center; gap:6px; height:38px; padding:0 13px; border-radius:10px; background:rgba(37,211,102,.12); border:1.5px solid rgba(37,211,102,.3); color:#16a34a; font-size:13px; font-weight:800; text-decoration:none; white-space:nowrap; transition:background .14s; flex-shrink:0; }
-        .tc-preview-btn-wa:hover { background:rgba(37,211,102,.22); }
-        body.public-theme-dark .tc-preview-btn-wa { color:#4ade80; }
-        .tc-preview-arrow { position:absolute; bottom:-7px; left:50%; transform:translateX(-50%) rotate(45deg); width:14px; height:14px; background:var(--surface); border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
-        @media (max-width:900px) { .tc-preview { display:none; } }
-      `}</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </article>
   );
 }
