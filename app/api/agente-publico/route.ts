@@ -3,18 +3,20 @@ import { createPublicClient } from "@/lib/supabase/public"; // Bypassa RLS
 import { GoogleGenAI } from "@google/genai";
 
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenAI(apiKey || '');
 
 export async function POST(req: NextRequest) {
+  let inputDados: any = {};
   try {
-    const { mensagem, dados, etapa } = await req.json();
+    const body = await req.json();
+    const { mensagem, dados, etapa } = body;
+    inputDados = dados || {};
     const supabase = createPublicClient();
 
     if (!apiKey) {
       return NextResponse.json({ resposta: "Erro: Chave do Gemini não configurada no .env" }, { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const genAI = new GoogleGenAI({ apiKey });
 
     const prompt = `
       Você é um assistente de anúncios de caminhões.
@@ -32,14 +34,18 @@ export async function POST(req: NextRequest) {
       }
     `;
 
-    const result = await model.generateContent(prompt);
-    const jsonStr = result.response.text().replace(/```json|```/g, "").trim();
+    const response = await genAI.models.generateContent({
+      model: "gemini-1.5-pro",
+      contents: prompt
+    });
+
+    const jsonStr = (response.text || "").replace(/```json|```/g, "").trim();
     const aiResponse = JSON.parse(jsonStr);
 
     const novosDados = { ...(dados || {}), ...(aiResponse.dadosExtraidos || {}) };
 
     if (aiResponse.finalizado) {
-      const { error } = await supabase.from("trucks").insert({
+      const { error } = await (supabase.from("trucks") as any).insert({
         titulo: `${novosDados.marca || ''} ${novosDados.modelo || ''}`.trim(),
         marca: novosDados.marca,
         modelo: novosDados.modelo,
@@ -60,6 +66,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("ERRO AGENTE:", error);
-    return NextResponse.json({ resposta: "Tive um erro técnico. Pode repetir?", dados: dados || {} }, { status: 500 });
+    return NextResponse.json({ resposta: "Tive um erro técnico. Pode repetir?", dados: inputDados }, { status: 500 });
   }
 }

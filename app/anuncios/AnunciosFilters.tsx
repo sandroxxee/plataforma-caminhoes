@@ -49,7 +49,9 @@ const ESTADOS = [
   { label: "MG", value: "MG" }, { label: "MS", value: "MS" },
   { label: "MT", value: "MT" }, { label: "GO", value: "GO" },
   { label: "BA", value: "BA" }, { label: "RJ", value: "RJ" },
-  { label: "ES", value: "ES" },
+  { label: "ES", value: "ES" }, { label: "PE", value: "PE" },
+  { label: "CE", value: "CE" }, { label: "PA", value: "PA" },
+  { label: "AM", value: "AM" },
 ];
 
 const FAIXAS = [

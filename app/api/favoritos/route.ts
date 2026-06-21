@@ -22,8 +22,7 @@ export async function POST(req: NextRequest) {
   const { truck_id } = await req.json();
   if (!truck_id) return NextResponse.json({ error: "truck_id obrigatório" }, { status: 400 });
 
-  const { error } = await supabase
-    .from("favoritos")
+  const { error } = await (supabase.from("favoritos") as any)
     .insert({ user_id: user.id, truck_id });
 
   if (error?.code === "23505") {

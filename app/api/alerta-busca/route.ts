@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     if (!marca && !estado && !termo) return NextResponse.json({ error: "Informe ao menos um filtro" }, { status: 400 });
 
     const supabase = await createClient();
-    const { error } = await supabase.from("alertas_busca").insert({
+    const { error } = await (supabase.from("alertas_busca") as any).insert({
       email: email.toLowerCase().trim(),
       marca: marca || null,
       estado: estado || null,

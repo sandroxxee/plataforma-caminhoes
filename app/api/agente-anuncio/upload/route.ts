@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       principal: idx === 0,
       ordem:     idx,
     }));
-    await supabase.from("truck_images").insert(rows);
+    await (supabase.from("truck_images") as any).insert(rows);
   }
 
   return NextResponse.json({ urls, count: urls.length });

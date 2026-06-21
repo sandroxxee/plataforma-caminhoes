@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (existing) {
-      await supabase.from("search_logs").update({ count: existing.count + 1, updated_at: new Date().toISOString() }).eq("id", existing.id);
+      await (supabase.from("search_logs") as any).update({ count: existing.count + 1, updated_at: new Date().toISOString() }).eq("id", existing.id);
     } else {
-      await supabase.from("search_logs").insert({ term: clean, count: 1 });
+      await (supabase.from("search_logs") as any).insert({ term: clean, count: 1 });
     }
   } catch (error) {
     console.error("Error logging search term:", error);

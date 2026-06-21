@@ -5,7 +5,6 @@ export const runtime = "nodejs";
 
 // Alterado para ler a chave correta que está configurada no seu .env.local
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey });
 
 type TruckContext = {
   marca?: string | null;
@@ -65,6 +64,8 @@ export async function POST(req: NextRequest) {
       console.error("[chat-anuncio] Erro: Chave de API da Google ausente no ambiente.");
       return NextResponse.json({ erro: "Configuração de IA ausente no servidor local." }, { status: 500 });
     }
+
+    const ai = new GoogleGenAI({ apiKey });
 
     const body = await req.json() as {
       mensagem: string;

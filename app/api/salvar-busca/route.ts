@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
 
-  const { error } = await supabase.from("saved_searches").insert({
+  const { error } = await (supabase.from("saved_searches") as any).insert({
     user_id: user.id,
     marca: body.marca ?? null,
     ano_min: body.ano_min ?? null,

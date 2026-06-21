@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
 
     if (["publicar", "sim", "s", "ok", "confirmar", "enviar"].includes(resp)) {
       const titulo = `${dados.marca} ${dados.modelo} ${dados.ano_modelo || dados.ano_fabricacao}`.trim();
-      const { data: truck, error } = await supabase.from("trucks").insert({
+      const { data: truck, error } = await (supabase.from("trucks") as any).insert({
         user_id: user.id,
         titulo,
         tipo:           dados.tipo || "Caminhao",

@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 // Lê a chave de API do ambiente
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenAI(apiKey || '');
 
 export async function POST(req: Request) {
   try {
@@ -13,24 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Chave de API Gemini não configurada' }, { status: 500 });
     }
 
-    // Modelo atualizado para o mais estável (1.5 Pro ou Flash)
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-pro',
-      systemInstruction: `Você é o assistente inteligente da plataforma Caminhões à Venda.
-Seu objetivo é ajudar o usuário a criar um anúncio completo.
-Siga estas etapas:
-1. Identificar Marca, Modelo e Ano.
-2. Identificar Valor e Quilometragem.
-3. Identificar Localização (Cidade/Estado).
-4. Solicitar uma breve descrição.
-
-Dados já coletados: ${JSON.stringify(dadosColetados || {})}
-
-REGRAS:
-- Seja direto e amigável.
-- Não use formatação markdown pesada (como muitos asteriscos).
-- Se os dados estiverem completos, gere um resumo e peça confirmação.`
-    });
+    const genAI = new GoogleGenAI({ apiKey });
 
     // Tratamento rigoroso do histórico para evitar INVALID_ARGUMENT
     // O Gemini exige que o histórico alterne entre 'user' e 'model'
@@ -38,7 +20,7 @@ REGRAS:
     const formattedHistory = (Array.isArray(historico) ? historico : [])
       .filter(msg => msg.role === 'user' || msg.role === 'model' || msg.role === 'assistant')
       .map(msg => ({
-        role: msg.role === 'assistant' ? 'model' : msg.role,
+        role: (msg.role === 'assistant' ? 'model' : msg.role) as "user" | "model",
         content: msg.content || msg.text || ''
       }))
       .filter(msg => {
@@ -51,22 +33,36 @@ REGRAS:
         parts: [{ text: msg.content }]
       }));
 
-    // Inicia o chat com o histórico validado
-    const chat = model.startChat({
-      history: formattedHistory,
-      generationConfig: {
+    // Inicia o chat com o histórico validado no novo SDK @google/genai
+    const chat = genAI.chats.create({
+      model: 'gemini-1.5-pro',
+      config: {
+        systemInstruction: `Você é o assistente inteligente da plataforma Caminhões à Venda.
+Seu objetivo é ajudar o usuário a criar um anúncio completo.
+Siga estas etapas:
+1. Identificar Marca, Modelo e Ano.
+2. Identificar Valor e Quilometragem.
+3. Identificar Localização (Cidade/Estado).
+4. Solicitar uma breve descrição.
+
+Dados já coletados: ${JSON.stringify(dadosColetados || {})}
+
+REGRAS:
+- Seja direto e amigável.
+- Não use formatação markdown pesada (como muitos asteriscos).
+- Se os dados estiverem completos, gere um resumo e peça confirmação.`,
         temperature: 0.7,
         maxOutputTokens: 1000,
       },
+      history: formattedHistory,
     });
 
-    const result = await chat.sendMessage(mensagem);
-    const response = await result.response;
-    const text = response.text();
+    const result = await chat.sendMessage({ message: mensagem });
+    const text = result.text || "";
 
     return NextResponse.json({
       textoBot: text,
-      historicoAtualizado: await chat.getHistory()
+      historicoAtualizado: chat.getHistory()
     });
 
   } catch (error: any) {
