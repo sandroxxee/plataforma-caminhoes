@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/painel/anuncios/[id]/actions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/forms/EditAnuncioForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/painel/anuncios/[id]/editar/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/painel/anuncios/[id]/editar/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constants.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,6 +79,27 @@
       <updated>1782030759834</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="843ce463-58cf-4bc5-a17b-c82a2d0e323a" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="843ce463-58cf-4bc5-a17b-c82a2d0e323a">
+          <value>
+            <State />
+          </value>
+        </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ADD" />
