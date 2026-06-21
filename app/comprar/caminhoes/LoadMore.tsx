@@ -37,7 +37,7 @@ export function LoadMore({
       if (estado)  params.set("estado", estado);
       if (faixa > 0) params.set("faixa", String(faixa));
 
-      const res = await fetch(`/api/anuncios?${params.toString()}`);
+      const res = await fetch(`/api/comprar/caminhoes?${params.toString()}`);
       if (!res.ok) return;
       const json = await res.json();
       setTrucks((prev) => [...prev, ...json.trucks]);

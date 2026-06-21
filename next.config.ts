@@ -44,6 +44,22 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "25mb",
     },
   },
+
+  async redirects() {
+    return [
+      { source: "/anuncios", destination: "/comprar/caminhoes", permanent: true },
+      { source: "/carretas", destination: "/comprar/carretas", permanent: true },
+      { source: "/implementos", destination: "/comprar/implementos", permanent: true },
+      { source: "/maquinas", destination: "/comprar/maquinas", permanent: true },
+      { source: "/pecas", destination: "/comprar/pecas", permanent: true },
+      { source: "/revendas", destination: "/parcerias/revendas", permanent: true },
+      { source: "/parceiros", destination: "/parcerias/parceiros", permanent: true },
+      { source: "/sobre", destination: "/institucional/sobre", permanent: true },
+      { source: "/contato", destination: "/institucional/contato", permanent: true },
+      { source: "/como-funciona", destination: "/institucional/ajuda", permanent: true },
+      { source: "/politica-de-privacidade", destination: "/institucional/privacidade", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

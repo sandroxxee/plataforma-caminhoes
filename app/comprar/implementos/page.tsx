@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Implementos à Venda | Caminhões à Venda",
   description: "Implementos rodoviários à venda: caçambas, munks, pranchas, baús, tanques, plataformas e muito mais.",
-  alternates: { canonical: "/implementos" },
+  alternates: { canonical: "/comprar/implementos" },
 };
 
 const TIPOS = [
@@ -64,13 +64,13 @@ export default async function ImplementosPage({ searchParams }: PageProps) {
       <div className="impl-container">
         {/* Chips de tipo — sem label */}
         <div className="impl-tipos-grid">
-          <Link href="/implementos" className={`impl-tipo-chip${!tipoFiltro ? " impl-tipo-chip--active" : ""}`}>
+          <Link href="/comprar/implementos" className={`impl-tipo-chip${!tipoFiltro ? " impl-tipo-chip--active" : ""}`}>
             <span aria-hidden="true">📦</span> Todos
           </Link>
           {TIPOS.map((tipo) => (
             <Link
               key={tipo.valor}
-              href={`/implementos?tipo=${encodeURIComponent(tipo.valor)}`}
+              href={`/comprar/implementos?tipo=${encodeURIComponent(tipo.valor)}`}
               className={`impl-tipo-chip${tipoFiltro === tipo.valor ? " impl-tipo-chip--active" : ""}`}
             >
               <span aria-hidden="true">{tipo.emoji}</span> {tipo.label}
@@ -80,9 +80,9 @@ export default async function ImplementosPage({ searchParams }: PageProps) {
 
         {/* Filtro estado */}
         <div className="impl-estados">
-          <Link href={tipoFiltro ? `/implementos?tipo=${encodeURIComponent(tipoFiltro)}` : "/implementos"} className={`impl-est-chip${!estadoFiltro ? " impl-est-chip--active" : ""}`}>Todos</Link>
+          <Link href={tipoFiltro ? `/comprar/implementos?tipo=${encodeURIComponent(tipoFiltro)}` : "/comprar/implementos"} className={`impl-est-chip${!estadoFiltro ? " impl-est-chip--active" : ""}`}>Todos</Link>
           {ESTADOS.map(uf => (
-            <Link key={uf} href={`/implementos?${tipoFiltro ? `tipo=${encodeURIComponent(tipoFiltro)}&` : ""}estado=${uf}`} className={`impl-est-chip${estadoFiltro === uf ? " impl-est-chip--active" : ""}`}>{uf}</Link>
+            <Link key={uf} href={`/comprar/implementos?${tipoFiltro ? `tipo=${encodeURIComponent(tipoFiltro)}&` : ""}estado=${uf}`} className={`impl-est-chip${estadoFiltro === uf ? " impl-est-chip--active" : ""}`}>{uf}</Link>
           ))}
         </div>
 
@@ -100,13 +100,13 @@ export default async function ImplementosPage({ searchParams }: PageProps) {
                 ? `Nenhum ${tipoFiltro || "implemento"} encontrado${estadoFiltro ? ` em ${estadoFiltro}` : ""}.`
                 : "Nenhum implemento disponível no momento."
             }
-            primaryHref="/implementos"
+            primaryHref="/comprar/implementos"
             primaryLabel="Ver todos os implementos"
             suggestions={[
-              { href: "/carretas",  label: "Carretas",  icon: <Container size={16} /> },
-              { href: "/anuncios",  label: "Caminhões", icon: <Truck size={16} /> },
-              { href: "/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
-              { href: "/pecas",     label: "Peças",     icon: <Package size={16} /> },
+              { href: "/comprar/carretas",  label: "Carretas",  icon: <Container size={16} /> },
+              { href: "/comprar/caminhoes",  label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/comprar/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
+              { href: "/comprar/pecas",     label: "Peças",     icon: <Package size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/implemento"
             announceLabel="Anuncie seu implemento"

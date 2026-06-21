@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Máquinas Pesadas à Venda | Caminhões à Venda",
   description: "Escavadeiras, pás-carregadeiras, motoniveladoras, rolos e muito mais. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/maquinas" },
+  alternates: { canonical: "/comprar/maquinas" },
 };
 
 const ESTADOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
@@ -51,9 +51,9 @@ export default async function MaquinasPage({ searchParams }: PageProps) {
       <div className="maq-container">
         <CategoryBrandsBar categoria="maquinas" labelSingular="Máquinas" />
         <div className="maq-estados">
-          <Link href="/maquinas" className={`maq-est${!estadoFiltro ? " maq-est--on" : ""}`}>Todos</Link>
+          <Link href="/comprar/maquinas" className={`maq-est${!estadoFiltro ? " maq-est--on" : ""}`}>Todos</Link>
           {ESTADOS.map(uf => (
-            <Link key={uf} href={`/maquinas?estado=${uf}`} className={`maq-est${estadoFiltro===uf ? " maq-est--on" : ""}`}>{uf}</Link>
+            <Link key={uf} href={`/comprar/maquinas?estado=${uf}`} className={`maq-est${estadoFiltro===uf ? " maq-est--on" : ""}`}>{uf}</Link>
           ))}
         </div>
         {maquinas.length > 0 ? (
@@ -66,13 +66,13 @@ export default async function MaquinasPage({ searchParams }: PageProps) {
             icon={<Tractor size={48} strokeWidth={1.5} />}
             title="Nenhuma máquina encontrada"
             description={estadoFiltro ? `Nenhuma máquina disponível em ${estadoFiltro} no momento.` : "Nenhuma máquina disponível no momento."}
-            primaryHref="/maquinas"
+            primaryHref="/comprar/maquinas"
             primaryLabel="Ver todas as máquinas"
             suggestions={[
-              { href: "/anuncios", label: "Caminhões", icon: <Truck size={16} /> },
-              { href: "/carretas", label: "Carretas", icon: <Container size={16} /> },
-              { href: "/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-              { href: "/pecas", label: "Peças", icon: <Package size={16} /> },
+              { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/comprar/carretas", label: "Carretas", icon: <Container size={16} /> },
+              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/comprar/pecas", label: "Peças", icon: <Package size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/maquina"
             announceLabel="Anuncie sua máquina"

@@ -156,8 +156,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
   if (!truck) notFound();
 
   const canonicalPath = getCanonicalPath(truck);
-  const currentPath   = `/anuncios/${id}`;
-  if (currentPath !== canonicalPath) {
+  const currentPath   = `/comprar/caminhoes/${id}`;
+  if (currentPath !== canonicalPath && !canonicalPath.includes(id)) {
     redirect(canonicalPath);
   }
 
@@ -184,7 +184,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
           <nav className="detail-breadcrumb" aria-label="Navegação">
             <Link href="/">Ínicio</Link>
             <span aria-hidden="true">›</span>
-            <Link href="/anuncios">Anúncios</Link>
+            <Link href="/comprar/caminhoes">Caminhões</Link>
             <span aria-hidden="true">›</span>
             <span>{truck.marca || truck.perfil || "Anúncio"}</span>
           </nav>

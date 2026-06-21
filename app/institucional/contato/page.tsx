@@ -7,7 +7,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Contato | Caminhões à Venda",
   description: "Entre em contato com a equipe do Caminhões à Venda. Tire dúvidas, reporte problemas ou saiba como anunciar seu caminhão.",
-  alternates: { canonical: "https://www.caminhoesavenda.com/contato" },
+  alternates: { canonical: "https://www.caminhoesavenda.com/institucional/contato" },
 };
 
 export default function ContatoPage() {

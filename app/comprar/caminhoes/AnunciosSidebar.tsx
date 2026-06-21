@@ -49,7 +49,7 @@ export function AnunciosSidebar({
   const [sliderMin, setSliderMin] = useState(precoMin);
   const [sliderMax, setSliderMax] = useState(precoMax);
 
-  const base = categoriaAtiva === "anuncios" ? "/anuncios" : `/${categoriaAtiva}`;
+  const base = categoriaAtiva === "anuncios" ? "/comprar/caminhoes" : `/${categoriaAtiva}`;
 
   const getUrl = (params: Record<string, string | number | undefined>) => {
     const sp = new URLSearchParams();
@@ -156,7 +156,7 @@ export function AnunciosSidebar({
             <div className="asb-list">
               {CATEGORIAS.map((cat) => (
                 <Link key={cat.id}
-                  href={cat.id === "anuncios" ? "/anuncios" : `/${cat.id}`}
+                  href={cat.id === "anuncios" ? "/comprar/caminhoes" : `/${cat.id}`}
                   className={`asb-item${categoriaAtiva === cat.id ? " active" : ""}`}>
                   <cat.icon size={14} />
                   <span>{cat.label}</span>

@@ -11,13 +11,13 @@ import { MARCAS_VALIDAS } from "@/lib/constants";
 type Categoria = { label: string; href: string; iconName: string };
 
 const CATEGORIAS: Categoria[] = [
-  { label: "Todos",       href: "/anuncios",    iconName: "truck" },
+  { label: "Todos",       href: "/comprar/caminhoes",    iconName: "truck" },
   { label: "Caminh\u00f5es",   href: "/caminhoes",   iconName: "truck" },
-  { label: "Carretas",    href: "/carretas",    iconName: "container" },
-  { label: "Implementos", href: "/implementos", iconName: "wrench" },
+  { label: "Carretas",    href: "/comprar/carretas",    iconName: "container" },
+  { label: "Implementos", href: "/comprar/implementos", iconName: "wrench" },
   { label: "\u00d4nibus",      href: "/onibus",      iconName: "bus" },
-  { label: "M\u00e1quinas",    href: "/maquinas",    iconName: "tractor" },
-  { label: "Pe\u00e7as",       href: "/pecas",       iconName: "package" },
+  { label: "M\u00e1quinas",    href: "/comprar/maquinas",    iconName: "tractor" },
+  { label: "Pe\u00e7as",       href: "/comprar/pecas",       iconName: "package" },
 ];
 
 function CatIcon({ name }: { name: string }) {
@@ -73,7 +73,7 @@ function buildHref(q: string, faixaIdx: number, marcaFiltro: string, estadoFiltr
     else params[k] = String(v);
   });
   const qs = new URLSearchParams(params).toString();
-  return qs ? `/anuncios?${qs}` : "/anuncios";
+  return qs ? `/comprar/caminhoes?${qs}` : "/comprar/caminhoes";
 }
 
 type Props = {
@@ -195,7 +195,7 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
         <p className="af-count">
           <strong>{total}</strong> {total === 1 ? "an\u00fancio" : "an\u00fancios"}
           {hasFilters && <span className="af-filtered"> encontrados</span>}
-          {hasFilters && <Link href="/anuncios" className="af-clear-inline"><X size={11} />Limpar</Link>}
+          {hasFilters && <Link href="/comprar/caminhoes" className="af-clear-inline"><X size={11} />Limpar</Link>}
         </p>
       </div>
 
@@ -274,7 +274,7 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           {hasFilters && (
             <div className="af-dsection">
               <SalvarBusca marca={marcaFiltro || undefined} estado={estadoFiltro || undefined} precoMax={precoMaxAtivo} />
-              <Link href="/anuncios" className="af-dclear" onClick={() => setDrawerOpen(false)}><X size={12} />Limpar filtros</Link>
+              <Link href="/comprar/caminhoes" className="af-dclear" onClick={() => setDrawerOpen(false)}><X size={12} />Limpar filtros</Link>
             </div>
           )}
         </div>

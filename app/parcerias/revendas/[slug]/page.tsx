@@ -93,7 +93,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description:
       dealer.description ||
       `Veja os anúncios de ${dealer.name} no Caminhões à Venda, com caminhões e implementos disponíveis para contato direto.`,
-    alternates: { canonical: `/revendas/${dealer.slug}` },
+    alternates: { canonical: `/parcerias/revendas/${dealer.slug}` },
   };
 }
 
@@ -145,7 +145,7 @@ export default async function RevendaDetalhePage({ params }: PageProps) {
       <div className="market-main">
         <section className="market-container" style={{ paddingTop: 18, paddingBottom: 56 }}>
           <Link
-            href="/revendas"
+            href="/parcerias/revendas"
             style={{
               display: "inline-flex",
               marginBottom: 14,

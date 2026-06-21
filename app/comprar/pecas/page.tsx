@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Peças para Caminhão à Venda | Caminhões à Venda",
   description: "Motores, câmbios, eixos, suspensão, freios e muito mais. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/pecas" },
+  alternates: { canonical: "/comprar/pecas" },
 };
 
 const ESTADOS = ["SC","PR","RS","SP","MG","MS","MT","GO","BA","RJ","ES","PE","CE","PA","AM"];
@@ -51,9 +51,9 @@ export default async function PecasPage({ searchParams }: PageProps) {
       <div className="pec-container">
         <CategoryBrandsBar categoria="pecas" labelSingular="Peças" />
         <div className="pec-estados">
-          <Link href="/pecas" className={`pec-est${!estadoFiltro ? " pec-est--on" : ""}`}>Todos</Link>
+          <Link href="/comprar/pecas" className={`pec-est${!estadoFiltro ? " pec-est--on" : ""}`}>Todos</Link>
           {ESTADOS.map(uf => (
-            <Link key={uf} href={`/pecas?estado=${uf}`} className={`pec-est${estadoFiltro===uf ? " pec-est--on" : ""}`}>{uf}</Link>
+            <Link key={uf} href={`/comprar/pecas?estado=${uf}`} className={`pec-est${estadoFiltro===uf ? " pec-est--on" : ""}`}>{uf}</Link>
           ))}
         </div>
         {pecas.length > 0 ? (
@@ -66,13 +66,13 @@ export default async function PecasPage({ searchParams }: PageProps) {
             icon={<Package size={48} strokeWidth={1.5} />}
             title="Nenhuma peça encontrada"
             description={estadoFiltro ? `Nenhuma peça disponível em ${estadoFiltro} no momento.` : "Nenhuma peça disponível no momento."}
-            primaryHref="/pecas"
+            primaryHref="/comprar/pecas"
             primaryLabel="Ver todas as peças"
             suggestions={[
-              { href: "/anuncios", label: "Caminhões", icon: <Truck size={16} /> },
-              { href: "/carretas", label: "Carretas", icon: <Container size={16} /> },
-              { href: "/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-              { href: "/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
+              { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/comprar/carretas", label: "Carretas", icon: <Container size={16} /> },
+              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/comprar/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/peca"
             announceLabel="Anuncie sua peça"

@@ -136,7 +136,7 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
               <div className="market-empty">
                 <strong>Nenhum anúncio encontrado</strong>
                 <p>Tente outros filtros ou veja todos.</p>
-                <Link href="/anuncios" className="market-empty-btn">Ver todos</Link>
+                <Link href="/comprar/caminhoes" className="market-empty-btn">Ver todos</Link>
               </div>
             ) : (
               <LoadMore

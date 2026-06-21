@@ -6,24 +6,28 @@
   <component name="ChangeListManager">
     <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/admin/anuncios/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin/anuncios/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/admin/aparencia/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin/aparencia/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/admin/pendentes/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin/pendentes/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosSidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/anuncios/AnunciosSidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/carretas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/carretas/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/implementos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/implementos/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/maquinas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/maquinas/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/painel/anuncios/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/painel/anuncios/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pecas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/pecas/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/AdminLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/AdminLayout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/AdminMenu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/AdminMenu.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/PanelLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PanelLayout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/theme/EmptyState.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/theme/EmptyState.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next-env.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosFilters.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/AnunciosSidebar.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/LoadMore.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/AnuncioDetalheClient.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/anuncio-utils.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/opengraph-image.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/[id]/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/opengraph-image.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/anuncios/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/carretas/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/como-funciona/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/contato/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/implementos/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/maquinas/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/parceiros/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/pecas/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/politica-de-privacidade/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/revendas/[slug]/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/revendas/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/sobre/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/PublicHeaderClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PublicHeaderClient.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -160,7 +164,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ADD" />
-    <option name="LAST_COMMIT_MESSAGE" value="ADD" />
+    <MESSAGE value="feat: implement Premium Design System (Apple Style) across the platform" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: implement Premium Design System (Apple Style) across the platform" />
   </component>
   <component name="dal_apis">
     <option name="consented" value="true" />

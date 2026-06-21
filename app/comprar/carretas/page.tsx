@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
-import { AnunciosSidebar } from "../anuncios/AnunciosSidebar";
+import { AnunciosSidebar } from "../caminhoes/AnunciosSidebar";
 import { EmptyState } from "@/components/theme/EmptyState";
 import { Container, Truck, Wrench, Tractor, Package } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Carretas à Venda | Caminhões à Venda",
   description: "Graneleiras, porta-containers, pranchas, frigoríficas e tanques. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/carretas" },
+  alternates: { canonical: "/comprar/carretas" },
 };
 
 type PageProps = {
@@ -104,13 +104,13 @@ export default async function CarretasPage({ searchParams }: PageProps) {
                 icon={<Container size={48} strokeWidth={1.5} />}
                 title="Nenhuma carreta encontrada"
                 description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma carreta disponível no momento."}
-                primaryHref="/carretas"
+                primaryHref="/comprar/carretas"
                 primaryLabel="Ver todas as carretas"
                 suggestions={[
-                  { href: "/anuncios", label: "Caminhões", icon: <Truck size={16} /> },
-                  { href: "/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-                  { href: "/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
-                  { href: "/pecas", label: "Peças", icon: <Package size={16} /> },
+                  { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+                  { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+                  { href: "/comprar/maquinas", label: "Máquinas", icon: <Tractor size={16} /> },
+                  { href: "/comprar/pecas", label: "Peças", icon: <Package size={16} /> },
                 ]}
                 announceHref="/painel/anuncios/novo/carreta"
                 announceLabel="Anuncie sua carreta"

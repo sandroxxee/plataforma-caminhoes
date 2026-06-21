@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Parceiros | Caminhões à Venda",
   description:
     "Revendas, lojas e empresas parceiras que apoiam a plataforma Caminhões à Venda. Peças, pneus, acessórios, manutenção e muito mais.",
-  alternates: { canonical: "/parceiros" },
+  alternates: { canonical: "/parcerias/parceiros" },
 };
 
 const whatsappUrl =
