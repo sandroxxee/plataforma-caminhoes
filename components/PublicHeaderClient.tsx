@@ -35,164 +35,87 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
 
   return (
     <>
-      <style>{`
-        .ph-root {
-          position: sticky; top: 0; z-index: 80;
-          height: 70px;
-          background: rgba(255,255,255,.90);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border-bottom: 1px solid rgba(148,163,184,.16);
-          box-shadow: 0 18px 42px rgba(15,23,42,.08);
-          display: flex; align-items: center;
-          padding: 0 20px; gap: 18px;
-        }
-        body.public-theme-dark .ph-root {
-          background: rgba(15,23,42,.92);
-          border-bottom-color: rgba(255,255,255,.12);
-          box-shadow: 0 18px 42px rgba(0,0,0,.24);
-        }
-        .ph-logo {
-          display: flex; align-items: center; gap: 10px;
-          text-decoration: none; flex-shrink: 0;
-        }
-        .ph-logo-text {
-          font-weight: 800; font-size: 15px;
-          color: var(--text); line-height: 1.2;
-        }
-        .ph-logo-text span { color: #1877f2; }
-        .ph-search {
-          flex: 1; max-width: 340px; position: relative;
-        }
-        .ph-search input {
-          width: 100%; height: 40px; border-radius: 999px;
-          border: 1.5px solid var(--line);
-          background: var(--soft);
-          padding: 0 40px 0 16px;
-          font-size: 13px; font-weight: 600;
-          color: var(--text); outline: none;
-          transition: border-color .2s, box-shadow .2s;
-        }
-        .ph-search input:focus {
-          border-color: var(--blue);
-          box-shadow: 0 0 0 3px rgba(24,119,242,.12);
-          background: var(--surface);
-        }
-        .ph-search input::placeholder { color: var(--muted); }
-        .ph-search-icon {
-          position: absolute; right: 12px; top: 50%;
-          transform: translateY(-50%);
-          color: var(--muted); pointer-events: none;
-        }
-        .ph-nav {
-          display: flex; align-items: center;
-          gap: 8px; margin-left: auto;
-        }
-        .ph-nav-link {
-          display: flex; align-items: center; gap: 6px;
-          padding: 8px 12px; border-radius: 14px;
-          text-decoration: none; font-weight: 700;
-          font-size: 13px; color: var(--muted);
-          white-space: nowrap; position: relative;
-          transition: background .18s, color .18s;
-        }
-        .ph-nav-link:hover { background: rgba(59,130,246,.12); color: var(--blue); }
-        .ph-nav-link.active {
-          color: var(--blue); font-weight: 800;
-          background: rgba(59,130,246,.12);
-        }
-        .ph-nav-link.active::after {
-          content: '';
-          position: absolute; bottom: -2px;
-          left: 10px; right: 10px;
-          height: 2px; border-radius: 2px;
-          background: var(--blue);
-        }
-        .ph-toggle-btn {
-          width: 36px; height: 36px; border-radius: 50%;
-          border: 1.5px solid var(--line);
-          background: var(--soft); cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          color: var(--text); flex-shrink: 0;
-          transition: background .2s, color .2s;
-          touch-action: manipulation;
-        }
-        .ph-toggle-btn:hover { background: var(--blueSoft); color: var(--blue); }
-        .ph-hamburger {
-          display: none;
-          width: 38px; height: 38px; border-radius: 50%;
-          border: 0; background: var(--soft); cursor: pointer;
-          align-items: center; justify-content: center;
-          color: var(--text); flex-shrink: 0;
-        }
-        .ph-menu-mobile {
-          display: none;
-          position: fixed; left: 12px; right: 12px; top: 68px;
-          background: var(--surface); border: 1px solid var(--line);
-          border-radius: 20px; box-shadow: 0 16px 48px rgba(0,0,0,.14);
-          flex-direction: column; padding: 8px; z-index: 100;
-        }
-        .ph-menu-mobile.open { display: flex; }
-        .ph-menu-mobile a {
-          display: flex; align-items: center; gap: 10px;
-          min-height: 50px; padding: 0 14px; border-radius: 12px;
-          color: var(--text); font-weight: 700; font-size: 15px;
-          text-decoration: none; transition: background .14s, color .14s;
-        }
-        .ph-menu-mobile a:hover, .ph-menu-mobile a.active {
-          background: var(--blueSoft); color: var(--blue);
-        }
-        .ph-backdrop {
-          display: none; position: fixed; inset: 0;
-          z-index: 90; background: rgba(0,0,0,.18);
-        }
-        .ph-backdrop.open { display: block; }
-        .public-cta {
-          display: inline-flex;
-          align-items: center; justify-content: center;
-          min-height: 42px; padding: 0 18px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, #2563eb, #4f46e5);
-          color: #fff; font-weight: 900;
-          text-decoration: none;
-          transition: transform .18s, box-shadow .18s, opacity .18s;
-        }
-        .public-cta:hover { transform: translateY(-1px); box-shadow: 0 18px 44px rgba(37,99,235,.24); }
-        @media (max-width: 1100px) {
-          .ph-search { display: none; }
-        }
-        @media (max-width: 900px) {
-          .ph-nav { display: none; }
-          .ph-hamburger { display: flex; }
-          .ph-search { display: none; }
-          .ph-root { padding: 0 14px; gap: 10px; height: 58px; }
-          .public-cta { display: none; }
-        }
-      `}</style>
+      <header className="sticky top-0 z-[100] h-16 w-full bg-white/80 backdrop-blur-md border-b border-slate-100/50 shadow-sm transition-all duration-300">
+        <div className="max-w-[1400px] h-full mx-auto px-4 flex items-center justify-between gap-6">
 
-      <header className="ph-root">
-        <Link href="/" className="ph-logo" aria-label="Caminhões à Venda">
-          <div className="ph-logo-text">
-            Caminhões<br /><span>à Venda</span>
+          {/* Logo Premium */}
+          <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Caminhões à Venda">
+            <div className="flex flex-col leading-none">
+              <span className="text-slate-900 font-black text-lg tracking-tighter uppercase italic">Caminhões</span>
+              <span className="text-blue-600 font-black text-[10px] tracking-[0.2em] uppercase ml-0.5">à Venda</span>
+            </div>
+          </Link>
+
+          {/* Barra de Busca Premium (Apple Style) */}
+          <div className="hidden lg:flex flex-1 max-w-md relative group">
+            <input
+              type="search"
+              placeholder="Buscar marca, modelo ou cidade..."
+              className="w-full h-10 pl-11 pr-4 bg-slate-50 border border-slate-100 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 outline-none transition-all duration-200 focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const val = (e.currentTarget as HTMLInputElement).value.trim();
+                  if (val) window.location.href = `/anuncios?q=${encodeURIComponent(val)}`;
+                }
+              }}
+            />
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
           </div>
-        </Link>
 
-        <div className="ph-search">
-          <input
-            type="search"
-            placeholder="Buscar marca, modelo..."
-            aria-label="Buscar"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                const val = (e.target as HTMLInputElement).value.trim();
-                if (val) window.location.href = `/anuncios?q=${encodeURIComponent(val)}`;
-              }
-            }}
-          />
-          <Search size={15} className="ph-search-icon" aria-hidden="true" />
+          {/* Navegação Desktop */}
+          <nav className="hidden xl:flex items-center gap-1" aria-label="Menu principal">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all duration-200
+                    ${active
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}
+                  `}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <Icon size={16} strokeWidth={2.5} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Ações e Mobile Toggle */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <ThemeTogglePublic />
+            </div>
+
+            <Link
+              href="/anunciar"
+              className="hidden md:flex h-10 px-5 items-center justify-center bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Anunciar grátis
+            </Link>
+
+            <button
+              className="xl:hidden w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-900 rounded-xl hover:bg-slate-100 transition-colors"
+              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              {menuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
+            </button>
+          </div>
         </div>
+      </header>
 
-        <nav className="ph-nav" aria-label="Menu principal">
+      {/* Menu Mobile Premium (Overlay) */}
+      <div className={`
+        fixed inset-0 z-[90] bg-white transition-all duration-300 xl:hidden
+        ${menuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}
+      `}>
+        <div className="pt-20 px-4 pb-8 h-full flex flex-col gap-2 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(pathname, item.href);
@@ -200,54 +123,34 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`ph-nav-link${active ? " active" : ""}`}
-                aria-current={active ? "page" : undefined}
+                className={`
+                  flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all
+                  ${active ? "bg-blue-50 text-blue-600" : "text-slate-900 active:bg-slate-50"}
+                `}
+                onClick={() => setMenuOpen(false)}
               >
-                <Icon size={14} strokeWidth={1.8} aria-hidden="true" />
-                <span>{item.label}</span>
+                <div className={`w-12 h-12 flex items-center justify-center rounded-xl ${active ? "bg-white shadow-sm" : "bg-slate-50"}`}>
+                   <Icon size={24} strokeWidth={2.5} />
+                </div>
+                {item.label}
               </Link>
             );
           })}
-          <ThemeTogglePublic />
-        </nav>
 
-        <Link href="/anunciar" className="public-cta">Anunciar grátis</Link>
-
-        <button
-          className="ph-hamburger"
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </header>
-
-      <nav className={`ph-menu-mobile${menuOpen ? " open" : ""}`} aria-label="Menu mobile">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(pathname, item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={active ? "active" : ""}
+          <div className="mt-auto pt-8 flex flex-col gap-4">
+             <Link
+              href="/anunciar"
+              className="h-14 flex items-center justify-center bg-blue-600 text-white rounded-2xl text-base font-black uppercase tracking-widest shadow-xl shadow-blue-500/30"
               onClick={() => setMenuOpen(false)}
             >
-              <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
-              {item.label}
+              Anunciar grátis
             </Link>
-          );
-        })}
-      </nav>
-
-      {menuOpen && (
-        <div
-          className="ph-backdrop open"
-          onClick={() => setMenuOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+            <div className="flex justify-center">
+              <ThemeTogglePublic />
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
