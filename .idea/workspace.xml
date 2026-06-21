@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d283b53-3247-4da2-b851-c68f77d517b9" name="Changes" comment="feat: implement Premium Design System (Apple Style) across the platform">
-      <change afterPath="$PROJECT_DIR$/components/CategoryPageLayout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/PanelHeaderWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/comprar/caminhoes/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/caminhoes/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/comprar/carretas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/carretas/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/comprar/implementos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/implementos/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/comprar/maquinas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/maquinas/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/comprar/pecas/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/comprar/pecas/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/painel/anuncios/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/painel/anuncios/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/painel/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/painel/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/PanelLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/PanelLayout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
