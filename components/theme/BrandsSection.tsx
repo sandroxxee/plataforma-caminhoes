@@ -11,8 +11,8 @@ const MARCAS = [
   { nome: "Iveco",         slug: "iveco",         logo: "https://img.logo.dev/iveco.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
   { nome: "Ford",          slug: "ford",          logo: "https://img.logo.dev/ford.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
   { nome: "Volkswagen",    slug: "volkswagen",    logo: "https://img.logo.dev/volkswagen.com?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
-  { nome: "Randon",        slug: "randon",        logo: null },
-  { nome: "Agrale",        slug: "agrale",        logo: null },
+  { nome: "Randon",        slug: "randon",        logo: "https://img.logo.dev/randon.com.br?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
+  { nome: "Agrale",        slug: "agrale",        logo: "https://img.logo.dev/agrale.com.br?token=pk_X-1ZO13GSgeOoUrIuJ6BeA" },
 ];
 
 export function BrandsSection() {
