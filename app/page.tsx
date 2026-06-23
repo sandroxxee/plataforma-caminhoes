@@ -53,11 +53,6 @@ export default async function HomePage() {
 
       <div className="premium-main">
 
-        {/* MARCAS */}
-        <div className="section-wrap">
-          <BrandsSection />
-        </div>
-
         {/* ÚLTIMOS ANÚNCIOS */}
         <section className="section-wrap">
           <div className="premium-section">
