@@ -12,12 +12,12 @@ type Categoria = { label: string; href: string; iconName: string };
 
 const CATEGORIAS: Categoria[] = [
   { label: "Todos",       href: "/comprar/caminhoes",    iconName: "truck" },
-  { label: "Caminh\u00f5es",   href: "/caminhoes",   iconName: "truck" },
-  { label: "Carretas",    href: "/comprar/carretas",    iconName: "container" },
-  { label: "Implementos", href: "/comprar/implementos", iconName: "wrench" },
-  { label: "\u00d4nibus",      href: "/onibus",      iconName: "bus" },
-  { label: "M\u00e1quinas",    href: "/comprar/maquinas",    iconName: "tractor" },
-  { label: "Pe\u00e7as",       href: "/comprar/pecas",       iconName: "package" },
+  { label: "Caminhões",   href: "/caminhoes",            iconName: "truck" },
+  { label: "Carretas",    href: "/comprar/carretas",     iconName: "container" },
+  { label: "Implementos", href: "/comprar/implementos",  iconName: "wrench" },
+  { label: "Ônibus",      href: "/onibus",               iconName: "bus" },
+  { label: "Máquinas",    href: "/comprar/maquinas",     iconName: "tractor" },
+  { label: "Peças",       href: "/comprar/pecas",        iconName: "package" },
 ];
 
 function CatIcon({ name }: { name: string }) {
@@ -31,15 +31,16 @@ function CatIcon({ name }: { name: string }) {
 }
 
 const MARCAS_LOGOS: Record<string, string> = {
-  "Mercedes-Benz": "/marcas/Gemini_Generated_Image_sdthoysdthoysdth__2_-removebg-preview.png",
-  "Scania":        "/marcas/scania-removebg-preview.png",
-  "Volvo":         "/marcas/volvo-removebg-preview.png",
-  "Volkswagen":    "/marcas/volkswagen-removebg-preview.png",
-  "Ford":          "/marcas/ford-removebg-preview.png",
-  "Iveco":         "/marcas/iveco-removebg-preview.png",
-  "DAF":           "/marcas/daf-removebg-preview.png",
+  "Mercedes-Benz": "/Gemini_Generated_Image_sdthoysdthoysdth__2_-removebg-preview.png",
+  "Scania":        "/scania-removebg-preview.png",
+  "Volvo":         "/volvo-removebg-preview.png",
+  "Volkswagen":    "/volkswagen-removebg-preview.png",
+  "Ford":          "/ford-removebg-preview.png",
+  "Iveco":         "/iveco-removebg-preview.png",
+  "DAF":           "/daf-removebg-preview.png",
   "MAN":           "",
-  "Agrale":        "/marcas/agrale-removebg-preview.png",
+  "Agrale":        "/agrale-removebg-preview.png",
+  "Foton":         "/foton-removebg-preview.png",
 };
 
 const ESTADOS = [
@@ -55,10 +56,10 @@ const ESTADOS = [
 ];
 
 const FAIXAS = [
-  { label: "Todos os pre\u00e7os", min: 0, max: Infinity },
-  { label: "At\u00e9 R$100k",     min: 0,       max: 100_000 },
-  { label: "R$100k\u2013200k",   min: 100_000, max: 200_000 },
-  { label: "R$200k\u2013400k",   min: 200_000, max: 400_000 },
+  { label: "Todos os preços", min: 0, max: Infinity },
+  { label: "Até R$100k",     min: 0,       max: 100_000 },
+  { label: "R$100k–200k",   min: 100_000, max: 200_000 },
+  { label: "R$200k–400k",   min: 200_000, max: 400_000 },
   { label: "Acima R$400k",  min: 400_000, max: Infinity },
 ];
 
@@ -193,7 +194,7 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           {search && <button className="af-search-clear" onClick={() => handleSearch("")}><X size={13} /></button>}
         </div>
         <p className="af-count">
-          <strong>{total}</strong> {total === 1 ? "an\u00fancio" : "an\u00fancios"}
+          <strong>{total}</strong> {total === 1 ? "anúncio" : "anúncios"}
           {hasFilters && <span className="af-filtered"> encontrados</span>}
           {hasFilters && <Link href="/comprar/caminhoes" className="af-clear-inline"><X size={11} />Limpar</Link>}
         </p>
@@ -261,7 +262,7 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           <div className="af-ddiv" />
 
           <div className="af-dsection">
-            <p className="af-dlabel">Faixa de pre\u00e7o</p>
+            <p className="af-dlabel">Faixa de preço</p>
             <nav className="af-dlist">
               {FAIXAS.map((f, idx) => (
                 <Link key={idx} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })} className={`af-ditem af-dprice${faixaIdx === idx ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
