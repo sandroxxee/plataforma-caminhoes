@@ -6,7 +6,9 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminLaudoPage({ params }: { params: { id: string } }) {
+export default async function AdminLaudoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -22,7 +24,7 @@ export default async function AdminLaudoPage({ params }: { params: { id: string 
       cidade, estado, carroceria, tracao, whatsapp, descricao,
       truck_images ( image_url, principal, ordem )
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!truck) notFound();
@@ -30,14 +32,14 @@ export default async function AdminLaudoPage({ params }: { params: { id: string 
   return (
     <AdminLayout
       title="Laudo Comercial"
-      subtitle={truck.titulo || "Avaliação mercadológica do veículo"}
+      subtitle={truck.titulo || "Avalia\u00e7\u00e3o mercadol\u00f3gica do ve\u00edculo"}
       badge="Admin"
       actions={
         <Link
           href="/admin/anuncios"
           style={{ padding: "10px 18px", borderRadius: 12, background: "#1e293b", color: "#94a3b8", textDecoration: "none", fontWeight: 800, fontSize: 13 }}
         >
-          ← Voltar
+          \u2190 Voltar
         </Link>
       }
     >
