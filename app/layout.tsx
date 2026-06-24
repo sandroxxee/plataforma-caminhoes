@@ -5,7 +5,7 @@ import { ClientShell } from "@/components/ClientShell";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import ChatFlutuante from "@/components/ChatFlutuante";
+import ChatGuard from "@/components/ChatGuard";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -114,7 +114,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <CookieBanner />
         <Analytics />
         <SpeedInsights />
-        <ChatFlutuante />
+        <ChatGuard />
       </body>
     </html>
   );
