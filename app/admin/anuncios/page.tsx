@@ -43,32 +43,17 @@ function statusLabel(status: string | null) {
 export default async function AdminAnunciosPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-
   if (profile?.role !== "admin") redirect("/painel");
 
   const { data } = await supabase
     .from("trucks")
     .select(`
-      id,
-      titulo,
-      status,
-      preco,
-      cidade,
-      estado,
-      marca,
-      modelo,
-      truck_images (
-        image_url,
-        principal,
-        ordem
-      )
+      id, titulo, status, preco, cidade, estado, marca, modelo,
+      truck_images ( image_url, principal, ordem )
     `)
     .order("created_at", { ascending: false });
 
@@ -84,7 +69,6 @@ export default async function AdminAnunciosPage() {
       <div style={styles.list}>
         {trucks.map((truck) => {
           const image = getMainImage(truck);
-
           return (
             <article key={truck.id} style={styles.row}>
               <div style={styles.thumb}>
@@ -105,9 +89,9 @@ export default async function AdminAnunciosPage() {
                   <Link href={`/admin/divulgacao/${truck.id}`} style={styles.share}>Divulgar</Link>
                 )}
 
-                <Link href={`/admin/ia-anuncios/${truck.id}`} style={styles.aiPackage}>
-                  Central IA
-                </Link>
+                <Link href={`/admin/ia-anuncios/${truck.id}`} style={styles.aiPackage}>Central IA</Link>
+
+                <Link href={`/admin/laudo/${truck.id}`} style={styles.laudo}>Laudo</Link>
 
                 {truck.status !== "aprovado" && (
                   <form action={aprovarAnuncio} style={styles.formButton}>
@@ -150,7 +134,7 @@ const buttonBase: CSSProperties = {
   textDecoration: "none",
   lineHeight: 1,
   fontSize: 13,
-  transition: 'all 0.2s'
+  transition: "all 0.2s",
 };
 
 const statusBase: CSSProperties = {
@@ -160,8 +144,8 @@ const statusBase: CSSProperties = {
   fontWeight: 800,
   fontSize: 11,
   whiteSpace: "nowrap",
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em'
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
 };
 
 const styles: Record<string, CSSProperties> = {
@@ -183,5 +167,6 @@ const styles: Record<string, CSSProperties> = {
   edit: { ...buttonBase, background: "#f1f5f9", color: "#475569", border: "1px solid rgba(148,163,184,0.1)" },
   share: { ...buttonBase, background: "#22c55e", color: "#ffffff" },
   aiPackage: { ...buttonBase, background: "#f59e0b", color: "#ffffff" },
-  empty: { padding: 32, borderRadius: 20, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", color: "#64748b", fontWeight: 700, textAlign: 'center' },
+  laudo: { ...buttonBase, background: "#7c3aed", color: "#ffffff" },
+  empty: { padding: 32, borderRadius: 20, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", color: "#64748b", fontWeight: 700, textAlign: "center" },
 };
