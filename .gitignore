@@ -9,3 +9,7 @@ project-status.json
 project-status.md
 project-overview.md
 *.png
+
+# Prevenir commits acidentais de artefatos de terminal/npm
+Build
+plataforma-caminhoes@*
