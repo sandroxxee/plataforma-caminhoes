@@ -13,3 +13,11 @@ project-overview.md
 # Prevenir commits acidentais de artefatos de terminal/npm
 Build
 plataforma-caminhoes@*
+
+# Artefatos de build do Expo/React Native (pasta mobile/)
+mobile/.expo
+mobile/node_modules
+mobile/dist
+mobile/build
+mobile/android
+mobile/ios
