@@ -27,12 +27,6 @@ export default async function PainelPage() {
     <PanelLayout userName={nomeUsuario} role="anunciante">
       <div className="painel-wrap">
 
-        {/* Saudação */}
-        <div>
-          <p className="painel-role">Anunciante</p>
-          <h1 className="painel-greeting">Olá, {nomeUsuario} 👋</h1>
-        </div>
-
         {/* Views Hero */}
         <div className="painel-views-card">
           <div className="painel-views-icon">
