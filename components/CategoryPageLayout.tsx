@@ -20,23 +20,23 @@ export function CategoryPageLayout({
   total,
 }: CategoryPageLayoutProps) {
   return (
-    <main className="min-h-screen bg-slate-50 flex flex-col">
+    <main style={{ minHeight: "100vh", background: "var(--soft)", display: "flex", flexDirection: "column" }}>
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="relative w-full h-[280px] md:h-[400px] bg-slate-900 overflow-hidden">
+      <section style={{ position: "relative", width: "100%", height: "clamp(220px, 30vw, 400px)", background: "#0f172a", overflow: "hidden" }}>
         <img
           src={heroImage}
           alt={title}
-          className="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-[10s] hover:scale-105"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent" />
-        <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-end pb-8 md:pb-12 max-w-7xl">
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.3) 60%, transparent 100%)" }} />
+        <div style={{ position: "relative", zIndex: 10, maxWidth: "1400px", margin: "0 auto", padding: "0 24px", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", paddingBottom: "clamp(20px, 3vw, 48px)" }}>
+          <h1 style={{ fontSize: "clamp(26px, 4vw, 52px)", fontWeight: 900, color: "#fff", margin: 0, letterSpacing: "-0.03em", lineHeight: 1.15 }}>
             {title}
           </h1>
           {subtitle && (
-            <p className="text-slate-200 text-base md:text-lg font-bold mt-2 max-w-2xl text-shadow">
+            <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "clamp(14px, 1.5vw, 18px)", fontWeight: 700, marginTop: 8, maxWidth: "56ch" }}>
               {subtitle}
             </p>
           )}
@@ -44,28 +44,28 @@ export function CategoryPageLayout({
       </section>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-7xl flex-1">
-        {/* Layout de duas colunas: Sidebar à Esquerda, Conteúdo à Direita */}
-        <div className="flex flex-col md:flex-row items-start gap-8">
+      <div className="mp-shell-wrap" style={{ flex: 1 }}>
+        <div className="category-layout">
 
-          {/* Sidebar - Fixa à esquerda no desktop */}
+          {/* Sidebar */}
           {sidebar && (
-            <aside className="w-full md:w-72 flex-shrink-0 md:sticky md:top-24">
+            <aside className="category-sidebar">
               {sidebar}
             </aside>
           )}
 
-          {/* Área de Conteúdo/Grid */}
-          <section className="flex-1 min-w-0 w-full">
+          {/* Conteúdo principal */}
+          <section className="category-content">
             {total !== undefined && (
-              <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                 <p className="text-slate-500 font-bold text-sm">
-                   Mostrando <span className="text-slate-900">{total}</span> {total === 1 ? 'anúncio' : 'anúncios'}
-                 </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, background: "var(--surface)", padding: "12px 18px", borderRadius: 14, border: "1px solid var(--line)", boxShadow: "var(--shadow)" }}>
+                <p style={{ margin: 0, color: "var(--muted)", fontWeight: 800, fontSize: 13 }}>
+                  Mostrando <span style={{ color: "var(--text)" }}>{total}</span> {total === 1 ? "anúncio" : "anúncios"}
+                </p>
               </div>
             )}
             {children}
           </section>
+
         </div>
       </div>
 
