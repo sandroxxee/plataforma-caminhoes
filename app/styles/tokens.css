@@ -1,0 +1,46 @@
+/* ============================================================
+   TOKENS BASE — TEMA CLARO (light)
+   ============================================================ */
+:root {
+  --bg:        #f0f2f5;
+  --surface:   #ffffff;
+  --soft:      #e8ebef;
+  --text:      #0d1117;
+  --muted:     #4b5563;
+  --blue:      #1877f2;
+  --blue2:     #0f5fc8;
+  --blueSoft:  #dbeafe;
+  --wa:        #25d366;
+  --line:      #d1d5db;
+  --shadow:    0 2px 12px rgba(0,0,0,.07);
+  --shadow2:   0 8px 32px rgba(0,0,0,.12);
+  --shadow3:   0 16px 48px rgba(0,0,0,.16);
+  --radius:    20px;
+  --radius-sm: 12px;
+  --header-bg: #ffffff;
+  --font-display: var(--font-manrope), Arial, sans-serif;
+  --font-title:   var(--font-manrope), Arial, sans-serif;
+  --font-body:    var(--font-manrope), Arial, sans-serif;
+}
+
+/* ============================================================
+   TEMA ESCURO
+   ============================================================ */
+body.public-theme-dark {
+  --bg:       #0a0f1a;
+  --surface:  #131c2e;
+  --soft:     #1a2336;
+  --text:     #f0f4f8;
+  --muted:    #a0aec0;
+  --blue:     #4d9fff;
+  --blue2:    #3b82f6;
+  --blueSoft: rgba(77,159,255,.18);
+  --line:     rgba(160,174,192,.18);
+  --shadow:   0 2px 12px rgba(0,0,0,.35);
+  --shadow2:  0 8px 32px rgba(0,0,0,.48);
+  --shadow3:  0 16px 48px rgba(0,0,0,.6);
+  --header-bg:#131c2e;
+  color-scheme: dark;
+}
+
+body.public-theme-light { color-scheme: light; }

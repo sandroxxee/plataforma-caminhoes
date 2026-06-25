@@ -1,0 +1,69 @@
+/* ============================================================
+   HEADER PÚBLICO + MENU + SEARCH
+   ============================================================ */
+.public-header {
+  position: sticky; top: 0; z-index: 80;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(148,163,184,.14);
+  box-shadow: 0 18px 42px rgba(15,23,42,.08);
+}
+body.public-theme-dark .public-header {
+  background: rgba(15,23,42,.92);
+  border-bottom-color: rgba(255,255,255,.12);
+}
+.public-nav-shell { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 14px; }
+.public-brand { display: flex; align-items: center; gap: 10px; min-width: max-content; }
+.brand-mark {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--blue); color: #fff;
+}
+.brand-text { display: grid; }
+.brand-text img { width: 160px; height: 36px; object-fit: contain; object-position: left center; display: block; }
+.brand-text small { color: var(--muted); font-size: 11px; font-weight: 800; margin-top: -2px; white-space: nowrap; }
+
+.public-menu { display: flex; align-items: center; gap: 2px; }
+.public-menu a {
+  min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 0 14px; border-radius: 14px;
+  color: var(--muted); font-weight: 800; font-size: 13.5px; white-space: nowrap;
+  transition: background .18s, color .18s, transform .18s;
+  text-decoration: none;
+}
+.public-menu a:hover { background: rgba(59,130,246,.12); color: var(--blue); transform: translateY(-1px); }
+.public-menu a.active {
+  background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(59,130,246,.08));
+  color: var(--blue);
+}
+
+.public-theme-toggle {
+  min-height: 40px; border-radius: 10px; border: 1.5px solid var(--line);
+  background: transparent; color: var(--text);
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 0 12px; font-size: 13px; font-weight: 800; cursor: pointer;
+  transition: border-color .14s, color .14s;
+}
+.public-theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
+.contact-button {
+  min-height: 44px; border-radius: 10px; padding: 0 16px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--blue); color: #fff; font-weight: 900;
+  white-space: nowrap; transition: background .14s; text-decoration: none;
+}
+.contact-button:hover { background: var(--blue2); }
+.mobile-btn { display: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--soft); color: var(--text); align-items: center; justify-content: center; cursor: pointer; }
+.menu-backdrop { display: none; }
+
+/* === SEARCH === */
+.search-top {
+  flex: 1; max-width: 520px; height: 48px; border-radius: 999px;
+  background: var(--soft); border: 1.5px solid transparent;
+  display: flex; align-items: center; gap: 10px; padding: 0 18px;
+  color: var(--muted); transition: border-color .16s, background .16s, box-shadow .16s;
+}
+.search-top:focus-within { background: var(--surface); border-color: var(--blue); box-shadow: 0 0 0 4px rgba(59,130,246,.12); }
+.search-top input {
+  width: 100%; min-width: 0; border: 0; outline: 0;
+  background: transparent; color: var(--text); font-weight: 700; font-size: 15px;
+}

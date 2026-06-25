@@ -1,0 +1,86 @@
+/* ============================================================
+   RESPONSIVE — 900px / 640px / 390px
+   ============================================================ */
+@media (max-width: 900px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  .market-page { overflow-x: hidden; }
+  .search-top { display: none; }
+  .public-menu {
+    display: none; position: fixed; left: 12px; right: 12px; top: 68px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 20px; box-shadow: var(--shadow3);
+    flex-direction: column; padding: 8px; z-index: 100;
+  }
+  .public-menu.open { display: flex; }
+  .public-menu a { min-height: 50px; border-radius: 12px; font-size: 15px; }
+  .mobile-btn { display: flex; }
+  .menu-backdrop { display: none; position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.18); }
+  .menu-backdrop.open { display: block; }
+  .detail-layout { grid-template-columns: 1fr; }
+  .market-section { padding: 20px 16px; }
+  .seo-marca-nav { gap: 6px; }
+
+  .mp-shell, .category-layout {
+    flex-direction: column; gap: 0; padding: 16px 0 48px;
+  }
+  .mp-sidebar, .category-sidebar { display: none; }
+  .mp-main, .category-content { width: 100%; }
+}
+
+@media (max-width: 640px) {
+  .market-container, .container, .public-nav-shell, .site-footer { width: calc(100vw - 20px); }
+
+  .stock-grid, .market-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .tc { border-radius: 16px; }
+  .tc-photo { aspect-ratio: 16/9; }
+  .tc-price  { font-size: 16px; }
+  .tc-name   { font-size: 15px; }
+  .tc-meta   { font-size: 13px; }
+  .tc-body   { padding: 12px 14px 14px; gap: 6px; }
+  .tc-btn    { min-height: 44px; font-size: 14px; border-radius: 12px; }
+  .tc-wa     { width: 36px; height: 36px; top: 8px; right: 8px; }
+  .tc-loc    { max-width: 55%; font-size: 10px; }
+
+  .ad-gallery-main {
+    border-radius: 14px; aspect-ratio: 4/3;
+    max-height: 280px; overflow: hidden; isolation: isolate;
+  }
+  .ad-gallery-thumbs button { width: 60px; height: 46px; }
+
+  .market-field input, .market-field select, input, select, textarea { font-size: 16px; }
+  .market-search { padding: 14px; }
+  .market-field { min-width: 100%; }
+  .market-filter-actions { width: 100%; }
+  .market-filter-actions button { flex: 1; min-height: 50px; }
+
+  .detail-card { padding: 16px; }
+  .detail-price { font-size: 28px; }
+  .detail-whatsapp { min-height: 52px; font-size: 15px; }
+
+  .market-section { padding: 16px 12px; border-radius: 16px; }
+  .market-section-head h2 { font-size: 20px; }
+
+  .site-footer nav a { min-height: 44px; font-size: 13px; }
+  .brand-mark { width: 36px; height: 36px; }
+  .brand-text img { width: min(130px, 44vw); height: 30px; }
+
+  .seo-alerta-row { flex-direction: column; align-items: flex-start; }
+  .al-title { font-size: 26px; }
+  .seo-text-block { padding: 12px 14px; font-size: 13px; }
+
+  .mp-shell-wrap { width: calc(100vw - 24px); }
+}
+
+@media (max-width: 390px) {
+  .stock-grid, .market-grid { gap: 10px; }
+  .tc-name  { font-size: 14px; }
+  .tc-price { font-size: 15px; }
+  .brand-text img { width: min(116px, 42vw); }
+  .detail-price { font-size: 24px; }
+  .site-footer nav { flex-direction: column; }
+  .ad-gallery-main { max-height: 240px; }
+}
