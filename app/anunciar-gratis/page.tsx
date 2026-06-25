@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import AgentePublico from '@/components/AgentePublico'
+import AgentChat from '@/components/AgentChat'
 
 export const metadata: Metadata = {
   title: 'Anunciar Grátis | Caminhões à Venda',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function AnunciarGratisPage() {
-  return <AgentePublico />
+  return <AgentChat variant="publico" />
 }
