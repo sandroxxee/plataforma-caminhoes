@@ -11,7 +11,7 @@ const indexNowEndpoint = "https://api.indexnow.org/indexnow";
 
 const staticUrls = [
   siteUrl,
-  `${siteUrl}/anuncios`,
+  `${siteUrl}/comprar/caminhoes`,
   `${siteUrl}/anunciar`,
   `${siteUrl}/sobre`,
   `${siteUrl}/como-funciona`,
@@ -20,7 +20,6 @@ const staticUrls = [
 function isAuthorized(request: Request) {
   const secret = process.env.INDEXNOW_SECRET;
   const requestSecret = request.headers.get("x-indexnow-secret");
-
   return Boolean(secret && requestSecret && secret === requestSecret);
 }
 
@@ -43,22 +42,20 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.json(
-      { ok: false, version: "1.0+", error: "Não foi possível buscar anúncios aprovados." },
+      { ok: false, version: "1.0+", error: "N\u00e3o foi poss\u00edvel buscar an\u00fancios aprovados." },
       { status: 500 }
     );
   }
 
   const truckUrls = (trucks || []).map(
-    (truck) => `${siteUrl}/anuncios/${gerarSlugComId(truck)}`
+    (truck) => `${siteUrl}/comprar/caminhoes/${gerarSlugComId(truck)}`
   );
 
   const urlList = Array.from(new Set([...staticUrls, ...truckUrls]));
 
   const response = await fetch(indexNowEndpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
+    headers: { "Content-Type": "application/json; charset=utf-8" },
     body: JSON.stringify({
       host: siteHost,
       key: indexNowKey,
@@ -69,34 +66,18 @@ export async function POST(request: Request) {
 
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-
     return NextResponse.json(
-      {
-        ok: false,
-        version: "1.0+",
-        error: "IndexNow recusou o envio.",
-        status: response.status,
-        details: body,
-      },
+      { ok: false, version: "1.0+", error: "IndexNow recusou o envio.", status: response.status, details: body },
       { status: 502 }
     );
   }
 
-  return NextResponse.json({
-    ok: true,
-    version: "1.0+",
-    sent: urlList.length,
-    urls: urlList,
-  });
+  return NextResponse.json({ ok: true, version: "1.0+", sent: urlList.length, urls: urlList });
 }
 
 export async function GET() {
   return NextResponse.json(
-    {
-      ok: true,
-      version: "1.0+",
-      route: "IndexNow ativo. Use POST com x-indexnow-secret para enviar URLs públicas e anúncios aprovados.",
-    },
+    { ok: true, version: "1.0+", route: "IndexNow ativo. Use POST com x-indexnow-secret para enviar URLs p\u00fablicas e an\u00fancios aprovados." },
     { status: 200 }
   );
 }

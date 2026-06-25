@@ -8,7 +8,7 @@ export type TruckImage = {
 
 export type TruckCardData = {
   id: string;
-  user_id?: string | null;   // dono do anúncio — sempre presente no select
+  user_id?: string | null;
   titulo: string | null;
   marca: string | null;
   modelo: string | null;
@@ -76,7 +76,7 @@ export function getWhatsappLink(truck: TruckCardData) {
 }
 
 export function getTruckUrl(truck: TruckCardData) {
-  return `/anuncios/${gerarSlugComId({
+  return `/comprar/caminhoes/${gerarSlugComId({
     id: truck.id,
     marca: truck.marca,
     modelo: truck.modelo,

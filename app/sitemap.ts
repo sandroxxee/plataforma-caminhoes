@@ -15,11 +15,11 @@ const ESTADOS = [
 ];
 
 const CATEGORIAS: { path: string; param: string }[] = [
-  { path: "anuncios",   param: "marca" },
-  { path: "carretas",   param: "estado" },
-  { path: "implementos",param: "estado" },
-  { path: "maquinas",   param: "estado" },
-  { path: "pecas",      param: "estado" },
+  { path: "anuncios",    param: "marca" },
+  { path: "carretas",    param: "estado" },
+  { path: "implementos", param: "estado" },
+  { path: "maquinas",    param: "estado" },
+  { path: "pecas",       param: "estado" },
 ];
 
 type TruckRow = {
@@ -61,52 +61,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const trucks = await getAllTrucks();
   const lastAnuncio = trucks[0]?.updated_at ?? new Date().toISOString();
 
-  // Páginas estáticas principais
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE,                              lastModified: lastAnuncio, changeFrequency: "daily",   priority: 1.00 },
-    { url: `${BASE}/anuncios`,                lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.95 },
-    { url: `${BASE}/carretas`,                lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
-    { url: `${BASE}/implementos`,             lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
-    { url: `${BASE}/maquinas`,                lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.90 },
-    { url: `${BASE}/pecas`,                   lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.88 },
-    { url: `${BASE}/anunciar`,                changeFrequency: "weekly",  priority: 0.85 },
-    { url: `${BASE}/planos`,                  changeFrequency: "weekly",  priority: 0.80 },
-    { url: `${BASE}/parceiros`,               changeFrequency: "weekly",  priority: 0.72 },
-    { url: `${BASE}/revendas`,                changeFrequency: "weekly",  priority: 0.70 },
-    { url: `${BASE}/como-funciona`,           changeFrequency: "monthly", priority: 0.65 },
-    { url: `${BASE}/sobre`,                   changeFrequency: "monthly", priority: 0.60 },
-    { url: `${BASE}/contato`,                 changeFrequency: "monthly", priority: 0.60 },
-    { url: `${BASE}/politica-de-privacidade`, changeFrequency: "yearly",  priority: 0.30 },
+    { url: `${BASE}/comprar/caminhoes`,        lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.95 },
+    { url: `${BASE}/comprar/carretas`,         lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
+    { url: `${BASE}/comprar/implementos`,      lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
+    { url: `${BASE}/comprar/maquinas`,         lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.90 },
+    { url: `${BASE}/comprar/pecas`,            lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.88 },
+    { url: `${BASE}/anunciar`,                 changeFrequency: "weekly",  priority: 0.85 },
+    { url: `${BASE}/planos`,                   changeFrequency: "weekly",  priority: 0.80 },
+    { url: `${BASE}/parceiros`,                changeFrequency: "weekly",  priority: 0.72 },
+    { url: `${BASE}/revendas`,                 changeFrequency: "weekly",  priority: 0.70 },
+    { url: `${BASE}/como-funciona`,            changeFrequency: "monthly", priority: 0.65 },
+    { url: `${BASE}/sobre`,                    changeFrequency: "monthly", priority: 0.60 },
+    { url: `${BASE}/contato`,                  changeFrequency: "monthly", priority: 0.60 },
+    { url: `${BASE}/politica-de-privacidade`,  changeFrequency: "yearly",  priority: 0.30 },
   ];
 
-  // URLs de filtro por marca (anuncios) — alto valor de SEO
   const marcaUrls: MetadataRoute.Sitemap = MARCAS.map((m) => ({
-    url: `${BASE}/anuncios?marca=${encodeURIComponent(m)}`,
+    url: `${BASE}/comprar/caminhoes?marca=${encodeURIComponent(m)}`,
     changeFrequency: "daily" as const,
     priority: 0.88,
   }));
 
-  // URLs de filtro por estado em cada categoria
   const estadoUrls: MetadataRoute.Sitemap = CATEGORIAS.flatMap(({ path, param }) =>
     ESTADOS.map((uf) => ({
-      url: `${BASE}/${path}?${param}=${uf}`,
+      url: `${BASE}/comprar/${path}?${param}=${uf}`,
       changeFrequency: "daily" as const,
-      priority: path === "anuncios" ? 0.82 : 0.75,
+      priority: path === "caminhoes" ? 0.82 : 0.75,
     }))
   );
 
-  // Combina marca x estado para /anuncios (maior valor SEO)
   const marcaEstadoUrls: MetadataRoute.Sitemap = MARCAS.flatMap((m) =>
     ESTADOS.map((uf) => ({
-      url: `${BASE}/anuncios?marca=${encodeURIComponent(m)}&estado=${uf}`,
+      url: `${BASE}/comprar/caminhoes?marca=${encodeURIComponent(m)}&estado=${uf}`,
       changeFrequency: "weekly" as const,
       priority: 0.72,
     }))
   );
 
-  // Páginas individuais de anúncio
   const anuncioUrls: MetadataRoute.Sitemap = trucks.map((t) => ({
-    url: `${BASE}/anuncios/${gerarSlugComId(t)}`,
+    url: `${BASE}/comprar/caminhoes/${gerarSlugComId(t)}`,
     lastModified: t.updated_at ?? undefined,
     changeFrequency: "weekly" as const,
     priority: 0.80,
