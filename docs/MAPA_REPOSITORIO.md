@@ -1,0 +1,212 @@
+# 🗺️ Mapa do Repositório — plataforma-caminhoes
+
+> Gerado automaticamente em 18/06/2026  
+> Repositório: [sandroxxee/plataforma-caminhoes](https://github.com/sandroxxee/plataforma-caminhoes)  
+> Total de itens mapeados: **306**
+
+## 📁 Estrutura Completa (ordem alfabética)
+
+```
+📄 .eslintrc.json
+📁 .githooks
+  📄 pre-commit
+📁 .github
+  📁 workflows
+    📄 ci.yml
+📄 .gitignore
+📄 .vercel-deploy
+📁 .vscode
+  📄 settings.json
+📁 app
+  📁 admin
+    📄 actions.ts
+    📁 anuncios
+      📄 page.tsx
+    📁 aparencia
+      📄 actions.ts
+      📄 HeroBannerSection.tsx
+      📄 HeroBannerUpload.tsx
+      📄 page.tsx
+    📁 divulgacao
+      📁 [id]
+        📄 page.tsx
+    📄 layout.tsx
+    📁 lista-transmissao
+      📄 page.tsx
+    📄 page.tsx
+    📁 pendentes
+      📄 page.tsx
+    📁 usuarios
+      📄 page.tsx
+  📁 anunciar
+    📄 page.tsx
+  📁 anuncios
+    📁 [id]
+      📄 anuncio-utils.ts
+      📄 AnuncioDetalheClient.tsx
+      📄 opengraph-image.tsx
+      📄 page.tsx
+    📄 AnunciosFilters.tsx
+    📄 AnunciosSidebar.tsx
+    📄 LoadMore.tsx
+    📄 opengraph-image.tsx
+    📄 page.tsx
+  📁 api
+    📁 admin
+      📁 ia-anuncios
+        📁 [id]
+          📁 foto
+            📁 [ordem]
+              📄 route.ts
+          📄 route.ts
+      📁 usuarios
+        📄 route.ts
+    📁 anuncios
+      📁 [id]
+        📄 route.ts
+      📄 route.ts
+    📁 auth
+      📁 callback
+        📄 route.ts
+      📄 route.ts
+    📁 cidades
+      📄 route.ts
+    📁 contato
+      📄 route.ts
+    📁 favoritos
+      📁 [id]
+        📄 route.ts
+      📄 route.ts
+    📁 marcas
+      📄 route.ts
+    📁 meus-anuncios
+      📄 route.ts
+    📁 modelos
+      📄 route.ts
+    📁 upload
+      📄 route.ts
+    📁 user
+      📄 route.ts
+  📁 auth
+    📁 login
+      📄 page.tsx
+    📁 register
+      📄 page.tsx
+  📄 error.tsx
+  📄 favicon.ico
+  📄 globals.css
+  📄 layout.tsx
+  📁 meus-anuncios
+    📄 MeusAnunciosClient.tsx
+    📄 page.tsx
+  📄 not-found.tsx
+  📄 opengraph-image.tsx
+  📄 page.tsx
+  📁 perfil
+    📄 page.tsx
+    📄 PerfilClient.tsx
+  📁 política-de-privacidade
+    📄 page.tsx
+  📁 sitemap
+    📄 route.ts
+  📁 termos-de-uso
+    📄 page.tsx
+📁 components
+  📁 admin
+    📄 AdminNav.tsx
+    📄 AnuncioCard.tsx
+    📄 AnuncioCardAdmin.tsx
+    📄 AnuncioForm.tsx
+    📄 AnuncioFormFields.tsx
+    📄 AnuncioFormImages.tsx
+    📄 AnuncioFormImagesSortable.tsx
+    📄 AprovacaoButtons.tsx
+    📄 BannerList.tsx
+    📄 CepInput.tsx
+    📄 DivulgacaoEditor.tsx
+    📄 FotoManager.tsx
+    📄 ListaTransmissaoManager.tsx
+    📄 PendingAnuncioCard.tsx
+    📄 RichTextEditor.tsx
+    📄 UsuarioList.tsx
+  📁 auth
+    📄 AuthModal.tsx
+    📄 AuthModalWrapper.tsx
+    📄 SocialLoginButtons.tsx
+  📁 home
+    📄 FeaturedListings.tsx
+    📄 HeroBanner.tsx
+    📄 HeroSearch.tsx
+    📄 InfoSection.tsx
+    📄 NewsletterSection.tsx
+    📄 StatsSection.tsx
+  📁 shared
+    📄 AnuncioCard.tsx
+    📄 BackButton.tsx
+    📄 Breadcrumb.tsx
+    📄 ContactModal.tsx
+    📄 FavoriteButton.tsx
+    📄 Footer.tsx
+    📄 ImageCarousel.tsx
+    📄 Navbar.tsx
+    📄 Pagination.tsx
+    📄 ShareButton.tsx
+    📄 ThemeProvider.tsx
+    📄 ThemeToggle.tsx
+    📄 WhatsAppButton.tsx
+📁 design
+  📄 design-system.md
+  📄 mobile-ux.md
+  📄 ui-components.md
+📁 docs
+  📄 AUDITORIA.md
+  📄 CONTEXT.md
+  📄 MAPA_REPOSITORIO.md
+  📄 MAPA_VISUAL_LAYOUT_E_TEMPLATES.md
+  📄 decisao-tema-claro-escuro.md
+  📄 project-ui-context.json
+  📄 project-ui-context.md
+📁 lib
+  📄 auth.ts
+  📄 constants.ts
+  📄 image-utils.ts
+  📄 slug.ts
+  📄 supabase/
+  📄 truck-utils.ts
+  📄 trucks.ts
+  📄 useTheme.tsx
+  📄 utils.ts
+📁 logout
+  📄 route.ts
+📄 next-env.d.ts
+📄 next.config.ts
+📄 package-lock.json
+📄 package.json
+📄 proxy.ts
+📁 public
+  📁 icons
+    📄 apple-touch-icon.png
+    📄 favicon-16x16.png
+    📄 favicon-32x32.png
+    📄 icon-192.png
+    📄 icon-512.png
+    📄 safari-pinned-tab.svg
+  📄 manifest.json
+  📄 og-image.png
+  📄 robots.txt
+  📄 sitemap.xml
+📁 scripts
+  📄 check-env.ts
+  📄 project-ui-context.js
+  📄 seed.ts
+📁 supabase
+  📁 migrations
+    📄 20260616_favoritos.sql
+  📄 config.toml
+📄 tsconfig.json
+📄 vercel.json
+```
+
+---
+
+*Arquivo atualizado em 24/06/2026 — docs movidos para docs/*
