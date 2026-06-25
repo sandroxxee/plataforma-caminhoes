@@ -2,12 +2,12 @@
    globals.css — ponto de entrada
    ============================================================ */
 
-/* Módulos de estilo */
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/header.css";
 @import "./styles/layout.css";
 @import "./styles/cards.css";
 @import "./styles/painel.css";
+@import "./styles/meus-anuncios.css";
 @import "./styles/seo.css";
 @import "./styles/responsive.css";
