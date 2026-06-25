@@ -1,6 +1,12 @@
 /* ============================================================
    BASE — reset, tipografia, containers
    ============================================================ */
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * { box-sizing: border-box; }
 html { background: var(--bg); scroll-behavior: smooth; }
 body {
