@@ -2,36 +2,25 @@
    PAINEL — dashboard do anunciante
    ============================================================ */
 
-/* === PANEL HERO (cabecalho do layout) === */
-.panel-hero {
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
-.panel-hero-inner {
+/* === SHELL === */
+.painel-wrap {
   width: min(1100px, calc(100vw - 32px));
   margin: 0 auto;
-  padding: 24px 0;
+  padding: 32px 0 64px;
   display: flex;
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
+  gap: 24px;
 }
-.panel-hero-avatar {
-  width: 56px; height: 56px;
-  border-radius: 16px;
-  background: var(--blueSoft);
-  color: var(--blue);
-  font-size: 22px;
-  font-weight: 900;
-  display: flex; align-items: center; justify-content: center;
-  border: 1.5px solid var(--line);
-  box-shadow: var(--shadow);
-  flex-shrink: 0;
+
+/* === GREETING === */
+.painel-greeting-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.panel-hero-badge {
+.painel-role-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
   height: 22px;
   padding: 0 10px;
   border-radius: 999px;
@@ -41,26 +30,16 @@
   font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: .07em;
-  margin-bottom: 6px;
+  letter-spacing: .08em;
+  width: fit-content;
 }
-.panel-hero-title {
-  font-size: clamp(20px, 2.5vw, 28px);
+.painel-greeting {
+  font-size: clamp(22px, 3vw, 32px);
   font-weight: 900;
   letter-spacing: -.03em;
   color: var(--text);
   margin: 0;
   line-height: 1.2;
-}
-
-/* === SHELL === */
-.painel-wrap {
-  width: min(1100px, calc(100vw - 32px));
-  margin: 0 auto;
-  padding: 32px 0 64px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 /* === VIEWS HERO === */
@@ -247,10 +226,9 @@
 
 /* === RESPONSIVE === */
 @media (max-width: 900px) {
-  .painel-stats  { grid-template-columns: repeat(2, 1fr); }
-  .painel-acoes  { grid-template-columns: 1fr; }
+  .painel-stats      { grid-template-columns: repeat(2, 1fr); }
+  .painel-acoes      { grid-template-columns: 1fr; }
   .painel-views-link { display: none; }
-  .panel-hero-inner { padding: 20px 0; }
 }
 @media (max-width: 640px) {
   .painel-wrap         { padding: 20px 0 48px; gap: 16px; }
@@ -258,5 +236,4 @@
   .painel-views-number { font-size: 36px; }
   .painel-stat         { padding: 16px; }
   .painel-stat-value   { font-size: 28px; }
-  .panel-hero-avatar   { width: 44px; height: 44px; font-size: 18px; }
 }
