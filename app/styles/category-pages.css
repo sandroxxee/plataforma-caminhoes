@@ -1,0 +1,95 @@
+/* ============================================================
+   CATEGORY PAGES — /comprar/*
+   ============================================================ */
+
+.cat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Banner topo */
+.cat-banner {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cat-banner-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+.cat-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: var(--radius-sm);
+  background: var(--blue);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .14s;
+}
+.cat-banner-btn:hover { background: var(--blue2); }
+
+/* Grid de cards */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Empty state inline */
+.cat-empty {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 64px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.cat-empty-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text);
+  display: block;
+}
+.cat-empty-desc {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+}
+.cat-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 32px;
+  border-radius: var(--radius-sm);
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: background .14s;
+  margin-top: 8px;
+}
+.cat-empty-btn:hover { background: var(--blue2); }
+
+/* Responsive */
+@media (max-width: 1024px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .cat-grid { grid-template-columns: 1fr; } .cat-banner { flex-direction: column; align-items: flex-start; } }
