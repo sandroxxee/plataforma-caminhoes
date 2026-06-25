@@ -10,6 +10,10 @@ project-status.md
 project-overview.md
 *.png
 
+# Editor (configurações locais da IDE, não pertencem ao repositório)
+.idea/
+.vscode/
+
 # Prevenir commits acidentais de artefatos de terminal/npm
 Build
 plataforma-caminhoes@*
