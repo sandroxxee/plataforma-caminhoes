@@ -1,8 +1,13 @@
 /* ============================================================
    globals.css — ponto de entrada
-   Importa os módulos em ordem. Não edite os estilos aqui;
-   edite o arquivo correspondente em app/styles/
    ============================================================ */
+
+/* Tailwind — deve ficar aqui no arquivo raiz */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Módulos de estilo */
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/header.css";
