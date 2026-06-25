@@ -18,10 +18,10 @@
   --line:        rgba(0,0,0,.09);
   --line-hover:  rgba(24,119,242,.4);
 
-  /* Sombras — bem visíveis sobre --bg */
-  --shadow:   0 1px 3px rgba(0,0,0,.07), 0 6px 20px rgba(0,0,0,.08);
-  --shadow2:  0 4px 10px rgba(0,0,0,.10), 0 16px 40px rgba(0,0,0,.12);
-  --shadow3:  0 8px 20px rgba(0,0,0,.14), 0 28px 60px rgba(0,0,0,.16);
+  /* Sombras */
+  --shadow:   0 2px 6px rgba(0,0,0,.10), 0 8px 28px rgba(0,0,0,.13);
+  --shadow2:  0 6px 16px rgba(0,0,0,.14), 0 20px 52px rgba(0,0,0,.18);
+  --shadow3:  0 12px 28px rgba(0,0,0,.18), 0 36px 72px rgba(0,0,0,.22);
 
   /* Raios */
   --radius:    16px;
@@ -50,9 +50,9 @@ body.public-theme-dark {
   --line:       rgba(255,255,255,.08);
   --line-hover: rgba(77,159,255,.4);
 
-  --shadow:  0 1px 3px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.38);
-  --shadow2: 0 4px 10px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.50);
-  --shadow3: 0 8px 20px rgba(0,0,0,.55), 0 28px 60px rgba(0,0,0,.60);
+  --shadow:  0 2px 6px rgba(0,0,0,.45), 0 8px 28px rgba(0,0,0,.50);
+  --shadow2: 0 6px 16px rgba(0,0,0,.55), 0 20px 52px rgba(0,0,0,.60);
+  --shadow3: 0 12px 28px rgba(0,0,0,.65), 0 36px 72px rgba(0,0,0,.70);
 
   --header-bg: #111827;
   color-scheme: dark;
