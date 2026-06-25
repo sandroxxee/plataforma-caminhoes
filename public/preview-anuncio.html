@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Preview — Criar Anúncio</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #09090b; color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+  .screen { display: none; flex-direction: column; min-height: 100vh; padding: 24px 16px 120px; max-width: 480px; margin: 0 auto; }
+  .screen.active { display: flex; }
+  .progress-bar { height: 4px; background: #27272a; border-radius: 99px; margin-bottom: 6px; }
+  .progress-fill { height: 4px; background: #10b981; border-radius: 99px; transition: width .4s; }
+  .step-label { font-size: 11px; color: #71717a; margin-bottom: 24px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 20px; }
+  p.sub { font-size: 13px; color: #a1a1aa; margin-bottom: 20px; }
+
+  /* Cards categoria */
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cat-card { background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 16px; cursor: pointer; transition: border-color .2s; text-align: left; color: #f4f4f5; }
+  .cat-card:hover, .cat-card.selected { border-color: #10b981; }
+  .cat-card .emoji { font-size: 28px; display: block; margin-bottom: 8px; }
+  .cat-card .name { font-size: 15px; font-weight: 500; }
+
+  /* Chat */
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; border: 1px solid #3f3f46; background: #27272a; border-radius: 99px; padding: 4px 12px; font-size: 11px; color: #d4d4d8; }
+  .chip.green { border-color: #065f46; background: rgba(16,185,129,.15); color: #34d399; }
+  .messages { flex: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+  .bubble { max-width: 85%; border-radius: 16px; padding: 12px 16px; font-size: 14px; line-height: 1.5; }
+  .bubble.ai { background: #18181b; border: 1px solid #27272a; align-self: flex-start; }
+  .bubble.user { background: #059669; color: #fff; align-self: flex-end; }
+  .bubble.typing { color: #71717a; }
+
+  /* Input fixo */
+  .input-bar { position: fixed; bottom: 0; left: 0; right: 0; border-top: 1px solid #27272a; background: #09090b; padding: 12px 16px; }
+  .input-bar-inner { max-width: 480px; margin: 0 auto; }
+  .quick-replies { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+  .quick-replies::-webkit-scrollbar { display: none; }
+  .qr-btn { flex-shrink: 0; border: 1px solid #3f3f46; background: #18181b; border-radius: 99px; padding: 6px 14px; font-size: 12px; color: #d4d4d8; cursor: pointer; }
+  .qr-btn:hover { border-color: #10b981; }
+  .input-row { display: flex; gap: 8px; margin-top: 8px; }
+  .input-row input { flex: 1; background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #f4f4f5; outline: none; }
+  .input-row input:focus { border-color: #10b981; }
+  .input-row button { background: #10b981; color: #000; border: none; border-radius: 12px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .input-row button:disabled { opacity: .4; cursor: default; }
+
+  /* Fotos */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .checklist li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #a1a1aa; }
+  .check-dot { width: 22px; height: 22px; border-radius: 99px; border: 1px solid #3f3f46; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .check-dot.done { background: #10b981; border-color: #10b981; color: #000; font-weight: 700; }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+  .photo-thumb { aspect-ratio: 1; border-radius: 12px; object-fit: cover; width: 100%; }
+
+  /* Revisão */
+  .field-row { display: flex; justify-content: space-between; align-items: center; background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; font-size: 14px; }
+  .field-row.missing { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.06); }
+  .field-label { color: #71717a; }
+  .field-value { color: #f4f4f5; }
+  .field-value.empty { color: #f87171; font-size: 12px; }
+  .error-box { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #f87171; margin-bottom: 16px; }
+
+  /* Botões */
+  .btn-primary { width: 100%; background: #10b981; color: #000; border: none; border-radius: 16px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
+  .btn-primary:disabled { opacity: .5; }
+  .btn-secondary { width: 100%; background: #18181b; border: 1px solid #3f3f46; color: #d4d4d8; border-radius: 16px; padding: 14px; font-size: 14px; cursor: pointer; margin-bottom: 10px; }
+  .btn-link { background: none; border: none; color: #71717a; font-size: 13px; text-decoration: underline; cursor: pointer; display: block; margin: 0 auto; }
+
+  /* Publicado */
+  .success-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .success-screen .icon { font-size: 64px; margin-bottom: 20px; }
+
+  /* Saving indicator */
+  .saving { font-size: 11px; color: #10b981; }
+</style>
+</head>
+<body>
+
+<!-- TELA 1: CATEGORIA -->
+<div class="screen active" id="screen-categoria">
+  <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+  <div class="step-label">Etapa 1 de 5</div>
+  <h1>O que você quer anunciar?</h1>
+  <div class="cat-grid">
+    <button class="cat-card" onclick="selectCategory('caminhao',this)"><span class="emoji">🚛</span><span class="name">Caminhão</span></button>
+    <button class="cat-card" onclick="selectCategory('carreta',this)"><span class="emoji">🚚</span><span class="name">Carreta</span></button>
+    <button class="cat-card" onclick="selectCategory('maquina',this)"><span class="emoji">🏗️</span><span class="name">Máquina</span></button>
+    <button class="cat-card" onclick="selectCategory('implemento',this)"><span class="emoji">🔧</span><span class="name">Implemento</span></button>
+    <button class="cat-card" onclick="selectCategory('peca',this)"><span class="emoji">⚙️</span><span class="name">Peça</span></button>
+  </div>
+</div>
+
+<!-- TELA 2: ASSISTENTE -->
+<div class="screen" id="screen-assistente">
+  <div class="progress-bar"><div class="progress-fill" id="chat-progress" style="width:30%"></div></div>
+  <div class="step-label" id="chat-step-label">Etapa 2 de 5 <span class="saving" id="saving-indicator"></span></div>
+  <div class="chips" id="chips"></div>
+  <div class="messages" id="messages"></div>
+  <div style="height:120px"></div>
+</div>
+
+<!-- TELA 3: FOTOS -->
+<div class="screen" id="screen-fotos">
+  <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+  <div class="step-label">Etapa 3 de 5</div>
+  <h1>Fotos do veículo</h1>
+  <p class="sub">Quanto mais claras, melhor o anúncio.</p>
+  <ul class="checklist" id="photo-checklist"></ul>
+  <div class="photo-grid" id="photo-grid"></div>
+  <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handlePhotos(event)" />
+  <button class="btn-secondary" onclick="document.getElementById('file-input').click()">+ Adicionar fotos</button>
+  <button class="btn-primary" onclick="goTo('screen-revisar')">Continuar →</button>
+</div>
+
+<!-- TELA 4: REVISÃO -->
+<div class="screen" id="screen-revisar">
+  <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+  <div class="step-label">Etapa 4 de 5</div>
+  <h1>Revise seu anúncio</h1>
+  <div id="error-missing"></div>
+  <div id="review-fields"></div>
+  <button class="btn-secondary" onclick="goTo('screen-assistente')">← Editar dados</button>
+  <button class="btn-primary" id="btn-publish" onclick="handlePublish()">Publicar anúncio</button>
+</div>
+
+<!-- TELA 5: PUBLICADO -->
+<div class="screen success-screen" id="screen-publicado">
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+  <div class="step-label">Etapa 5 de 5</div>
+  <div class="icon">✅</div>
+  <h1>Anúncio publicado!</h1>
+  <p class="sub" style="margin-top:8px">Seu anúncio foi enviado para revisão e será publicado em breve.</p>
+  <button class="btn-primary" style="margin-top:32px" onclick="location.reload()">Criar outro anúncio</button>
+  <button class="btn-link" onclick="location.reload()">Voltar ao início</button>
+</div>
+
+<!-- INPUT BAR (chat) -->
+<div class="input-bar" id="input-bar" style="display:none">
+  <div class="input-bar-inner">
+    <div class="quick-replies" id="quick-replies"></div>
+    <div class="input-row">
+      <input id="chat-input" placeholder="Escreva sua resposta..." onkeydown="if(event.key==='Enter')sendMessage()" />
+      <button id="send-btn" onclick="sendMessage()">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- STATE ---
+let draft = {
+  category: '',
+  vehicle: { brand: '', model: '', year: null, bodyType: '', mileage: null },
+  price: null,
+  location: { city: '', state: '' },
+  contact: { whatsapp: '' },
+  description: '',
+  photos: []
+}
+
+const BR_STATES = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
+
+const QUICK_REPLIES = {
+  mileage: ['Menos de 50 mil km','50 a 200 mil km','200 a 500 mil km','Acima de 500 mil km'],
+  price: ['A negociar','Consulte-nos'],
+  description: ['Pular','Veículo em ótimo estado, revisado e pronto para trabalhar.']
+}
+
+const CHECKLIST = ['Frente do veículo','Lado esquerdo','Lado direito','Traseira','Cabine / interior','Painel / odômetro','Motor','Detalhe ou avaria (opcional)']
+
+// --- ROUTING ---
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(screenId).classList.add('active')
+  const bar = document.getElementById('input-bar')
+  if (screenId === 'screen-assistente') {
+    bar.style.display = 'block'
+    renderChips()
+    window.scrollTo(0, document.body.scrollHeight)
+  } else {
+    bar.style.display = 'none'
+  }
+  if (screenId === 'screen-fotos') renderPhotos()
+  if (screenId === 'screen-revisar') renderReview()
+}
+
+// --- CATEGORIA ---
+function selectCategory(value, el) {
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'))
+  el.classList.add('selected')
+  draft.category = value
+  setTimeout(() => {
+    goTo('screen-assistente')
+    addAIMessage(getPrompt())
+    renderQuickReplies()
+  }, 200)
+}
+
+// --- PROMPT ---
+function getPrompt() {
+  if (!draft.vehicle.brand) return 'Me diga a marca, modelo e ano do veículo.'
+  if (!draft.vehicle.year) return `Qual o ano do ${draft.vehicle.brand}?`
+  if (!draft.vehicle.bodyType) return 'Qual é a carroceria ou configuração?'
+  if (!draft.vehicle.mileage) return 'Quantos km ele tem, mais ou menos?'
+  if (!draft.price) return 'Qual preço quer anunciar?'
+  if (!draft.location.city) return 'Em que cidade e estado ele está?'
+  if (!draft.contact.whatsapp) return 'Qual WhatsApp vai aparecer no anúncio?'
+  if (!draft.description) return 'Quer adicionar uma descrição curta? (opcional)'
+  return '__done__'
+}
+
+function getCurrentField() {
+  if (!draft.vehicle.brand) return 'brand'
+  if (!draft.vehicle.year) return 'year'
+  if (!draft.vehicle.bodyType) return 'bodyType'
+  if (!draft.vehicle.mileage) return 'mileage'
+  if (!draft.price) return 'price'
+  if (!draft.location.city) return 'location'
+  if (!draft.contact.whatsapp) return 'whatsapp'
+  if (!draft.description) return 'description'
+  return ''
+}
+
+// --- PARSER ---
+function parseMessage(text) {
+  const t = text.trim()
+
+  // Ano
+  const yearM = t.match(/\b(19\d{2}|20\d{2})\b/)
+  if (yearM) draft.vehicle.year = parseInt(yearM[1])
+
+  // Preco
+  const priceM = t.match(/(?:r\$|rs\.?)?\s*([\d.]+(?:,\d{1,2})?)/i)
+  if (priceM) {
+    const raw = priceM[1].replace(/\./g, '').replace(',', '.')
+    const v = parseFloat(raw)
+    if (!isNaN(v) && v > 1000) draft.price = v
+  }
+  if (/negociar|consulte/i.test(t)) draft.price = -1
+
+  // KM
+  const kmM = t.match(/([\d.]+)\s*(?:mil)?\s*km/i)
+  if (kmM) {
+    let v = parseFloat(kmM[1].replace(/\./g, ''))
+    if (/mil km/i.test(t)) v *= 1000
+    if (!isNaN(v)) draft.vehicle.mileage = v
+  }
+  if (/menos de 50/i.test(t)) draft.vehicle.mileage = 49000
+  if (/50 a 200/i.test(t)) draft.vehicle.mileage = 125000
+  if (/200 a 500/i.test(t)) draft.vehicle.mileage = 350000
+  if (/acima de 500/i.test(t)) draft.vehicle.mileage = 500001
+
+  // Estado
+  const stateRe = new RegExp(`\\b(${BR_STATES.join('|')})\\b`, 'i')
+  const stateM = t.match(stateRe)
+  if (stateM) draft.location.state = stateM[1].toUpperCase()
+
+  // Cidade (palavra antes do estado)
+  if (stateM) {
+    const before = t.slice(0, stateM.index).trim()
+    const words = before.split(/[,\s]+/).filter(Boolean)
+    if (words.length > 0) draft.location.city = words[words.length - 1]
+  }
+
+  // WhatsApp
+  const waM = t.match(/(\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4})/)
+  if (waM) draft.contact.whatsapp = waM[1].trim()
+
+  // Descricao
+  const field = getCurrentField()
+  if (field === 'description' && !/pular/i.test(t)) draft.description = t
+  if (/pular/i.test(t) && field === 'description') draft.description = '—'
+
+  // Marca / Modelo (primeira vez, pega da frase livre)
+  if (!draft.vehicle.brand) {
+    const words = t.split(/\s+/)
+    if (words[0]) draft.vehicle.brand = words[0]
+    if (words[1] && !/\d{4}/.test(words[1])) draft.vehicle.model = words.slice(1).filter(w => !/\d{4}/.test(w)).join(' ')
+  }
+
+  // Carroceria
+  if (field === 'bodyType') draft.vehicle.bodyType = t
+}
+
+// --- CHAT ---
+function addAIMessage(text) {
+  if (text === '__done__') {
+    const div = document.createElement('div')
+    div.innerHTML = `<div class="bubble ai">Perfeito! Tudo preenchido. Vamos para as fotos.</div>
+      <button class="btn-primary" style="margin-top:16px" onclick="goTo('screen-fotos')">Ir para fotos →</button>`
+    document.getElementById('messages').appendChild(div)
+    document.getElementById('input-bar').style.display = 'none'
+    updateProgress()
+    renderChips()
+    scrollBottom()
+    return
+  }
+  const div = document.createElement('div')
+  div.className = 'bubble ai'
+  div.textContent = text
+  document.getElementById('messages').appendChild(div)
+  scrollBottom()
+}
+
+function addUserMessage(text) {
+  const div = document.createElement('div')
+  div.className = 'bubble user'
+  div.textContent = text
+  document.getElementById('messages').appendChild(div)
+  scrollBottom()
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input')
+  const text = input.value.trim()
+  if (!text) return
+  input.value = ''
+  addUserMessage(text)
+  parseMessage(text)
+  renderChips()
+  saveDraft()
+  const next = getPrompt()
+  setTimeout(() => {
+    addAIMessage(next)
+    renderQuickReplies()
+    updateProgress()
+  }, 400)
+}
+
+function sendQuick(text) {
+  document.getElementById('chat-input').value = text
+  sendMessage()
+}
+
+function renderQuickReplies() {
+  const field = getCurrentField()
+  const replies = QUICK_REPLIES[field] || []
+  const container = document.getElementById('quick-replies')
+  container.innerHTML = ''
+  replies.forEach(r => {
+    const btn = document.createElement('button')
+    btn.className = 'qr-btn'
+    btn.textContent = r
+    btn.onclick = () => sendQuick(r)
+    container.appendChild(btn)
+  })
+}
+
+// --- CHIPS ---
+function renderChips() {
+  const c = document.getElementById('chips')
+  c.innerHTML = ''
+  const add = (text, green) => {
+    const span = document.createElement('span')
+    span.className = 'chip' + (green ? ' green' : '')
+    span.textContent = text
+    c.appendChild(span)
+  }
+  if (draft.category) add(draft.category)
+  if (draft.vehicle.brand) add(draft.vehicle.brand)
+  if (draft.vehicle.model) add(draft.vehicle.model)
+  if (draft.vehicle.year) add(draft.vehicle.year)
+  if (draft.vehicle.bodyType) add(draft.vehicle.bodyType)
+  if (draft.vehicle.mileage) add(draft.vehicle.mileage > 500000 ? '+500k km' : draft.vehicle.mileage.toLocaleString('pt-BR') + ' km')
+  if (draft.price) add(draft.price === -1 ? 'A negociar' : 'R$ ' + draft.price.toLocaleString('pt-BR'), true)
+  if (draft.location.city) add(draft.location.city + (draft.location.state ? ' ' + draft.location.state : ''))
+  if (draft.contact.whatsapp) add(draft.contact.whatsapp)
+}
+
+// --- PROGRESS ---
+function updateProgress() {
+  const fields = [draft.category, draft.vehicle.brand, draft.vehicle.year, draft.vehicle.bodyType, draft.vehicle.mileage, draft.price, draft.location.city, draft.contact.whatsapp]
+  const filled = fields.filter(Boolean).length
+  const pct = 20 + Math.round((filled / fields.length) * 50)
+  document.getElementById('chat-progress').style.width = pct + '%'
+}
+
+// --- AUTOSAVE ---
+function saveDraft() {
+  const ind = document.getElementById('saving-indicator')
+  ind.textContent = '· Salvando...'
+  localStorage.setItem('ad_draft_preview', JSON.stringify(draft))
+  setTimeout(() => { ind.textContent = '· Salvo ✓' }, 600)
+}
+
+// --- FOTOS ---
+function renderPhotos() {
+  const cl = document.getElementById('photo-checklist')
+  cl.innerHTML = ''
+  CHECKLIST.forEach((item, i) => {
+    const done = draft.photos[i]
+    cl.innerHTML += `<li><span class="check-dot ${done ? 'done' : ''}">${done ? '✓' : i + 1}</span>${item}</li>`
+  })
+  const grid = document.getElementById('photo-grid')
+  grid.innerHTML = ''
+  draft.photos.forEach(src => {
+    const img = document.createElement('img')
+    img.src = src
+    img.className = 'photo-thumb'
+    grid.appendChild(img)
+  })
+}
+
+function handlePhotos(e) {
+  const files = Array.from(e.target.files)
+  files.forEach(f => {
+    const reader = new FileReader()
+    reader.onload = ev => {
+      draft.photos.push(ev.target.result)
+      renderPhotos()
+    }
+    reader.readAsDataURL(f)
+  })
+}
+
+// --- REVISÃO ---
+function renderReview() {
+  const fields = [
+    { label: 'Categoria', value: draft.category },
+    { label: 'Marca', value: draft.vehicle.brand },
+    { label: 'Modelo', value: draft.vehicle.model },
+    { label: 'Ano', value: draft.vehicle.year },
+    { label: 'Carroceria', value: draft.vehicle.bodyType },
+    { label: 'Quilometragem', value: draft.vehicle.mileage ? (draft.vehicle.mileage > 500000 ? '+500.000 km' : draft.vehicle.mileage.toLocaleString('pt-BR') + ' km') : null },
+    { label: 'Preço', value: draft.price ? (draft.price === -1 ? 'A negociar' : 'R$ ' + draft.price.toLocaleString('pt-BR')) : null },
+    { label: 'Cidade', value: draft.location.city },
+    { label: 'Estado', value: draft.location.state },
+    { label: 'WhatsApp', value: draft.contact.whatsapp },
+    { label: 'Descrição', value: draft.description && draft.description !== '—' ? draft.description : null },
+    { label: 'Fotos', value: draft.photos.length > 0 ? draft.photos.length + ' foto(s)' : null },
+  ]
+  const container = document.getElementById('review-fields')
+  container.innerHTML = ''
+  fields.forEach(f => {
+    container.innerHTML += `<div class="field-row ${!f.value ? 'missing' : ''}">
+      <span class="field-label">${f.label}</span>
+      <span class="field-value ${!f.value ? 'empty' : ''}">${f.value || 'Não preenchido'}</span>
+    </div>`
+  })
+}
+
+// --- PUBLICAR ---
+function handlePublish() {
+  const required = ['category','brand','year','price','whatsapp']
+  const missing = []
+  if (!draft.category) missing.push('Categoria')
+  if (!draft.vehicle.brand) missing.push('Marca')
+  if (!draft.vehicle.year) missing.push('Ano')
+  if (!draft.price) missing.push('Preço')
+  if (!draft.contact.whatsapp) missing.push('WhatsApp')
+  const err = document.getElementById('error-missing')
+  if (missing.length > 0) {
+    err.innerHTML = `<div class="error-box">Campos obrigatórios faltando: ${missing.join(', ')}</div>`
+    return
+  }
+  err.innerHTML = ''
+  const btn = document.getElementById('btn-publish')
+  btn.textContent = 'Publicando...'
+  btn.disabled = true
+  setTimeout(() => goTo('screen-publicado'), 1200)
+}
+
+// --- SCROLL ---
+function scrollBottom() {
+  setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100)
+}
+
+// --- LOAD SAVED ---
+const saved = localStorage.getItem('ad_draft_preview')
+if (saved) {
+  try { draft = JSON.parse(saved) } catch(e) {}
+}
+</script>
+</body>
+</html>
