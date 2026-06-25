@@ -1,22 +1,32 @@
 /* ============================================================
-   TOKENS BASE — TEMA CLARO (light)
+   TOKENS BASE — TEMA CLARO
    ============================================================ */
 :root {
   --bg:        #f0f2f5;
   --surface:   #ffffff;
-  --soft:      #e8ebef;
+  --soft:      #f4f6f8;
   --text:      #0d1117;
-  --muted:     #4b5563;
+  --muted:     #64748b;
+
   --blue:      #1877f2;
   --blue2:     #0f5fc8;
-  --blueSoft:  #dbeafe;
+  --blueSoft:  #eff6ff;
+
   --wa:        #25d366;
-  --line:      #d1d5db;
-  --shadow:    0 2px 12px rgba(0,0,0,.07);
-  --shadow2:   0 8px 32px rgba(0,0,0,.12);
-  --shadow3:   0 16px 48px rgba(0,0,0,.16);
-  --radius:    20px;
-  --radius-sm: 12px;
+
+  /* Bordas — 1 única espessura, cor suave */
+  --line:        rgba(0,0,0,.08);
+  --line-hover:  rgba(24,119,242,.35);
+
+  /* Sombras — 3 níveis bem definidos */
+  --shadow:   0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+  --shadow2:  0 4px 12px rgba(0,0,0,.08), 0 12px 32px rgba(0,0,0,.10);
+  --shadow3:  0 8px 24px rgba(0,0,0,.10), 0 24px 56px rgba(0,0,0,.14);
+
+  /* Raios — 2 níveis */
+  --radius:    16px;
+  --radius-sm: 10px;
+
   --header-bg: #ffffff;
   --font-display: var(--font-manrope), Arial, sans-serif;
   --font-title:   var(--font-manrope), Arial, sans-serif;
@@ -27,19 +37,24 @@
    TEMA ESCURO
    ============================================================ */
 body.public-theme-dark {
-  --bg:       #0a0f1a;
-  --surface:  #131c2e;
-  --soft:     #1a2336;
-  --text:     #f0f4f8;
-  --muted:    #a0aec0;
+  --bg:       #080d18;
+  --surface:  #111827;
+  --soft:     #1a2236;
+  --text:     #f1f5f9;
+  --muted:    #94a3b8;
+
   --blue:     #4d9fff;
   --blue2:    #3b82f6;
-  --blueSoft: rgba(77,159,255,.18);
-  --line:     rgba(160,174,192,.18);
-  --shadow:   0 2px 12px rgba(0,0,0,.35);
-  --shadow2:  0 8px 32px rgba(0,0,0,.48);
-  --shadow3:  0 16px 48px rgba(0,0,0,.6);
-  --header-bg:#131c2e;
+  --blueSoft: rgba(77,159,255,.12);
+
+  --line:       rgba(255,255,255,.08);
+  --line-hover: rgba(77,159,255,.4);
+
+  --shadow:  0 1px 4px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.3);
+  --shadow2: 0 4px 12px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45);
+  --shadow3: 0 8px 24px rgba(0,0,0,.5), 0 24px 56px rgba(0,0,0,.55);
+
+  --header-bg: #111827;
   color-scheme: dark;
 }
 
