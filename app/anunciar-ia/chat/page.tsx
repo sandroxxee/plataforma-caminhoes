@@ -54,10 +54,11 @@ function parse(text: string, d: Draft): Draft {
   const yearM = t.match(/\b(19\d{2}|20\d{2})\b/)
   if (yearM) next.vehicle.year = parseInt(yearM[1])
 
-  if (/negociar|consulte/i.test(t)) { next.price = -1 }
-  else {
+  if (/negociar|consulte/i.test(t)) {
+    next.price = -1
+  } else if (field === 'price') {
     const priceM = t.match(/([\d.]+(?:,\d{1,2})?)/)
-    if (priceM && field === 'price') {
+    if (priceM) {
       const v = parseFloat(priceM[1].replace(/\./g, '').replace(',', '.'))
       if (!isNaN(v) && v > 1000) next.price = v
     }
@@ -94,7 +95,7 @@ function parse(text: string, d: Draft): Draft {
 
   if (field === 'bodyType') next.vehicle.bodyType = t
 
-  if (field === 'brand' && !next.vehicle.brand) {
+  if (field === 'brand') {
     const words = t.split(/\s+/)
     if (words[0]) next.vehicle.brand = words[0]
     const rest = words.slice(1).filter(w => !/\b(19|20)\d{2}\b/.test(w))
@@ -112,23 +113,22 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [saving, setSaving] = useState(false)
-  const [started, setStarted] = useState(false)
+  const initRef = useRef(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  // Carrega draft uma única vez
   useEffect(() => {
+    if (initRef.current) return
+    initRef.current = true
     const raw = sessionStorage.getItem('ia_draft')
     if (!raw) { router.replace('/anunciar-ia'); return }
     const d: Draft = JSON.parse(raw)
     setDraft(d)
+    const prompt = getPrompt(d)
+    if (prompt !== 'done') {
+      setMessages([{ role: 'ai', text: prompt }])
+    }
   }, [router])
-
-  // Envia primeira mensagem da IA só uma vez
-  useEffect(() => {
-    if (!draft || started) return
-    setStarted(true)
-    const prompt = getPrompt(draft)
-    if (prompt !== 'done') setMessages([{ role: 'ai', text: prompt }])
-  }, [draft, started])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -145,11 +145,10 @@ export default function ChatPage() {
     setTimeout(() => setSaving(false), 600)
     const prompt = getPrompt(next)
     setTimeout(() => {
-      if (prompt === 'done') {
-        setMessages(prev => [...prev, { role: 'ai', text: 'Perfeito! Tudo preenchido. Vamos para as fotos 📸' }])
-      } else {
-        setMessages(prev => [...prev, { role: 'ai', text: prompt }])
-      }
+      setMessages(prev => [
+        ...prev,
+        { role: 'ai', text: prompt === 'done' ? 'Perfeito! Tudo preenchido. Vamos para as fotos 📸' : prompt }
+      ])
     }, 400)
   }, [draft])
 
@@ -165,31 +164,34 @@ export default function ChatPage() {
     draft.vehicle.model,
     draft.vehicle.year?.toString(),
     draft.vehicle.bodyType,
-    draft.vehicle.mileage ? (draft.vehicle.mileage > 500000 ? '+500k km' : draft.vehicle.mileage.toLocaleString('pt-BR') + ' km') : null,
-    draft.price ? (draft.price === -1 ? 'A negociar' : 'R$ ' + draft.price.toLocaleString('pt-BR')) : null,
+    draft.vehicle.mileage
+      ? draft.vehicle.mileage > 500000 ? '+500k km' : draft.vehicle.mileage.toLocaleString('pt-BR') + ' km'
+      : null,
+    draft.price
+      ? draft.price === -1 ? 'A negociar' : 'R$ ' + draft.price.toLocaleString('pt-BR')
+      : null,
     draft.location.city ? `${draft.location.city} ${draft.location.state ?? ''}`.trim() : null,
     draft.contact.whatsapp,
   ].filter(Boolean) as string[]
 
-  const filled = [draft.category, draft.vehicle.brand, draft.vehicle.year, draft.vehicle.bodyType, draft.vehicle.mileage, draft.price, draft.location.city, draft.contact.whatsapp].filter(Boolean).length
+  const filled = [draft.category, draft.vehicle.brand, draft.vehicle.year, draft.vehicle.bodyType,
+    draft.vehicle.mileage, draft.price, draft.location.city, draft.contact.whatsapp].filter(Boolean).length
   const pct = Math.round(10 + (filled / 8) * 60)
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 pb-36 pt-6 px-4">
       <div className="mx-auto max-w-md">
-        {/* Progress */}
         <div className="mb-4">
           <div className="h-1 w-full rounded-full bg-zinc-800">
             <div className="h-1 rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
           </div>
           <p className="mt-1.5 text-xs text-zinc-500">
-            Etapa 2 de 5 {saving && <span className="text-emerald-500"> · Salvando...</span>}
+            Etapa 2 de 5{saving && <span className="text-emerald-500"> · Salvando...</span>}
           </p>
         </div>
 
-        {/* Chips */}
         {chips.length > 0 && (
-          <div className="mb-4 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
             {chips.map((c, i) => (
               <span key={i} className={`shrink-0 rounded-full border px-3 py-1 text-xs ${
                 c.startsWith('R$') || c === 'A negociar'
@@ -200,7 +202,6 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* Messages */}
         <div className="flex flex-col gap-3">
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
@@ -226,12 +227,11 @@ export default function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
       {!isDone && (
         <div className="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-950 px-4 py-3">
           <div className="mx-auto max-w-md">
             {quickReplies.length > 0 && (
-              <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
                 {quickReplies.map((r) => (
                   <button
                     key={r}
