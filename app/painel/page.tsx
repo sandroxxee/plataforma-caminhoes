@@ -24,8 +24,14 @@ export default async function PainelPage() {
   const nomeUsuario = user.user_metadata?.name || user.email?.split("@")[0] || "Anunciante";
 
   return (
-    <PanelLayout userName={nomeUsuario} role="anunciante">
+    <PanelLayout role="anunciante">
       <div className="painel-wrap">
+
+        {/* Greeting */}
+        <div className="painel-greeting-block">
+          <span className="painel-role-badge">Anunciante</span>
+          <h1 className="painel-greeting">Olá, {nomeUsuario} 👋</h1>
+        </div>
 
         {/* Views Hero */}
         <div className="painel-views-card">
