@@ -6,33 +6,22 @@ import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { excluirMeuAnuncio, marcarComoVendido, reanunciarAnuncio } from "./actions";
 import { gerarSlugComId } from "@/lib/slug";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
-import { Truck, CheckCircle, Clock, XCircle, Handshake, Camera, MapPin, RotateCw, Plus, Eye } from "lucide-react";
+import { Truck, CheckCircle, Clock, XCircle, Handshake, RotateCw, Plus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-type Truck = TruckCardData & {
-  status: string | null; vendido: boolean | null;
+type TruckItem = TruckCardData & {
+  status: string | null;
+  vendido: boolean | null;
   views: number | null;
 };
 
-function getMainImage(truck: Truck) {
-  const images = truck.truck_images || [];
-  const principal = images.find((img) => img.principal);
-  const first = [...images].sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
-  return principal?.image_url || first?.image_url || "";
-}
-
-function money(value: number | null) {
-  if (!value) return "Sob consulta";
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-}
-
 function normalizeStatus(status: string | null, vendido: boolean | null) {
-  if (vendido) return { label: "Vendido", className: "sold", icon: <Handshake size={12} /> };
-  const value = (status || "pendente").toLowerCase();
-  if (value === "publicado" || value.includes("aprov")) return { label: "Publicado", className: "approved", icon: <CheckCircle size={12} /> };
-  if (value.includes("reprov") || value.includes("rejeit")) return { label: "Rejeitado", className: "rejected", icon: <XCircle size={12} /> };
-  return { label: "Aguardando", className: "pending", icon: <Clock size={12} /> };
+  if (vendido) return { label: "Vendido",    cls: "sold",     icon: <Handshake size={12} /> };
+  const v = (status || "pendente").toLowerCase();
+  if (v === "publicado" || v.includes("aprov"))  return { label: "Publicado",  cls: "approved", icon: <CheckCircle size={12} /> };
+  if (v.includes("reprov") || v.includes("rejeit")) return { label: "Rejeitado", cls: "rejected", icon: <XCircle size={12} /> };
+  return { label: "Aguardando", cls: "pending", icon: <Clock size={12} /> };
 }
 
 export default async function MeusAnunciosPage() {
@@ -46,85 +35,92 @@ export default async function MeusAnunciosPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  const trucks = (data || []) as Truck[];
-  const ativos = trucks.filter((t) => normalizeStatus(t.status, t.vendido).className === "approved").length;
-  const pendentes = trucks.filter((t) => normalizeStatus(t.status, t.vendido).className === "pending").length;
-  const vendidos = trucks.filter((t) => normalizeStatus(t.status, t.vendido).className === "sold").length;
+  const trucks = (data || []) as TruckItem[];
+  const ativos   = trucks.filter((t) => normalizeStatus(t.status, t.vendido).cls === "approved").length;
+  const pendentes = trucks.filter((t) => normalizeStatus(t.status, t.vendido).cls === "pending").length;
+  const vendidos  = trucks.filter((t) => normalizeStatus(t.status, t.vendido).cls === "sold").length;
 
   return (
-    <PanelLayout
-      title="Meus anúncios"
-      subtitle="Acompanhe seus caminhões, edite informações e veja o status de publicação."
-      badge={`${trucks.length} ${trucks.length === 1 ? "anúncio" : "anúncios"}`}
-      actions={<Link href="/painel/anuncios/novo" className="h-12 px-6 inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"><Plus size={16} className="mr-2" /> Novo anúncio</Link>}
-    >
-      <div className="flex flex-col gap-6">
+    <PanelLayout role="anunciante">
+      <div className="painel-wrap">
+
+        {/* Header */}
+        <div className="meus-anuncios-header">
+          <div>
+            <h1 className="painel-greeting">Meus anúncios</h1>
+            <p className="meus-anuncios-sub">Acompanhe, edite e gerencie seus caminhões.</p>
+          </div>
+          <Link href="/painel/anuncios/novo" className="meus-anuncios-btn-novo">
+            <Plus size={16} /> Novo anúncio
+          </Link>
+        </div>
+
+        {/* Badges de resumo */}
         {trucks.length > 0 && (
-          <div className="flex flex-wrap gap-3">
-            <div className="bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm text-sm font-bold text-slate-500 flex items-center gap-2">
-              <Truck size={14} className="text-blue-600" /> {trucks.length} total
-            </div>
+          <div className="meus-anuncios-badges">
+            <span className="ma-badge">
+              <Truck size={13} style={{ color: "var(--blue)" }} /> {trucks.length} total
+            </span>
             {ativos > 0 && (
-              <div className="bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm text-sm font-bold text-slate-500 flex items-center gap-2">
-                <CheckCircle size={14} className="text-green-600" /> {ativos} publicado{ativos > 1 ? "s" : ""}
-              </div>
+              <span className="ma-badge">
+                <CheckCircle size={13} style={{ color: "#16a34a" }} /> {ativos} publicado{ativos > 1 ? "s" : ""}
+              </span>
             )}
             {pendentes > 0 && (
-              <div className="bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm text-sm font-bold text-slate-500 flex items-center gap-2">
-                <Clock size={14} className="text-amber-600" /> {pendentes} aguardando
-              </div>
+              <span className="ma-badge">
+                <Clock size={13} style={{ color: "#d97706" }} /> {pendentes} aguardando
+              </span>
             )}
             {vendidos > 0 && (
-              <div className="bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm text-sm font-bold text-slate-500 flex items-center gap-2">
-                <Handshake size={14} className="text-slate-600" /> {vendidos} vendido{vendidos > 1 ? "s" : ""}
-              </div>
+              <span className="ma-badge">
+                <Handshake size={13} style={{ color: "var(--muted)" }} /> {vendidos} vendido{vendidos > 1 ? "s" : ""}
+              </span>
             )}
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Grid de anúncios */}
+        <div className="meus-anuncios-grid">
           {trucks.map((truck) => {
             const status = normalizeStatus(truck.status, truck.vendido);
-            const isSold = status.className === "sold";
-            const isRejected = status.className === "rejected";
+            const isSold     = status.cls === "sold";
+            const isRejected = status.cls === "rejected";
             const slug = gerarSlugComId(truck);
 
             return (
-              <div key={truck.id} className="flex flex-col">
-                <div className="relative">
+              <div key={truck.id} className="ma-item">
+                {/* Card com badge de status */}
+                <div style={{ position: "relative" }}>
                   <TruckCard truck={truck} />
-                  <div className={`absolute top-4 left-4 z-20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/90 backdrop-blur border border-white/20 shadow-lg flex items-center gap-2 ${
-                    status.className === 'approved' ? 'text-green-700' :
-                    status.className === 'pending' ? 'text-amber-700' :
-                    status.className === 'rejected' ? 'text-red-700' : 'text-slate-700'
-                  }`}>
+                  <div className={`ma-status-badge ma-status-${status.cls}`}>
                     {status.icon} {status.label}
                   </div>
                 </div>
 
-                <div className="mt-3 flex flex-wrap gap-2 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                  {status.className === "approved" && (
-                    <Link href={`/anuncios/${slug}`} className="flex-1 h-10 inline-flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 font-bold text-xs hover:bg-blue-600 hover:text-white transition-all" target="_blank">
+                {/* Ações */}
+                <div className="ma-actions">
+                  {status.cls === "approved" && (
+                    <Link href={`/anuncios/${slug}`} className="ma-btn ma-btn-blue" target="_blank">
                       Ver no site
                     </Link>
                   )}
                   {!isSold && (
-                    <form action={marcarComoVendido} className="flex-1">
+                    <form action={marcarComoVendido} style={{ flex: 1 }}>
                       <input type="hidden" name="id" value={truck.id} />
-                      <button type="submit" className="w-full h-10 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-50 text-amber-700 font-bold text-xs hover:bg-amber-100 transition-all">
-                        <Handshake size={14} /> Vendido
+                      <button type="submit" className="ma-btn ma-btn-amber" style={{ width: "100%" }}>
+                        <Handshake size={13} /> Vendido
                       </button>
                     </form>
                   )}
                   {(isSold || isRejected) && (
-                    <form action={reanunciarAnuncio} className="flex-1">
+                    <form action={reanunciarAnuncio} style={{ flex: 1 }}>
                       <input type="hidden" name="id" value={truck.id} />
-                      <button type="submit" className="w-full h-10 inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs hover:bg-indigo-100 transition-all">
-                        <RotateCw size={14} /> Reanunciar
+                      <button type="submit" className="ma-btn ma-btn-indigo" style={{ width: "100%" }}>
+                        <RotateCw size={13} /> Reanunciar
                       </button>
                     </form>
                   )}
-                  <Link href={`/painel/anuncios/${truck.id}/editar`} className="flex-1 h-10 inline-flex items-center justify-center rounded-xl bg-slate-50 text-slate-600 font-bold text-xs hover:bg-slate-100 transition-all">
+                  <Link href={`/painel/anuncios/${truck.id}/editar`} className="ma-btn ma-btn-gray">
                     Editar
                   </Link>
                   <form action={excluirMeuAnuncio}>
@@ -136,19 +132,19 @@ export default async function MeusAnunciosPage() {
             );
           })}
 
+          {/* Empty state */}
           {trucks.length === 0 && (
-            <div className="col-span-full py-20 px-10 bg-white rounded-3xl border border-slate-200 border-dashed text-center">
-              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Truck size={40} className="text-slate-300" strokeWidth={1.5} />
-              </div>
-              <h2 className="text-2xl font-black text-slate-900 mb-2">Nenhum anúncio cadastrado</h2>
-              <p className="text-slate-500 font-bold max-w-md mx-auto mb-8">Cadastre seu primeiro caminhão ou implemento para aparecer no site e receber contatos.</p>
-              <Link href="/painel/anuncios/novo" className="h-14 px-10 inline-flex items-center justify-center rounded-2xl bg-blue-600 text-white font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20">
+            <div className="ma-empty">
+              <div className="ma-empty-icon"><Truck size={36} strokeWidth={1.5} /></div>
+              <h2 className="ma-empty-title">Nenhum anúncio cadastrado</h2>
+              <p className="ma-empty-desc">Cadastre seu primeiro caminhão ou implemento para aparecer no site.</p>
+              <Link href="/painel/anuncios/novo" className="meus-anuncios-btn-novo">
                 Cadastrar primeiro anúncio
               </Link>
             </div>
           )}
         </div>
+
       </div>
     </PanelLayout>
   );

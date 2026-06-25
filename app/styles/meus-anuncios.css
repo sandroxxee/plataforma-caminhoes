@@ -1,0 +1,176 @@
+/* ============================================================
+   MEUS ANÚNNCIOS — /painel/anuncios
+   ============================================================ */
+
+.meus-anuncios-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.meus-anuncios-sub {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+.meus-anuncios-btn-novo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: var(--radius-sm);
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: background .14s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.meus-anuncios-btn-novo:hover { background: var(--blue2); }
+
+/* Badges de resumo */
+.meus-anuncios-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ma-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+/* Grid */
+.meus-anuncios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Item */
+.ma-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Badge de status sobre o card */
+.ma-status-badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(255,255,255,.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.ma-status-approved { color: #15803d; }
+.ma-status-pending  { color: #b45309; }
+.ma-status-rejected { color: #b91c1c; }
+.ma-status-sold     { color: #475569; }
+
+/* Barra de ações abaixo do card */
+.ma-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.ma-btn {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: filter .14s, opacity .14s;
+  white-space: nowrap;
+}
+.ma-btn:hover { filter: brightness(.92); }
+.ma-btn-blue   { background: rgba(24,119,242,.1);  color: var(--blue); }
+.ma-btn-amber  { background: rgba(245,158,11,.1);  color: #b45309; }
+.ma-btn-indigo { background: rgba(99,102,241,.1);  color: #4338ca; }
+.ma-btn-gray   { background: var(--soft);           color: var(--muted); }
+
+/* Empty state */
+.ma-empty {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 64px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.ma-empty-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--soft);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--line);
+  margin-bottom: 4px;
+}
+.ma-empty-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin: 0;
+}
+.ma-empty-desc {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  max-width: 380px;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .meus-anuncios-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .meus-anuncios-grid  { grid-template-columns: 1fr; }
+  .meus-anuncios-header { flex-direction: column; align-items: flex-start; }
+}
