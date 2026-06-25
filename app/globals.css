@@ -2,16 +2,12 @@
    globals.css — ponto de entrada
    ============================================================ */
 
-/* Tailwind — deve ficar aqui no arquivo raiz */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Módulos de estilo */
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/header.css";
 @import "./styles/layout.css";
 @import "./styles/cards.css";
+@import "./styles/painel.css";
 @import "./styles/seo.css";
 @import "./styles/responsive.css";
