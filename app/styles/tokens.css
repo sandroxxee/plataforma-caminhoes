@@ -2,7 +2,7 @@
    TOKENS BASE — TEMA CLARO
    ============================================================ */
 :root {
-  --bg:        #f0f2f5;
+  --bg:        #eef0f4;
   --surface:   #ffffff;
   --soft:      #f4f6f8;
   --text:      #0d1117;
@@ -14,16 +14,16 @@
 
   --wa:        #25d366;
 
-  /* Bordas — 1 única espessura, cor suave */
-  --line:        rgba(0,0,0,.08);
-  --line-hover:  rgba(24,119,242,.35);
+  /* Bordas */
+  --line:        rgba(0,0,0,.09);
+  --line-hover:  rgba(24,119,242,.4);
 
-  /* Sombras — 3 níveis bem definidos */
-  --shadow:   0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
-  --shadow2:  0 4px 12px rgba(0,0,0,.08), 0 12px 32px rgba(0,0,0,.10);
-  --shadow3:  0 8px 24px rgba(0,0,0,.10), 0 24px 56px rgba(0,0,0,.14);
+  /* Sombras — bem visíveis sobre --bg */
+  --shadow:   0 1px 3px rgba(0,0,0,.07), 0 6px 20px rgba(0,0,0,.08);
+  --shadow2:  0 4px 10px rgba(0,0,0,.10), 0 16px 40px rgba(0,0,0,.12);
+  --shadow3:  0 8px 20px rgba(0,0,0,.14), 0 28px 60px rgba(0,0,0,.16);
 
-  /* Raios — 2 níveis */
+  /* Raios */
   --radius:    16px;
   --radius-sm: 10px;
 
@@ -50,9 +50,9 @@ body.public-theme-dark {
   --line:       rgba(255,255,255,.08);
   --line-hover: rgba(77,159,255,.4);
 
-  --shadow:  0 1px 4px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.3);
-  --shadow2: 0 4px 12px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45);
-  --shadow3: 0 8px 24px rgba(0,0,0,.5), 0 24px 56px rgba(0,0,0,.55);
+  --shadow:  0 1px 3px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.38);
+  --shadow2: 0 4px 10px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.50);
+  --shadow3: 0 8px 20px rgba(0,0,0,.55), 0 28px 60px rgba(0,0,0,.60);
 
   --header-bg: #111827;
   color-scheme: dark;
