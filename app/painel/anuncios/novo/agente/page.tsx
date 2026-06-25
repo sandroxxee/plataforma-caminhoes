@@ -1,4 +1,4 @@
-import { AgenteAnuncio } from "@/components/AgenteAnuncio";
+import AgentChat from "@/components/AgentChat";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function AgenteAnuncioPage() {
             Responda as perguntas abaixo e seu anuncio sera criado automaticamente.
           </p>
         </div>
-        <AgenteAnuncio />
+        <AgentChat variant="anuncio" />
       </div>
     </main>
   );
