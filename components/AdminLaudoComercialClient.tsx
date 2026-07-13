@@ -27,7 +27,7 @@ export type LaudoTruck = {
 
 type Props = { truck: LaudoTruck };
 
-import { getTruckImageUrl } from "@/lib/truck-utils";
+import { formatImageUrl } from "@/lib/truck-utils";
 
 function sortedImages(images?: TruckImage[]) {
   return [...(images || [])]
@@ -37,7 +37,7 @@ function sortedImages(images?: TruckImage[]) {
       if (!a.principal && b.principal) return 1;
       return (a.ordem || 0) - (b.ordem || 0);
     })
-    .map((image) => getTruckImageUrl(image.image_url));
+    .map((image) => formatImageUrl(image.image_url));
 }
 
 export function AdminLaudoComercialClient({ truck }: Props) {
