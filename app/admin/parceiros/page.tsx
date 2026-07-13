@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { CSSProperties, ChangeEvent, FormEvent } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { AdminLayout } from "@/components/AdminLayout";
-import { salvarParceiroAction } from "./actions";
+import { salvarParceiroAction, excluirParceiroAction } from "./actions";
 import {
   Building2, MapPin, Phone, Smartphone,
-  ImagePlus, CheckCircle, Loader2, Eye, ShoppingBag,
+  ImagePlus, CheckCircle, Loader2, Eye, ShoppingBag, Trash2, Plus
 } from "lucide-react";
 
 const UFS = [
@@ -34,6 +35,8 @@ export default function AdminParceirosPage() {
   const [estado, setEstado] = useState("");
   const [celular, setCelular] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -46,8 +49,29 @@ export default function AdminParceirosPage() {
   const [error, setError] = useState("");
   const [showPreview, setShowPreview] = useState(false);
 
+  // Lista de parceiros cadastrados
+  const [parceiros, setParceiros] = useState<any[]>([]);
+  const [excluindoId, setExcluindoId] = useState<string | null>(null);
+
   const logoRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
+
+  // Carregar parceiros cadastrados
+  const carregarParceiros = useCallback(async () => {
+    const supabase = createClient();
+    const { data, error: err } = await supabase
+      .from("parceiros")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (!err) {
+      setParceiros(data || []);
+    }
+  }, []);
+
+  useEffect(() => {
+    carregarParceiros();
+  }, [carregarParceiros]);
 
   function handleLogoChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -85,6 +109,8 @@ export default function AdminParceirosPage() {
       formData.set("estado", estado);
       formData.set("celular", celular.trim());
       formData.set("telefone", telefone.trim());
+      formData.set("instagram", instagram.trim());
+      formData.set("facebook", facebook.trim());
       
       if (logoFile) {
         formData.set("logo", logoFile);
@@ -102,8 +128,12 @@ export default function AdminParceirosPage() {
       setSuccess(true);
       setShowPreview(false);
       setNome(""); setCidade(""); setEstado(""); setCelular(""); setTelefone("");
+      setInstagram(""); setFacebook("");
       setLogoFile(null); setLogoPreview(null);
       setBannerFile(null); setBannerPreview(null);
+      
+      // Recarrega a lista reativamente
+      carregarParceiros();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erro desconhecido.");
     } finally {
@@ -112,12 +142,34 @@ export default function AdminParceirosPage() {
     }
   }
 
+  async function handleExcluir(id: string) {
+    if (!confirm("Tem certeza que deseja apagar este parceiro? Todas as logos e banners serão apagados do storage definitivamente.")) {
+      return;
+    }
+
+    setExcluindoId(id);
+    try {
+      const res = await excluirParceiroAction(id);
+      if (res.error) {
+        alert(res.error);
+      } else {
+        // Recarrega a lista de parceiros reativamente
+        carregarParceiros();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao excluir parceiro.");
+    } finally {
+      setExcluindoId(null);
+    }
+  }
+
   const nomePreenchido = nome.trim().length > 0;
 
   return (
     <AdminLayout
       title="Parceiros"
-      subtitle="Adicione um novo parceiro oficial para publicar no site."
+      subtitle="Adicione um novo parceiro oficial ou apague parceiros existentes no site."
       badge="Admin"
     >
       <div style={s.wrapper}>
@@ -178,6 +230,17 @@ export default function AdminParceirosPage() {
 
             <div style={s.row}>
               <div style={{ ...s.field, flex: 1 }}>
+                <label style={s.label}>Instagram <span style={{ color: "#6b7280", fontWeight: 700, textTransform: "none" }}>(opcional)</span></label>
+                <input style={s.input} type="text" placeholder="Ex: @brutus_caminhoes" value={instagram} onChange={(e) => setInstagram(e.target.value)} />
+              </div>
+              <div style={{ ...s.field, flex: 1 }}>
+                <label style={s.label}>Facebook / Site <span style={{ color: "#6b7280", fontWeight: 700, textTransform: "none" }}>(opcional)</span></label>
+                <input style={s.input} type="text" placeholder="Ex: facebook.com/brutus" value={facebook} onChange={(e) => setFacebook(e.target.value)} />
+              </div>
+            </div>
+
+            <div style={s.row}>
+              <div style={{ ...s.field, flex: 1 }}>
                 <label style={s.label}><ImagePlus size={13} style={{ marginRight: 5 }} />Logo <span style={{ color: "#6b7280", fontWeight: 700, textTransform: "none" }}>(1:1)</span></label>
                 <input ref={logoRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
                 <button type="button" style={s.uploadBtn} onClick={() => logoRef.current?.click()}>
@@ -233,6 +296,15 @@ export default function AdminParceirosPage() {
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Redes na prévia */}
+                  {(instagram || facebook) && (
+                    <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 2 }}>
+                      {instagram && <span style={{ display: "inline-flex", color: "#e1306c", fontSize: 10, fontWeight: 900 }}>📷 Instagram</span>}
+                      {facebook && <span style={{ display: "inline-flex", color: "#4d9fff", fontSize: 10, fontWeight: 900 }}>🌐 Facebook/Site</span>}
+                    </div>
+                  )}
+
                   <div style={{ background: "#1a1f24", border: "1px dashed #343a40", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
                     <strong style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "#f4f4f5", fontSize: 12, fontWeight: 800, marginBottom: 3 }}><ShoppingBag size={11} /> Vitrine de produtos</strong>
                     <p style={{ color: "#9ca3af", fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>Peças e serviços em breve aqui.</p>
@@ -247,6 +319,100 @@ export default function AdminParceirosPage() {
             </div>
           )}
         </div>
+
+        {/* LISTAGEM DE PARCEIROS CADASTRADOS */}
+        <div style={{ marginTop: 52, paddingTop: 32, borderTop: "1px solid #343a40" }}>
+          <h2 style={{ color: "#f4f4f5", fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Parceiros Cadastrados</h2>
+          <p style={{ color: "#a7afb7", fontSize: 14, fontWeight: 700, marginBottom: 20 }}>Veja, apague ou adicione caminhões para as revendas parceiras publicadas no site.</p>
+
+          <div style={{ display: "grid", gap: 12 }}>
+            {parceiros.map((p) => (
+              <article 
+                key={p.id} 
+                style={{ 
+                  display: "flex", 
+                  alignItems: "center", 
+                  gap: 16, 
+                  padding: 16, 
+                  borderRadius: 18, 
+                  background: "#1f2327", 
+                  border: "1px solid #343a40", 
+                  boxShadow: "0 16px 34px rgba(0,0,0,.12)",
+                  flexWrap: "wrap"
+                }}
+              >
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1.5px solid #343a40", flexShrink: 0 }}>
+                  {p.logo_url ? <img src={p.logo_url} alt="Logo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} /> : <span style={{ fontSize: 14, fontWeight: 900, color: "#1e293b" }}>{iniciais(p.nome)}</span>}
+                </div>
+                
+                <div style={{ flex: 1, minWidth: 220 }}>
+                  <strong style={{ color: "#f4f4f5", fontSize: 15, display: "block", fontWeight: 850 }}>{p.nome}</strong>
+                  <span style={{ color: "#a7afb7", fontSize: 13, fontWeight: 700 }}>
+                    {p.cidade}/{p.estado} • WhatsApp: {p.celular} 
+                    {(p.instagram || p.facebook) && (
+                      <span style={{ color: "#22c55e" }}> 
+                        {p.instagram ? " • 📷 Instagram" : ""}
+                        {p.facebook ? " • 🌐 Facebook" : ""}
+                      </span>
+                    )}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  {/* Botão para adicionar fotos/anúncio vinculando o whatsapp do parceiro */}
+                  <a 
+                    href={`/painel/anuncios/novo?whatsapp=${p.celular.replace(/\D/g, "")}`} 
+                    style={{ 
+                      display: "inline-flex", 
+                      alignItems: "center", 
+                      gap: 6, 
+                      height: 38, 
+                      padding: "0 14px", 
+                      borderRadius: 10, 
+                      background: "#1877f2", 
+                      color: "#fff", 
+                      fontWeight: 900, 
+                      fontSize: 12, 
+                      textDecoration: "none" 
+                    }}
+                  >
+                    <Plus size={14} /> Adicionar Caminhão
+                  </a>
+                  
+                  {/* Botão de Excluir */}
+                  <button 
+                    onClick={() => handleExcluir(p.id)} 
+                    disabled={excluindoId === p.id}
+                    style={{ 
+                      display: "inline-flex", 
+                      alignItems: "center", 
+                      gap: 6, 
+                      height: 38, 
+                      padding: "0 14px", 
+                      borderRadius: 10, 
+                      background: "rgba(239,68,68,0.12)", 
+                      border: "1.5px solid #ef4444", 
+                      color: "#ef4444", 
+                      fontWeight: 900, 
+                      fontSize: 12, 
+                      cursor: "pointer" 
+                    }}
+                  >
+                    {excluindoId === p.id ? <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} /> : <Trash2 size={13} />}
+                    {excluindoId === p.id ? "Apagando..." : "Apagar"}
+                  </button>
+                </div>
+              </article>
+            ))}
+
+            {parceiros.length === 0 && (
+              <div style={{ padding: 32, borderRadius: 18, background: "#1f2327", border: "1px solid #343a40", color: "#a7afb7", fontWeight: 800, textAlign: "center", fontSize: 14 }}>
+                Nenhum parceiro cadastrado encontrado.
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
     </AdminLayout>
   );
@@ -257,7 +423,7 @@ const s: Record<string, CSSProperties> = {
   twoCol: { display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" },
   form: { display: "flex", flexDirection: "column", gap: 16, flex: "1 1 420px", minWidth: 0 },
   previewCol: { flex: "0 0 280px", minWidth: 0 },
-  previewLabel: { fontSize: 11, fontWeight: 900, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 },
+  previewLabel: { fontSize: 11, fontWeight: 900, color: "#6b7280", textTransform: "uppercase" as const, letterSpacing: "0.07em", marginBottom: 10 },
   cardPreview: { background: "#131c2e", border: "1px solid #343a40", borderRadius: 14, overflow: "hidden", boxShadow: "0 8px 24px rgba(0,0,0,.35)" },
   formHeader: { padding: "22px 24px", borderRadius: 24, background: "linear-gradient(135deg, #1f2327, #121416)", border: "1px solid #343a40", marginBottom: 20, boxShadow: "0 16px 34px rgba(0,0,0,.18)" },
   badge: { display: "inline-flex", padding: "7px 11px", borderRadius: 999, background: "#14532d", color: "#bbf7d0", fontWeight: 900, fontSize: 12, marginBottom: 12 },

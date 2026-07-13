@@ -9,7 +9,7 @@ async function requireAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Usuário não autenticado.");
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "admin") throw new Error("Acesso negado. Apenas administradores podem cadastrar parceiros.");
+  if (profile?.role !== "admin") throw new Error("Acesso negado. Apenas administradores podem gerenciar parceiros.");
 }
 
 export async function salvarParceiroAction(formData: FormData) {
@@ -22,6 +22,8 @@ export async function salvarParceiroAction(formData: FormData) {
     const celular = String(formData.get("celular") || "").trim();
     const telefone = String(formData.get("telefone") || "").trim();
     const slug = String(formData.get("slug") || "").trim();
+    const instagram = String(formData.get("instagram") || "").trim();
+    const facebook = String(formData.get("facebook") || "").trim();
     
     const logoFile = formData.get("logo") as File | null;
     const bannerFile = formData.get("banner") as File | null;
@@ -36,10 +38,15 @@ export async function salvarParceiroAction(formData: FormData) {
     let logo_url: string | null = null;
     let banner_url: string | null = null;
 
+    // Obter o userId para o caminho do arquivo
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id || "admin";
+
     if (logoFile && logoFile.size > 0) {
       const ext = logoFile.name.split(".").pop() || "png";
       const logoBuffer = Buffer.from(await logoFile.arrayBuffer());
-      const logoPath = `parceiros/logos/${slug}.${ext}`;
+      const logoPath = `${userId}/parceiros/logos/${slug}.${ext}`;
       
       const { error: upErr } = await supabaseAdmin.storage
         .from("truck-images")
@@ -53,7 +60,7 @@ export async function salvarParceiroAction(formData: FormData) {
     if (bannerFile && bannerFile.size > 0) {
       const ext = bannerFile.name.split(".").pop() || "jpg";
       const bannerBuffer = Buffer.from(await bannerFile.arrayBuffer());
-      const bannerPath = `parceiros/banners/${slug}.${ext}`;
+      const bannerPath = `${userId}/parceiros/banners/${slug}.${ext}`;
       
       const { error: upErr } = await supabaseAdmin.storage
         .from("truck-images")
@@ -73,6 +80,8 @@ export async function salvarParceiroAction(formData: FormData) {
       telefone: telefone || null,
       logo_url,
       banner_url,
+      instagram: instagram || null,
+      facebook: facebook || null,
       ativo: true,
     });
 
@@ -83,5 +92,53 @@ export async function salvarParceiroAction(formData: FormData) {
     return { success: true };
   } catch (err: any) {
     return { error: err?.message || "Erro interno ao cadastrar parceiro." };
+  }
+}
+
+export async function excluirParceiroAction(id: string) {
+  try {
+    await requireAdmin();
+
+    const supabaseAdmin = createPublicClient();
+
+    // 1. Busca os dados do parceiro para obter as URLs das imagens
+    const { data: parceiro, error: fetchErr } = await (supabaseAdmin.from("parceiros") as any)
+      .select("logo_url, banner_url")
+      .eq("id", id)
+      .single();
+
+    if (fetchErr) {
+      throw new Error(`Erro ao buscar dados do parceiro para exclusão: ${fetchErr.message}`);
+    }
+
+    // 2. Remove as imagens físicas do storage caso existam
+    const parseStoragePath = (url: string | null) => {
+      if (!url) return null;
+      const parts = url.split("/public/truck-images/");
+      return parts[1] || null;
+    };
+
+    const logoPath = parseStoragePath(parceiro?.logo_url);
+    const bannerPath = parseStoragePath(parceiro?.banner_url);
+
+    if (logoPath) {
+      await supabaseAdmin.storage.from("truck-images").remove([logoPath]);
+    }
+    if (bannerPath) {
+      await supabaseAdmin.storage.from("truck-images").remove([bannerPath]);
+    }
+
+    // 3. Remove o registro do parceiro do banco de dados
+    const { error: dbErr } = await (supabaseAdmin.from("parceiros") as any)
+      .delete()
+      .eq("id", id);
+
+    if (dbErr) {
+      throw new Error(`Erro ao deletar do banco de dados: ${dbErr.message}`);
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { error: err?.message || "Erro interno ao deletar parceiro." };
   }
 }
