@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { extrairIdDoParametroAnuncio, gerarSlugComId } from "@/lib/slug";
 import { formatImageUrl } from "@/lib/truck-utils";
+import { GoogleGenAI } from "@google/genai";
 
 export const dynamic = "force-dynamic";
 
@@ -25,13 +26,53 @@ async function getAnuncio(id: string) {
     .from("trucks")
     .select(`
       id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao,
-      quilometragem, motor, cambio, combustivel, cor,
+      quilometragem, motor, cambio, combustivel, cor, descricao,
       truck_images ( image_url, principal, ordem )
     `)
     .eq("id", uuid)
     .single();
 
   return data ?? null;
+}
+
+// Função para gerar chamada comercial via IA com o Gemini
+async function gerarTaglineIA(titulo: string, preco: string, local: string, descricao: string): Promise<string> {
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) return "Caminhão pronto para pegar a estrada!";
+
+  const ai = new GoogleGenAI({ apiKey });
+  try {
+    const promise = ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: `Gere uma única frase comercial curta e muito impactante (máximo de 42 caracteres) para divulgar a venda deste veículo no Instagram/WhatsApp. Use um gatilho de venda rápido. Exemplos: 'Caminhão impecável pronto para trabalhar!', 'Excelente custo-benefício, confira!', 'Scania robusto em ótimo estado!'. Não use aspas na resposta.
+
+Veículo: ${titulo}
+Preço: ${preco}
+Local: ${local}
+Descrição: ${descricao.slice(0, 200)}`,
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 40,
+      }
+    });
+
+    // Timeout de 1.1s para não travar a geração da imagem
+    const timeout = new Promise<null>((_, reject) => setTimeout(() => reject(new Error("Timeout")), 1100));
+
+    const response = await Promise.race([promise, timeout]);
+    if (response && response.text) {
+      return response.text.trim().replace(/^["']|["']$/g, "");
+    }
+  } catch (error) {
+    console.error("Erro ao gerar tagline com Gemini:", error);
+  }
+
+  // Fallbacks locais caso a IA falhe ou estoure o timeout
+  if (titulo.toLowerCase().includes("scania")) return "Robustez e potência para a sua frota!";
+  if (titulo.toLowerCase().includes("volvo")) return "Tecnologia, conforto e alta performance!";
+  if (titulo.toLowerCase().includes("mercedes") || titulo.toLowerCase().includes("atego") || titulo.toLowerCase().includes("actros")) return "Qualidade e durabilidade garantidas!";
+  if (titulo.toLowerCase().includes("vw") || titulo.toLowerCase().includes("constellation")) return "Excelente caminhão para puxar sua carga!";
+  return "Oportunidade única para o seu trabalho!";
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -52,6 +93,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const local = [item.cidade, item.estado].filter(Boolean).join("/");
   const details = [item.carroceria, item.tracao].filter(Boolean).join(" • ");
 
+  // Gerar tagline comercial usando o Gemini
+  const tagline = await gerarTaglineIA(titulo, preco, local, item.descricao || "");
+
   const images = (item.truck_images || []) as Array<{ image_url: string; principal?: boolean; ordem?: number }>;
   const mainImageRaw =
     images.find((i) => i.principal)?.image_url ??
@@ -70,16 +114,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   });
   const linkAnuncio = `${siteUrl}/anuncios/${slug}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(linkAnuncio)}`;
-
-  let width = 1080;
-  let height = 1080;
-  if (formato === "story") {
-    width = 1080;
-    height = 1920;
-  } else if (formato === "whatsapp") {
-    width = 1200;
-    height = 630;
-  }
 
   const truckIcon = (color: string) => (
     <div style={{ display: "flex", alignItems: "center", position: "relative", width: 50, height: 30 }}>
@@ -103,6 +137,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           <div style={{ position: "absolute", left: 0, top: 480, width: 1080, height: 270, display: "flex", background: "linear-gradient(to bottom, transparent 0%, #080c16 100%)" }} />
 
           <div style={{ position: "absolute", inset: 20, display: "flex", border: "4px solid rgba(59, 130, 246, 0.4)", pointerEvents: "none" }} />
+
+          {/* Tagline IA no topo do Feed */}
+          <div style={{ position: "absolute", left: 40, top: 40, display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", background: "rgba(16, 185, 129, 0.95)", borderRadius: 99, border: "1.5px solid #10b981", boxShadow: "0 10px 20px rgba(0,0,0,0.3)" }}>
+            <span style={{ color: "#ffffff", fontWeight: 900, fontSize: 16, letterSpacing: 0.5 }}>✨ RECOMENDADO IA</span>
+            <span style={{ color: "#ffffff", fontWeight: "bold", fontSize: 16 }}>| "{tagline}"</span>
+          </div>
 
           <div style={{ position: "absolute", left: 40, bottom: 40, width: 1000, height: 300, display: "flex", flexDirection: "row", background: "#111827", borderRadius: 16, padding: "24px 32px", justifyContent: "space-between" }}>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: 620 }}>
@@ -150,12 +190,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           </div>
 
           {mainImage && (
-            <div style={{ display: "flex", width: 1000, height: 1000, borderRadius: 24, overflow: "hidden", border: "4px solid #eab308" }}>
+            <div style={{ display: "flex", width: 1000, height: 920, borderRadius: 24, overflow: "hidden", border: "4px solid #eab308" }}>
               <img src={mainImage} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 40, gap: 10, flex: 1, justifyContent: "center" }}>
+          {/* Destaque IA no Story */}
+          <div style={{ display: "flex", alignSelf: "center", alignItems: "center", gap: 8, padding: "12px 24px", background: "rgba(234, 179, 8, 0.95)", borderRadius: 99, border: "1.5px solid #eab308", marginTop: 30, boxShadow: "0 10px 20px rgba(0,0,0,0.3)" }}>
+            <span style={{ color: "#000000", fontWeight: 950, fontSize: 18, letterSpacing: 0.5 }}>✨ ANÁLISE IA</span>
+            <span style={{ color: "#000000", fontWeight: "bold", fontSize: 18 }}>| "{tagline}"</span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 30, gap: 10, flex: 1, justifyContent: "center" }}>
             <span style={{ color: "#10b981", fontWeight: 900, fontSize: 80, lineHeight: 1 }}>{preco}</span>
             <span style={{ color: "#94a3b8", fontWeight: "600", fontSize: 32 }}>📍 {local}</span>
 
@@ -182,7 +228,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         <div style={{ width: 6, height: 630, background: "#eab308" }} />
 
         <div style={{ display: "flex", flexDirection: "column", width: 474, height: 630, padding: "40px 32px", justifyContent: "space-between", background: "#0f172a" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {truckIcon("#3b82f6")}
               <span style={{ color: "#3b82f6", fontWeight: "bold", fontSize: 16, letterSpacing: 0.5 }}>CAMINHÕES À VENDA</span>
@@ -191,6 +237,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             {details && (
               <span style={{ color: "#94a3b8", fontSize: 18, fontWeight: "600" }}>{details}</span>
             )}
+            
+            {/* Tagline IA no formato Whatsapp */}
+            <span style={{ color: "#38bdf8", fontSize: 15, fontWeight: "700", marginTop: 4 }}>✨ {tagline}</span>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

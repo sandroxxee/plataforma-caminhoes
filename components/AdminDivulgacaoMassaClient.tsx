@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, type CSSProperties } from "react";
-import { Eye, Copy, Share2, Smartphone, Landmark, RotateCcw, Download, Search, CheckSquare, Square, ExternalLink } from "lucide-react";
+import { Eye, Copy, Share2, Smartphone, Landmark, RotateCcw, Download, Search, CheckSquare, Square, ExternalLink, Sparkles } from "lucide-react";
 import { gerarSlugComId } from "@/lib/slug";
 import { formatImageUrl } from "@/lib/truck-utils";
 
@@ -73,7 +73,7 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
   const gerarTextoPadrao = (ids: string[]) => {
     const selecionados = anuncios.filter((a) => ids.includes(a.id));
     if (selecionados.length === 0) {
-      return "Nenhum caminhão selecionado. Marque os caminhões na lista acima para gerar o post consolidado.";
+      return "Nenhum caminhão selecionado. Marque os caminhões na lista à esquerda para gerar o post consolidado.";
     }
 
     const dataAbreviada = new Date().toLocaleDateString("pt-BR");
@@ -153,10 +153,10 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
       {/* BARRA DE FILTROS E BUSCA */}
       <section style={styles.filterBar}>
         <div style={styles.searchWrapper}>
-          <Search size={18} style={{ color: "#64748b" }} />
+          <Search size={18} style={{ color: "#38bdf8" }} />
           <input
             type="text"
-            placeholder="Buscar por marca, modelo, cidade..."
+            placeholder="Filtrar por marca, modelo, cidade..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             style={styles.searchInput}
@@ -171,235 +171,245 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
         </button>
       </section>
 
-      {/* TABELA DE VEÍCULOS */}
-      <section style={styles.tableCard}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={styles.table}>
-            <thead>
-              <tr style={styles.thRow}>
-                <th style={{ ...styles.th, width: 50 }}>Sel.</th>
-                <th style={styles.th}>Veículo</th>
-                <th style={styles.th}>Preço</th>
-                <th style={styles.th}>Localidade</th>
-                <th style={{ ...styles.th, textAlign: "right" }}>Ações Rápidas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {anunciosFiltrados.length === 0 ? (
-                <tr>
-                  <td colSpan={5} style={styles.emptyCell}>
-                    Nenhum anúncio ativo encontrado.
-                  </td>
+      {/* NOVO LAYOUT PRINCIPAL DE DUAS COLUNAS */}
+      <div style={styles.mainLayout}>
+        
+        {/* COLUNA ESQUERDA: LISTAGEM DE VEÍCULOS (ROLAGEM PRÓPRIA) */}
+        <div style={styles.leftCol}>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr style={styles.thRow}>
+                  <th style={{ ...styles.th, width: 60, textAlign: "center" }}>Sel.</th>
+                  <th style={styles.th}>Veículo</th>
+                  <th style={styles.th}>Preço</th>
+                  <th style={styles.th}>Localidade</th>
+                  <th style={{ ...styles.th, textAlign: "right", width: 220 }}>Ações Rápidas</th>
                 </tr>
-              ) : (
-                anunciosFiltrados.map((a) => {
-                  const isSelected = selectedIds.includes(a.id);
-                  const title = getAdTitle(a);
-                  const images = a.truck_images || [];
-                  const mainImageRaw = images.find((i) => i.principal)?.image_url ?? images[0]?.image_url ?? "";
-                  const thumb = formatImageUrl(mainImageRaw);
-                  const link = getAdUrl(a);
+              </thead>
+              <tbody>
+                {anunciosFiltrados.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={styles.emptyCell}>
+                      Nenhum anúncio ativo encontrado.
+                    </td>
+                  </tr>
+                ) : (
+                  anunciosFiltrados.map((a) => {
+                    const isSelected = selectedIds.includes(a.id);
+                    const title = getAdTitle(a);
+                    const images = a.truck_images || [];
+                    const mainImageRaw = images.find((i) => i.principal)?.image_url ?? images[0]?.image_url ?? "";
+                    const thumb = formatImageUrl(mainImageRaw);
+                    const link = getAdUrl(a);
 
-                  return (
-                    <tr key={a.id} style={isSelected ? styles.trSelected : styles.trNormal}>
-                      <td style={styles.td}>
-                        <button onClick={() => toggleSelectOne(a.id)} style={styles.checkboxBtn}>
-                          {isSelected ? (
-                            <CheckSquare size={20} style={{ color: "#10b981" }} />
-                          ) : (
-                            <Square size={20} style={{ color: "#475569" }} />
-                          )}
-                        </button>
-                      </td>
-                      <td style={styles.td}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                          <div style={styles.thumbWrapper}>
-                            {thumb ? (
-                              <img src={thumb} alt={title} style={styles.thumbImg} />
+                    return (
+                      <tr key={a.id} style={isSelected ? styles.trSelected : styles.trNormal}>
+                        <td style={{ ...styles.td, textAlign: "center" }}>
+                          <button onClick={() => toggleSelectOne(a.id)} style={styles.checkboxBtn}>
+                            {isSelected ? (
+                              <CheckSquare size={22} style={{ color: "#10b981", filter: "drop-shadow(0 0 4px rgba(16,185,129,0.3))" }} />
                             ) : (
-                              <div style={styles.thumbEmpty}>FOTO</div>
+                              <Square size={22} style={{ color: "#64748b" }} />
                             )}
-                          </div>
-                          <div style={{ display: "flex", flexDirection: "column" }}>
-                            <strong style={{ color: "#fff", fontSize: 15 }}>{title}</strong>
-                            <span style={{ color: "#64748b", fontSize: 12 }}>Configuração: {[a.carroceria, a.tracao].filter(Boolean).join(" • ")}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ ...styles.td, color: "#10b981", fontWeight: 800 }}>{money(a.preco)}</td>
-                      <td style={{ ...styles.td, color: "#94a3b8" }}>{a.cidade}/{a.estado}</td>
-                      <td style={{ ...styles.td, textAlign: "right" }}>
-                        <div style={styles.rowActions}>
-                          <button
-                            title="Copiar texto curto"
-                            onClick={() => {
-                              const textoCurto = `🚛 ${title}\n📍 ${a.cidade || ""}/${a.estado || ""}\n💰 ${money(a.preco)}\n📲 Fotos: ${link}`;
-                              copiar(textoCurto, "Texto copiado!");
-                            }}
-                            style={styles.rowBtn}
-                          >
-                            <Copy size={13} />
                           </button>
-                          <a
-                            title="Enviar WhatsApp"
-                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🚛 ${title}\n📍 ${a.cidade}/${a.estado}\n💰 ${money(a.preco)}\n📲 Detalhes: ${link}`)}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={styles.rowLinkBtn}
-                          >
-                            <Share2 size={13} />
-                          </a>
-                          <a
-                            title="Ver anúncio público"
-                            href={link}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={styles.rowLinkBtn}
-                          >
-                            <ExternalLink size={13} />
-                          </a>
-                          <a
-                            title="Baixar Feed"
-                            href={getArteUrl(a.id, "feed")}
-                            download={`feed-${a.id}.png`}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={styles.rowLinkDownload}
-                          >
-                            Feed
-                          </a>
-                          <a
-                            title="Baixar Story"
-                            href={getArteUrl(a.id, "story")}
-                            download={`story-${a.id}.png`}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={styles.rowLinkDownload}
-                          >
-                            Story
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                        </td>
+                        <td style={styles.td}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <div style={styles.thumbWrapper}>
+                              {thumb ? (
+                                <img src={thumb} alt={title} style={styles.thumbImg} />
+                              ) : (
+                                <div style={styles.thumbEmpty}>FOTO</div>
+                              )}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                              <strong style={{ color: "#ffffff", fontSize: 14, fontWeight: 700 }}>{title}</strong>
+                              <span style={{ color: "#64748b", fontSize: 11 }}>Configuração: {[a.carroceria, a.tracao].filter(Boolean).join(" • ")}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ ...styles.td, color: "#10b981", fontWeight: 800, fontSize: 14 }}>{money(a.preco)}</td>
+                        <td style={{ ...styles.td, color: "#f8fafc", fontSize: 13 }}>{a.cidade}/{a.estado}</td>
+                        <td style={{ ...styles.td, textAlign: "right" }}>
+                          <div style={styles.rowActions}>
+                            <button
+                              title="Copiar legenda individual"
+                              onClick={() => {
+                                const textoCurto = `🚛 ${title}\n📍 ${a.cidade || ""}/${a.estado || ""}\n💰 ${money(a.preco)}\n📲 Fotos: ${link}`;
+                                copiar(textoCurto, "Legenda copiada!");
+                              }}
+                              style={styles.rowBtn}
+                            >
+                              <Copy size={13} />
+                            </button>
+                            <a
+                              title="WhatsApp Individual"
+                              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🚛 ${title}\n📍 ${a.cidade}/${a.estado}\n💰 ${money(a.preco)}\n📲 Detalhes: ${link}`)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={styles.rowBtn}
+                            >
+                              <Share2 size={13} />
+                            </a>
+                            <a
+                              title="Ver anúncio público"
+                              href={link}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={styles.rowBtn}
+                            >
+                              <ExternalLink size={13} />
+                            </a>
+                            <a
+                              title="Baixar Feed IA"
+                              href={getArteUrl(a.id, "feed")}
+                              download={`feed-${a.id}.png`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={styles.rowLinkDownloadFeed}
+                            >
+                              Feed
+                            </a>
+                            <a
+                              title="Baixar Story IA"
+                              href={getArteUrl(a.id, "story")}
+                              download={`story-${a.id}.png`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={styles.rowLinkDownloadStory}
+                            >
+                              Story
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </section>
 
-      {/* SEÇÃO INFERIOR DIVIDIDA */}
-      <div style={styles.bottomLayout}>
-        {/* Editor de Texto Consolidado em Lote */}
-        <section style={styles.editorCard}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h3 style={{ ...styles.sectionTitle, margin: 0 }}>Oferta em Lote</h3>
-            <button
-              onClick={() => {
-                setHasManuallyEdited(false);
-                setEditedText(gerarTextoPadrao(selectedIds));
+        {/* COLUNA DIREITA: EDITOR DE LOTE E PRÉVIAS IA (FIXO/STICKY) */}
+        <div style={styles.rightCol}>
+          
+          {/* Caixa do Editor de Lote */}
+          <section style={styles.editorCard}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h3 style={{ ...styles.sectionTitle, margin: 0 }}>📋 Post de Estoque em Lote</h3>
+              <button
+                onClick={() => {
+                  setHasManuallyEdited(false);
+                  setEditedText(gerarTextoPadrao(selectedIds));
+                }}
+                style={styles.resetBtn}
+              >
+                <RotateCcw size={12} /> Restaurar Padrão
+              </button>
+            </div>
+
+            <textarea
+              value={editedText}
+              onChange={(e) => {
+                setEditedText(e.target.value);
+                setHasManuallyEdited(true);
               }}
-              style={styles.resetBtn}
-            >
-              <RotateCcw size={13} /> Forçar Texto Padrão
-            </button>
-          </div>
-          <p style={styles.sectionDesc}>Texto unificado dos caminhões marcados na lista para divulgar estoque de uma só vez.</p>
+              style={styles.textarea}
+              placeholder="Marque os caminhões na lista para criar seu post..."
+            />
 
-          <textarea
-            value={editedText}
-            onChange={(e) => {
-              setEditedText(e.target.value);
-              setHasManuallyEdited(true);
-            }}
-            style={styles.textarea}
-          />
+            <div style={styles.batchActions}>
+              <button
+                onClick={handleWhatsappShareLote}
+                disabled={selectedIds.length === 0}
+                style={{ ...styles.btnWhatsapp, opacity: selectedIds.length === 0 ? 0.4 : 1 }}
+              >
+                <Share2 size={15} /> Disparar WhatsApp
+              </button>
+              <button
+                onClick={() => copiar(editedText, "Post copiado com sucesso!")}
+                disabled={selectedIds.length === 0}
+                style={{ ...styles.btnCopiaLote, opacity: selectedIds.length === 0 ? 0.4 : 1 }}
+              >
+                <Copy size={15} /> Copiar Texto
+              </button>
+            </div>
+          </section>
 
-          <div style={styles.batchActions}>
-            <button
-              onClick={handleWhatsappShareLote}
-              disabled={selectedIds.length === 0}
-              style={{ ...styles.btnWhatsapp, opacity: selectedIds.length === 0 ? 0.5 : 1 }}
-            >
-              <Share2 size={16} /> Compartilhar no WhatsApp
-            </button>
-            <button
-              onClick={() => copiar(editedText, "Estoque copiado!")}
-              disabled={selectedIds.length === 0}
-              style={{ ...styles.btnCopiaLote, opacity: selectedIds.length === 0 ? 0.5 : 1 }}
-            >
-              <Copy size={16} /> Copiar Texto Consolidado
-            </button>
-          </div>
-        </section>
+          {/* Prévia de Artes Rápidas com Tagline de IA */}
+          <section style={styles.previewCard}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+              <Sparkles size={16} style={{ color: "#22c55e" }} />
+              <h3 style={{ ...styles.sectionTitle, margin: 0 }}>🖼️ Arte Gráfica Inteligente (IA)</h3>
+            </div>
 
-        {/* Prévia de Artes Rápidas do primeiro item selecionado */}
-        <section style={styles.previewCard}>
-          <h3 style={styles.sectionTitle}>Mídias Rápidas</h3>
-          <p style={styles.sectionDesc}>Prévia de mídias dinâmicas do primeiro veículo selecionado do lote.</p>
-
-          {primeiroSelecionado ? (
-            <div style={styles.previewContent}>
-              <strong style={{ color: "#fff", display: "block", marginBottom: 10 }}>{getAdTitle(primeiroSelecionado)}</strong>
-              <div style={styles.mediaRow}>
-                <div style={styles.miniMediaCard}>
-                  <span style={styles.mediaLabel}>Feed (1:1)</span>
-                  <div style={styles.mediaBox}>
-                    <img src={getArteUrl(primeiroSelecionado.id, "feed")} alt="Preview" style={styles.mediaImg} loading="lazy" />
+            {primeiroSelecionado ? (
+              <div style={styles.previewContent}>
+                <strong style={{ color: "#38bdf8", display: "block", marginBottom: 12, fontSize: 13, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                  Foco: {getAdTitle(primeiroSelecionado)}
+                </strong>
+                
+                <div style={styles.mediaRow}>
+                  <div style={styles.miniMediaCard}>
+                    <span style={styles.mediaLabel}>Feed 1:1 (IA)</span>
+                    <div style={styles.mediaBox}>
+                      <img src={getArteUrl(primeiroSelecionado.id, "feed")} alt="Preview Feed" style={styles.mediaImg} loading="lazy" />
+                    </div>
+                    <a href={getArteUrl(primeiroSelecionado.id, "feed")} download={`feed-${primeiroSelecionado.id}.png`} target="_blank" rel="noreferrer" style={styles.mediaDownloadFeed}>
+                      <Download size={12} /> Salvar Feed
+                    </a>
                   </div>
-                  <a href={getArteUrl(primeiroSelecionado.id, "feed")} download={`feed-${primeiroSelecionado.id}.png`} target="_blank" rel="noreferrer" style={styles.mediaDownload}>
-                    <Download size={13} /> Feed
-                  </a>
-                </div>
 
-                <div style={styles.miniMediaCard}>
-                  <span style={styles.mediaLabel}>Story (9:16)</span>
-                  <div style={styles.mediaBoxStory}>
-                    <img src={getArteUrl(primeiroSelecionado.id, "story")} alt="Preview" style={styles.mediaImg} loading="lazy" />
+                  <div style={styles.miniMediaCard}>
+                    <span style={styles.mediaLabel}>Story 9:16 (IA)</span>
+                    <div style={styles.mediaBoxStory}>
+                      <img src={getArteUrl(primeiroSelecionado.id, "story")} alt="Preview Story" style={styles.mediaImg} loading="lazy" />
+                    </div>
+                    <a href={getArteUrl(primeiroSelecionado.id, "story")} download={`story-${primeiroSelecionado.id}.png`} target="_blank" rel="noreferrer" style={styles.mediaDownloadStory}>
+                      <Download size={12} /> Salvar Story
+                    </a>
                   </div>
-                  <a href={getArteUrl(primeiroSelecionado.id, "story")} download={`story-${primeiroSelecionado.id}.png`} target="_blank" rel="noreferrer" style={styles.mediaDownload}>
-                    <Download size={13} /> Story
-                  </a>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div style={styles.previewPlaceholder}>
-              Selecione ao menos um caminhão na tabela para visualizar e baixar as mídias prontas do estoque.
-            </div>
-          )}
-        </section>
+            ) : (
+              <div style={styles.previewPlaceholder}>
+                Selecione ao menos um caminhão da lista para carregar e baixar os designs profissionais com taglines comerciais geradas por IA.
+              </div>
+            )}
+          </section>
+        </div>
+        
       </div>
     </div>
   );
 }
 
 const styles: Record<string, CSSProperties> = {
-  container: { display: "flex", flexDirection: "column", gap: 20 },
+  container: { display: "flex", flexDirection: "column", gap: 16 },
   filterBar: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: 16,
-    padding: 16,
-    borderRadius: 20,
-    background: "rgba(30, 41, 59, 0.4)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    gap: 12,
+    padding: 14,
+    borderRadius: 16,
+    background: "#1e293b",
+    border: "1px solid rgba(255,255,255,0.06)",
     flexWrap: "wrap",
   },
   searchWrapper: {
     display: "flex",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
     background: "#0f172a",
-    padding: "0 16px",
-    borderRadius: 12,
+    padding: "0 12px",
+    borderRadius: 10,
     flex: 1,
     minWidth: 260,
-    height: 44,
-    border: "1px solid #1e293b",
+    height: 40,
+    border: "1px solid #334155",
   },
   searchInput: {
     border: 0,
@@ -407,199 +417,233 @@ const styles: Record<string, CSSProperties> = {
     color: "#fff",
     outline: "none",
     width: "100%",
-    fontSize: 14,
+    fontSize: 13,
   },
   selectAllBtn: {
     border: "1px solid rgba(255,255,255,0.08)",
-    height: 44,
-    padding: "0 16px",
-    borderRadius: 12,
+    height: 40,
+    padding: "0 14px",
+    borderRadius: 10,
     background: "rgba(255,255,255,0.05)",
     color: "#f8fafc",
     fontWeight: 800,
-    fontSize: 13,
+    fontSize: 12,
     cursor: "pointer",
   },
 
-  tableCard: {
-    borderRadius: 24,
-    background: "rgba(17, 24, 39, 0.45)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
-    overflow: "hidden",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
+  mainLayout: {
+    display: "flex",
+    gap: 20,
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  leftCol: {
+    flex: 1.3,
+    minWidth: 480,
+    display: "flex",
+    flexDirection: "column",
+  },
+  rightCol: {
+    flex: 0.9,
+    minWidth: 320,
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+    position: "sticky",
+    top: 20,
+  },
+
+  tableWrapper: {
+    maxHeight: "72vh",
+    overflowY: "auto",
+    borderRadius: 16,
+    background: "#0f172a",
+    border: "1px solid #1e293b",
   },
   table: { width: "100%", borderCollapse: "collapse", color: "#e2e8f0" },
-  thRow: { background: "#0f172a", borderBottom: "1px solid #1e293b" },
-  th: { padding: "16px 20px", textTransform: "uppercase", fontSize: 11, color: "#64748b", fontWeight: 800, textAlign: "left" },
-  td: { padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.03)", verticalAlign: "middle" },
-  trNormal: { transition: "all 0.15s" },
-  trSelected: { background: "rgba(16, 185, 129, 0.05)", transition: "all 0.15s" },
-  emptyCell: { padding: "40px 20px", textAlign: "center", color: "#64748b", fontSize: 14 },
-  checkboxBtn: { border: 0, background: "transparent", cursor: "pointer", display: "flex" },
-  thumbWrapper: { width: 68, height: 48, borderRadius: 8, overflow: "hidden", background: "#334155", flexShrink: 0 },
+  thRow: { background: "#090d16", borderBottom: "1.5px solid #1e293b", position: "sticky", top: 0, zIndex: 10 },
+  th: { padding: "12px 16px", textTransform: "uppercase", fontSize: 11, color: "#64748b", fontWeight: 800, textAlign: "left" },
+  td: { padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.03)", verticalAlign: "middle" },
+  trNormal: { transition: "all 0.15s", background: "rgba(30, 41, 59, 0.15)" },
+  trSelected: { background: "rgba(16, 185, 129, 0.08)", transition: "all 0.15s" },
+  emptyCell: { padding: "40px 20px", textAlign: "center", color: "#64748b", fontSize: 13 },
+  checkboxBtn: { border: 0, background: "transparent", cursor: "pointer", display: "flex", padding: 0 },
+  thumbWrapper: { width: 56, height: 42, borderRadius: 6, overflow: "hidden", background: "#1e293b", flexShrink: 0 },
   thumbImg: { width: "100%", height: "100%", objectFit: "cover" },
-  thumbEmpty: { display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#64748b", fontSize: 10 },
-  rowActions: { display: "flex", gap: 6, justifyContent: "flex-end", alignItems: "center" },
+  thumbEmpty: { display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#475569", fontSize: 9 },
+  rowActions: { display: "flex", gap: 5, justifyContent: "flex-end", alignItems: "center" },
   rowBtn: {
     border: "1px solid rgba(255,255,255,0.08)",
-    height: 32,
-    width: 32,
-    borderRadius: 8,
+    height: 28,
+    width: 28,
+    borderRadius: 6,
     background: "rgba(255,255,255,0.03)",
-    color: "#94a3b8",
+    color: "#cbd5e1",
     cursor: "pointer",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
   },
-  rowLinkBtn: {
-    border: "1px solid rgba(255,255,255,0.08)",
-    height: 32,
-    width: 32,
-    borderRadius: 8,
-    background: "rgba(255,255,255,0.03)",
-    color: "#94a3b8",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textDecoration: "none",
-  },
-  rowLinkDownload: {
-    height: 32,
+  rowLinkDownloadFeed: {
+    height: 28,
     padding: "0 10px",
-    borderRadius: 8,
-    background: "#1e293b",
-    color: "#f8fafc",
-    fontSize: 12,
+    borderRadius: 6,
+    background: "#3b82f6",
+    color: "#ffffff",
+    fontSize: 11,
     fontWeight: 800,
     textDecoration: "none",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px solid rgba(255,255,255,0.06)",
+    border: 0,
+    boxShadow: "0 2px 6px rgba(59,130,246,0.2)",
+  },
+  rowLinkDownloadStory: {
+    height: 28,
+    padding: "0 10px",
+    borderRadius: 6,
+    background: "#eab308",
+    color: "#000000",
+    fontSize: 11,
+    fontWeight: 800,
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: 0,
+    boxShadow: "0 2px 6px rgba(234,179,8,0.2)",
   },
 
-  bottomLayout: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, flexWrap: "wrap" },
   editorCard: {
-    padding: 24,
-    borderRadius: 24,
-    background: "rgba(17, 24, 39, 0.45)",
-    backdropFilter: "blur(12px)",
+    padding: 16,
+    borderRadius: 16,
+    background: "#1e293b",
     border: "1px solid rgba(255, 255, 255, 0.05)",
   },
-  sectionTitle: { fontSize: 16, color: "#ffffff", fontWeight: 850, marginBottom: 4 },
-  sectionDesc: { fontSize: 12, color: "#64748b", margin: "0 0 16px" },
+  sectionTitle: { fontSize: 14, color: "#ffffff", fontWeight: 800 },
   textarea: {
     width: "100%",
-    minHeight: 250,
+    minHeight: 180,
     resize: "vertical",
-    borderRadius: 14,
-    border: "1px solid #374151",
-    background: "#1f2937",
-    color: "#e5e7eb",
-    padding: 16,
+    borderRadius: 10,
+    border: "1px solid #334155",
+    background: "#0f172a",
+    color: "#f8fafc",
+    padding: 12,
     fontFamily: "inherit",
-    fontSize: 13,
-    lineHeight: 1.45,
+    fontSize: 12,
+    lineHeight: 1.4,
     outline: "none",
+    marginTop: 8,
   },
   resetBtn: {
     border: 0,
     background: "transparent",
-    color: "#64748b",
-    fontSize: 12,
+    color: "#38bdf8",
+    fontSize: 11,
     fontWeight: 800,
     cursor: "pointer",
     display: "inline-flex",
     alignItems: "center",
     gap: 4,
   },
-  batchActions: { display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" },
+  batchActions: { display: "flex", gap: 8, marginTop: 10 },
   btnWhatsapp: {
-    height: 48,
+    height: 40,
     border: 0,
-    borderRadius: 12,
-    background: "#25d366",
-    color: "#fff",
+    borderRadius: 8,
+    background: "#22c55e",
+    color: "#052e16",
     fontWeight: 900,
-    fontSize: 13,
+    fontSize: 12,
     cursor: "pointer",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    padding: "0 16px",
+    gap: 6,
+    padding: "0 12px",
     flex: 1,
-    minWidth: 180,
   },
   btnCopiaLote: {
-    height: 48,
+    height: 40,
     border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 12,
+    borderRadius: 8,
     background: "rgba(255,255,255,0.05)",
     color: "#fff",
     fontWeight: 900,
-    fontSize: 13,
+    fontSize: 12,
     cursor: "pointer",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    padding: "0 16px",
+    gap: 6,
+    padding: "0 12px",
     flex: 1,
-    minWidth: 180,
   },
 
   previewCard: {
-    padding: 24,
-    borderRadius: 24,
-    background: "rgba(17, 24, 39, 0.45)",
-    backdropFilter: "blur(12px)",
+    padding: 16,
+    borderRadius: 16,
+    background: "#1e293b",
     border: "1px solid rgba(255, 255, 255, 0.05)",
   },
   previewPlaceholder: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    height: 250,
-    border: "2px dashed rgba(255,255,255,0.06)",
-    borderRadius: 16,
+    height: 150,
+    border: "2px dashed rgba(255,255,255,0.05)",
+    borderRadius: 12,
     color: "#64748b",
     textAlign: "center",
-    padding: 24,
-    fontSize: 14,
-    lineHeight: 1.5,
+    padding: 16,
+    fontSize: 12,
+    lineHeight: 1.4,
   },
   previewContent: { display: "flex", flexDirection: "column" },
-  mediaRow: { display: "flex", gap: 16 },
+  mediaRow: { display: "flex", gap: 10 },
   miniMediaCard: {
     display: "flex",
     flexDirection: "column",
-    gap: 8,
+    gap: 6,
     flex: 1,
-    background: "#1f2937",
-    padding: 12,
-    borderRadius: 12,
-    border: "1px solid #374151",
+    background: "#0f172a",
+    padding: 10,
+    borderRadius: 10,
+    border: "1px solid #334155",
   },
-  mediaLabel: { fontSize: 11, color: "#64748b", fontWeight: 800, textTransform: "uppercase" },
-  mediaBox: { width: "100%", aspectRatio: "1", borderRadius: 8, overflow: "hidden", background: "#080c16" },
-  mediaBoxStory: { width: "100%", aspectRatio: "9/16", borderRadius: 8, overflow: "hidden", background: "#080c16" },
+  mediaLabel: { fontSize: 10, color: "#64748b", fontWeight: 800, textTransform: "uppercase" },
+  mediaBox: { width: "100%", aspectRatio: "1", borderRadius: 6, overflow: "hidden", background: "#020617", border: "1px solid #1e293b" },
+  mediaBoxStory: { width: "100%", aspectRatio: "9/16", borderRadius: 6, overflow: "hidden", background: "#020617", border: "1px solid #1e293b" },
   mediaImg: { width: "100%", height: "100%", objectFit: "contain" },
-  mediaDownload: {
-    height: 32,
-    borderRadius: 8,
-    background: "#1e293b",
-    color: "#fff",
-    fontSize: 12,
+  mediaDownloadFeed: {
+    height: 30,
+    borderRadius: 6,
+    background: "#3b82f6",
+    color: "#ffffff",
+    fontSize: 11,
     fontWeight: 800,
     textDecoration: "none",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    border: "1px solid rgba(255,255,255,0.06)",
+    border: 0,
+  },
+  mediaDownloadStory: {
+    height: 30,
+    borderRadius: 6,
+    background: "#eab308",
+    color: "#000000",
+    fontSize: 11,
+    fontWeight: 800,
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    border: 0,
   },
 
   toast: {
@@ -609,15 +653,14 @@ const styles: Record<string, CSSProperties> = {
     zIndex: 9999,
     display: "flex",
     alignItems: "center",
-    gap: 10,
-    padding: "14px 20px",
-    borderRadius: 16,
+    gap: 8,
+    padding: "12px 16px",
+    borderRadius: 12,
     background: "#1e293b",
     color: "#f8fafc",
     border: "1px solid rgba(255,255,255,0.1)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
     fontWeight: 800,
-    fontSize: 13,
-    animation: "slideDown 0.3s ease-out",
+    fontSize: 12,
   },
 };
