@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/AdminLayout";
-import { formatImageUrl } from "@/lib/truck-utils";
 import AdminAnunciosClient from "./AdminAnunciosClient";
 
 export const dynamic = "force-dynamic";
@@ -27,25 +26,6 @@ type Parceiro = {
   nome: string;
   celular: string;
 };
-
-function getMainImage(truck: Truck) {
-  const images = truck.truck_images || [];
-  const principal = images.find((img) => img.principal);
-  const first = [...images].sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
-  return formatImageUrl(principal?.image_url || first?.image_url || "");
-}
-
-function money(value: number | null) {
-  if (!value) return "Sob consulta";
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-}
-
-function statusLabel(status: string | null) {
-  if (status === "aprovado") return "Aprovado";
-  if (status === "reprovado") return "Reprovado";
-  if (status === "pendente") return "Pendente";
-  return status || "Sem status";
-}
 
 export default async function AdminAnunciosPage() {
   const supabase = await createClient();
@@ -85,9 +65,6 @@ export default async function AdminAnunciosPage() {
         <AdminAnunciosClient 
           initialTrucks={trucks}
           parceiros={parceiros}
-          getMainImage={getMainImage}
-          money={money}
-          statusLabel={statusLabel}
         />
       </Suspense>
     </AdminLayout>

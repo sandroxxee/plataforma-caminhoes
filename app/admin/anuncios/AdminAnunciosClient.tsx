@@ -28,15 +28,33 @@ type Parceiro = {
   celular: string;
 };
 
+import { formatImageUrl } from "@/lib/truck-utils";
+
+function getMainImage(truck: Truck) {
+  const images = truck.truck_images || [];
+  const principal = images.find((img) => img.principal);
+  const first = [...images].sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
+  return formatImageUrl(principal?.image_url || first?.image_url || "");
+}
+
+function money(value: number | null) {
+  if (!value) return "Sob consulta";
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+}
+
+function statusLabel(status: string | null) {
+  if (status === "aprovado") return "Aprovado";
+  if (status === "reprovado") return "Reprovado";
+  if (status === "pendente") return "Pendente";
+  return status || "Sem status";
+}
+
 type Props = {
   initialTrucks: Truck[];
   parceiros: Parceiro[];
-  getMainImage: (truck: Truck) => string;
-  money: (value: number | null) => string;
-  statusLabel: (status: string | null) => string;
 };
 
-export default function AdminAnunciosClient({ initialTrucks, parceiros, getMainImage, money, statusLabel }: Props) {
+export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props) {
   const searchParams = useSearchParams();
   const targetWhatsApp = searchParams.get("whatsapp") || "";
   const targetNome = searchParams.get("nome") || "";
