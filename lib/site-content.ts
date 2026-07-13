@@ -26,6 +26,9 @@ export type HomeContent = {
   finalMini: string;
   finalTitle: string;
   heroBannerUrl: string;
+  corPrimaria?: string;
+  corSecundaria?: string;
+  history?: Array<{ data: string; content: any }>;
 };
 
 export const defaultHomeContent: HomeContent = {
@@ -58,6 +61,9 @@ export const defaultHomeContent: HomeContent = {
   finalMini: "Caminhões à venda",
   finalTitle: "Veja o estoque completo ou anuncie seu caminhão.",
   heroBannerUrl: "",
+  corPrimaria: "#1877f2",
+  corSecundaria: "#10b981",
+  history: [],
 };
 
 export function mergeHomeContent(content: unknown): HomeContent {
@@ -66,8 +72,12 @@ export function mergeHomeContent(content: unknown): HomeContent {
   const merged = { ...defaultHomeContent };
   (Object.keys(defaultHomeContent) as (keyof HomeContent)[]).forEach((key) => {
     const value = raw[key];
-    if (typeof value === "string" && value.trim()) {
-      merged[key] = value.trim();
+    if (key === "history") {
+      if (Array.isArray(value)) {
+        merged.history = value;
+      }
+    } else if (typeof value === "string" && value.trim()) {
+      merged[key] = value.trim() as any;
     }
   });
   return merged;

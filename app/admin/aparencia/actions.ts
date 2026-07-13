@@ -16,12 +16,39 @@ async function requireAdmin() {
 
 export async function salvarAparencia(formData: FormData) {
   const supabase = await requireAdmin();
-  const content  = { ...defaultHomeContent } as HomeContent;
+
+  // 1. Busca o registro atual do banco para extrair o histórico existente
+  const { data: currentRecord } = await supabase
+    .from("site_content")
+    .select("content")
+    .eq("id", "home")
+    .maybeSingle();
+
+  const currentContent = currentRecord?.content || {};
+  let history = Array.isArray(currentContent.history) ? currentContent.history : [];
+
+  // 2. Se já houver conteúdo salvo, empilha a versão anterior no histórico (limite de 5 versões)
+  if (Object.keys(currentContent).length > 0) {
+    const newHistoryEntry = {
+      data: new Date().toLocaleString("pt-BR"),
+      content: { ...currentContent, history: undefined }, // Evita aninhamento recursivo de histórico
+    };
+    history = [newHistoryEntry, ...history].slice(0, 5);
+  }
+
+  // 3. Monta o novo conteúdo a partir dos dados do formulário
+  const content = { ...defaultHomeContent } as HomeContent;
 
   (Object.keys(defaultHomeContent) as (keyof HomeContent)[]).forEach((key) => {
+    if (key === "history") return;
     const value = String(formData.get(key) || "").trim();
-    if (value) content[key] = value;
+    if (value) {
+      content[key] = value as any;
+    }
   });
+
+  // Salva o histórico atualizado de volta no JSON
+  content.history = history;
 
   const { error } = await supabase.from("site_content").upsert({
     id: "home",

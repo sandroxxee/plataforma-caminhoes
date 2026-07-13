@@ -6,6 +6,8 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ChatGuard from "@/components/ChatGuard";
+import { createClient } from "@/lib/supabase/server";
+import { getHomeContent } from "@/lib/site-content";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -101,9 +103,59 @@ const searchActionSchema = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const supabase = await createClient();
+  const content = await getHomeContent(supabase);
+  
+  const corPrimaria = content.corPrimaria || "#1877f2";
+
+  // Gerar cor primária hover e soft
+  const hexToRgba = (hex: string, alpha: number) => {
+    try {
+      const cleanHex = hex.replace("#", "");
+      const r = parseInt(cleanHex.slice(0, 2), 16);
+      const g = parseInt(cleanHex.slice(2, 4), 16);
+      const b = parseInt(cleanHex.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    } catch {
+      return "rgba(24, 119, 242, 0.12)";
+    }
+  };
+
+  const escurecerCor = (hex: string, amt: number) => {
+    try {
+      let usePound = false;
+      if (hex[0] === "#") {
+        hex = hex.slice(1);
+        usePound = true;
+      }
+      let num = parseInt(hex, 16);
+      let r = (num >> 16) + amt;
+      r = Math.max(0, Math.min(255, r));
+      let b = ((num >> 8) & 0x00ff) + amt;
+      b = Math.max(0, Math.min(255, b));
+      let g = (num & 0x0000ff) + amt;
+      g = Math.max(0, Math.min(255, g));
+      return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16).padStart(6, "0");
+    } catch {
+      return "#0f5fc8";
+    }
+  };
+
+  const corPrimariaHover = escurecerCor(corPrimaria, -24);
+  const corPrimariaSoft = hexToRgba(corPrimaria, 0.12);
+
   return (
     <html lang="pt-BR" className={manrope.variable}>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root {
+            --blue: ${corPrimaria} !important;
+            --blue2: ${corPrimariaHover} !important;
+            --blueSoft: ${corPrimariaSoft} !important;
+          }
+        `}} />
+      </head>
       <body>
         <script
           type="application/ld+json"

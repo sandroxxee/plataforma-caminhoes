@@ -20,6 +20,16 @@ type Props = {
   initialContent: HomeContent;
 };
 
+const PAGINAS_SEGURAS = [
+  { path: "/anuncios", label: "Estoque Geral (Ver caminhões)" },
+  { path: "/anunciar", label: "Criar Anúncio" },
+  { path: "/parcerias/parceiros", label: "Página de Parceiros" },
+  { path: "/planos", label: "Página de Planos" },
+  { path: "/institucional/contato", label: "Fale Conosco" },
+  { path: "/institucional/sobre", label: "Sobre Nós" },
+  { path: "/institucional/privacidade", label: "Política de Privacidade" },
+];
+
 export function AparenciaFormClient({ initialContent }: Props) {
   const [activeTab, setActiveTab] = useState<"capa" | "confianca" | "comercial" | "chamadas">("capa");
   const [salvando, setSalvando] = useState(false);
@@ -32,6 +42,7 @@ export function AparenciaFormClient({ initialContent }: Props) {
   const [heroSubtitle, setHeroSubtitle] = useState(initialContent.heroSubtitle);
   const [primaryBtn, setPrimaryBtn] = useState(initialContent.primaryButtonText);
   const [secondaryBtn, setSecondaryBtn] = useState(initialContent.secondaryButtonText);
+  const [corPrimaria, setCorPrimaria] = useState(initialContent.corPrimaria || "#1877f2");
 
   // Estados para os outros campos para persistir valor nas abas
   const [formState, setFormState] = useState(initialContent);
@@ -45,6 +56,7 @@ export function AparenciaFormClient({ initialContent }: Props) {
     if (name === "heroSubtitle") setHeroSubtitle(val);
     if (name === "primaryButtonText") setPrimaryBtn(val);
     if (name === "secondaryButtonText") setSecondaryBtn(val);
+    if (name === "corPrimaria") setCorPrimaria(val);
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -135,6 +147,42 @@ export function AparenciaFormClient({ initialContent }: Props) {
           {/* ABA 1: CAPA & TOPO (Hero) */}
           {activeTab === "capa" && (
             <div className="tab-pane-content">
+
+              {/* HISTÓRICO E RESTAURAÇÃO */}
+              {initialContent.history && initialContent.history.length > 0 && (
+                <div className="form-card-premium backup-history-card">
+                  <h3 className="card-title-premium" style={{ display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
+                    <span>🕒</span> Histórico de Alterações (Backups)
+                  </h3>
+                  <p style={{ margin: "4px 0 14px", color: "#94a3b8", fontSize: 13, fontWeight: 700 }}>
+                    Selecione uma versão salva abaixo para restaurar o formulário completo. (Necessário salvar para publicar).
+                  </p>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {initialContent.history.map((h, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        className="restore-history-btn"
+                        onClick={() => {
+                          if (confirm(`Deseja restaurar as configurações de ${h.data}? O formulário será preenchido.`)) {
+                            const hc = h.content;
+                            setFormState(hc);
+                            setHeroBannerUrl(hc.heroBannerUrl || "");
+                            setHeroMini(hc.heroMini || "");
+                            setHeroTitle(hc.heroTitle || "");
+                            setHeroSubtitle(hc.heroSubtitle || "");
+                            setPrimaryBtn(hc.primaryButtonText || "");
+                            setSecondaryBtn(hc.secondaryButtonText || "");
+                            setCorPrimaria(hc.corPrimaria || "#1877f2");
+                          }
+                        }}
+                      >
+                        Versão de {h.data}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               {/* Live Preview Card */}
               <div className="live-preview-box">
@@ -152,10 +200,70 @@ export function AparenciaFormClient({ initialContent }: Props) {
                     <p className="preview-hero-sub">{heroSubtitle || "Subtítulo explicativo abaixo."}</p>
                     
                     <div className="preview-hero-actions">
-                      {primaryBtn && <span className="preview-btn primary">{primaryBtn}</span>}
-                      {secondaryBtn && <span className="preview-btn secondary">{secondaryBtn}</span>}
+                      {primaryBtn && (
+                        <span 
+                          className="preview-btn primary"
+                          style={{ background: corPrimaria }}
+                        >
+                          {primaryBtn}
+                        </span>
+                      )}
+                      {secondaryBtn && (
+                        <span 
+                          className="preview-btn secondary"
+                          style={{ borderColor: corPrimaria, color: "#fff" }}
+                        >
+                          {secondaryBtn}
+                        </span>
+                      )}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Seletor de Cores da Identidade */}
+              <div className="form-card-premium">
+                <h3 className="card-title-premium">Identidade Visual & Cores</h3>
+                <p style={{ margin: "0 0 16px", color: "#94a3b8", fontSize: 13, fontWeight: 700 }}>
+                  Personalize a paleta de cores principal do site inteiro de forma instantânea.
+                </p>
+                <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+                  <label className="field-premium" style={{ flex: 1, margin: 0 }}>
+                    <span>Cor Primária (Botões e Destaques)</span>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
+                      <input 
+                        type="color" 
+                        name="corPrimaria" 
+                        value={corPrimaria} 
+                        onChange={(e) => handleChange("corPrimaria", e.target.value)}
+                        style={{ width: 52, height: 46, padding: 0, border: "1px solid #343a40", borderRadius: 12, cursor: "pointer", background: "none" }}
+                      />
+                      <input 
+                        type="text" 
+                        value={corPrimaria} 
+                        onChange={(e) => handleChange("corPrimaria", e.target.value)}
+                        style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", width: 100 }}
+                      />
+                    </div>
+                  </label>
+                  <label className="field-premium" style={{ flex: 1, margin: 0 }}>
+                    <span>Cor Secundária (Auxiliar)</span>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
+                      <input 
+                        type="color" 
+                        name="corSecundaria" 
+                        value={formState.corSecundaria || "#10b981"} 
+                        onChange={(e) => handleChange("corSecundaria", e.target.value)}
+                        style={{ width: 52, height: 46, padding: 0, border: "1px solid #343a40", borderRadius: 12, cursor: "pointer", background: "none" }}
+                      />
+                      <input 
+                        type="text" 
+                        value={formState.corSecundaria || "#10b981"} 
+                        onChange={(e) => handleChange("corSecundaria", e.target.value)}
+                        style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", width: 100 }}
+                      />
+                    </div>
+                  </label>
                 </div>
               </div>
 
@@ -219,14 +327,39 @@ export function AparenciaFormClient({ initialContent }: Props) {
                       onChange={(e) => handleChange("primaryButtonText", e.target.value)} 
                     />
                   </label>
-                  <label className="field-premium">
-                    <span>Botão Principal (Link)</span>
-                    <input 
-                      name="primaryButtonHref" 
-                      defaultValue={formState.primaryButtonHref} 
-                      onChange={(e) => handleChange("primaryButtonHref", e.target.value)} 
-                    />
-                  </label>
+                  
+                  {/* Link Seguro Botão Principal */}
+                  <div className="field-premium">
+                    <span>Botão Principal (Link Seguro)</span>
+                    <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                      <select 
+                        value={PAGINAS_SEGURAS.some(p => p.path === formState.primaryButtonHref) ? formState.primaryButtonHref : "custom"}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val !== "custom") {
+                            handleChange("primaryButtonHref", val);
+                          }
+                        }}
+                        style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", flex: 1, outline: "none" }}
+                      >
+                        {PAGINAS_SEGURAS.map(p => <option key={p.path} value={p.path}>{p.label}</option>)}
+                        <option value="custom">Outro link / digitável...</option>
+                      </select>
+                      {(!PAGINAS_SEGURAS.some(p => p.path === formState.primaryButtonHref) || formState.primaryButtonHref === "custom") && (
+                        <input 
+                          name="primaryButtonHref" 
+                          placeholder="Ex: /anuncios"
+                          value={formState.primaryButtonHref} 
+                          onChange={(e) => handleChange("primaryButtonHref", e.target.value)} 
+                          style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", flex: 1 }}
+                        />
+                      )}
+                      {PAGINAS_SEGURAS.some(p => p.path === formState.primaryButtonHref) && (
+                        <input type="hidden" name="primaryButtonHref" value={formState.primaryButtonHref} />
+                      )}
+                    </div>
+                  </div>
+
                   <label className="field-premium">
                     <span>Botão Secundário (Texto)</span>
                     <input 
@@ -235,14 +368,38 @@ export function AparenciaFormClient({ initialContent }: Props) {
                       onChange={(e) => handleChange("secondaryButtonText", e.target.value)} 
                     />
                   </label>
-                  <label className="field-premium">
-                    <span>Botão Secundário (Link)</span>
-                    <input 
-                      name="secondaryButtonHref" 
-                      defaultValue={formState.secondaryButtonHref} 
-                      onChange={(e) => handleChange("secondaryButtonHref", e.target.value)} 
-                    />
-                  </label>
+                  
+                  {/* Link Seguro Botão Secundário */}
+                  <div className="field-premium">
+                    <span>Botão Secundário (Link Seguro)</span>
+                    <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                      <select 
+                        value={PAGINAS_SEGURAS.some(p => p.path === formState.secondaryButtonHref) ? formState.secondaryButtonHref : "custom"}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val !== "custom") {
+                            handleChange("secondaryButtonHref", val);
+                          }
+                        }}
+                        style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", flex: 1, outline: "none" }}
+                      >
+                        {PAGINAS_SEGURAS.map(p => <option key={p.path} value={p.path}>{p.label}</option>)}
+                        <option value="custom">Outro link / digitável...</option>
+                      </select>
+                      {(!PAGINAS_SEGURAS.some(p => p.path === formState.secondaryButtonHref) || formState.secondaryButtonHref === "custom") && (
+                        <input 
+                          name="secondaryButtonHref" 
+                          placeholder="Ex: /anunciar"
+                          value={formState.secondaryButtonHref} 
+                          onChange={(e) => handleChange("secondaryButtonHref", e.target.value)} 
+                          style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", flex: 1 }}
+                        />
+                      )}
+                      {PAGINAS_SEGURAS.some(p => p.path === formState.secondaryButtonHref) && (
+                        <input type="hidden" name="secondaryButtonHref" value={formState.secondaryButtonHref} />
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -831,6 +988,29 @@ export function AparenciaFormClient({ initialContent }: Props) {
         .preview-btn-premium:hover {
           background: #f8fafc;
           color: #0f172a;
+        }
+
+        .backup-history-card {
+          border: 1px solid rgba(245,158,11,0.2) !important;
+          background: linear-gradient(135deg, #1f2327, #17181c) !important;
+          margin-bottom: 20px;
+        }
+        .restore-history-btn {
+          height: 36px;
+          padding: 0 14px;
+          border-radius: 10px;
+          border: 1px solid rgba(245,158,11,0.3);
+          background: rgba(245,158,11,0.08);
+          color: #f59e0b;
+          font-weight: 800;
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .restore-history-btn:hover {
+          background: rgba(245,158,11,0.18);
+          border-color: #f59e0b;
+          transform: translateY(-1px);
         }
 
         @keyframes fadeIn {
