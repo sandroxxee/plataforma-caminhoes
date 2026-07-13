@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { AnunciarImportarClient } from "@/components/AnunciarImportarClient";
 
 export const metadata: Metadata = {
   title: "Anuncie seu Caminhão, Carreta ou Máquina | CaminhõesBR",
@@ -79,7 +80,7 @@ export default function AnunciarPage() {
 
       {/* HERO */}
       <section className="hero">
-        <p className="hero-badge">🚛 Plataforma gratuita</p>
+        <p className="hero-badge">CaminhõesBR — Plataforma gratuita</p>
         <h1 className="hero-title">
           Anuncie seu caminhão,<br />carreta ou máquina<br />
           <span className="hero-highlight">em menos de 2 minutos</span>
@@ -92,6 +93,9 @@ export default function AnunciarPage() {
           <Link href="/cadastro" className="btn-primary">Criar conta grátis</Link>
           <Link href="/login" className="btn-ghost">Já tenho conta →</Link>
         </div>
+
+        {/* Importador de link OLX com formulário de cadastro simplificado */}
+        <AnunciarImportarClient />
       </section>
 
       {/* CATEGORIAS */}
