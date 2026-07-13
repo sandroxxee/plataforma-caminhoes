@@ -274,7 +274,8 @@ export default async function ParceirosPage() {
                         zIndex: 3,
                       }}
                     >
-                      <div
+                      <Link
+                        href={`/parcerias/parceiros/${p.slug}`}
                         style={{
                           width: 68,
                           height: 68,
@@ -288,6 +289,7 @@ export default async function ParceirosPage() {
                           justifyContent: "center",
                           overflow: "hidden",
                           border: "2px solid var(--line)",
+                          cursor: "pointer"
                         }}
                       >
                         {p.logo_url ? (
@@ -309,38 +311,51 @@ export default async function ParceirosPage() {
                             {iniciais(p.nome)}
                           </span>
                         )}
-                      </div>
+                      </Link>
 
                       <div>
-                        <h2
-                          style={{
-                            color: "var(--text)",
-                            fontSize: 17,
-                            fontWeight: 900,
-                            margin: "0 0 4px",
-                            lineHeight: 1.2,
-                            letterSpacing: "-0.02em",
-                          }}
+                        <Link
+                          href={`/parcerias/parceiros/${p.slug}`}
+                          style={{ textDecoration: "none", cursor: "pointer" }}
                         >
-                          {p.nome}
-                        </h2>
-                        {(p.cidade || p.estado) && (
+                          <h2
+                            style={{
+                              color: "var(--text)",
+                              fontSize: 17,
+                              fontWeight: 900,
+                              margin: "0 0 4px",
+                              lineHeight: 1.2,
+                              letterSpacing: "-0.02em",
+                            }}
+                          >
+                            {p.nome}
+                          </h2>
+                        </Link>
+                        {(p.cidade || p.estado || p.telefone) && (
                           <p
                             style={{
                               display: "flex",
                               alignItems: "center",
-                              gap: 4,
+                              flexWrap: "wrap",
+                              gap: 10,
                               color: "var(--muted)",
                               fontSize: 13,
                               fontWeight: 700,
                               margin: 0,
                             }}
                           >
-                            <MapPin size={12} style={{ color: "#22c55e", flexShrink: 0 }} />
-                            {[p.cidade, p.estado].filter(Boolean).join(", ")}
+                            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                              <MapPin size={12} style={{ color: "#22c55e", flexShrink: 0 }} />
+                              {[p.cidade, p.estado].filter(Boolean).join(", ")}
+                            </span>
+                            {p.telefone && (
+                              <span style={{ display: "flex", alignItems: "center", gap: 4, color: "var(--muted)" }}>
+                                <Phone size={11} style={{ flexShrink: 0 }} />
+                                {p.telefone}
+                              </span>
+                            )}
                           </p>
                         )}
-
                       </div>
                     </div>
 
@@ -453,10 +468,31 @@ export default async function ParceirosPage() {
                     <div
                       style={{
                         display: "grid",
-                        gridTemplateColumns: p.telefone ? "1fr 1fr" : "1fr",
+                        gridTemplateColumns: "1fr 1fr",
                         gap: 10,
                       }}
                     >
+                      <Link
+                        href={`/parcerias/parceiros/${p.slug}`}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 7,
+                          padding: "11px 0",
+                          borderRadius: 10,
+                          background: "transparent",
+                          border: "1.5px solid var(--line)",
+                          color: "var(--text)",
+                          fontSize: 13,
+                          fontWeight: 900,
+                          textDecoration: "none",
+                          cursor: "pointer"
+                        }}
+                      >
+                        Ver Estoque
+                      </Link>
+
                       {p.celular && (
                         <a
                           href={`https://wa.me/55${p.celular.replace(/\D/g, "")}`}
@@ -474,6 +510,7 @@ export default async function ParceirosPage() {
                             fontSize: 13,
                             fontWeight: 900,
                             textDecoration: "none",
+                            cursor: "pointer"
                           }}
                         >
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -481,28 +518,6 @@ export default async function ParceirosPage() {
                             <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.853L.057 23.57a.75.75 0 00.92.92l5.656-1.476A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.65-.52-5.157-1.426l-.362-.217-3.768.982.999-3.683-.234-.381A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
                           </svg>
                           WhatsApp
-                        </a>
-                      )}
-                      {p.telefone && (
-                        <a
-                          href={`tel:${p.telefone}`}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 7,
-                            padding: "11px 0",
-                            borderRadius: 10,
-                            background: "transparent",
-                            border: "1.5px solid var(--line)",
-                            color: "var(--text)",
-                            fontSize: 13,
-                            fontWeight: 900,
-                            textDecoration: "none",
-                          }}
-                        >
-                          <Phone size={14} />
-                          Ligar
                         </a>
                       )}
                     </div>
