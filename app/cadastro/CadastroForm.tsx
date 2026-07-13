@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { SocialLoginButtons } from "@/components/SocialLoginButtons";
 
 function validarEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
@@ -168,6 +169,8 @@ export function CadastroForm() {
       <button type="submit" disabled={carregando}>
         {carregando ? "Criando conta..." : "Criar conta"}
       </button>
+
+      <SocialLoginButtons />
 
       <p className="login-text">
         Já tem conta? <Link href="/login">Entrar agora</Link>

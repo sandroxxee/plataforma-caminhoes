@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { SocialLoginButtons } from "@/components/SocialLoginButtons";
 
 export function LoginForm() {
   const router = useRouter();
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -86,6 +86,8 @@ export function LoginForm() {
       <button type="submit" disabled={carregando}>
         {carregando ? "Entrando..." : "Entrar no painel"}
       </button>
+
+      <SocialLoginButtons />
 
       <p className="login-text">
         Ainda não tem conta? <Link href="/cadastro">Criar cadastro</Link>
