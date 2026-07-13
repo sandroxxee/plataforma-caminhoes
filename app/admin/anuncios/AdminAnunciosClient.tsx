@@ -293,7 +293,7 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
                   <Link href={`/admin/divulgacao/${truck.id}`} style={c.share}>Divulgar</Link>
                 )}
 
-                <Link href={`/admin/ia-anuncios/${truck.id}`} style={c.aiPackage}>Central IA</Link>
+                <a href={`/api/admin/ia-anuncios/${truck.id}`} download style={c.aiPackage}>Central IA</a>
                 <Link href={`/admin/laudo/${truck.id}`} style={c.laudo}>Laudo</Link>
 
                 {truck.status !== "aprovado" && (

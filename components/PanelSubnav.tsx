@@ -25,7 +25,6 @@ const adminLinks = [
   { href: "/admin/usuarios",          label: "Usuários",   icon: Users },
   { href: "/admin/aparencia",         label: "Aparência",  icon: Palette },
   { href: "/admin/divulgacao",        label: "Divulgação", icon: Megaphone },
-  { href: "/admin/ia-anuncios",       label: "IA",         icon: Bot },
   { href: "/admin/lista-transmissao", label: "Lista",      icon: Radio },
 ];
 
