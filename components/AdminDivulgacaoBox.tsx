@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { Eye, Copy, Share2, Smartphone, Landmark, RotateCcw, Download } from "lucide-react";
+import { Eye, Copy, Share2, Smartphone, Landmark, RotateCcw, Download, Users, FileText } from "lucide-react";
 
 type AdminDivulgacaoBoxProps = {
   titulo: string;
@@ -203,163 +203,230 @@ export function AdminDivulgacaoBox({
       c.drawImage(img, cx, cy, cw, ch, x, y, w, h);
     }
 
+    function drawTruckIcon(c: CanvasRenderingContext2D, x: number, y: number, color: string) {
+      c.fillStyle = color;
+      c.beginPath();
+      drawRoundRect(c, x, y + 6, 22, 18, 3);
+      c.fill();
+      c.fillStyle = "#ffffff";
+      c.fillRect(x + 14, y + 9, 6, 6);
+      c.fillStyle = color;
+      c.fillRect(x - 22, y, 20, 24);
+      c.fillStyle = "#000000";
+      c.beginPath();
+      c.arc(x - 14, y + 24, 5, 0, Math.PI * 2);
+      c.arc(x - 4, y + 24, 5, 0, Math.PI * 2);
+      c.arc(x + 8, y + 24, 5, 0, Math.PI * 2);
+      c.fill();
+    }
+
     function desenharEDownload() {
       if (!ctx) return;
-      // 1. Fundo Gradiente Geral
+
+      // 1. Fundo Gradiente Geral (Deep Dark Blue)
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#0d1527");
-      bgGrad.addColorStop(1, "#030712");
+      bgGrad.addColorStop(0, "#080c16");
+      bgGrad.addColorStop(1, "#020408");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
       // 2. Renderização Específica do Layout
       if (tipo === "feed") {
         // Feed Quadrado (1080x1080)
-        drawImageProp(ctx, truckImg, 0, 0, 1080, 720);
+        // Foto com fade degradê na base
+        drawImageProp(ctx, truckImg, 0, 0, 1080, 750);
 
-        ctx.strokeStyle = "rgba(59, 130, 246, 0.2)";
+        const fadeGrad = ctx.createLinearGradient(0, 500, 0, 750);
+        fadeGrad.addColorStop(0, "transparent");
+        fadeGrad.addColorStop(1, "#080c16");
+        ctx.fillStyle = fadeGrad;
+        ctx.fillRect(0, 500, 1080, 250);
+
+        // Moldura Neon Azul Fina Superior
+        ctx.strokeStyle = "rgba(59, 130, 246, 0.4)";
         ctx.lineWidth = 4;
-        ctx.strokeRect(0, 0, 1080, 720);
+        ctx.strokeRect(20, 20, 1040, 1040);
 
-        // Retângulo de informações inferior
+        // Barra de Informações do Rodapé
         ctx.fillStyle = "#111827";
-        ctx.fillRect(0, 720, 1080, 360);
+        drawRoundRect(ctx, 40, 740, 1000, 300, 16);
+        ctx.fill();
 
+        // Branding
+        drawTruckIcon(ctx, 80, 770, "#3b82f6");
         ctx.fillStyle = "#3b82f6";
-        ctx.font = "bold 24px sans-serif";
-        ctx.fillText("CAMINHÕES À VENDA", 50, 760);
+        ctx.font = "bold 22px sans-serif";
+        ctx.fillText("CAMINHÕES À VENDA", 115, 788);
+
+        // Título do Anúncio
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 42px sans-serif";
+        ctx.fillText(titulo.slice(0, 36), 60, 845);
+
+        // Preço em Pílula Verde Neon com Sombra Projetada
+        ctx.shadowColor = "rgba(16, 185, 129, 0.4)";
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = "#10b981";
+        drawRoundRect(ctx, 60, 890, 320, 75, 12);
+        ctx.fill();
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 44px sans-serif";
-        ctx.fillText(titulo.slice(0, 35), 50, 810);
+        ctx.font = "extrabold 38px sans-serif";
+        ctx.fillText(preco, 85, 942);
 
-        ctx.fillStyle = "#10b981";
-        ctx.font = "extrabold 60px sans-serif";
-        ctx.fillText(preco, 50, 890);
-
+        // Cidade / UF + Ícone Pin
         ctx.fillStyle = "#94a3b8";
-        ctx.font = "600 32px sans-serif";
-        ctx.fillText(`📍 ${cidade}/${estado}`, 50, 960);
+        ctx.font = "600 28px sans-serif";
+        ctx.fillText(`📍 ${cidade}/${estado}`, 60, 1000);
 
-        // Selo "OPORTUNIDADE"
+        // Selo "OPORTUNIDADE" Dourado
         ctx.fillStyle = "rgba(245, 158, 11, 0.15)";
         ctx.strokeStyle = "#f59e0b";
         ctx.lineWidth = 2;
-        drawRoundRect(ctx, 50, 1000, 200, 42, 8);
+        drawRoundRect(ctx, 420, 895, 210, 48, 8);
         ctx.fill();
         ctx.stroke();
 
         ctx.fillStyle = "#f59e0b";
         ctx.font = "bold 18px sans-serif";
-        ctx.fillText("OPORTUNIDADE", 68, 1028);
+        ctx.fillText("OPORTUNIDADE", 450, 927);
 
         // QR Code na direita
         ctx.fillStyle = "#ffffff";
-        drawRoundRect(ctx, 830, 770, 200, 200, 12);
+        drawRoundRect(ctx, 810, 770, 200, 200, 14);
         ctx.fill();
-        ctx.drawImage(qrImg, 845, 785, 170, 170);
+        ctx.drawImage(qrImg, 825, 785, 170, 170);
 
         ctx.fillStyle = "#64748b";
-        ctx.font = "600 18px sans-serif";
-        ctx.fillText("Escaneie para fotos", 850, 1000);
+        ctx.font = "600 16px sans-serif";
+        ctx.fillText("Consulte no site", 845, 995);
       } else if (tipo === "story") {
         // Story Vertical (1080x1920)
-        drawImageProp(ctx, truckImg, 0, 280, 1080, 1100);
+        // Foto centralizada com cantos arredondados e sombra
+        ctx.shadowColor = "rgba(0,0,0,0.5)";
+        ctx.shadowBlur = 30;
+        ctx.fillStyle = "#1e293b";
+        drawRoundRect(ctx, 40, 260, 1000, 1000, 24);
+        ctx.fill();
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
 
-        const gradTop = ctx.createLinearGradient(0, 0, 0, 280);
-        gradTop.addColorStop(0, "#080d18");
-        gradTop.addColorStop(1, "transparent");
-        ctx.fillStyle = gradTop;
-        ctx.fillRect(0, 0, 1080, 280);
+        ctx.save();
+        ctx.beginPath();
+        drawRoundRect(ctx, 40, 260, 1000, 1000, 24);
+        ctx.clip();
+        drawImageProp(ctx, truckImg, 40, 260, 1000, 1000);
+        ctx.restore();
+
+        // Moldura dourada elegante na foto
+        ctx.strokeStyle = "#eab308";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        drawRoundRect(ctx, 40, 260, 1000, 1000, 24);
+        ctx.stroke();
+
+        // Topo do Story (Branding)
+        drawTruckIcon(ctx, 160, 70, "#eab308");
+        ctx.fillStyle = "#eab308";
+        ctx.font = "bold 26px sans-serif";
+        ctx.fillText("CAMINHÕES À VENDA", 195, 88);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 32px sans-serif";
-        ctx.fillText("CAMINHÕES À VENDA", 540 - ctx.measureText("CAMINHÕES À VENDA").width / 2, 70);
+        ctx.font = "bold 46px sans-serif";
+        ctx.fillText(titulo.slice(0, 32), 540 - ctx.measureText(titulo.slice(0, 32)).width / 2, 180);
 
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillText("VEÍCULO DISPONÍVEL", 540 - ctx.measureText("VEÍCULO DISPONÍVEL").width / 2, 110);
-
-        const gradBot = ctx.createLinearGradient(0, 1200, 0, 1920);
-        gradBot.addColorStop(0, "transparent");
-        gradBot.addColorStop(0.2, "#080d18");
-        gradBot.addColorStop(1, "#030205");
-        ctx.fillStyle = gradBot;
-        ctx.fillRect(0, 1200, 1080, 720);
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 52px sans-serif";
-        ctx.fillText(titulo.slice(0, 36), 540 - ctx.measureText(titulo.slice(0, 36)).width / 2, 1420);
-
+        // Base do Story
         ctx.fillStyle = "#10b981";
-        ctx.font = "extrabold 82px sans-serif";
-        ctx.fillText(preco, 540 - ctx.measureText(preco).width / 2, 1500);
+        ctx.font = "extrabold 90px sans-serif";
+        ctx.fillText(preco, 540 - ctx.measureText(preco).width / 2, 1360);
 
         ctx.fillStyle = "#94a3b8";
         ctx.font = "600 36px sans-serif";
         const locTxt = `📍 ${cidade}/${estado}`;
-        ctx.fillText(locTxt, 540 - ctx.measureText(locTxt).width / 2, 1600);
+        ctx.fillText(locTxt, 540 - ctx.measureText(locTxt).width / 2, 1470);
 
-        // QR Code no Story
+        // QR Code e chamada no rodapé
         ctx.fillStyle = "#ffffff";
-        drawRoundRect(ctx, 455, 1670, 170, 170, 12);
+        drawRoundRect(ctx, 440, 1570, 200, 200, 16);
         ctx.fill();
-        ctx.drawImage(qrImg, 465, 1680, 150, 150);
+        ctx.drawImage(qrImg, 455, 1585, 170, 170);
 
-        ctx.fillStyle = "#94a3b8";
+        ctx.fillStyle = "#64748b";
         ctx.font = "600 20px sans-serif";
-        const camTxt = "Aponte a câmera para ver detalhes e fotos";
-        ctx.fillText(camTxt, 540 - ctx.measureText(camTxt).width / 2, 1875);
+        const camTxt = "Aponte a câmera para ver mais fotos";
+        ctx.fillText(camTxt, 540 - ctx.measureText(camTxt).width / 2, 1810);
       } else {
-        // WhatsApp Retangular (1200x630)
-        drawImageProp(ctx, truckImg, 0, 0, 720, 630);
+        // WhatsApp Retangular (1200x630) com Corte Diagonal Ousado e Borda Dourada
+        drawImageProp(ctx, truckImg, 0, 0, 1200, 630);
 
-        ctx.fillStyle = "#111827";
-        ctx.fillRect(720, 0, 480, 630);
+        // Painel de informações com corte diagonal na direita
+        ctx.fillStyle = "#0f172a";
+        ctx.beginPath();
+        ctx.moveTo(690, 0);
+        ctx.lineTo(1200, 0);
+        ctx.lineTo(1200, 630);
+        ctx.lineTo(770, 630);
+        ctx.closePath();
+        ctx.fill();
 
+        // Linha dourada brilhante sobre o corte diagonal
+        ctx.strokeStyle = "#eab308";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(690, 0);
+        ctx.lineTo(770, 630);
+        ctx.stroke();
+
+        // Textos na direita
+        drawTruckIcon(ctx, 840, 50, "#3b82f6");
         ctx.fillStyle = "#3b82f6";
         ctx.font = "bold 20px sans-serif";
-        ctx.fillText("CAMINHÕES À VENDA", 760, 60);
+        ctx.fillText("CAMINHÕES À VENDA", 875, 68);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 36px sans-serif";
+        ctx.font = "bold 34px sans-serif";
         const words = titulo.split(" ");
         let line = "";
-        let y = 110;
+        let y = 130;
         for (let n = 0; n < words.length; n++) {
           const testLine = line + words[n] + " ";
           const metrics = ctx.measureText(testLine);
-          if (metrics.width > 400 && n > 0) {
-            ctx.fillText(line, 760, y);
+          if (metrics.width > 360 && n > 0) {
+            ctx.fillText(line, 800, y);
             line = words[n] + " ";
-            y += 48;
+            y += 44;
           } else {
             line = testLine;
           }
         }
-        ctx.fillText(line, 760, y);
+        ctx.fillText(line, 800, y);
 
+        // Preço Verde
         ctx.fillStyle = "#10b981";
-        ctx.font = "extrabold 52px sans-serif";
-        ctx.fillText(preco, 760, y + 65);
+        ctx.font = "extrabold 48px sans-serif";
+        ctx.fillText(preco, 800, y + 60);
 
+        // Localização
         ctx.fillStyle = "#94a3b8";
-        ctx.font = "600 26px sans-serif";
-        ctx.fillText(`📍 ${cidade}/${estado}`, 760, y + 130);
+        ctx.font = "600 24px sans-serif";
+        ctx.fillText(`📍 ${cidade}/${estado}`, 800, y + 115);
 
-        // QR Code no WhatsApp layout
+        // QR Code no rodapé direito
         ctx.fillStyle = "#ffffff";
-        drawRoundRect(ctx, 760, 440, 130, 130, 8);
+        drawRoundRect(ctx, 800, 450, 140, 140, 10);
         ctx.fill();
-        ctx.drawImage(qrImg, 768, 448, 114, 114);
+        ctx.drawImage(qrImg, 810, 460, 120, 120);
 
         ctx.fillStyle = "#64748b";
-        ctx.font = "600 16px sans-serif";
-        ctx.fillText("Escaneie o", 910, 480);
-        ctx.fillText("QR Code para", 910, 505);
-        ctx.fillText("negociar", 910, 530);
+        ctx.font = "600 15px sans-serif";
+        ctx.fillText("Aponte para", 960, 490);
+        ctx.fillText("negociar e", 960, 515);
+        ctx.fillText("ver fotos", 960, 540);
       }
 
+      // Download da Imagem gerada
       try {
         const downloadUrl = canvas.toDataURL("image/png");
         const a = document.createElement("a");
@@ -386,7 +453,7 @@ export function AdminDivulgacaoBox({
         </div>
       )}
 
-      {/* CARD DE IDENTIFICAÇÃO DO VEÍCULO */}
+      {/* CARD DE IDENTIFICAÇÃO DO VEÍCULO (Tema Glassmorphism) */}
       <section style={styles.adCard}>
         <div style={styles.adThumb}>
           {mainImage ? (
@@ -410,10 +477,10 @@ export function AdminDivulgacaoBox({
         </div>
       </section>
 
-      {/* PAINEL DE DISTRIBUIÇÃO RÁPIDA */}
+      {/* PAINEL DE DISTRIBUIÇÃO RÁPIDA (Estilo Glassmorphism translúcido) */}
       <section style={styles.sharePanel}>
         <h3 style={styles.sectionTitle}>Divulgar anúncio</h3>
-        <p style={styles.sectionDesc}>Clique nos botões abaixo para compartilhar nos canais mais adequados de forma rápida.</p>
+        <p style={styles.sectionDesc}>Selecione o canal para divulgar o veículo de forma rápida e profissional.</p>
 
         <div style={styles.shareGrid}>
           {/* WhatsApp - Principal */}
@@ -428,24 +495,48 @@ export function AdminDivulgacaoBox({
             Compartilhar no celular (Nativo)
           </button>
 
-          {/* Facebook */}
+          {/* Facebook - Perfil */}
           <a
             href={facebookShareUrl}
             target="_blank"
             rel="noreferrer"
-            onClick={() => copiar(getTextoAtivo(), "Texto copiado! Cole na sua publicação do Facebook.")}
+            onClick={() => copiar(getTextoAtivo(), "Texto copiado! Cole na sua linha do tempo do Facebook.")}
             style={styles.btnFacebook}
           >
             <Landmark size={15} />
-            Publicar no Facebook
+            Facebook (Perfil)
           </a>
+
+          {/* Facebook - Grupos */}
+          <button
+            onClick={() => {
+              copiar(getTextoAtivo(), "Texto copiado! Agora entre em seus grupos e cole.");
+              window.open("https://www.facebook.com/groups", "_blank");
+            }}
+            style={styles.btnFacebookGroup}
+          >
+            <Users size={15} />
+            Facebook (Grupos)
+          </button>
+
+          {/* Facebook - Páginas */}
+          <button
+            onClick={() => {
+              copiar(getTextoAtivo(), "Texto copiado! Selecione sua página para postar.");
+              window.open("https://www.facebook.com/bookmarks/pages", "_blank");
+            }}
+            style={styles.btnFacebookPage}
+          >
+            <FileText size={15} />
+            Facebook (Páginas)
+          </button>
 
           {/* Instagram */}
           <button
             onClick={() =>
               copiar(
                 getTextoAtivo(),
-                "Legenda copiada para o Instagram! Agora baixe a arte abaixo e poste na rede."
+                "Legenda copiada! Abra o Instagram, baixe a arte abaixo e publique."
               )
             }
             style={styles.btnInstagram}
@@ -512,7 +603,7 @@ export function AdminDivulgacaoBox({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 14 }}>
           <div>
             <h3 style={{ ...styles.sectionTitle, margin: 0 }}>Gerador de Artes de Vendas</h3>
-            <p style={styles.sectionDesc}>Gere artes gráficas profissionais contendo a foto, preço, localidade e QR Code do anúncio.</p>
+            <p style={styles.sectionDesc}>Gere artes profissionais contendo a foto, preço, localidade e QR Code do anúncio.</p>
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button
@@ -565,9 +656,10 @@ const styles: Record<string, CSSProperties> = {
     gap: 20,
     padding: 24,
     borderRadius: 24,
-    background: "linear-gradient(135deg, #1e293b, #0f172a)",
-    border: "1px solid rgba(255,255,255,0.06)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+    background: "rgba(30, 41, 59, 0.4)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
   },
   adThumb: { width: 140, height: 95, borderRadius: 16, overflow: "hidden", background: "#334155", flexShrink: 0 },
   adImg: { width: "100%", height: "100%", objectFit: "cover" },
@@ -580,10 +672,17 @@ const styles: Record<string, CSSProperties> = {
   price: { fontSize: 22, fontWeight: 950, color: "#10b981" },
   adLinkBtn: { display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 800, color: "#3b82f6", textDecoration: "none" },
 
-  sharePanel: { padding: 24, borderRadius: 24, background: "#111827", border: "1px solid rgba(255,255,255,0.03)" },
+  sharePanel: {
+    padding: 24,
+    borderRadius: 24,
+    background: "rgba(17, 24, 39, 0.45)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+  },
   sectionTitle: { fontSize: 18, color: "#ffffff", fontWeight: 850, marginBottom: 4, letterSpacing: "-0.01em" },
   sectionDesc: { fontSize: 13, color: "#64748b", margin: "0 0 16px" },
-  shareGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 },
+  shareGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 12 },
   btnWhatsapp: {
     minHeight: 52,
     border: 0,
@@ -598,11 +697,11 @@ const styles: Record<string, CSSProperties> = {
     justifyContent: "center",
     gap: 8,
     boxShadow: "0 4px 14px rgba(37,211,102,0.22)",
-    transition: "all 0.2s",
+    transition: "all 0.2s ease-in-out",
   },
   btnNativo: {
     minHeight: 52,
-    border: "1px solid rgba(255,255,255,0.1)",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 14,
     background: "rgba(255,255,255,0.05)",
     color: "#fff",
@@ -613,7 +712,7 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    transition: "all 0.2s",
+    transition: "all 0.2s ease-in-out",
   },
   btnFacebook: {
     minHeight: 52,
@@ -630,11 +729,43 @@ const styles: Record<string, CSSProperties> = {
     gap: 8,
     textDecoration: "none",
     boxShadow: "0 4px 14px rgba(24,119,242,0.2)",
-    transition: "all 0.2s",
+    transition: "all 0.2s ease-in-out",
+  },
+  btnFacebookGroup: {
+    minHeight: 52,
+    border: 0,
+    borderRadius: 14,
+    background: "#0c63d4",
+    color: "#fff",
+    fontWeight: 900,
+    fontSize: 14,
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    boxShadow: "0 4px 14px rgba(12,99,212,0.2)",
+    transition: "all 0.2s ease-in-out",
+  },
+  btnFacebookPage: {
+    minHeight: 52,
+    border: 0,
+    borderRadius: 14,
+    background: "#0a56b8",
+    color: "#fff",
+    fontWeight: 900,
+    fontSize: 14,
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    boxShadow: "0 4px 14px rgba(10,86,184,0.2)",
+    transition: "all 0.2s ease-in-out",
   },
   btnInstagram: {
     minHeight: 52,
-    border: "1px solid rgba(245,158,11,0.2)",
+    border: "1px solid rgba(245,158,11,0.25)",
     borderRadius: 14,
     background: "rgba(245,158,11,0.06)",
     color: "#f59e0b",
@@ -645,7 +776,7 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    transition: "all 0.2s",
+    transition: "all 0.2s ease-in-out",
   },
   secondaryActions: { display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" },
   actionPill: {
@@ -661,10 +792,16 @@ const styles: Record<string, CSSProperties> = {
     fontSize: 12,
     fontWeight: 800,
     cursor: "pointer",
-    transition: "all 0.15s",
+    transition: "all 0.15s ease-in-out",
   },
 
-  editorCard: { padding: 24, borderRadius: 24, background: "#111827", border: "1px solid rgba(255,255,255,0.03)" },
+  editorCard: {
+    padding: 24,
+    borderRadius: 24,
+    background: "rgba(17, 24, 39, 0.45)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
+  },
   editorHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 14 },
   tabList: { display: "flex", gap: 4, background: "#1f2937", padding: 4, borderRadius: 10 },
   tabActive: { border: 0, background: "#374151", color: "#fff", padding: "6px 14px", borderRadius: 7, fontWeight: 900, fontSize: 13, cursor: "pointer" },
@@ -695,7 +832,13 @@ const styles: Record<string, CSSProperties> = {
     gap: 4,
   },
 
-  artsCard: { padding: 24, borderRadius: 24, background: "#111827", border: "1px solid rgba(255,255,255,0.03)" },
+  artsCard: {
+    padding: 24,
+    borderRadius: 24,
+    background: "rgba(17, 24, 39, 0.45)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
+  },
   downloadBtn: {
     height: 42,
     padding: "0 16px",
@@ -709,6 +852,7 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     gap: 6,
     border: "1px solid rgba(255,255,255,0.08)",
+    transition: "all 0.2s ease-in-out",
   },
   qrSection: {
     display: "flex",
