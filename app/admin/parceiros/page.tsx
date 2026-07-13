@@ -2,8 +2,8 @@
 
 import { useState, useRef } from "react";
 import type { CSSProperties, ChangeEvent, FormEvent } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { AdminLayout } from "@/components/AdminLayout";
+import { salvarParceiroAction } from "./actions";
 import {
   Building2, MapPin, Phone, Smartphone,
   ImagePlus, CheckCircle, Loader2, Eye, ShoppingBag,
@@ -29,8 +29,6 @@ function iniciais(nome: string) {
 }
 
 export default function AdminParceirosPage() {
-  const supabase = createClient();
-
   const [nome, setNome] = useState("");
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
@@ -65,19 +63,6 @@ export default function AdminParceirosPage() {
     setBannerPreview(URL.createObjectURL(file));
   }
 
-  async function garantirBucket() {
-    // O bucket "truck-images" já existe e está previamente configurado no Supabase.
-  }
-
-  async function uploadImage(file: File, path: string): Promise<string> {
-    const { error: upErr } = await supabase.storage
-      .from("truck-images")
-      .upload(path, file, { upsert: true });
-    if (upErr) throw new Error(`Upload falhou: ${upErr.message}`);
-    const { data } = supabase.storage.from("truck-images").getPublicUrl(path);
-    return data.publicUrl;
-  }
-
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
@@ -89,51 +74,29 @@ export default function AdminParceirosPage() {
     }
 
     setLoading(true);
+    setLoadingMsg("Preparando dados e enviando imagens...");
     try {
-      setLoadingMsg("Preparando bucket de imagens...");
-      await garantirBucket();
-
       const slug = `${slugify(nome)}-${Date.now()}`;
-      let logo_url: string | null = null;
-      let banner_url: string | null = null;
-
-      // Obter o userId do administrador autenticado para passar pela política de RLS do Storage
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Você precisa estar logado para cadastrar um parceiro.");
-      const userId = user.id;
-
+      
+      const formData = new FormData();
+      formData.set("nome", nome.trim());
+      formData.set("slug", slug);
+      formData.set("cidade", cidade.trim());
+      formData.set("estado", estado);
+      formData.set("celular", celular.trim());
+      formData.set("telefone", telefone.trim());
+      
       if (logoFile) {
-        setLoadingMsg("Enviando logo...");
-        const ext = logoFile.name.split(".").pop();
-        logo_url = await uploadImage(logoFile, `${userId}/parceiros/logos/${slug}.${ext}`);
+        formData.set("logo", logoFile);
       }
       if (bannerFile) {
-        setLoadingMsg("Enviando banner...");
-        const ext = bannerFile.name.split(".").pop();
-        banner_url = await uploadImage(bannerFile, `${userId}/parceiros/banners/${slug}.${ext}`);
+        formData.set("banner", bannerFile);
       }
 
-      setLoadingMsg("Salvando parceiro...");
-      const { error: dbErr } = await supabase.from("parceiros").insert({
-        nome: nome.trim(),
-        slug,
-        cidade: cidade.trim(),
-        estado,
-        celular: celular.trim(),
-        telefone: telefone.trim() || null,
-        logo_url,
-        banner_url,
-        ativo: true,
-      });
+      const res = await salvarParceiroAction(formData);
 
-      if (dbErr) {
-        // tabela nao existe ainda
-        if (dbErr.message.includes("relation") || dbErr.message.includes("does not exist")) {
-          throw new Error(
-            "A tabela \"parceiros\" ainda não existe no banco. Execute o SQL de criação no Supabase SQL Editor."
-          );
-        }
-        throw new Error(dbErr.message);
+      if (res.error) {
+        throw new Error(res.error);
       }
 
       setSuccess(true);
