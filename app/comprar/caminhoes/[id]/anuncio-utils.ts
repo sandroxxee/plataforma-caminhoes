@@ -1,5 +1,5 @@
 // Funções puras de SEO, formatação e dados — sem React, sem estado
-import { formatMoney, getLocation, getTitle, type TruckCardData, type TruckImage } from "@/lib/truck-utils";
+import { formatMoney, getLocation, getTitle, formatImageUrl, type TruckCardData, type TruckImage } from "@/lib/truck-utils";
 import { gerarSlugComId } from "@/lib/slug";
 
 export const siteUrl = "https://www.caminhoesavenda.com";
@@ -133,7 +133,7 @@ export function getSeoDescription(truck: Truck, title: string, location: string,
 export function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
   const main = images.find((img) => img.principal)?.image_url || images[0]?.image_url;
-  return main || defaultOgImage;
+  return formatImageUrl(main) || defaultOgImage;
 }
 
 function getDriveWheel(tracao?: string | null): string | undefined {

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { formatImageUrl } from "@/lib/truck-utils";
 
 type TruckImage = {
   image_url: string | null;
@@ -23,6 +24,10 @@ function isSupabaseUrl(url: string) {
 export function TruckGallery({ title, images }: Props) {
   const validImages = [...images]
     .filter((img) => img.image_url)
+    .map((img) => ({
+      ...img,
+      image_url: formatImageUrl(img.image_url),
+    }))
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
   const principalIndex = validImages.findIndex((img) => img.principal) ?? 0;

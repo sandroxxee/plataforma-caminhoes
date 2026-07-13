@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { gerarSlugComId } from "@/lib/slug";
+import { formatImageUrl } from "@/lib/truck-utils";
 
 const BASE = "https://www.caminhoesavenda.com";
 const DEFAULT_IMAGE = `${BASE}/og-caminhoes-a-venda.jpg`;
@@ -61,7 +62,7 @@ export async function GET() {
       if (!price) return null; // Google Shopping exige preço
 
       const images = (t.truck_images as { image_url: string; principal: boolean; ordem: number }[]) || [];
-      const mainImg = images.find((i) => i.principal)?.image_url || images[0]?.image_url || DEFAULT_IMAGE;
+      const mainImg = formatImageUrl(images.find((i) => i.principal)?.image_url || images[0]?.image_url) || DEFAULT_IMAGE;
 
       const title = [
         t.marca, t.modelo,

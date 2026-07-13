@@ -58,6 +58,16 @@ export function getCardTitle(truck: TruckCardData) {
     .replace(/\s{2,}/g, " ").trim() || title;
 }
 
+export function formatImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
+    return url;
+  }
+  const cleanPath = url.startsWith("/") ? url.slice(1) : url;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://tvkqoeyhsynvehrpvtmx.supabase.co";
+  return `${supabaseUrl}/storage/v1/object/public/truck-images/${cleanPath}`;
+}
+
 export function getTruckImage(truck: TruckCardData) {
   const images = [...(truck.truck_images || [])]
     .filter((img) => img.image_url)
@@ -66,7 +76,7 @@ export function getTruckImage(truck: TruckCardData) {
       if (!a.principal && b.principal) return 1;
       return (a.ordem || 0) - (b.ordem || 0);
     });
-  return images[0]?.image_url || "";
+  return formatImageUrl(images[0]?.image_url);
 }
 
 export function getWhatsappLink(truck: TruckCardData) {

@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
 import { extrairIdDoParametroAnuncio } from "@/lib/slug";
+import { formatImageUrl } from "@/lib/truck-utils";
 
 export const alt         = "Máquina à venda";
 export const size        = { width: 1200, height: 630 };
@@ -38,9 +39,10 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const tituloSize = titulo.length > 35 ? 44 : titulo.length > 25 ? 52 : 60;
 
   const images = (item?.truck_images || []) as Array<{ image_url: string; principal?: boolean; ordem?: number }>;
-  const mainImage =
+  const mainImageRaw =
     images.find((i) => i.principal)?.image_url ??
     images.sort((a, b) => (a.ordem ?? 99) - (b.ordem ?? 99))[0]?.image_url ?? null;
+  const mainImage = formatImageUrl(mainImageRaw);
 
   return new ImageResponse(
     (

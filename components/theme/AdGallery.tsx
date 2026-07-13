@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { TruckImage } from "./TruckCard";
+import { formatImageUrl } from "@/lib/truck-utils";
 
 const AUTOPLAY_INTERVAL = 3500;
 
@@ -13,6 +14,10 @@ type Props = {
 export function AdGallery({ title, images }: Props) {
   const validImages = [...images]
     .filter((img) => img.image_url)
+    .map((img) => ({
+      ...img,
+      image_url: formatImageUrl(img.image_url),
+    }))
     .sort((a, b) => {
       if (a.principal && !b.principal) return -1;
       if (!a.principal && b.principal) return 1;
