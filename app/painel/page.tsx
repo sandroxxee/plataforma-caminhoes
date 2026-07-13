@@ -11,6 +11,16 @@ export default async function PainelPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.role === "admin") {
+    redirect("/admin/anuncios");
+  }
+
   const { data: trucks } = await supabase
     .from("trucks")
     .select("status,views")
