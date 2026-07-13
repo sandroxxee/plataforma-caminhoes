@@ -66,21 +66,15 @@ export default function AdminParceirosPage() {
   }
 
   async function garantirBucket() {
-    // tenta criar — se ja existir, ignora o erro
-    await supabase.storage.createBucket("parceiros", {
-      public: true,
-      fileSizeLimit: 5 * 1024 * 1024,
-      allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
-    });
-    // nao joga erro mesmo se bucket ja existir (duplicate = ok)
+    // O bucket "truck-images" já existe e está previamente configurado no Supabase.
   }
 
   async function uploadImage(file: File, path: string): Promise<string> {
     const { error: upErr } = await supabase.storage
-      .from("parceiros")
+      .from("truck-images")
       .upload(path, file, { upsert: true });
     if (upErr) throw new Error(`Upload falhou: ${upErr.message}`);
-    const { data } = supabase.storage.from("parceiros").getPublicUrl(path);
+    const { data } = supabase.storage.from("truck-images").getPublicUrl(path);
     return data.publicUrl;
   }
 
@@ -106,12 +100,12 @@ export default function AdminParceirosPage() {
       if (logoFile) {
         setLoadingMsg("Enviando logo...");
         const ext = logoFile.name.split(".").pop();
-        logo_url = await uploadImage(logoFile, `logos/${slug}.${ext}`);
+        logo_url = await uploadImage(logoFile, `parceiros/logos/${slug}.${ext}`);
       }
       if (bannerFile) {
         setLoadingMsg("Enviando banner...");
         const ext = bannerFile.name.split(".").pop();
-        banner_url = await uploadImage(bannerFile, `banners/${slug}.${ext}`);
+        banner_url = await uploadImage(bannerFile, `parceiros/banners/${slug}.${ext}`);
       }
 
       setLoadingMsg("Salvando parceiro...");
