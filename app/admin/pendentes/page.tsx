@@ -37,11 +37,13 @@ const PERFIL_LABEL: Record<string, { label: string; color: string; bg: string }>
   Implementos:{ label: "Implemento", color: "#6b21a8", bg: "#f3e8ff" },
 };
 
+import { getTruckImageUrl } from "@/lib/truck-utils";
+
 function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
   const principal = images.find((img) => img.principal);
   const first = [...images].sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
-  return principal?.image_url || first?.image_url || "";
+  return getTruckImageUrl(principal?.image_url || first?.image_url || "");
 }
 
 function money(value: number | null) {

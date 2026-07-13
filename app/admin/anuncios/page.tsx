@@ -8,6 +8,8 @@ import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin } from "../actions
 
 export const dynamic = "force-dynamic";
 
+import { getTruckImageUrl } from "@/lib/truck-utils";
+
 type TruckImage = { image_url: string | null; principal: boolean | null; ordem: number | null };
 type Truck = {
   id: string;
@@ -25,7 +27,7 @@ function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
   const principal = images.find((img) => img.principal);
   const first = [...images].sort((a, b) => (a.ordem || 0) - (b.ordem || 0))[0];
-  return principal?.image_url || first?.image_url || "";
+  return getTruckImageUrl(principal?.image_url || first?.image_url || "");
 }
 
 function money(value: number | null) {
