@@ -97,15 +97,20 @@ export default function AdminParceirosPage() {
       let logo_url: string | null = null;
       let banner_url: string | null = null;
 
+      // Obter o userId do administrador autenticado para passar pela política de RLS do Storage
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Você precisa estar logado para cadastrar um parceiro.");
+      const userId = user.id;
+
       if (logoFile) {
         setLoadingMsg("Enviando logo...");
         const ext = logoFile.name.split(".").pop();
-        logo_url = await uploadImage(logoFile, `parceiros/logos/${slug}.${ext}`);
+        logo_url = await uploadImage(logoFile, `${userId}/parceiros/logos/${slug}.${ext}`);
       }
       if (bannerFile) {
         setLoadingMsg("Enviando banner...");
         const ext = bannerFile.name.split(".").pop();
-        banner_url = await uploadImage(bannerFile, `parceiros/banners/${slug}.${ext}`);
+        banner_url = await uploadImage(bannerFile, `${userId}/parceiros/banners/${slug}.${ext}`);
       }
 
       setLoadingMsg("Salvando parceiro...");
