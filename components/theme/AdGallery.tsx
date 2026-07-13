@@ -167,6 +167,11 @@ export function AdGallery({ title, images }: Props) {
         .ad-gallery-thumbs button:hover { border-color: var(--blue); opacity: 1; }
         .ad-gallery-thumbs button img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+        @media (max-width: 768px) {
+          .ad-gallery-main {
+            aspect-ratio: 16/12;
+          }
+        }
         @media (max-width: 560px) {
           .ad-gallery-thumbs button { width: 60px; height: 46px; }
         }

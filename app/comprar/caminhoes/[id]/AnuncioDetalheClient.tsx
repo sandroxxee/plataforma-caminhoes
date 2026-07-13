@@ -14,18 +14,8 @@ interface GaleriaProps {
 }
 
 export function AnuncioGaleria({ truckId, title, images, initialViews }: GaleriaProps) {
-  const photoCount = images.length;
   return (
     <div className="detail-card detail-gallery-card">
-      <div className="detail-gallery-meta">
-        {photoCount > 0 && (
-          <div className="detail-badge">
-            <Camera size={13} strokeWidth={2.5} aria-hidden="true" />
-            {photoCount} {photoCount === 1 ? "foto" : "fotos"}
-          </div>
-        )}
-        <ViewCounter truckId={truckId} initialViews={initialViews} />
-      </div>
       <AdGallery title={title} images={images} />
     </div>
   );
