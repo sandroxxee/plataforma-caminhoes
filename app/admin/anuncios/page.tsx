@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/AdminLayout";
 import { formatImageUrl } from "@/lib/truck-utils";
@@ -80,13 +81,15 @@ export default async function AdminAnunciosPage() {
       badge="Admin"
       actions={<Link href="/painel/anuncios/novo" style={{ padding: "12px 20px", borderRadius: 14, background: "#1877f2", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: 14, boxShadow: "0 4px 12px rgba(24,119,242,0.2)" }}>Criar anúncio</Link>}
     >
-      <AdminAnunciosClient 
-        initialTrucks={trucks}
-        parceiros={parceiros}
-        getMainImage={getMainImage}
-        money={money}
-        statusLabel={statusLabel}
-      />
+      <Suspense fallback={<div style={{ color: "#64748b", fontWeight: 700, padding: 24, textAlign: "center" }}>Carregando painel de anúncios...</div>}>
+        <AdminAnunciosClient 
+          initialTrucks={trucks}
+          parceiros={parceiros}
+          getMainImage={getMainImage}
+          money={money}
+          statusLabel={statusLabel}
+        />
+      </Suspense>
     </AdminLayout>
   );
 }
