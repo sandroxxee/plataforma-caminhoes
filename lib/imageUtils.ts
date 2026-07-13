@@ -198,3 +198,27 @@ export async function applyBlurToFile(file: File, rects: BlurRect[]): Promise<Fi
   rects.forEach((rect) => drawBlurArea(ctx, source, rect));
   return canvasToFile(canvas, file.name, "borrado");
 }
+
+export async function autoCropAndWatermark(file: File): Promise<File> {
+  const image = await loadImage(file);
+  const canvas = document.createElement("canvas");
+  canvas.width = OUTPUT_WIDTH;
+  canvas.height = OUTPUT_HEIGHT;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Não foi possível preparar o canvas.");
+  
+  ctx.fillStyle = "#f3f4f6";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
+  const w = image.width * scale;
+  const h = image.height * scale;
+  const x = (canvas.width - w) / 2;
+  const y = (canvas.height - h) / 2;
+  
+  ctx.drawImage(image, x, y, w, h);
+  drawWatermark(ctx, canvas.width, canvas.height);
+  
+  return canvasToFile(canvas, file.name, "marca-dagua");
+}
+

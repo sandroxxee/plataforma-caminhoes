@@ -8,6 +8,7 @@ import {
   type CropTarget,
   type AiAnalysis,
   addWatermark,
+  autoCropAndWatermark,
   setInputFiles,
   makePreviews,
   revokePreviews,
@@ -54,6 +55,8 @@ export function WatermarkPhotoUploader() {
   const [processando, setProcessando] = useState(false);
   const [analisandoKey, setAnalisandoKey] = useState("");
   const [analises, setAnalises] = useState<Record<string, AiAnalysis>>({});
+  const [autoCrop, setAutoCrop] = useState(true);
+  const [extrasQueue, setExtrasQueue] = useState<File[]>([]);
 
   function previewKey(type: PhotoType, index: number) {
     return `${type}-${index}`;
@@ -139,20 +142,64 @@ export function WatermarkPhotoUploader() {
     }
   }
 
-  function processPrincipal(e: React.ChangeEvent<HTMLInputElement>) {
+  async function processPrincipal(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    setCropTarget({ type: "principal", index: 0, file });
-    setStatus("Ajuste a foto principal na moldura 4:3.");
+
+    if (autoCrop) {
+      setProcessando(true);
+      setStatus("Processando foto de capa...");
+      try {
+        const processed = await autoCropAndWatermark(file);
+        const nextItem = makePreviews([processed])[0];
+        setPrincipalPreview((old) => { revokePreviews(old); const next = [nextItem]; updateInputs(next, extrasPreview); return next; });
+        setStatus("Foto de capa adicionada.");
+      } catch (err) {
+        setStatus("Erro ao processar a foto de capa.");
+      } finally {
+        setProcessando(false);
+      }
+    } else {
+      setCropTarget({ type: "principal", index: 0, file });
+      setStatus("Ajuste a foto principal na moldura 4:3.");
+    }
   }
 
-  function processExtras(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = Array.from(e.target.files || [])[0];
+  async function processExtras(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
     e.target.value = "";
-    if (!file) return;
-    setCropTarget({ type: "extra", index: extrasPreview.length, file });
-    setStatus("Ajuste essa foto extra na moldura 4:3.");
+    if (files.length === 0) return;
+
+    if (autoCrop) {
+      setProcessando(true);
+      setStatus(`Processando ${files.length} foto(s) extra(s) em lote...`);
+      try {
+        const processedFiles = [];
+        for (let i = 0; i < files.length; i++) {
+          setStatus(`Processando foto ${i + 1} de ${files.length}...`);
+          const processed = await autoCropAndWatermark(files[i]);
+          processedFiles.push(processed);
+        }
+        const nextItems = makePreviews(processedFiles);
+        setExtrasPreview((old) => {
+          const next = [...old, ...nextItems];
+          updateInputs(principalPreview, next);
+          return next;
+        });
+        setStatus(`${files.length} fotos extras adicionadas.`);
+      } catch (err) {
+        console.error(err);
+        setStatus("Erro ao processar algumas fotos extras.");
+      } finally {
+        setProcessando(false);
+      }
+    } else {
+      const [first, ...rest] = files;
+      setExtrasQueue(rest);
+      setCropTarget({ type: "extra", index: extrasPreview.length, file: first });
+      setStatus(`Ajuste a primeira foto na moldura 4:3 (${files.length} selecionada(s)).`);
+    }
   }
 
   async function applyCrop(target: CropTarget, croppedFile: File) {
@@ -161,18 +208,70 @@ export function WatermarkPhotoUploader() {
     try {
       const processed = await addWatermark(croppedFile);
       const nextItem = makePreviews([processed])[0];
+      
+      let nextExtrasPreview = extrasPreview;
       if (target.type === "principal") {
         setPrincipalPreview((old) => { revokePreviews(old); const next = [nextItem]; updateInputs(next, extrasPreview); return next; });
       } else {
-        setExtrasPreview((old) => { const next = [...old, nextItem]; updateInputs(principalPreview, next); return next; });
+        setExtrasPreview((old) => { 
+          const next = [...old, nextItem]; 
+          nextExtrasPreview = next;
+          updateInputs(principalPreview, next); 
+          return next; 
+        });
       }
-      setCropTarget(null);
-      setStatus("Foto salva em 4:3 com marca d'água.");
+
+      if (extrasQueue.length > 0) {
+        const [nextFile, ...remainingQueue] = extrasQueue;
+        setExtrasQueue(remainingQueue);
+        setTimeout(() => {
+          setCropTarget({ 
+            type: "extra", 
+            index: target.type === "principal" ? nextExtrasPreview.length : nextExtrasPreview.length + 1, 
+            file: nextFile 
+          });
+          setStatus(`Ajuste a próxima foto na moldura 4:3 (${remainingQueue.length} restante(s)).`);
+        }, 50);
+      } else {
+        setCropTarget(null);
+        setStatus("Foto salva em 4:3 com marca d'água.");
+      }
     } catch (err) {
       console.error(err);
       setStatus("Não consegui preparar essa foto. Tente outra imagem.");
+      if (extrasQueue.length > 0) {
+        const [nextFile, ...remainingQueue] = extrasQueue;
+        setExtrasQueue(remainingQueue);
+        setTimeout(() => {
+          setCropTarget({ 
+            type: "extra", 
+            index: target.type === "principal" ? extrasPreview.length : extrasPreview.length + 1, 
+            file: nextFile 
+          });
+        }, 50);
+      } else {
+        setCropTarget(null);
+      }
     } finally {
       setProcessando(false);
+    }
+  }
+
+  function handleCropCancel() {
+    if (extrasQueue.length > 0) {
+      const [nextFile, ...remainingQueue] = extrasQueue;
+      setExtrasQueue(remainingQueue);
+      setTimeout(() => {
+        setCropTarget({ 
+          type: "extra", 
+          index: extrasPreview.length, 
+          file: nextFile 
+        });
+        setStatus(`Ajuste a próxima foto na moldura 4:3 (${remainingQueue.length} restante(s)).`);
+      }, 50);
+    } else {
+      setCropTarget(null);
+      setStatus("Corte cancelado.");
     }
   }
 
@@ -188,16 +287,29 @@ export function WatermarkPhotoUploader() {
 
   return (
     <div className="watermark-uploader">
+      <div style={{ padding: "10px 14px", borderRadius: "14px", background: "rgba(34,197,94,.06)", border: "1px solid rgba(34,197,94,.2)", display: "flex", alignItems: "center", gap: "10px", margin: "4px 0" }}>
+        <input 
+          id="autocrop-checkbox"
+          type="checkbox" 
+          checked={autoCrop} 
+          onChange={(e) => setAutoCrop(e.target.checked)} 
+          style={{ width: "18px", height: "18px", accentColor: "#22c55e", cursor: "pointer" }}
+        />
+        <label htmlFor="autocrop-checkbox" style={{ color: "#22c55e", fontSize: "14px", fontWeight: "800", cursor: "pointer", userSelect: "none" }}>
+          Aplicar corte automático centralizado (pula o editor de ajuste e processa as fotos em lote)
+        </label>
+      </div>
+
       <div className="photo-grid">
         <label className="upload-field">
           <strong>Foto principal/capa</strong>
-          <small>Escolha uma foto e ajuste o caminhão na moldura 4:3 antes de salvar.</small>
+          <small>Escolha uma foto para a capa do anúncio.</small>
           <input ref={principalRef} name="foto_principal" type="file" accept="image/*" onChange={processPrincipal} disabled={processando} />
         </label>
         <label className="upload-field">
           <strong>Fotos extras</strong>
-          <small>Adicione uma foto por vez para ajustar cada enquadramento.</small>
-          <input ref={extrasRef} name="fotos_extras" type="file" accept="image/*" onChange={processExtras} disabled={processando} />
+          <small>Selecione uma ou mais fotos adicionais de uma vez só.</small>
+          <input ref={extrasRef} name="fotos_extras" type="file" accept="image/*" multiple onChange={processExtras} disabled={processando} />
         </label>
       </div>
 
@@ -238,7 +350,7 @@ export function WatermarkPhotoUploader() {
         </div>
       )}
 
-      {cropTarget && <CropEditor target={cropTarget} onCancel={() => setCropTarget(null)} onApply={applyCrop} />}
+      {cropTarget && <CropEditor target={cropTarget} onCancel={handleCropCancel} onApply={applyCrop} />}
       {editorTarget && <BlurEditor target={editorTarget} onCancel={() => setEditorTarget(null)} onApply={applyEditedFile} />}
 
       <style>{UPLOADER_STYLES}</style>
