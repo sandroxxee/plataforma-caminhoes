@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 const menuItems = [
   { href: "/admin/pendentes", label: "Pendentes" },
   { href: "/admin/anuncios", label: "Todos anúncios" },
+  { href: "/admin/parceiros", label: "Parceiros / Revendas" },
+  { href: "/admin/usuarios", label: "Usuários" },
+  { href: "/admin/lista-transmissao", label: "Lista de transmissão" },
   { href: "/admin/aparencia", label: "Aparência do site" },
   { href: "/painel/anuncios/novo", label: "Criar anúncio" },
   { href: "/painel/anuncios", label: "Painel anunciante" },
