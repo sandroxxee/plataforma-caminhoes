@@ -378,6 +378,26 @@ export default function AdminParceirosPage() {
                   >
                     <Plus size={14} /> Adicionar Caminhão
                   </a>
+
+                  <a 
+                    href={`/admin/anuncios?whatsapp=${p.celular.replace(/\D/g, "")}&nome=${encodeURIComponent(p.nome)}`}
+                    style={{ 
+                      display: "inline-flex", 
+                      alignItems: "center", 
+                      gap: 6, 
+                      height: 38, 
+                      padding: "0 14px", 
+                      borderRadius: 10, 
+                      background: "rgba(245,158,11,0.12)", 
+                      border: "1.5px solid #f59e0b", 
+                      color: "#f59e0b", 
+                      fontWeight: 900, 
+                      fontSize: 12, 
+                      textDecoration: "none" 
+                    }}
+                  >
+                    Vincular Anúncios
+                  </a>
                   
                   {/* Botão de Excluir */}
                   <button 

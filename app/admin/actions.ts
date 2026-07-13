@@ -87,3 +87,31 @@ export async function excluirAnuncioAdmin(formData: FormData) {
   revalidatePath("/admin/anuncios");
   revalidatePath("/anuncios");
 }
+
+export async function vincularAnunciosParceiroAction(truckIds: string[], whatsapp: string) {
+  try {
+    const supabase = await requireAdmin();
+
+    if (!truckIds || truckIds.length === 0 || !whatsapp) {
+      throw new Error("Parâmetros inválidos.");
+    }
+
+    const { error } = await supabase
+      .from("trucks")
+      .update({ whatsapp })
+      .in("id", truckIds);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    revalidatePath("/");
+    revalidatePath("/admin/anuncios");
+    revalidatePath("/parcerias/parceiros");
+    
+    return { success: true };
+  } catch (err: any) {
+    return { error: err?.message || "Erro ao vincular anúncios." };
+  }
+}
+
