@@ -31,7 +31,7 @@ const PAGINAS_SEGURAS = [
 ];
 
 export function AparenciaFormClient({ initialContent }: Props) {
-  const [activeTab, setActiveTab] = useState<"capa" | "confianca" | "comercial" | "chamadas">("capa");
+  const [activeTab, setActiveTab] = useState<"capa" | "confianca" | "comercial" | "chamadas" | "design">("capa");
   const [salvando, setSalvando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
 
@@ -43,6 +43,13 @@ export function AparenciaFormClient({ initialContent }: Props) {
   const [primaryBtn, setPrimaryBtn] = useState(initialContent.primaryButtonText);
   const [secondaryBtn, setSecondaryBtn] = useState(initialContent.secondaryButtonText);
   const [corPrimaria, setCorPrimaria] = useState(initialContent.corPrimaria || "#1877f2");
+  const [fontePrincipal, setFontePrincipal] = useState(initialContent.fontePrincipal || "manrope");
+  const [arredondamento, setArredondamento] = useState(initialContent.arredondamento || "16px");
+  const [efeitoHover, setEfeitoHover] = useState(initialContent.efeitoHover || "flutuar");
+  const [bgClaro, setBgClaro] = useState(initialContent.bgClaro || "#eef0f4");
+  const [surfaceClaro, setSurfaceClaro] = useState(initialContent.surfaceClaro || "#ffffff");
+  const [bgEscuro, setBgEscuro] = useState(initialContent.bgEscuro || "#080d18");
+  const [surfaceEscuro, setSurfaceEscuro] = useState(initialContent.surfaceEscuro || "#111827");
 
   // Estados para os outros campos para persistir valor nas abas
   const [formState, setFormState] = useState(initialContent);
@@ -57,6 +64,13 @@ export function AparenciaFormClient({ initialContent }: Props) {
     if (name === "primaryButtonText") setPrimaryBtn(val);
     if (name === "secondaryButtonText") setSecondaryBtn(val);
     if (name === "corPrimaria") setCorPrimaria(val);
+    if (name === "fontePrincipal") setFontePrincipal(val);
+    if (name === "arredondamento") setArredondamento(val);
+    if (name === "efeitoHover") setEfeitoHover(val);
+    if (name === "bgClaro") setBgClaro(val);
+    if (name === "surfaceClaro") setSurfaceClaro(val);
+    if (name === "bgEscuro") setBgEscuro(val);
+    if (name === "surfaceEscuro") setSurfaceEscuro(val);
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -137,6 +151,15 @@ export function AparenciaFormClient({ initialContent }: Props) {
             <span>Chamadas & Rodapé</span>
             <ChevronRight size={14} className="arrow" />
           </button>
+          <button 
+            type="button"
+            onClick={() => setActiveTab("design")}
+            className={`tab-btn ${activeTab === "design" ? "active" : ""}`}
+          >
+            <Sparkles size={18} style={{ color: "#f59e0b" }} />
+            <span>Design & Cores</span>
+            <ChevronRight size={14} className="arrow" />
+          </button>
         </div>
 
         {/* Lado Direito: Formulário Ativo + Preview */}
@@ -174,6 +197,13 @@ export function AparenciaFormClient({ initialContent }: Props) {
                             setPrimaryBtn(hc.primaryButtonText || "");
                             setSecondaryBtn(hc.secondaryButtonText || "");
                             setCorPrimaria(hc.corPrimaria || "#1877f2");
+                            setFontePrincipal(hc.fontePrincipal || "manrope");
+                            setArredondamento(hc.arredondamento || "16px");
+                            setEfeitoHover(hc.efeitoHover || "flutuar");
+                            setBgClaro(hc.bgClaro || "#eef0f4");
+                            setSurfaceClaro(hc.surfaceClaro || "#ffffff");
+                            setBgEscuro(hc.bgEscuro || "#080d18");
+                            setSurfaceEscuro(hc.surfaceEscuro || "#111827");
                           }
                         }}
                       >
@@ -192,9 +222,17 @@ export function AparenciaFormClient({ initialContent }: Props) {
                 
                 <div 
                   className="preview-hero-mockup"
-                  style={{ backgroundImage: `url(${heroBannerUrl || "/placeholder-truck.png"})` }}
+                  style={{ 
+                    backgroundImage: `url(${heroBannerUrl || "/placeholder-truck.png"})`,
+                    fontFamily: fontePrincipal === "inter" ? "var(--font-inter), sans-serif" :
+                                fontePrincipal === "montserrat" ? "var(--font-montserrat), sans-serif" :
+                                fontePrincipal === "outfit" ? "var(--font-outfit), sans-serif" :
+                                fontePrincipal === "roboto" ? "var(--font-roboto), sans-serif" :
+                                "var(--font-manrope), sans-serif",
+                    borderRadius: arredondamento
+                  }}
                 >
-                  <div className="preview-hero-overlay">
+                  <div className="preview-hero-overlay" style={{ borderRadius: arredondamento }}>
                     <span className="preview-hero-mini">{heroMini || "MINI TEXTO"}</span>
                     <h2 className="preview-hero-title">{heroTitle || "Título Principal da Capa"}</h2>
                     <p className="preview-hero-sub">{heroSubtitle || "Subtítulo explicativo abaixo."}</p>
@@ -203,7 +241,10 @@ export function AparenciaFormClient({ initialContent }: Props) {
                       {primaryBtn && (
                         <span 
                           className="preview-btn primary"
-                          style={{ background: corPrimaria }}
+                          style={{ 
+                            background: corPrimaria,
+                            borderRadius: arredondamento === "0px" ? "0px" : arredondamento === "8px" ? "6px" : arredondamento === "24px" ? "14px" : "10px"
+                          }}
                         >
                           {primaryBtn}
                         </span>
@@ -211,7 +252,11 @@ export function AparenciaFormClient({ initialContent }: Props) {
                       {secondaryBtn && (
                         <span 
                           className="preview-btn secondary"
-                          style={{ borderColor: corPrimaria, color: "#fff" }}
+                          style={{ 
+                            borderColor: corPrimaria, 
+                            color: "#fff",
+                            borderRadius: arredondamento === "0px" ? "0px" : arredondamento === "8px" ? "6px" : arredondamento === "24px" ? "14px" : "10px"
+                          }}
                         >
                           {secondaryBtn}
                         </span>
@@ -633,6 +678,156 @@ export function AparenciaFormClient({ initialContent }: Props) {
                 </label>
               </div>
 
+            </div>
+          )}
+
+          {/* ABA 5: DESIGN & ESTILOS */}
+          {activeTab === "design" && (
+            <div className="tab-pane-content" style={{ animation: "fadeIn .25s ease-out" }}>
+              <div className="form-card-premium">
+                <h3 className="card-title-premium">Design & Identidade Visual</h3>
+                <p style={{ margin: "0 0 16px", color: "#94a3b8", fontSize: 13, fontWeight: 700 }}>
+                  Customize fontes, arredondamentos de cantos e micro-animações do site.
+                </p>
+
+                {/* Seletor de Fontes */}
+                <label className="field-premium">
+                  <span>Fonte Principal do Site</span>
+                  <select 
+                    name="fontePrincipal" 
+                    value={fontePrincipal} 
+                    onChange={(e) => handleChange("fontePrincipal", e.target.value)}
+                    style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", width: "100%", outline: "none", marginTop: 4 }}
+                  >
+                    <option value="manrope">Manrope (Moderna e robusta - Padrão)</option>
+                    <option value="inter">Inter (Séria, limpa e profissional)</option>
+                    <option value="montserrat">Montserrat (Geométrica e marcante)</option>
+                    <option value="outfit">Outfit (Tech, arredondada e sofisticada)</option>
+                    <option value="roboto">Roboto (Clássica e neutra)</option>
+                  </select>
+                </label>
+
+                {/* Arredondamento */}
+                <label className="field-premium" style={{ marginTop: 20 }}>
+                  <span>Arredondamento dos Cantos (Cards e Elementos)</span>
+                  <select 
+                    name="arredondamento" 
+                    value={arredondamento} 
+                    onChange={(e) => handleChange("arredondamento", e.target.value)}
+                    style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", width: "100%", outline: "none", marginTop: 4 }}
+                  >
+                    <option value="0px">Reto / Retangular (0px)</option>
+                    <option value="8px">Levemente Arredondado (8px)</option>
+                    <option value="16px">Moderno / Padrão Apple (16px)</option>
+                    <option value="24px">Muito Arredondado (24px)</option>
+                  </select>
+                </label>
+
+                {/* Efeitos de Hover */}
+                <label className="field-premium" style={{ marginTop: 20 }}>
+                  <span>Efeito de Animação nos Cards de Anúncios (Hover)</span>
+                  <select 
+                    name="efeitoHover" 
+                    value={efeitoHover} 
+                    onChange={(e) => handleChange("efeitoHover", e.target.value)}
+                    style={{ height: 46, borderRadius: 12, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 14, fontWeight: 700, padding: "0 12px", width: "100%", outline: "none", marginTop: 4 }}
+                  >
+                    <option value="flutuar">Flutuar (Sobe 4px com sombra 3D)</option>
+                    <option value="zoom">Zoom na Foto (Amplia imagem sem mover card)</option>
+                    <option value="estatico">Estático (Apenas realça a borda)</option>
+                  </select>
+                </label>
+              </div>
+
+              {/* Módulo de Cores de Fundo (Claro e Escuro) */}
+              <div className="form-card-premium" style={{ marginTop: 20 }}>
+                <h3 className="card-title-premium">Cores do Tema (Claro & Escuro)</h3>
+                <p style={{ margin: "0 0 16px", color: "#94a3b8", fontSize: 13, fontWeight: 700 }}>
+                  Customize os backgrounds e superfícies de cards dos temas claro e escuro.
+                </p>
+                
+                <div className="form-two-columns">
+                  <div style={{ padding: 16, borderRadius: 14, border: "1px solid rgba(255,255,255,0.05)", background: "#14171a" }}>
+                    <h4 style={{ margin: "0 0 12px", fontSize: 14, color: "#fff", fontWeight: 850 }}>Tema Claro</h4>
+                    <label className="field-premium">
+                      <span>Cor de Fundo</span>
+                      <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
+                        <input 
+                          type="color" 
+                          name="bgClaro" 
+                          value={bgClaro} 
+                          onChange={(e) => handleChange("bgClaro", e.target.value)}
+                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
+                        />
+                        <input 
+                          type="text" 
+                          value={bgClaro} 
+                          onChange={(e) => handleChange("bgClaro", e.target.value)}
+                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                        />
+                      </div>
+                    </label>
+                    <label className="field-premium" style={{ marginTop: 12 }}>
+                      <span>Cor de Superfície (Cards)</span>
+                      <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
+                        <input 
+                          type="color" 
+                          name="surfaceClaro" 
+                          value={surfaceClaro} 
+                          onChange={(e) => handleChange("surfaceClaro", e.target.value)}
+                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
+                        />
+                        <input 
+                          type="text" 
+                          value={surfaceClaro} 
+                          onChange={(e) => handleChange("surfaceClaro", e.target.value)}
+                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <div style={{ padding: 16, borderRadius: 14, border: "1px solid rgba(255,255,255,0.05)", background: "#14171a" }}>
+                    <h4 style={{ margin: "0 0 12px", fontSize: 14, color: "#fff", fontWeight: 850 }}>Tema Escuro</h4>
+                    <label className="field-premium">
+                      <span>Cor de Fundo</span>
+                      <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
+                        <input 
+                          type="color" 
+                          name="bgEscuro" 
+                          value={bgEscuro} 
+                          onChange={(e) => handleChange("bgEscuro", e.target.value)}
+                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
+                        />
+                        <input 
+                          type="text" 
+                          value={bgEscuro} 
+                          onChange={(e) => handleChange("bgEscuro", e.target.value)}
+                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                        />
+                      </div>
+                    </label>
+                    <label className="field-premium" style={{ marginTop: 12 }}>
+                      <span>Cor de Superfície (Cards)</span>
+                      <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
+                        <input 
+                          type="color" 
+                          name="surfaceEscuro" 
+                          value={surfaceEscuro} 
+                          onChange={(e) => handleChange("surfaceEscuro", e.target.value)}
+                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
+                        />
+                        <input 
+                          type="text" 
+                          value={surfaceEscuro} 
+                          onChange={(e) => handleChange("surfaceEscuro", e.target.value)}
+                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                        />
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

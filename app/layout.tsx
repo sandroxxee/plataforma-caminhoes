@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Manrope } from "next/font/google";
+import { Manrope, Inter, Montserrat, Outfit, Roboto } from "next/font/google";
 import { ClientShell } from "@/components/ClientShell";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
@@ -13,6 +13,31 @@ import "./globals.css";
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const roboto = Roboto({
+  weight: ["400", "700", "900"],
+  subsets: ["latin"],
+  variable: "--font-roboto",
   display: "swap",
 });
 
@@ -108,6 +133,20 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const content = await getHomeContent(supabase);
   
   const corPrimaria = content.corPrimaria || "#1877f2";
+  const fonte = content.fontePrincipal || "manrope";
+  const radius = content.arredondamento || "16px";
+  const radiusSm = radius === "0px" ? "0px" : radius === "8px" ? "6px" : radius === "24px" ? "14px" : "10px";
+  
+  const bgClaro = content.bgClaro || "#eef0f4";
+  const surfaceClaro = content.surfaceClaro || "#ffffff";
+  const bgEscuro = content.bgEscuro || "#080d18";
+  const surfaceEscuro = content.surfaceEscuro || "#111827";
+
+  let fontVariable = "var(--font-manrope)";
+  if (fonte === "inter") fontVariable = "var(--font-inter)";
+  else if (fonte === "montserrat") fontVariable = "var(--font-montserrat)";
+  else if (fonte === "outfit") fontVariable = "var(--font-outfit)";
+  else if (fonte === "roboto") fontVariable = "var(--font-roboto)";
 
   // Gerar cor primária hover e soft
   const hexToRgba = (hex: string, alpha: number) => {
@@ -144,16 +183,56 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   const corPrimariaHover = escurecerCor(corPrimaria, -24);
   const corPrimariaSoft = hexToRgba(corPrimaria, 0.12);
+  const efeitoHover = content.efeitoHover || "flutuar";
 
   return (
-    <html lang="pt-BR" className={manrope.variable}>
+    <html lang="pt-BR" className={`${manrope.variable} ${inter.variable} ${montserrat.variable} ${outfit.variable} ${roboto.variable}`}>
       <head>
         <style dangerouslySetInnerHTML={{ __html: `
           :root {
             --blue: ${corPrimaria} !important;
             --blue2: ${corPrimariaHover} !important;
             --blueSoft: ${corPrimariaSoft} !important;
+            --radius: ${radius} !important;
+            --radius-sm: ${radiusSm} !important;
+            --font-display: ${fontVariable}, Arial, sans-serif !important;
+            --font-title: ${fontVariable}, Arial, sans-serif !important;
+            --font-body: ${fontVariable}, Arial, sans-serif !important;
+            --bg: ${bgClaro} !important;
+            --surface: ${surfaceClaro} !important;
+            --soft: ${hexToRgba(bgClaro, 0.5)} !important;
           }
+          body.public-theme-dark {
+            --bg: ${bgEscuro} !important;
+            --surface: ${surfaceEscuro} !important;
+            --soft: ${hexToRgba(bgEscuro, 0.4)} !important;
+            --blue: ${corPrimaria} !important;
+            --blue2: ${corPrimariaHover} !important;
+            --blueSoft: ${corPrimariaSoft} !important;
+          }
+          
+          /* Efeitos de Hover Dinâmicos */
+          ${efeitoHover === "estatico" ? `
+            .tc:hover {
+              transform: none !important;
+              box-shadow: var(--shadow) !important;
+              border-color: var(--line) !important;
+            }
+            .tc:hover .tc-photo img {
+              transform: none !important;
+            }
+          ` : ""}
+          ${efeitoHover === "zoom" ? `
+            .tc:hover {
+              transform: none !important;
+              box-shadow: var(--shadow) !important;
+            }
+          ` : ""}
+          ${efeitoHover === "flutuar" ? `
+            .tc:hover .tc-photo img {
+              transform: none !important;
+            }
+          ` : ""}
         `}} />
       </head>
       <body>

@@ -28,6 +28,13 @@ export type HomeContent = {
   heroBannerUrl: string;
   corPrimaria?: string;
   corSecundaria?: string;
+  fontePrincipal?: string;
+  arredondamento?: string;
+  efeitoHover?: string;
+  bgClaro?: string;
+  surfaceClaro?: string;
+  bgEscuro?: string;
+  surfaceEscuro?: string;
   history?: Array<{ data: string; content: any }>;
 };
 
@@ -63,6 +70,13 @@ export const defaultHomeContent: HomeContent = {
   heroBannerUrl: "",
   corPrimaria: "#1877f2",
   corSecundaria: "#10b981",
+  fontePrincipal: "manrope",
+  arredondamento: "16px",
+  efeitoHover: "flutuar",
+  bgClaro: "#eef0f4",
+  surfaceClaro: "#ffffff",
+  bgEscuro: "#080d18",
+  surfaceEscuro: "#111827",
   history: [],
 };
 
