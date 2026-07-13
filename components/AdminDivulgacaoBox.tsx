@@ -36,6 +36,23 @@ export function AdminDivulgacaoBox({
   const [editedCurto, setEditedCurto] = useState(textoCurto);
   const [editedTecnico, setEditedTecnico] = useState(textoTecnico);
 
+  // ID do anúncio extraído do link
+  const getAnuncioId = () => {
+    try {
+      const parts = linkAnuncio.split("/");
+      const lastPart = parts[parts.length - 1];
+      if (lastPart.includes("-")) {
+        const subparts = lastPart.split("-");
+        return subparts[subparts.length - 1];
+      }
+      return lastPart;
+    } catch {
+      return "";
+    }
+  };
+
+  const adId = getAnuncioId();
+
   const getTextoAtivo = () => {
     if (activeTextTab === "curto") return editedCurto;
     if (activeTextTab === "tecnico") return editedTecnico;
@@ -89,359 +106,9 @@ export function AdminDivulgacaoBox({
     window.open(url, "_blank");
   };
 
-  // Geração de Artes Gráficas no HTML5 Canvas
-  const [gerandoArte, setGerandoArte] = useState<string | null>(null);
-
-  const handleGerarArte = (tipo: "feed" | "story" | "whatsapp") => {
-    setGerandoArte(tipo);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      setGerandoArte(null);
-      return;
-    }
-
-    let width = 1080;
-    let height = 1080;
-    if (tipo === "story") {
-      width = 1080;
-      height = 1920;
-    } else if (tipo === "whatsapp") {
-      width = 1200;
-      height = 630;
-    }
-
-    canvas.width = width;
-    canvas.height = height;
-
-    const truckImg = new Image();
-    truckImg.crossOrigin = "anonymous";
-    truckImg.src = mainImage || "/placeholder-truck.png";
-
-    const qrImg = new Image();
-    qrImg.crossOrigin = "anonymous";
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(linkAnuncio)}`;
-
-    let loadedCount = 0;
-    const checkLoaded = () => {
-      loadedCount++;
-      if (loadedCount === 2) {
-        desenharEDownload();
-      }
-    };
-
-    truckImg.onload = checkLoaded;
-    truckImg.onerror = () => {
-      console.warn("Falha ao carregar a foto do caminhão.");
-      checkLoaded();
-    };
-
-    qrImg.onload = checkLoaded;
-    qrImg.onerror = () => {
-      console.warn("Falha ao carregar a imagem do QR Code.");
-      checkLoaded();
-    };
-
-    function drawRoundRect(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-      if (w < 2 * r) r = w / 2;
-      if (h < 2 * r) r = h / 2;
-      c.beginPath();
-      c.moveTo(x + r, y);
-      c.arcTo(x + w, y, x + w, y + h, r);
-      c.arcTo(x + w, y + h, x, y + h, r);
-      c.arcTo(x, y + h, x, y, r);
-      c.arcTo(x, y, x + w, y, r);
-      c.closePath();
-    }
-
-    function drawImageProp(
-      c: CanvasRenderingContext2D,
-      img: HTMLImageElement,
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-      offsetX = 0.5,
-      offsetY = 0.5
-    ) {
-      if (img.width === 0 || img.height === 0) return;
-
-      const iw = img.width,
-        ih = img.height,
-        r = Math.min(w / iw, h / ih);
-      let nw = iw * r,
-        nh = ih * r,
-        cx = 1,
-        cy = 1,
-        cw = 1,
-        ch = 1;
-
-      if (nw < w) {
-        const r2 = w / nw;
-        nw *= r2;
-        nh *= r2;
-      }
-      if (nh < h) {
-        const r3 = h / nh;
-        nw *= r3;
-        nh *= r3;
-      }
-
-      const ar_w = iw / nw;
-      const ar_h = ih / nh;
-
-      cx = (iw - w * ar_w) * offsetX;
-      cy = (ih - h * ar_h) * offsetY;
-      cw = w * ar_w;
-      ch = h * ar_h;
-
-      if (cx < 0) cx = 0;
-      if (cy < 0) cy = 0;
-      if (cw > iw) cw = iw;
-      if (ch > ih) ch = ih;
-
-      c.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-    }
-
-    function drawTruckIcon(c: CanvasRenderingContext2D, x: number, y: number, color: string) {
-      c.fillStyle = color;
-      c.beginPath();
-      drawRoundRect(c, x, y + 6, 22, 18, 3);
-      c.fill();
-      c.fillStyle = "#ffffff";
-      c.fillRect(x + 14, y + 9, 6, 6);
-      c.fillStyle = color;
-      c.fillRect(x - 22, y, 20, 24);
-      c.fillStyle = "#000000";
-      c.beginPath();
-      c.arc(x - 14, y + 24, 5, 0, Math.PI * 2);
-      c.arc(x - 4, y + 24, 5, 0, Math.PI * 2);
-      c.arc(x + 8, y + 24, 5, 0, Math.PI * 2);
-      c.fill();
-    }
-
-    function desenharEDownload() {
-      if (!ctx) return;
-
-      // 1. Fundo Gradiente Geral (Deep Dark Blue)
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#080c16");
-      bgGrad.addColorStop(1, "#020408");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      // 2. Renderização Específica do Layout
-      if (tipo === "feed") {
-        // Feed Quadrado (1080x1080)
-        // Foto com fade degradê na base
-        drawImageProp(ctx, truckImg, 0, 0, 1080, 750);
-
-        const fadeGrad = ctx.createLinearGradient(0, 500, 0, 750);
-        fadeGrad.addColorStop(0, "transparent");
-        fadeGrad.addColorStop(1, "#080c16");
-        ctx.fillStyle = fadeGrad;
-        ctx.fillRect(0, 500, 1080, 250);
-
-        // Moldura Neon Azul Fina Superior
-        ctx.strokeStyle = "rgba(59, 130, 246, 0.4)";
-        ctx.lineWidth = 4;
-        ctx.strokeRect(20, 20, 1040, 1040);
-
-        // Barra de Informações do Rodapé
-        ctx.fillStyle = "#111827";
-        drawRoundRect(ctx, 40, 740, 1000, 300, 16);
-        ctx.fill();
-
-        // Branding
-        drawTruckIcon(ctx, 80, 770, "#3b82f6");
-        ctx.fillStyle = "#3b82f6";
-        ctx.font = "bold 22px sans-serif";
-        ctx.fillText("CAMINHÕES À VENDA", 115, 788);
-
-        // Título do Anúncio
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 42px sans-serif";
-        ctx.fillText(titulo.slice(0, 36), 60, 845);
-
-        // Preço em Pílula Verde Neon com Sombra Projetada
-        ctx.shadowColor = "rgba(16, 185, 129, 0.4)";
-        ctx.shadowBlur = 15;
-        ctx.fillStyle = "#10b981";
-        drawRoundRect(ctx, 60, 890, 320, 75, 12);
-        ctx.fill();
-        ctx.shadowColor = "transparent";
-        ctx.shadowBlur = 0;
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "extrabold 38px sans-serif";
-        ctx.fillText(preco, 85, 942);
-
-        // Cidade / UF + Ícone Pin
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "600 28px sans-serif";
-        ctx.fillText(`📍 ${cidade}/${estado}`, 60, 1000);
-
-        // Selo "OPORTUNIDADE" Dourado
-        ctx.fillStyle = "rgba(245, 158, 11, 0.15)";
-        ctx.strokeStyle = "#f59e0b";
-        ctx.lineWidth = 2;
-        drawRoundRect(ctx, 420, 895, 210, 48, 8);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = "#f59e0b";
-        ctx.font = "bold 18px sans-serif";
-        ctx.fillText("OPORTUNIDADE", 450, 927);
-
-        // QR Code na direita
-        ctx.fillStyle = "#ffffff";
-        drawRoundRect(ctx, 810, 770, 200, 200, 14);
-        ctx.fill();
-        ctx.drawImage(qrImg, 825, 785, 170, 170);
-
-        ctx.fillStyle = "#64748b";
-        ctx.font = "600 16px sans-serif";
-        ctx.fillText("Consulte no site", 845, 995);
-      } else if (tipo === "story") {
-        // Story Vertical (1080x1920)
-        // Foto centralizada com cantos arredondados e sombra
-        ctx.shadowColor = "rgba(0,0,0,0.5)";
-        ctx.shadowBlur = 30;
-        ctx.fillStyle = "#1e293b";
-        drawRoundRect(ctx, 40, 260, 1000, 1000, 24);
-        ctx.fill();
-        ctx.shadowColor = "transparent";
-        ctx.shadowBlur = 0;
-
-        ctx.save();
-        ctx.beginPath();
-        drawRoundRect(ctx, 40, 260, 1000, 1000, 24);
-        ctx.clip();
-        drawImageProp(ctx, truckImg, 40, 260, 1000, 1000);
-        ctx.restore();
-
-        // Moldura dourada elegante na foto
-        ctx.strokeStyle = "#eab308";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        drawRoundRect(ctx, 40, 260, 1000, 1000, 24);
-        ctx.stroke();
-
-        // Topo do Story (Branding)
-        drawTruckIcon(ctx, 160, 70, "#eab308");
-        ctx.fillStyle = "#eab308";
-        ctx.font = "bold 26px sans-serif";
-        ctx.fillText("CAMINHÕES À VENDA", 195, 88);
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 46px sans-serif";
-        ctx.fillText(titulo.slice(0, 32), 540 - ctx.measureText(titulo.slice(0, 32)).width / 2, 180);
-
-        // Base do Story
-        ctx.fillStyle = "#10b981";
-        ctx.font = "extrabold 90px sans-serif";
-        ctx.fillText(preco, 540 - ctx.measureText(preco).width / 2, 1360);
-
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "600 36px sans-serif";
-        const locTxt = `📍 ${cidade}/${estado}`;
-        ctx.fillText(locTxt, 540 - ctx.measureText(locTxt).width / 2, 1470);
-
-        // QR Code e chamada no rodapé
-        ctx.fillStyle = "#ffffff";
-        drawRoundRect(ctx, 440, 1570, 200, 200, 16);
-        ctx.fill();
-        ctx.drawImage(qrImg, 455, 1585, 170, 170);
-
-        ctx.fillStyle = "#64748b";
-        ctx.font = "600 20px sans-serif";
-        const camTxt = "Aponte a câmera para ver mais fotos";
-        ctx.fillText(camTxt, 540 - ctx.measureText(camTxt).width / 2, 1810);
-      } else {
-        // WhatsApp Retangular (1200x630) com Corte Diagonal Ousado e Borda Dourada
-        drawImageProp(ctx, truckImg, 0, 0, 1200, 630);
-
-        // Painel de informações com corte diagonal na direita
-        ctx.fillStyle = "#0f172a";
-        ctx.beginPath();
-        ctx.moveTo(690, 0);
-        ctx.lineTo(1200, 0);
-        ctx.lineTo(1200, 630);
-        ctx.lineTo(770, 630);
-        ctx.closePath();
-        ctx.fill();
-
-        // Linha dourada brilhante sobre o corte diagonal
-        ctx.strokeStyle = "#eab308";
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(690, 0);
-        ctx.lineTo(770, 630);
-        ctx.stroke();
-
-        // Textos na direita
-        drawTruckIcon(ctx, 840, 50, "#3b82f6");
-        ctx.fillStyle = "#3b82f6";
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillText("CAMINHÕES À VENDA", 875, 68);
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 34px sans-serif";
-        const words = titulo.split(" ");
-        let line = "";
-        let y = 130;
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + " ";
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > 360 && n > 0) {
-            ctx.fillText(line, 800, y);
-            line = words[n] + " ";
-            y += 44;
-          } else {
-            line = testLine;
-          }
-        }
-        ctx.fillText(line, 800, y);
-
-        // Preço Verde
-        ctx.fillStyle = "#10b981";
-        ctx.font = "extrabold 48px sans-serif";
-        ctx.fillText(preco, 800, y + 60);
-
-        // Localização
-        ctx.fillStyle = "#94a3b8";
-        ctx.font = "600 24px sans-serif";
-        ctx.fillText(`📍 ${cidade}/${estado}`, 800, y + 115);
-
-        // QR Code no rodapé direito
-        ctx.fillStyle = "#ffffff";
-        drawRoundRect(ctx, 800, 450, 140, 140, 10);
-        ctx.fill();
-        ctx.drawImage(qrImg, 810, 460, 120, 120);
-
-        ctx.fillStyle = "#64748b";
-        ctx.font = "600 15px sans-serif";
-        ctx.fillText("Aponte para", 960, 490);
-        ctx.fillText("negociar e", 960, 515);
-        ctx.fillText("ver fotos", 960, 540);
-      }
-
-      // Download da Imagem gerada
-      try {
-        const downloadUrl = canvas.toDataURL("image/png");
-        const a = document.createElement("a");
-        a.download = `arte-${tipo}-${titulo.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.png`;
-        a.href = downloadUrl;
-        a.click();
-        setCopiado("Arte baixada com sucesso!");
-        window.setTimeout(() => setCopiado(null), 3000);
-      } catch (err) {
-        console.error("Erro ao gerar URL da imagem do canvas:", err);
-        alert("Erro de segurança ao gerar download. Verifique se as fotos possuem CORS configurado.");
-      } finally {
-        setGerandoArte(null);
-      }
-    }
+  // URLs das artes dinâmicas geradas no servidor Next.js
+  const getArteUrl = (tipo: "feed" | "story" | "whatsapp") => {
+    return `/api/admin/gerar-arte/${adId || "id"}?formato=${tipo}`;
   };
 
   return (
@@ -598,50 +265,43 @@ export function AdminDivulgacaoBox({
         </div>
       </section>
 
-      {/* GERADOR AUTOMÁTICO DE ARTES E QR CODE */}
+      {/* GERADOR AUTOMÁTICO DE ARTES (IMAGENS RENDERIZADAS NO SERVIDOR COM DOWNLOAD) */}
       <section style={styles.artsCard}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 14 }}>
-          <div>
-            <h3 style={{ ...styles.sectionTitle, margin: 0 }}>Gerador de Artes de Vendas</h3>
-            <p style={styles.sectionDesc}>Gere artes profissionais contendo a foto, preço, localidade e QR Code do anúncio.</p>
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <button
-              onClick={() => handleGerarArte("feed")}
-              disabled={!!gerandoArte}
-              style={styles.downloadBtn}
-            >
-              <Download size={14} /> {gerandoArte === "feed" ? "Gerando..." : "Arte para Feed (1:1)"}
-            </button>
-            <button
-              onClick={() => handleGerarArte("story")}
-              disabled={!!gerandoArte}
-              style={styles.downloadBtn}
-            >
-              <Download size={14} /> {gerandoArte === "story" ? "Gerando..." : "Arte para Status/Story"}
-            </button>
-            <button
-              onClick={() => handleGerarArte("whatsapp")}
-              disabled={!!gerandoArte}
-              style={styles.downloadBtn}
-            >
-              <Download size={14} /> {gerandoArte === "whatsapp" ? "Gerando..." : "Arte para WhatsApp"}
-            </button>
-          </div>
-        </div>
+        <h3 style={styles.sectionTitle}>Prévia e Download de Artes para Redes Sociais</h3>
+        <p style={styles.sectionDesc}>Clique para baixar a arte profissional em alta definição para compartilhar na rede desejada.</p>
 
-        {/* Visualização Rápida QR Code */}
-        <div style={styles.qrSection}>
-          <div style={styles.qrInfo}>
-            <h4 style={{ color: "#fff", margin: "0 0 4px", fontSize: 15 }}>Acesso rápido via QR Code</h4>
-            <p style={{ margin: 0, color: "#64748b", fontSize: 13 }}>Mostre aos clientes presenciais ou utilize em panfletos e placas de loja.</p>
+        <div style={styles.previewGrid}>
+          {/* Formato 1: Feed */}
+          <div style={styles.previewCard}>
+            <div style={styles.previewLabel}>Feed do Instagram / Facebook (1:1)</div>
+            <div style={styles.previewWrapper}>
+              <img src={getArteUrl("feed")} alt="Prévia Feed 1:1" style={styles.previewImg} loading="lazy" />
+            </div>
+            <a href={getArteUrl("feed")} download={`feed-${adId}.png`} target="_blank" rel="noreferrer" style={styles.downloadBtn}>
+              <Download size={15} /> Baixar Arte Feed
+            </a>
           </div>
-          <div style={styles.qrDisplay}>
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(linkAnuncio)}`}
-              alt="QR Code do anúncio"
-              style={{ width: 100, height: 100, borderRadius: 6 }}
-            />
+
+          {/* Formato 2: Story */}
+          <div style={styles.previewCard}>
+            <div style={styles.previewLabel}>Status / Story (9:16)</div>
+            <div style={styles.previewWrapperStory}>
+              <img src={getArteUrl("story")} alt="Prévia Story 9:16" style={styles.previewImg} loading="lazy" />
+            </div>
+            <a href={getArteUrl("story")} download={`story-${adId}.png`} target="_blank" rel="noreferrer" style={styles.downloadBtn}>
+              <Download size={15} /> Baixar Arte Story
+            </a>
+          </div>
+
+          {/* Formato 3: WhatsApp */}
+          <div style={styles.previewCard}>
+            <div style={styles.previewLabel}>WhatsApp / Grupos (1200x630)</div>
+            <div style={styles.previewWrapperWhatsapp}>
+              <img src={getArteUrl("whatsapp")} alt="Prévia WhatsApp" style={styles.previewImg} loading="lazy" />
+            </div>
+            <a href={getArteUrl("whatsapp")} download={`whatsapp-${adId}.png`} target="_blank" rel="noreferrer" style={styles.downloadBtn}>
+              <Download size={15} /> Baixar Arte WhatsApp
+            </a>
           </div>
         </div>
       </section>
@@ -839,32 +499,68 @@ const styles: Record<string, CSSProperties> = {
     backdropFilter: "blur(12px)",
     border: "1px solid rgba(255, 255, 255, 0.05)",
   },
+  previewGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: 20,
+    marginTop: 16,
+  },
+  previewCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    background: "#1f2937",
+    padding: 16,
+    borderRadius: 18,
+    border: "1px solid #374151",
+  },
+  previewLabel: { fontSize: 14, color: "#94a3b8", fontWeight: 800 },
+  previewWrapper: {
+    width: "100%",
+    aspectRatio: "1",
+    overflow: "hidden",
+    borderRadius: 12,
+    background: "#080c16",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  previewWrapperStory: {
+    width: "100%",
+    aspectRatio: "9/16",
+    overflow: "hidden",
+    borderRadius: 12,
+    background: "#080c16",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  previewWrapperWhatsapp: {
+    width: "100%",
+    aspectRatio: "1200/630",
+    overflow: "hidden",
+    borderRadius: 12,
+    background: "#080c16",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  previewImg: { width: "100%", height: "100%", objectFit: "contain" },
   downloadBtn: {
-    height: 42,
-    padding: "0 16px",
+    height: 44,
     borderRadius: 12,
     background: "#1e293b",
     color: "#f8fafc",
     fontWeight: 800,
     fontSize: 13,
-    cursor: "pointer",
+    textDecoration: "none",
     display: "inline-flex",
     alignItems: "center",
-    gap: 6,
+    justifyContent: "center",
+    gap: 8,
     border: "1px solid rgba(255,255,255,0.08)",
     transition: "all 0.2s ease-in-out",
   },
-  qrSection: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 20,
-    marginTop: 20,
-    paddingTop: 20,
-    borderTop: "1px solid rgba(255,255,255,0.05)",
-  },
-  qrInfo: { flex: 1 },
-  qrDisplay: { background: "#ffffff", padding: 8, borderRadius: 12 },
 
   toast: {
     position: "fixed",
