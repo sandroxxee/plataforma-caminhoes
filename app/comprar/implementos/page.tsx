@@ -8,11 +8,40 @@ import Link from "next/link";
 import { Truck, Container, Wrench, Tractor, Package } from "lucide-react";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Implementos à Venda | Caminhões à Venda",
-  description: "Implementos rodoviários à venda: caçambas, munks, pranchas, baús, tanques, plataformas e muito mais.",
-  alternates: { canonical: "/comprar/implementos" },
-};
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { marca, estado, q, tipo } = await searchParams;
+  const marcaFiltro = marca ? String(marca).trim() : "";
+  const estadoFiltro = estado ? String(estado).trim() : "";
+  const tipoFiltro = tipo ? String(tipo).trim() : "";
+  const busca = (q || "").trim().slice(0, 100);
+
+  let title = "Implementos à Venda | Caçambas, baús e munks usados e seminovos";
+  let description = "Encontre implementos rodoviários à venda: caçambas, munks, pranchas, baús, tanques, plataformas e muito mais. Fale pelo WhatsApp.";
+
+  if (marcaFiltro && estadoFiltro) {
+    title = `Implementos ${marcaFiltro} à Venda em ${estadoFiltro} | Caminhões à Venda`;
+    description = `Confira os anúncios de implementos ${marcaFiltro} usados e seminovos em ${estadoFiltro}. Entre em contato pelo WhatsApp.`;
+  } else if (marcaFiltro) {
+    title = `Implementos ${marcaFiltro} à Venda | Ofertas de ${marcaFiltro}`;
+    description = `Veja ofertas de implementos rodoviários da marca ${marcaFiltro} e negocie direto com o vendedor.`;
+  } else if (estadoFiltro) {
+    title = `Implementos à Venda em ${estadoFiltro} | Ofertas em ${estadoFiltro}`;
+    description = `Veja os anúncios de implementos rodoviários à venda no estado de ${estadoFiltro}. Fale direto pelo WhatsApp.`;
+  } else if (tipoFiltro) {
+    title = `Implementos do tipo ${tipoFiltro} à Venda | Caminhões à Venda`;
+    description = `Confira ofertas de implementos rodoviários do tipo ${tipoFiltro} à venda. Contato direto via WhatsApp.`;
+  } else if (busca) {
+    title = `Busca por "${busca}" em Implementos | Caminhões à Venda`;
+    description = `Resultados de busca para "${busca}" em implementos no nosso portal.`;
+  }
+
+  return {
+    title,
+    description,
+    alternates: { canonical: "/comprar/implementos" },
+  };
+}
 
 type PageProps = { searchParams: Promise<{ tipo?: string; estado?: string; q?: string; marca?: string; pmin?: string; pmax?: string }> };
 

@@ -31,6 +31,9 @@ export function AdminDivulgacaoBox({
   const [copiado, setCopiado] = useState<string | null>(null);
   const [activeTextTab, setActiveTextTab] = useState<"completo" | "curto" | "tecnico">("completo");
 
+  // Novo estado de tema para as artes geradas
+  const [tema, setTema] = useState("neon");
+
   // Armazena as edições locais nas legendas
   const [editedCompleto, setEditedCompleto] = useState(textoCompleto);
   const [editedCurto, setEditedCurto] = useState(textoCurto);
@@ -108,7 +111,7 @@ export function AdminDivulgacaoBox({
 
   // URLs das artes dinâmicas geradas no servidor Next.js
   const getArteUrl = (tipo: "feed" | "story" | "whatsapp") => {
-    return `/api/admin/gerar-arte/${adId || "id"}?formato=${tipo}`;
+    return `/api/admin/gerar-arte/${adId || "id"}?formato=${tipo}&tema=${tema}`;
   };
 
   return (
@@ -267,7 +270,32 @@ export function AdminDivulgacaoBox({
 
       {/* GERADOR AUTOMÁTICO DE ARTES (IMAGENS RENDERIZADAS NO SERVIDOR COM DOWNLOAD) */}
       <section style={styles.artsCard}>
-        <h3 style={styles.sectionTitle}>Prévia e Download de Artes para Redes Sociais</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, flexWrap: "wrap", gap: 10 }}>
+          <h3 style={styles.sectionTitle}>Prévia e Download de Artes para Redes Sociais</h3>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.03)", padding: "4px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
+            <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 800 }}>Modelo:</span>
+            <select
+              value={tema}
+              onChange={(e) => setTema(e.target.value)}
+              style={{
+                background: "transparent",
+                color: "#fff",
+                border: 0,
+                fontSize: 13,
+                fontWeight: 700,
+                outline: "none",
+                cursor: "pointer",
+                paddingRight: 6
+              }}
+            >
+              <option value="neon" style={{ background: "#1f2937" }}>🔵 Neon</option>
+              <option value="gold" style={{ background: "#1f2937" }}>🟡 Ouro</option>
+              <option value="glass" style={{ background: "#1f2937" }}>🌸 Glass</option>
+              <option value="light" style={{ background: "#1f2937" }}>⚪ Light</option>
+            </select>
+          </div>
+        </div>
         <p style={styles.sectionDesc}>Clique para baixar a arte profissional em alta definição para compartilhar na rede desejada.</p>
 
         <div style={styles.previewGrid}>

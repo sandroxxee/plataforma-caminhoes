@@ -9,11 +9,40 @@ import { Tractor, Container, Truck, Package, Wrench } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Máquinas Pesadas à Venda | Caminhões à Venda",
-  description: "Escavadeiras, pás-carregadeiras, motoniveladoras, rolos e muito mais. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/comprar/maquinas" },
-};
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { marca, estado, q, tipo } = await searchParams;
+  const marcaFiltro = marca ? String(marca).trim() : "";
+  const estadoFiltro = estado ? String(estado).trim() : "";
+  const tipoFiltro = tipo ? String(tipo).trim() : "";
+  const busca = (q || "").trim().slice(0, 100);
+
+  let title = "Máquinas Pesadas à Venda | Escavadeiras e tratores usados e seminovos";
+  let description = "Encontre máquinas pesadas à venda: escavadeiras, retroescavadeiras, pás-carregadeiras, motoniveladoras e tratores. Fale direto no WhatsApp.";
+
+  if (marcaFiltro && estadoFiltro) {
+    title = `Máquinas Pesadas ${marcaFiltro} à Venda em ${estadoFiltro} | Caminhões à Venda`;
+    description = `Confira os anúncios de máquinas pesadas ${marcaFiltro} usadas e seminovas em ${estadoFiltro}. Contato direto via WhatsApp com o anunciante.`;
+  } else if (marcaFiltro) {
+    title = `Máquinas Pesadas ${marcaFiltro} à Venda | Ofertas de ${marcaFiltro}`;
+    description = `Veja ofertas de máquinas pesadas da marca ${marcaFiltro} para construção ou agronegócio.`;
+  } else if (estadoFiltro) {
+    title = `Máquinas Pesadas à Venda em ${estadoFiltro} | Ofertas em ${estadoFiltro}`;
+    description = `Veja anúncios de máquinas pesadas e equipamentos à venda no estado de ${estadoFiltro}.`;
+  } else if (tipoFiltro) {
+    title = `Máquinas do tipo ${tipoFiltro} à Venda | Caminhões à Venda`;
+    description = `Confira ofertas de máquinas pesadas do tipo ${tipoFiltro} à venda. Fale direto pelo WhatsApp.`;
+  } else if (busca) {
+    title = `Busca por "${busca}" em Máquinas | Caminhões à Venda`;
+    description = `Resultados de busca para "${busca}" em máquinas pesadas no nosso portal.`;
+  }
+
+  return {
+    title,
+    description,
+    alternates: { canonical: "/comprar/maquinas" },
+  };
+}
 
 type PageProps = { searchParams: Promise<{ estado?: string; tipo?: string; q?: string; marca?: string; pmin?: string; pmax?: string }> };
 

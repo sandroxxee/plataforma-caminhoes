@@ -12,7 +12,7 @@ type Categoria = { label: string; href: string; iconName: string };
 
 const CATEGORIAS: Categoria[] = [
   { label: "Todos",       href: "/comprar/caminhoes",    iconName: "truck" },
-  { label: "Caminhões",   href: "/caminhoes",            iconName: "truck" },
+  { label: "Caminhões",   href: "/comprar/caminhoes",    iconName: "truck" },
   { label: "Carretas",    href: "/comprar/carretas",     iconName: "container" },
   { label: "Implementos", href: "/comprar/implementos",  iconName: "wrench" },
   { label: "Ônibus",      href: "/onibus",               iconName: "bus" },
@@ -193,11 +193,11 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           <input type="search" className="af-search" placeholder="Buscar por modelo, marca ou cidade..." value={search} onChange={(e) => handleSearch(e.target.value)} />
           {search && <button className="af-search-clear" onClick={() => handleSearch("")}><X size={13} /></button>}
         </div>
-        <p className="af-count">
-          <strong>{total}</strong> {total === 1 ? "anúncio" : "anúncios"}
-          {hasFilters && <span className="af-filtered"> encontrados</span>}
-          {hasFilters && <Link href="/comprar/caminhoes" className="af-clear-inline"><X size={11} />Limpar</Link>}
-        </p>
+        {hasFilters && (
+          <p className="af-count">
+            <Link href="/comprar/caminhoes" className="af-clear-inline" style={{ marginLeft: 0 }}><X size={11} />Limpar filtros</Link>
+          </p>
+        )}
       </div>
 
       {/* DRAWER OVERLAY */}

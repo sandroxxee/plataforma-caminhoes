@@ -124,7 +124,7 @@ export default async function ParceirosPage() {
                   <a className="btn-primary" href={whatsappUrl} target="_blank" rel="noreferrer">
                     Quero ser parceiro
                   </a>
-                  <Link className="btn-secondary" href="/anuncios">
+                  <Link className="btn-secondary" href="/comprar/caminhoes">
                     Ver anúncios
                   </Link>
                 </div>

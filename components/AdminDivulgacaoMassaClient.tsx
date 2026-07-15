@@ -32,6 +32,9 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
   const [busca, setBusca] = useState("");
   const [copiado, setCopiado] = useState<string | null>(null);
   
+  // Novo estado de tema para as artes geradas
+  const [tema, setTema] = useState("neon");
+  
   // Texto editável da divulgação em lote
   const [editedText, setEditedText] = useState("");
   const [hasManuallyEdited, setHasManuallyEdited] = useState(false);
@@ -139,7 +142,7 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
 
   // Reta de API do servidor para geração de artes
   const getArteUrl = (id: string, tipo: "feed" | "story" | "whatsapp") => {
-    return `/api/admin/gerar-arte/${id}?formato=${tipo}`;
+    return `/api/admin/gerar-arte/${id}?formato=${tipo}&tema=${tema}`;
   };
 
   return (
@@ -347,9 +350,34 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
 
             {primeiroSelecionado ? (
               <div style={styles.previewContent}>
-                <strong style={{ color: "#38bdf8", display: "block", marginBottom: 12, fontSize: 13, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
-                  Foco: {getAdTitle(primeiroSelecionado)}
-                </strong>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
+                  <strong style={{ color: "#38bdf8", fontSize: 13, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1, margin: 0 }}>
+                    Foco: {getAdTitle(primeiroSelecionado)}
+                  </strong>
+                  
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.03)", padding: "2px 8px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 800 }}>Modelo:</span>
+                    <select
+                      value={tema}
+                      onChange={(e) => setTema(e.target.value)}
+                      style={{
+                        background: "transparent",
+                        color: "#fff",
+                        border: 0,
+                        fontSize: 11,
+                        fontWeight: 800,
+                        outline: "none",
+                        cursor: "pointer",
+                        paddingRight: 4
+                      }}
+                    >
+                      <option value="neon" style={{ background: "#1e293b" }}>🔵 Neon</option>
+                      <option value="gold" style={{ background: "#1e293b" }}>🟡 Ouro</option>
+                      <option value="glass" style={{ background: "#1e293b" }}>🌸 Glass</option>
+                      <option value="light" style={{ background: "#1e293b" }}>⚪ Light</option>
+                    </select>
+                  </div>
+                </div>
                 
                 <div style={styles.mediaRow}>
                   <div style={styles.miniMediaCard}>

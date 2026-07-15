@@ -60,7 +60,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           border-bottom-color: rgba(255,255,255,0.08);
         }
         .ph-container {
-          width: 100%; max-width: 1400px;
+          width: 100%; max-width: 1600px;
           padding: 0 24px;
           display: flex; align-items: center; justify-content: space-between;
           gap: 32px;
@@ -239,7 +239,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
             {/* COMPRAR */}
             <div className="ph-nav-item">
               <button className={`ph-nav-trigger ${pathname.startsWith("/comprar") ? "active" : ""}`}>
-                Comprar <ChevronDown size={14} strokeWidth={3} />
+                O que você procura? <ChevronDown size={14} strokeWidth={3} />
               </button>
               <div className="ph-dropdown">
                 {buyingItems.map((item) => (
@@ -312,7 +312,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
 
       <div className={`ph-mobile-menu ${menuOpen ? "open" : ""}`}>
         <div className="ph-mobile-section">
-          <p className="ph-mobile-section-title">Comprar</p>
+          <p className="ph-mobile-section-title">O que você procura?</p>
           <div className="ph-mobile-grid">
             {buyingItems.map((item) => (
               <Link key={item.href} href={item.href} className="ph-mobile-link" onClick={() => setMenuOpen(false)}>

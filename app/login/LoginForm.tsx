@@ -64,10 +64,9 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="card">
       <div className="form-head">
-        <span className="form-icon">🔐</span>
         <div>
-          <h2>Entrar no painel</h2>
-          <p>Acesse sua conta para gerenciar anúncios.</p>
+          <h2>Entrar</h2>
+          <p>Acesse sua conta para gerenciar seus anúncios.</p>
         </div>
       </div>
 
@@ -84,7 +83,7 @@ export function LoginForm() {
       </label>
 
       <button type="submit" disabled={carregando}>
-        {carregando ? "Entrando..." : "Entrar no painel"}
+        {carregando ? "Entrando..." : "Entrar"}
       </button>
 
       <SocialLoginButtons />

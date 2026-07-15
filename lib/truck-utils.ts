@@ -45,7 +45,15 @@ export function getLocation(truck: TruckCardData) {
 }
 
 export function getTitle(truck: TruckCardData) {
-  return truck.titulo || `${truck.marca || ""} ${truck.modelo || ""}`.trim() || "Caminh\u00e3o anunciado";
+  if (truck.marca && truck.modelo) {
+    const m = truck.marca.trim();
+    const mod = truck.modelo.trim();
+    if (mod.toLowerCase().startsWith(m.toLowerCase())) {
+      return mod;
+    }
+    return `${m} ${mod}`;
+  }
+  return truck.titulo || "Caminhão anunciado";
 }
 
 export function getCardTitle(truck: TruckCardData) {
@@ -58,8 +66,8 @@ export function getCardTitle(truck: TruckCardData) {
     .replace(/\s{2,}/g, " ").trim() || title;
 }
 
-export function formatImageUrl(url: string | null | undefined): string {
-  if (!url) return "";
+export function formatImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
   if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
     return url;
   }

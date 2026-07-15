@@ -81,10 +81,27 @@ export default async function AnunciosPage({ searchParams }: PageProps) {
   if (busca) countQ = countQ.or(`titulo.ilike.%${busca}%,marca.ilike.%${busca}%,modelo.ilike.%${busca}%,cidade.ilike.%${busca}%`);
   const { count: total } = await countQ;
 
+  let titleText = "Caminhões à Venda";
+  let subtitleText = "Encontre os melhores caminhões usados e seminovos com garantia de procedência.";
+
+  if (marcaFiltro && estadoFiltro) {
+    titleText = `Caminhões ${marcaFiltro} à Venda em ${estadoFiltro}`;
+    subtitleText = `Confira os melhores anúncios de caminhões ${marcaFiltro} usados e seminovos em ${estadoFiltro}.`;
+  } else if (marcaFiltro) {
+    titleText = `Caminhões ${marcaFiltro} à Venda`;
+    subtitleText = `Procurando caminhão ${marcaFiltro}? Veja as melhores ofertas de ${marcaFiltro} em todo o Brasil.`;
+  } else if (estadoFiltro) {
+    titleText = `Caminhões à Venda em ${estadoFiltro}`;
+    subtitleText = `Veja anúncios de caminhões e implementos à venda no estado de ${estadoFiltro}.`;
+  } else if (busca) {
+    titleText = `Busca por "${busca}"`;
+    subtitleText = `Resultados de busca para "${busca}" em caminhões e pesados.`;
+  }
+
   return (
     <CategoryPageLayout
-      title="Caminhões à Venda"
-      subtitle="Encontre os melhores caminhões usados e seminovos com garantia de procedência."
+      title={titleText}
+      subtitle={subtitleText}
       total={total ?? trucks.length}
       sidebar={
         <AnunciosSidebar

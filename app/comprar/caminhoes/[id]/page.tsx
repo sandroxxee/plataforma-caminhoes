@@ -57,35 +57,71 @@ function FipeBadge({ abaixoFipe }: { abaixoFipe: boolean }) {
   );
 }
 
-function AnuncioHighlights({ truck }: { truck: Truck }) {
-  const highlights = [
-    { label: "Ano", value: truck.ano_modelo || truck.ano_fabricacao, icon: <Calendar size={18} /> },
-    { label: "Quilometragem", value: formatKm(truck.quilometragem || truck.km), icon: <Gauge size={18} /> },
-    { label: "Tração", value: truck.tracao, icon: <Settings2 size={18} /> },
-    { label: "Carroceria", value: truck.carroceria, icon: <TruckIcon size={18} /> },
-  ].filter(h => h.value);
 
-  if (highlights.length === 0) return null;
 
-  return (
-    <div className="highlights-grid">
-      {highlights.map((h) => (
-        <div key={h.label} className="highlight-item">
-          <div className="highlight-icon">{h.icon}</div>
-          <div className="highlight-info">
-            <span className="highlight-label">{h.label}</span>
-            <span className="highlight-value">{h.value}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SmartDescription({ text, fallback }: { text?: string | null; fallback: string }) {
+function SmartDescription({
+  text,
+  fallback,
+  title,
+  price,
+  whatsapp,
+}: {
+  text?: string | null;
+  fallback: string;
+  title: string;
+  price: number | null;
+  whatsapp: string | null;
+}) {
   if (!text?.trim()) return <p className="detail-desc-text">{fallback}</p>;
 
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  const titleLower = title.toLowerCase();
+  const priceStr = price ? price.toString() : "";
+  const phoneDigits = whatsapp ? whatsapp.replace(/\D/g, "") : "";
+
+  const lines = text
+    .split("\n")
+    .map(l => l.trim())
+    .filter(Boolean)
+    .filter(line => {
+      const lineLower = line.toLowerCase();
+      const cleanLine = lineLower.replace(/[^\w\s]/g, "").trim();
+
+      // 1. Se a linha for idêntica ao título do anúncio
+      if (cleanLine === titleLower.replace(/[^\w\s]/g, "").trim()) {
+        return false;
+      }
+
+      // 2. Se a linha contiver o título + termos redundantes de venda ou ano
+      if (cleanLine.includes(titleLower.replace(/[^\w\s]/g, "").trim()) && 
+          (lineLower.includes("venda") || lineLower.includes("vendo") || lineLower.includes("oferta") || lineLower.match(/\b\d{4}\b/))) {
+        return false;
+      }
+
+      // 3. Se a linha for apenas o preço
+      if (priceStr) {
+        const digits = line.replace(/\D/g, "");
+        if (digits === priceStr || digits === (priceStr + "00")) {
+          return false;
+        }
+        if (lineLower.includes("r$") && lineLower.includes(priceStr.slice(0, 3))) {
+          return false;
+        }
+      }
+
+      // 4. Se a linha contiver telefone/contato
+      if (phoneDigits && phoneDigits.length >= 8) {
+        const lineDigits = line.replace(/\D/g, "");
+        if (lineDigits.includes(phoneDigits.slice(-8)) || lineLower.includes("whatsapp") || lineLower.includes("whats") || lineLower.includes("fone") || lineLower.includes("contato")) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+  if (lines.length === 0) {
+    return <p className="detail-desc-text">{fallback}</p>;
+  }
 
   return (
     <div className="smart-desc">
@@ -208,66 +244,30 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             <FipeBadge abaixoFipe={abaixoFipe} />
           </div>
 
-          <div className="detail-tabs-wrap">
-            <Tabs defaultValue="sobre" className="w-full">
-              <TabsList className="detail-tabs-list">
-                <TabsTrigger value="sobre" className="detail-tab-trigger">
-                  <Info size={16} /> Sobre
-                </TabsTrigger>
-                {specs.length > 0 && (
-                  <TabsTrigger value="ficha" className="detail-tab-trigger">
-                    <FileText size={16} /> Ficha Técnica
-                  </TabsTrigger>
-                )}
-                <TabsTrigger value="localizacao" className="detail-tab-trigger">
-                  <MapIcon size={16} /> Localização
-                </TabsTrigger>
-              </TabsList>
+          <div className="detail-content-blocks" style={{ display: "grid", gap: 14, marginTop: 14 }}>
+            <div className="detail-card detail-desc-card">
+              <h2 className="detail-section-title">{textos.sobre}</h2>
+              <div className="detail-desc-body">
+                <SmartDescription
+                  text={truck.descricao}
+                  fallback={`Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
+                  title={title}
+                  price={truck.preco}
+                  whatsapp={truck.whatsapp}
+                />
+              </div>
+            </div>
 
-              <TabsContent value="sobre" className="detail-tab-content">
-                <div className="detail-card detail-desc-card">
-                  <h2 className="detail-section-title">{textos.sobre}</h2>
-
-                  <AnuncioHighlights truck={truck} />
-
-                  <div className="detail-desc-body">
-                    <SmartDescription
-                      text={truck.descricao}
-                      fallback={`Este anúncio ainda não possui descrição cadastrada. Fale pelo WhatsApp para confirmar estado ${textos.veiculo === "peça" ? "da" : "do"} ${textos.veiculo}, disponibilidade e condições de negociação.`}
-                    />
-                  </div>
+            <div className="detail-card detail-location-card">
+              <h2 className="detail-section-title">Localização</h2>
+              <div className="detail-location-info">
+                <MapPin size={24} className="text-blue-500" />
+                <div>
+                  <p className="text-lg font-bold">{location || "Localização não informada"}</p>
+                  <p className="text-muted-foreground text-sm">Entre em contato com o vendedor para agendar uma visita e ver o veículo pessoalmente.</p>
                 </div>
-              </TabsContent>
-
-              {specs.length > 0 && (
-                <TabsContent value="ficha" className="detail-tab-content">
-                  <div className="detail-card detail-specs-card">
-                    <h2 className="detail-section-title">{textos.ficha}</h2>
-                    <dl className="detail-specs-dl">
-                      {specs.map((spec) => (
-                        <div key={spec.label} className="detail-spec-row">
-                          <dt>{spec.label}</dt>
-                          <dd>{spec.value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-                </TabsContent>
-              )}
-
-              <TabsContent value="localizacao" className="detail-tab-content">
-                <div className="detail-card detail-location-card">
-                  <h2 className="detail-section-title">Localização do Veículo</h2>
-                  <div className="detail-location-info">
-                    <MapPin size={24} className="text-blue-500" />
-                    <div>
-                      <p className="text-lg font-bold">{location || "Localização não informada"}</p>
-                      <p className="text-muted-foreground text-sm">Entre em contato com o vendedor para agendar uma visita e ver o veículo pessoalmente.</p>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+            </div>
           </div>
 
           <div className="detail-card detail-safety">
@@ -305,22 +305,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
             />
           </div>
 
-          {specs.length > 0 && (
-            <div className="detail-card detail-specs-card-desktop">
-              <h2 className="detail-section-title">{textos.ficha}</h2>
-              <dl className="detail-specs-dl">
-                {specs.slice(0, 6).map((spec) => (
-                  <div key={spec.label} className="detail-spec-row">
-                    <dt>{spec.label}</dt>
-                    <dd>{spec.value}</dd>
-                  </div>
-                ))}
-              </dl>
-              {specs.length > 6 && (
-                <p className="text-xs text-muted-foreground mt-3 font-bold text-center">Veja a ficha completa nas abas ao lado.</p>
-              )}
-            </div>
-          )}
+
         </aside>
       </div>
 

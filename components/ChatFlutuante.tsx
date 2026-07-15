@@ -37,6 +37,7 @@ export default function ChatFlutuante({ truck }: Props) {
   const [mensagensTela, setMensagensTela] = useState<Mensagem[]>([]);
   const [historico, setHistorico] = useState<HistoricoMsg[]>([]);
   const [carregando, setCarregando] = useState(false);
+  
   const finalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,23 +65,41 @@ export default function ChatFlutuante({ truck }: Props) {
     setMensagensTela(prev => [...prev, { enviadoPor: 'user', texto: mensagemUsuario }]);
     setCarregando(true);
     try {
-      const res = await fetch('/api/chat-anuncio', {
+      const isAgentePublico = !truck?.marca;
+      const endpoint = isAgentePublico ? '/api/anunciar-chat' : '/api/chat-anuncio';
+      
+      const requestBody = isAgentePublico
+        ? { mensagem: mensagemUsuario, historico, dadosColetados: {} }
+        : {
+            mensagem: mensagemUsuario,
+            historico: historico.slice(-6),
+            truck: truck ?? {},
+          };
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mensagem: mensagemUsuario,
-          historico: historico.slice(-6),
-          truck: truck ?? {},
-        }),
+        body: JSON.stringify(requestBody),
       });
-      const json = await res.json() as { resposta?: string; erro?: string };
-      const textoBot = json.resposta ?? 'Não consegui processar sua pergunta. Tente novamente.';
+      
+      const json = await res.json();
+      
+      let textoBot = '';
+      if (isAgentePublico) {
+        textoBot = json.textoBot ?? 'Não consegui processar sua pergunta. Tente novamente.';
+        if (json.historicoAtualizado) {
+          setHistorico(json.historicoAtualizado);
+        }
+      } else {
+        textoBot = json.resposta ?? 'Não consegui processar sua pergunta. Tente novamente.';
+        setHistorico(prev => [
+          ...prev,
+          { role: 'user', parts: [{ text: mensagemUsuario }] },
+          { role: 'model', parts: [{ text: textoBot }] },
+        ]);
+      }
+
       setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: textoBot }]);
-      setHistorico(prev => [
-        ...prev,
-        { role: 'user', parts: [{ text: mensagemUsuario }] },
-        { role: 'model', parts: [{ text: textoBot }] },
-      ]);
     } catch {
       setMensagensTela(prev => [...prev, { enviadoPor: 'bot', texto: 'Ops, tive um problema técnico. Tente novamente.' }]);
     } finally {

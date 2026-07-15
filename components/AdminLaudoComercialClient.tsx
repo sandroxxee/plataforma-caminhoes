@@ -37,7 +37,8 @@ function sortedImages(images?: TruckImage[]) {
       if (!a.principal && b.principal) return 1;
       return (a.ordem || 0) - (b.ordem || 0);
     })
-    .map((image) => formatImageUrl(image.image_url));
+    .map((image) => formatImageUrl(image.image_url))
+    .filter((url): url is string => Boolean(url));
 }
 
 export function AdminLaudoComercialClient({ truck }: Props) {

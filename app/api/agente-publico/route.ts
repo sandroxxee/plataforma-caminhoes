@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     `;
 
     const response = await genAI.models.generateContent({
-      model: "gemini-1.5-pro",
+      model: "gemini-2.5-pro",
       contents: prompt
     });
 

@@ -19,11 +19,20 @@ export async function POST(req: Request) {
     let lastRole = '';
     const formattedHistory = (Array.isArray(historico) ? historico : [])
       .filter(msg => msg.role === 'user' || msg.role === 'model' || msg.role === 'assistant')
-      .map(msg => ({
-        role: (msg.role === 'assistant' ? 'model' : msg.role) as "user" | "model",
-        content: msg.content || msg.text || ''
-      }))
+      .map(msg => {
+        let textContent = '';
+        if (Array.isArray(msg.parts) && msg.parts[0]?.text) {
+          textContent = msg.parts[0].text;
+        } else {
+          textContent = msg.content || msg.text || '';
+        }
+        return {
+          role: (msg.role === 'assistant' ? 'model' : msg.role) as "user" | "model",
+          content: textContent
+        };
+      })
       .filter(msg => {
+        if (!msg.content.trim()) return false;
         if (msg.role === lastRole) return false;
         lastRole = msg.role;
         return true;
@@ -35,7 +44,7 @@ export async function POST(req: Request) {
 
     // Inicia o chat com o histórico validado no novo SDK @google/genai
     const chat = genAI.chats.create({
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.5-pro',
       config: {
         systemInstruction: `Você é o assistente inteligente da plataforma Caminhões à Venda.
 Seu objetivo é ajudar o usuário a criar um anúncio completo.
@@ -60,9 +69,10 @@ REGRAS:
     const result = await chat.sendMessage({ message: mensagem });
     const text = result.text || "";
 
+    // Corrigido para ler a propriedade .history do SDK @google/genai
     return NextResponse.json({
       textoBot: text,
-      historicoAtualizado: chat.getHistory()
+      historicoAtualizado: (chat as any).history || []
     });
 
   } catch (error: any) {

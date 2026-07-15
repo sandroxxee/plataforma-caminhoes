@@ -8,11 +8,40 @@ import { Container, Truck, Wrench, Tractor, Package } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Carretas à Venda | Caminhões à Venda",
-  description: "Graneleiras, porta-containers, pranchas, frigoríficas e tanques. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/comprar/carretas" },
-};
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { marca, estado, q, tipo } = await searchParams;
+  const marcaFiltro = marca ? String(marca).trim() : "";
+  const estadoFiltro = estado ? String(estado).trim() : "";
+  const tipoFiltro = tipo ? String(tipo).trim() : "";
+  const busca = (q || "").trim().slice(0, 100);
+
+  let title = "Carretas à Venda | Semirreboques e tanques usados e seminovos";
+  let description = "Encontre carretas à venda: graneleiras, basculantes, baús, porta-containers, pranchas e tanques. Negociação direta pelo WhatsApp.";
+
+  if (marcaFiltro && estadoFiltro) {
+    title = `Carretas ${marcaFiltro} à Venda em ${estadoFiltro} | Caminhões à Venda`;
+    description = `Confira os melhores anúncios de carretas ${marcaFiltro} usadas e seminovas em ${estadoFiltro}. Fale com o vendedor pelo WhatsApp.`;
+  } else if (marcaFiltro) {
+    title = `Carretas ${marcaFiltro} à Venda | Ofertas de ${marcaFiltro}`;
+    description = `Procurando carretas da marca ${marcaFiltro}? Veja os modelos anunciados e fale direto com o anunciante.`;
+  } else if (estadoFiltro) {
+    title = `Carretas à Venda em ${estadoFiltro} | Ofertas em ${estadoFiltro}`;
+    description = `Veja anúncios de carretas e semirreboques à venda no estado de ${estadoFiltro}. Contato direto via WhatsApp.`;
+  } else if (tipoFiltro) {
+    title = `Carretas do tipo ${tipoFiltro} à Venda | Caminhões à Venda`;
+    description = `Confira ofertas de carretas e semirreboques ${tipoFiltro} à venda. Fale direto pelo WhatsApp.`;
+  } else if (busca) {
+    title = `Busca por "${busca}" em Carretas | Caminhões à Venda`;
+    description = `Resultados de busca para "${busca}" em carretas no nosso portal.`;
+  }
+
+  return {
+    title,
+    description,
+    alternates: { canonical: "/comprar/carretas" },
+  };
+}
 
 type PageProps = { searchParams: Promise<{ estado?: string; marca?: string; faixa?: string; pmin?: string; pmax?: string; q?: string; tipo?: string }> };
 
@@ -41,10 +70,31 @@ export default async function CarretasPage({ searchParams }: PageProps) {
   const estadosDisponiveis = [...new Set((facetData || []).map((t) => t.estado).filter(Boolean))].sort() as string[];
   const hasFilters = !!(estado || marca || faixa || pmin || pmax || searchQ);
 
+  const marcaFiltro = marca ? String(marca).trim() : "";
+  const estadoFiltro = estado ? String(estado).trim() : "";
+  const busca = (searchQ || "").trim().slice(0, 100);
+
+  let titleText = "Carretas à Venda";
+  let subtitleText = "Graneleiras, porta-containers, pranchas, frigoríficas e muito mais.";
+
+  if (marcaFiltro && estadoFiltro) {
+    titleText = `Carretas ${marcaFiltro} à Venda em ${estadoFiltro}`;
+    subtitleText = `Confira os melhores anúncios de carretas ${marcaFiltro} usadas e seminovas em ${estadoFiltro}.`;
+  } else if (marcaFiltro) {
+    titleText = `Carretas ${marcaFiltro} à Venda`;
+    subtitleText = `Procurando carretas da marca ${marcaFiltro}? Veja os modelos anunciados e fale direto com o anunciante.`;
+  } else if (estadoFiltro) {
+    titleText = `Carretas à Venda em ${estadoFiltro}`;
+    subtitleText = `Veja anúncios de carretas e semirreboques à venda no estado de ${estadoFiltro}.`;
+  } else if (busca) {
+    titleText = `Busca por "${busca}" em Carretas`;
+    subtitleText = `Resultados de busca para "${busca}" em carretas no nosso portal.`;
+  }
+
   return (
     <CategoryPageLayout
-      title="Carretas à Venda"
-      subtitle="Graneleiras, porta-containers, pranchas, frigoríficas e muito mais."
+      title={titleText}
+      subtitle={subtitleText}
       total={carretas.length}
       sidebar={
         <AnunciosSidebar

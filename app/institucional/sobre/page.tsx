@@ -79,7 +79,7 @@ export default function SobrePage() {
               <h2>Encontre caminhões com informação clara.</h2>
               <p>Veja fotos, valor, cidade, configuração e chame direto no WhatsApp para confirmar disponibilidade e negociar.</p>
             </div>
-            <Link href="/anuncios">Procurar caminhões</Link>
+            <Link href="/comprar/caminhoes">Procurar caminhões</Link>
           </article>
 
           <article
@@ -176,7 +176,7 @@ export default function SobrePage() {
             <h2>Veja o estoque ou anuncie seu caminhão.</h2>
           </div>
           <div className="trust-actions end">
-            <Link className="trust-btn ghost" href="/anuncios">Ver caminhões</Link>
+            <Link className="trust-btn ghost" href="/comprar/caminhoes">Ver caminhões</Link>
             <Link className="trust-btn primary" href="/anunciar">Anunciar</Link>
           </div>
         </section>

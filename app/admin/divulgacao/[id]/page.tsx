@@ -149,7 +149,7 @@ export default async function AdminDivulgacaoPage({ params }: PageProps) {
   if (ad.status !== "aprovado") redirect("/admin/anuncios");
 
   const { title, link, textoCompleto, textoCurto, textoTecnico } = buildTexts(ad);
-  const mainImage = getMainImage(ad);
+  const mainImage = getMainImage(ad) || "";
   const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`;
 
   return (

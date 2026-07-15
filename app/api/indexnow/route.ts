@@ -4,8 +4,8 @@ import { gerarSlugComId } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
 
-const siteUrl = "https://caminhoesavenda.com";
-const siteHost = "caminhoesavenda.com";
+const siteUrl = "https://www.caminhoesavenda.com";
+const siteHost = "www.caminhoesavenda.com";
 const indexNowKey = "9f6c2a4e7b8d41c2a0f5e6b3c9d8a1f4";
 const indexNowEndpoint = "https://api.indexnow.org/indexnow";
 

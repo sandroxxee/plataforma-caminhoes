@@ -15,7 +15,7 @@ const ESTADOS = [
 ];
 
 const CATEGORIAS: { path: string; param: string }[] = [
-  { path: "anuncios",    param: "marca" },
+  { path: "caminhoes",   param: "estado" },
   { path: "carretas",    param: "estado" },
   { path: "implementos", param: "estado" },
   { path: "maquinas",    param: "estado" },

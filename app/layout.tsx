@@ -5,7 +5,7 @@ import { ClientShell } from "@/components/ClientShell";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import ChatGuard from "@/components/ChatGuard";
+// import ChatGuard from "@/components/ChatGuard";
 import { createClient } from "@/lib/supabase/server";
 import { getHomeContent } from "@/lib/site-content";
 import "./globals.css";
@@ -42,7 +42,7 @@ const roboto = Roboto({
 });
 
 const siteUrl = "https://www.caminhoesavenda.com";
-const ogImage = "/og-caminhoes-a-venda.jpg";
+const ogImage = "/og-caminhoes-a-venda.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -245,7 +245,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <CookieBanner />
         <Analytics />
         <SpeedInsights />
-        <ChatGuard />
+        {/* <ChatGuard /> */}
       </body>
     </html>
   );

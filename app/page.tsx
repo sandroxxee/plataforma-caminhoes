@@ -4,12 +4,11 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { createClient } from "@/lib/supabase/server";
 import { getHomeContent } from "@/lib/site-content";
 import { BrandsSection } from "@/components/theme/BrandsSection";
-import { HowItWorksSection } from "@/components/HowItWorksSection";
+
 import { TruckCard } from "@/components/theme/TruckCard";
 import type { TruckCardData } from "@/components/theme/TruckCard";
 import Image from "next/image";
 import Link from "next/link";
-import { Truck, Container, Wrench, Tractor, Package, Store } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -21,14 +20,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const CATEGORIAS = [
-  { href: "/caminhoes",   icon: <Truck     size={32} strokeWidth={1.5} />, label: "Caminhões" },
-  { href: "/carretas",    icon: <Container size={32} strokeWidth={1.5} />, label: "Carretas" },
-  { href: "/implementos", icon: <Wrench    size={32} strokeWidth={1.5} />, label: "Implementos" },
-  { href: "/maquinas",    icon: <Tractor   size={32} strokeWidth={1.5} />, label: "Máquinas" },
-  { href: "/pecas",       icon: <Package   size={32} strokeWidth={1.5} />, label: "Peças" },
-  { href: "/revendas",    icon: <Store     size={32} strokeWidth={1.5} />, label: "Revendas" },
-];
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -51,6 +42,8 @@ export default async function HomePage() {
     .limit(8);
 
   const trucks = (trucksData || []) as TruckCardData[];
+
+
 
   return (
     <main className="premium-page">
@@ -92,57 +85,15 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* ── HERO TEXTO (quando NÃO há banner) ───────────────────────── */}
-        {!content.heroBannerUrl && (
-          <section className="section-wrap">
-            <div className="hero-text-block">
-              {content.heroMini && (
-                <span className="eyebrow blue">{content.heroMini}</span>
-              )}
-              <h1 className="title">{content.heroTitle}</h1>
-              {content.heroSubtitle && (
-                <p className="hero-text-sub">{content.heroSubtitle}</p>
-              )}
-              <div className="hero-text-actions">
-                <Link href={content.primaryButtonHref} className="btn-primary">
-                  {content.primaryButtonText}
-                </Link>
-                <Link href={content.secondaryButtonHref} className="btn-outline">
-                  {content.secondaryButtonText}
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
 
-        {/* ── FAIXA DE CONFIANÇA ───────────────────────────────────────── */}
-        {(content.trust1Title || content.trust2Title) && (
-          <section className="section-wrap">
-            <div className="trust-strip">
-              {[
-                { t: content.trust1Title, d: content.trust1Text },
-                { t: content.trust2Title, d: content.trust2Text },
-                { t: content.trust3Title, d: content.trust3Text },
-                { t: content.trust4Title, d: content.trust4Text },
-              ].filter(i => i.t).map((item, i) => (
-                <div key={i} className="trust-item">
-                  <strong className="trust-title">{item.t}</strong>
-                  {item.d && <span className="trust-desc">{item.d}</span>}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
-        {/* ── ÚLTIMOS ANÚNCIOS ─────────────────────────────────────────── */}
+
+
+        {/* ── ANÚNCIOS (SEM TÍTULOS TEXTUAIS) ─────────────────────────────────── */}
         <section className="section-wrap">
-          <div className="premium-section">
-            <div className="section-header">
-              <div className="title-box">
-                <span className="eyebrow">Recém adicionados</span>
-                <h2 className="title">Últimos anúncios</h2>
-              </div>
-              <Link href="/anuncios" className="view-all">Ver todos anúncios →</Link>
+          <div className="premium-section" style={{ paddingTop: "8px" }}>
+            <div className="section-header" style={{ justifyContent: "flex-end", marginBottom: "16px" }}>
+              <Link href="/comprar/caminhoes" className="view-all">Ver todos anúncios →</Link>
             </div>
             {trucks.length === 0 ? (
               <div className="empty-state">
@@ -158,92 +109,10 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── TEXTOS COMERCIAIS (compra / venda / segurança) ───────────── */}
-        {(content.buyerTitle || content.sellerTitle || content.securityTitle) && (
-          <section className="section-wrap">
-            <div className="commercial-grid">
-              {[
-                { t: content.buyerTitle,    d: content.buyerText },
-                { t: content.sellerTitle,   d: content.sellerText },
-                { t: content.securityTitle, d: content.securityText },
-              ].filter(i => i.t).map((item, i) => (
-                <div key={i} className="commercial-card">
-                  <strong className="commercial-title">{item.t}</strong>
-                  {item.d && <p className="commercial-desc">{item.d}</p>}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
-        {/* ── SOBRE / CATEGORIAS ──────────────────────────────────────── */}
-        <section className="section-wrap">
-          <div className="home-sobre-card">
-            <div className="sobre-content">
-              <span className="eyebrow blue">Plataforma completa</span>
-              <h2 className="sobre-title">Tudo para comprar e vender veículos pesados</h2>
-              <p className="sobre-desc">
-                O <strong>Caminhões à Venda</strong> é a plataforma especializada para quem compra
-                ou vende caminhões, carretas, implementos, máquinas e peças no Brasil.
-              </p>
-              <div className="sobre-actions">
-                <Link href={content.primaryButtonHref} className="btn-primary">
-                  {content.primaryButtonText}
-                </Link>
-                <Link href={content.secondaryButtonHref} className="btn-outline">
-                  {content.secondaryButtonText}
-                </Link>
-              </div>
-            </div>
-            <div className="sobre-cats-grid">
-              {CATEGORIAS.map((c) => (
-                <Link key={c.href} href={c.href} className="cat-chip">
-                  <span className="cat-icon-wrap">{c.icon}</span>
-                  <strong className="cat-label">{c.label}</strong>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* ── CHAMADA PARA ANUNCIAR ────────────────────────────────────── */}
-        {content.sellTitle && (
-          <section className="section-wrap">
-            <div className="sell-cta-card">
-              {content.sellMini && (
-                <span className="eyebrow white">{content.sellMini}</span>
-              )}
-              <h2 className="sell-title">{content.sellTitle}</h2>
-              {content.sellText && (
-                <p className="sell-text">{content.sellText}</p>
-              )}
-              <Link href={content.secondaryButtonHref} className="sell-btn">
-                {content.secondaryButtonText}
-              </Link>
-            </div>
-          </section>
-        )}
 
-        {/* ── COMO FUNCIONA ────────────────────────────────────────────── */}
-        <div className="section-wrap">
-          <HowItWorksSection />
-        </div>
 
-        {/* ── CHAMADA FINAL ────────────────────────────────────────────── */}
-        {content.finalTitle && (
-          <section className="section-wrap">
-            <div className="final-cta">
-              {content.finalMini && (
-                <span className="eyebrow blue">{content.finalMini}</span>
-              )}
-              <h2 className="final-title">{content.finalTitle}</h2>
-              <div className="final-actions">
-                <Link href={content.primaryButtonHref}   className="btn-primary">{content.primaryButtonText}</Link>
-                <Link href={content.secondaryButtonHref} className="btn-outline">{content.secondaryButtonText}</Link>
-              </div>
-            </div>
-          </section>
-        )}
 
       </div>
 
@@ -253,7 +122,7 @@ export default async function HomePage() {
         /* ── base ────────────────────────────────────────────────── */
         .premium-page { min-height: 100vh; background: #f8fafc; color: #0f172a; }
         .premium-main { display: flex; flex-direction: column; gap: 40px; padding: 40px 0 80px; }
-        .section-wrap  { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        .section-wrap  { width: 100%; max-width: 1600px; margin: 0 auto; padding: 0 20px; }
 
         /* ── eyebrow ─────────────────────────────────────────────── */
         .eyebrow { font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; color:#64748b; margin-bottom:4px; display:block; }
@@ -279,12 +148,6 @@ export default async function HomePage() {
         .hero-text-sub   { font-size:18px; color:#64748b; line-height:1.6; margin:12px 0 28px; max-width:600px; }
         .hero-text-actions { display:flex; gap:16px; flex-wrap:wrap; }
 
-        /* ── faixa de confiança ──────────────────────────────────── */
-        .trust-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
-        .trust-item  { padding:20px 24px; border-radius:20px; background:#fff; border:1px solid rgba(0,0,0,.04); box-shadow:0 2px 8px rgba(0,0,0,.03); display:flex; flex-direction:column; gap:4px; }
-        .trust-title { font-size:15px; font-weight:900; color:#0f172a; }
-        .trust-desc  { font-size:13px; color:#64748b; font-weight:600; }
-
         /* ── anúncios ────────────────────────────────────────────── */
         .premium-section { display:flex; flex-direction:column; gap:24px; }
         .section-header  { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; }
@@ -295,22 +158,61 @@ export default async function HomePage() {
         .premium-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; }
         .empty-state { padding:40px; text-align:center; color:#94a3b8; }
 
-        /* ── textos comerciais ───────────────────────────────────── */
-        .commercial-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
-        .commercial-card { padding:28px; border-radius:24px; background:#fff; border:1px solid rgba(0,0,0,.04); box-shadow:0 4px 16px rgba(0,0,0,.03); }
-        .commercial-title { font-size:18px; font-weight:900; color:#0f172a; display:block; margin-bottom:10px; }
-        .commercial-desc  { font-size:15px; color:#64748b; line-height:1.6; margin:0; }
-
-        /* ── sobre / categorias ──────────────────────────────────── */
-        .home-sobre-card { background:#fff; border-radius:32px; padding:48px; border:1px solid rgba(0,0,0,.04); box-shadow:0 4px 20px rgba(0,0,0,.02); display:grid; grid-template-columns:1.2fr 1fr; gap:64px; align-items:center; }
-        .sobre-title { font-size:36px; font-weight:900; letter-spacing:-.04em; line-height:1.1; margin:12px 0 20px; }
-        .sobre-desc  { font-size:16px; color:#64748b; line-height:1.6; margin-bottom:32px; }
-        .sobre-actions { display:flex; gap:16px; }
-        .sobre-cats-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-        .cat-chip { padding:24px; border-radius:24px; background:#f8fafc; border:1px solid #f1f5f9; display:flex; flex-direction:column; align-items:center; gap:12px; text-decoration:none; text-align:center; transition:all .2s; }
-        .cat-chip:hover { background:#fff; border-color:var(--blue); box-shadow:0 12px 40px rgba(24,119,242,.12); transform:translateY(-4px); }
-        .cat-icon-wrap { color:var(--blue); opacity:.8; }
-        .cat-label { font-size:14px; font-weight:800; color:#0f172a; }
+        /* ── barra de categorias estilo olx ──────────────────────── */
+        .olx-categories-bar {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 32px;
+          padding: 24px 0;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+        }
+        .olx-categories-bar::-webkit-scrollbar {
+          display: none;
+        }
+        .olx-cat-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          min-width: 80px;
+          flex-shrink: 0;
+          transition: transform 0.2s ease;
+        }
+        .olx-cat-item:hover {
+          transform: translateY(-2px);
+        }
+        .olx-cat-icon-circle {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: #f1f5f9;
+          color: #0f172a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .olx-cat-item:hover .olx-cat-icon-circle {
+          background: #eff6ff;
+          color: #2563eb;
+          border-color: #bfdbfe;
+          box-shadow: 0 8px 24px rgba(24, 119, 242, 0.15);
+        }
+        .olx-cat-label {
+          font-size: 13px;
+          font-weight: 700;
+          color: #475569;
+          text-align: center;
+          transition: color 0.2s ease;
+        }
+        .olx-cat-item:hover .olx-cat-label {
+          color: #2563eb;
+        }
 
         /* ── botões reutilizáveis ────────────────────────────────── */
         .btn-primary { height:52px; padding:0 32px; border-radius:16px; background:#0f172a; color:#fff; font-weight:800; display:inline-flex; align-items:center; justify-content:center; transition:all .2s; text-decoration:none; }
@@ -332,22 +234,29 @@ export default async function HomePage() {
 
         /* ── responsivo ──────────────────────────────────────────── */
         @media (max-width:1024px) {
-          .home-sobre-card { grid-template-columns:1fr; gap:40px; padding:32px; }
           .title { font-size:28px; }
-          .sobre-title { font-size:28px; }
           .sell-cta-card { padding:40px 32px; }
           .sell-title { font-size:28px; }
         }
         @media (max-width:640px) {
           .premium-grid { grid-template-columns:1fr; }
-          .sobre-cats-grid { grid-template-columns:1fr 1fr; }
-          .sobre-actions { flex-direction:column; }
+          .olx-categories-bar {
+            justify-content: flex-start;
+            padding: 16px 4px;
+            gap: 20px;
+          }
+          .olx-cat-icon-circle {
+            width: 56px;
+            height: 56px;
+          }
+          .olx-cat-label {
+            font-size: 12px;
+          }
           .premium-main  { gap:32px; padding:24px 0; }
           .hero-actions  { flex-direction:column; }
           .sell-cta-card { padding:32px 24px; }
           .sell-btn      { align-self:stretch; justify-content:center; }
           .final-actions { flex-direction:column; align-items:center; }
-          .trust-strip   { grid-template-columns:1fr 1fr; }
         }
       `}</style>
     </main>

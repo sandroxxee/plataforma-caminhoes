@@ -9,11 +9,44 @@ import { Package, Tractor, Container, Truck, Wrench } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Peças para Caminhão à Venda | Caminhões à Venda",
-  description: "Motores, câmbios, eixos, suspensão, freios e muito mais. Negociação direta pelo WhatsApp.",
-  alternates: { canonical: "/comprar/pecas" },
-};
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { marca, estado, q, categoria_peca, condicao } = await searchParams;
+  const marcaFiltro = marca ? String(marca).trim() : "";
+  const estadoFiltro = estado ? String(estado).trim() : "";
+  const catFiltro = categoria_peca ? String(categoria_peca).trim() : "";
+  const condFiltro = condicao ? String(condicao).trim() : "";
+  const busca = (q || "").trim().slice(0, 100);
+
+  let title = "Peças para Caminhão à Venda | Motores e componentes de reposição";
+  let description = "Motores, câmbios, eixos, cabines, suspensão, freios e peças usadas ou novas de reposição para caminhões. Negociação direta pelo WhatsApp.";
+
+  if (marcaFiltro && estadoFiltro) {
+    title = `Peças para Caminhão ${marcaFiltro} à Venda em ${estadoFiltro} | Caminhões à Venda`;
+    description = `Confira peças para caminhão ${marcaFiltro} usadas e novas em ${estadoFiltro}. Motores, câmbios, suspensão e mais com contato no WhatsApp.`;
+  } else if (marcaFiltro) {
+    title = `Peças para Caminhão ${marcaFiltro} à Venda | Ofertas de ${marcaFiltro}`;
+    description = `Procurando peças originais ou paralelas da marca ${marcaFiltro}? Veja ofertas ativas no portal.`;
+  } else if (estadoFiltro) {
+    title = `Peças para Caminhão à Venda em ${estadoFiltro} | Ofertas em ${estadoFiltro}`;
+    description = `Veja anúncios de peças e componentes para caminhões à venda no estado de ${estadoFiltro}.`;
+  } else if (catFiltro) {
+    title = `Peças de ${catFiltro} para Caminhão | Caminhões à Venda`;
+    description = `Peças da categoria ${catFiltro} para caminhões usadas e seminovas. Fale com os vendedores no WhatsApp.`;
+  } else if (condFiltro) {
+    title = `Peças para Caminhão em estado ${condFiltro} | Caminhões à Venda`;
+    description = `Confira anúncios de peças de reposição ${condFiltro}s para caminhões pesados.`;
+  } else if (busca) {
+    title = `Busca por "${busca}" em Peças | Caminhões à Venda`;
+    description = `Resultados de busca para "${busca}" em peças de reposição de caminhão.`;
+  }
+
+  return {
+    title,
+    description,
+    alternates: { canonical: "/comprar/pecas" },
+  };
+}
 
 type PageProps = { searchParams: Promise<{ estado?: string; categoria_peca?: string; condicao?: string; q?: string; marca?: string }> };
 

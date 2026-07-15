@@ -27,7 +27,7 @@ export default function ContatoPage() {
           </p>
 
           <div style={{ display:"grid",gap:16,marginBottom:36 }}>
-            <a href="https://wa.me/5548999999999" target="_blank" rel="noreferrer"
+            <a href="https://wa.me/5549999362681?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20meu%20an%C3%BAncio." target="_blank" rel="noreferrer"
               style={{ display:"flex",alignItems:"center",gap:16,padding:"20px 24px",borderRadius:16,background:"rgba(37,211,102,.1)",border:"1.5px solid rgba(37,211,102,.3)",textDecoration:"none",transition:".15s" }}>
               <span style={{ fontSize:28 }}>📱</span>
               <div>

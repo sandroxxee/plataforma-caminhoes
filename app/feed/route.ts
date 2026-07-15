@@ -4,7 +4,7 @@ import { gerarSlugComId } from "@/lib/slug";
 import { formatImageUrl } from "@/lib/truck-utils";
 
 const BASE = "https://www.caminhoesavenda.com";
-const DEFAULT_IMAGE = `${BASE}/og-caminhoes-a-venda.jpg`;
+const DEFAULT_IMAGE = `${BASE}/og-caminhoes-a-venda.png`;
 
 function esc(s?: string | null) {
   if (!s) return "";

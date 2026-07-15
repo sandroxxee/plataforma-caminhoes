@@ -79,7 +79,7 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
           position: sticky; top: 0; z-index: 50;
         }
         .psnav-inner {
-          width: min(1280px, calc(100vw - 32px));
+          width: min(1600px, calc(100vw - 32px));
           margin: 0 auto; min-height: 48px;
           display: flex; align-items: center;
           justify-content: space-between; gap: 8px;

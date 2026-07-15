@@ -58,7 +58,7 @@ export async function RelatedAds({ currentId, marca, perfil }: Props) {
       </div>
       <style>{`
         .ra-wrap {
-          width: min(1280px, calc(100vw - 32px));
+          width: min(1600px, calc(100vw - 32px));
           margin: 32px auto 0;
           padding-bottom: 48px;
         }
