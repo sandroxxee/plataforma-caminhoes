@@ -18,13 +18,13 @@
 .meus-anuncios-btn-novo {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 22px;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
   border-radius: var(--radius-sm);
   background: var(--blue);
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
   text-decoration: none;
   transition: background .14s;
@@ -58,7 +58,7 @@
 .meus-anuncios-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 /* Item */
@@ -97,10 +97,10 @@
 .ma-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: 6px;
+  padding: 8px 10px;
   background: var(--surface);
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   border-top: none;
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   box-shadow: var(--shadow);
@@ -111,11 +111,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 10px;
-  border-radius: 10px;
-  font-size: 12px;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 900;
   text-decoration: none;
   border: none;
@@ -168,9 +168,11 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .meus-anuncios-grid { grid-template-columns: repeat(2, 1fr); }
+  .meus-anuncios-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
 @media (max-width: 640px) {
-  .meus-anuncios-grid  { grid-template-columns: 1fr; }
-  .meus-anuncios-header { flex-direction: column; align-items: flex-start; }
+  .meus-anuncios-grid  { grid-template-columns: 1fr; gap: 14px; }
+  .meus-anuncios-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .ma-actions { padding: 7px 8px; gap: 5px; }
+  .ma-btn { height: 26px; font-size: 10.5px; padding: 0 7px; border-radius: 7px; }
 }

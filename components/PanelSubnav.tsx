@@ -77,39 +77,48 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
         }
         .psnav-inner {
           width: min(1600px, calc(100vw - 32px));
-          margin: 0 auto; min-height: 48px;
-          display: flex; align-items: center;
+          margin: 0 auto; min-height: 44px;
+          display: flex; align-items: stretch;
           justify-content: space-between; gap: 8px;
         }
         .psnav {
-          display: flex; align-items: center; gap: 4px;
+          display: flex; align-items: stretch; gap: 0;
           overflow-x: auto; -webkit-overflow-scrolling: touch;
           scrollbar-width: none; flex: 1; min-width: 0;
-          padding: 6px 0;
         }
         .psnav::-webkit-scrollbar { display: none; }
         .psnav-link {
           display: inline-flex; align-items: center; gap: 6px;
-          min-height: 36px; padding: 0 12px;
-          border-radius: 10px; font-size: 13px; font-weight: 800;
+          padding: 0 14px;
+          border-bottom: 2.5px solid transparent;
+          font-size: 13px; font-weight: 800;
           white-space: nowrap; color: var(--muted);
           text-decoration: none; flex-shrink: 0;
-          transition: background .14s, color .14s;
+          transition: color .14s, border-color .14s;
+          position: relative;
         }
-        .psnav-link:hover { background: var(--soft); color: var(--text); }
-        .psnav-link.active { font-weight: 900; }
+        .psnav-link:hover { color: var(--text); }
+        .psnav-link.active {
+          color: var(--blue);
+          border-bottom-color: var(--blue);
+          font-weight: 900;
+        }
         .psnav-logout {
-          flex-shrink: 0;
+          flex-shrink: 0; align-self: center;
           display: inline-flex; align-items: center; gap: 5px;
-          min-height: 32px; padding: 0 12px; border-radius: 8px;
-          border: 1px solid rgba(239,68,68,.3); background: transparent;
-          color: #ef4444; font-size: 12px; font-weight: 800;
-          cursor: pointer; transition: background .14s; white-space: nowrap;
+          height: 30px; padding: 0 10px; border-radius: 8px;
+          border: 1px solid var(--line); background: transparent;
+          color: var(--muted); font-size: 11.5px; font-weight: 800;
+          cursor: pointer; transition: background .14s, color .14s; white-space: nowrap;
+          margin: 0 0 0 4px;
         }
-        .psnav-logout:hover { background: rgba(239,68,68,.08); }
-        @media (max-width: 560px) {
+        .psnav-logout:hover { background: rgba(239,68,68,.08); color: #ef4444; border-color: rgba(239,68,68,.3); }
+        @media (max-width: 640px) {
+          .psnav-link { padding: 0 10px; font-size: 12px; gap: 5px; }
+        }
+        @media (max-width: 460px) {
           .psnav-link span { display: none; }
-          .psnav-link { padding: 0 10px; min-height: 40px; }
+          .psnav-link { padding: 0 12px; }
           .psnav-logout span { display: none; }
           .psnav-logout { padding: 0 10px; }
         }
