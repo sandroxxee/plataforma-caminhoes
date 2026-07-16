@@ -34,21 +34,18 @@ export default async function FavoritosPage() {
 
   return (
     <PanelLayout>
-      <div style={{ padding: "24px 0" }}>
-        <h1 style={{
-          fontSize: 22, fontWeight: 900, marginBottom: 6,
-          letterSpacing: "-.025em"
-        }}>
-          ❤️ Meus Favoritos
-        </h1>
-        <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 24 }}>
-          {trucks.length === 0
-            ? "Você ainda não salvou nenhum anúncio."
-            : `${trucks.length} anúncio${trucks.length !== 1 ? "s" : ""} salvo${trucks.length !== 1 ? "s" : ""}.`}
-        </p>
+      <div className="painel-wrap">
+        <div>
+          <h1 className="painel-greeting">Meus favoritos</h1>
+          <p className="meus-anuncios-sub">
+            {trucks.length === 0
+              ? "Você ainda não salvou nenhum anúncio."
+              : `Você tem ${trucks.length} anúncio${trucks.length !== 1 ? "s" : ""} salvo${trucks.length !== 1 ? "s" : ""} nos favoritos.`}
+          </p>
+        </div>
 
         {trucks.length > 0 ? (
-          <div className="fav-grid">
+          <div className="meus-anuncios-grid">
             {trucks.map((truck) => (
               <TruckCard key={truck.id} truck={truck} />
             ))}
@@ -56,24 +53,17 @@ export default async function FavoritosPage() {
         ) : (
           <div style={{
             textAlign: "center", padding: "60px 20px",
-            background: "var(--surface)", borderRadius: 20,
-            border: "1.5px solid var(--line)"
+            background: "var(--surface)", borderRadius: "var(--radius)",
+            border: "1.5px solid var(--line)", boxShadow: "var(--shadow)"
           }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🤍</div>
-            <strong style={{ fontSize: 16 }}>Nenhum favorito ainda</strong>
-            <p style={{ color: "var(--muted)", marginTop: 8, fontSize: 14 }}>
-              Clique no ❤️ em qualquer anúncio para salvar aqui.
+            <div style={{ fontSize: 44, marginBottom: 12 }}>🤍</div>
+            <strong style={{ fontSize: 16, fontWeight: 900, color: "var(--text)" }}>Nenhum favorito ainda</strong>
+            <p style={{ color: "var(--muted)", marginTop: 8, fontSize: 14, fontWeight: 700 }}>
+              Clique no ícone de ❤️ em qualquer anúncio do site para salvá-lo aqui.
             </p>
           </div>
         )}
       </div>
-      <style>{`
-        .fav-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 20px;
-        }
-      `}</style>
     </PanelLayout>
   );
 }
