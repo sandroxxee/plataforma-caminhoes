@@ -115,3 +115,32 @@ export async function vincularAnunciosParceiroAction(truckIds: string[], whatsap
   }
 }
 
+export async function toggleSeloAction(id: string, campo: "destaque" | "verificado" | "abaixo_fipe", valorAtual: boolean) {
+  try {
+    const supabase = await requireAdmin();
+
+    if (!id || !campo) {
+      throw new Error("Parâmetros inválidos.");
+    }
+
+    const { error } = await supabase
+      .from("trucks")
+      .update({ [campo]: !valorAtual })
+      .eq("id", id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    revalidatePath("/");
+    revalidatePath("/admin/anuncios");
+    revalidatePath("/anuncios");
+    revalidatePath(`/anuncios/${id}`);
+
+    return { success: true };
+  } catch (err: any) {
+    return { error: err?.message || "Erro ao atualizar selo." };
+  }
+}
+
+

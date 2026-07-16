@@ -12,6 +12,14 @@ interface Props {
   initialEstado: string;
 }
 
+function formatarTelefone(value: string) {
+  const nums = value.replace(/\D/g, "");
+  if (nums.length <= 2) return nums;
+  if (nums.length <= 6) return `(${nums.slice(0, 2)}) ${nums.slice(2)}`;
+  if (nums.length <= 10) return `(${nums.slice(0, 2)}) ${nums.slice(2, 6)}-${nums.slice(6)}`;
+  return `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7, 11)}`;
+}
+
 export function FormPerfil({
   initialName,
   initialWhatsapp,
@@ -24,7 +32,7 @@ export function FormPerfil({
   const [error, setError] = useState("");
 
   const [name, setName] = useState(initialName);
-  const [whatsapp, setWhatsapp] = useState(initialWhatsapp);
+  const [whatsapp, setWhatsapp] = useState(formatarTelefone(initialWhatsapp));
   const [cidade, setCidade] = useState(initialCidade);
   const [estado, setEstado] = useState(initialEstado);
 
@@ -94,8 +102,8 @@ export function FormPerfil({
             type="text"
             required
             value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
-            placeholder="49 99999-9999"
+            onChange={(e) => setWhatsapp(formatarTelefone(e.target.value))}
+            placeholder="(49) 99999-9999"
             disabled={isPending}
           />
         </div>

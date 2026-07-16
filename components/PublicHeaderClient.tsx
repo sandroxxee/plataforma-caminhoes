@@ -380,7 +380,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
         </div>
       </header>
 
-      {!(pathname.startsWith("/painel") || pathname.startsWith("/admin") || pathname === "/login" || pathname === "/cadastro" || pathname === "/conta") && (
+      {!(pathname.startsWith("/painel") || pathname.startsWith("/admin") || pathname === "/login" || pathname === "/cadastro" || pathname === "/conta" || pathname.startsWith("/anuncios/")) && (
         <nav className="mobile-cat-bar" aria-label="Categorias">
           <div className="mobile-cat-scroll">
             {buyingItems.map((item) => {

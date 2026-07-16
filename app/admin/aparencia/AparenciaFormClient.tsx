@@ -747,82 +747,82 @@ export function AparenciaFormClient({ initialContent }: Props) {
                 </p>
                 
                 <div className="form-two-columns">
-                  <div style={{ padding: 16, borderRadius: 14, border: "1px solid rgba(255,255,255,0.05)", background: "#14171a" }}>
-                    <h4 style={{ margin: "0 0 12px", fontSize: 14, color: "#fff", fontWeight: 850 }}>Tema Claro</h4>
+                  <div style={{ padding: 16, borderRadius: 14, border: "1px solid var(--line)", background: "var(--soft)" }}>
+                    <h4 style={{ margin: "0 0 12px", fontSize: 14, color: "var(--text)", fontWeight: 850 }}>Tema Claro</h4>
                     <label className="field-premium">
                       <span>Cor de Fundo</span>
                       <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
                         <input 
-                          type="color" 
-                          name="bgClaro" 
-                          value={bgClaro} 
-                          onChange={(e) => handleChange("bgClaro", e.target.value)}
-                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
-                        />
+                           type="color" 
+                           name="bgClaro" 
+                           value={bgClaro} 
+                           onChange={(e) => handleChange("bgClaro", e.target.value)}
+                           style={{ width: 42, height: 38, padding: 0, border: "1px solid var(--line)", borderRadius: 8, cursor: "pointer", background: "none" }}
+                         />
                         <input 
-                          type="text" 
-                          value={bgClaro} 
-                          onChange={(e) => handleChange("bgClaro", e.target.value)}
-                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
-                        />
+                           type="text" 
+                           value={bgClaro} 
+                           onChange={(e) => handleChange("bgClaro", e.target.value)}
+                           style={{ height: 38, borderRadius: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--text)", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                         />
                       </div>
                     </label>
                     <label className="field-premium" style={{ marginTop: 12 }}>
                       <span>Cor de Superfície (Cards)</span>
                       <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
                         <input 
-                          type="color" 
-                          name="surfaceClaro" 
-                          value={surfaceClaro} 
-                          onChange={(e) => handleChange("surfaceClaro", e.target.value)}
-                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
-                        />
+                           type="color" 
+                           name="surfaceClaro" 
+                           value={surfaceClaro} 
+                           onChange={(e) => handleChange("surfaceClaro", e.target.value)}
+                           style={{ width: 42, height: 38, padding: 0, border: "1px solid var(--line)", borderRadius: 8, cursor: "pointer", background: "none" }}
+                         />
                         <input 
-                          type="text" 
-                          value={surfaceClaro} 
-                          onChange={(e) => handleChange("surfaceClaro", e.target.value)}
-                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
-                        />
+                           type="text" 
+                           value={surfaceClaro} 
+                           onChange={(e) => handleChange("surfaceClaro", e.target.value)}
+                           style={{ height: 38, borderRadius: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--text)", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                         />
                       </div>
                     </label>
                   </div>
 
-                  <div style={{ padding: 16, borderRadius: 14, border: "1px solid rgba(255,255,255,0.05)", background: "#14171a" }}>
-                    <h4 style={{ margin: "0 0 12px", fontSize: 14, color: "#fff", fontWeight: 850 }}>Tema Escuro</h4>
+                  <div style={{ padding: 16, borderRadius: 14, border: "1px solid var(--line)", background: "var(--soft)" }}>
+                    <h4 style={{ margin: "0 0 12px", fontSize: 14, color: "var(--text)", fontWeight: 850 }}>Tema Escuro</h4>
                     <label className="field-premium">
                       <span>Cor de Fundo</span>
                       <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
                         <input 
-                          type="color" 
-                          name="bgEscuro" 
-                          value={bgEscuro} 
-                          onChange={(e) => handleChange("bgEscuro", e.target.value)}
-                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
-                        />
+                           type="color" 
+                           name="bgEscuro" 
+                           value={bgEscuro} 
+                           onChange={(e) => handleChange("bgEscuro", e.target.value)}
+                           style={{ width: 42, height: 38, padding: 0, border: "1px solid var(--line)", borderRadius: 8, cursor: "pointer", background: "none" }}
+                         />
                         <input 
-                          type="text" 
-                          value={bgEscuro} 
-                          onChange={(e) => handleChange("bgEscuro", e.target.value)}
-                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
-                        />
+                           type="text" 
+                           value={bgEscuro} 
+                           onChange={(e) => handleChange("bgEscuro", e.target.value)}
+                           style={{ height: 38, borderRadius: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--text)", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                         />
                       </div>
                     </label>
                     <label className="field-premium" style={{ marginTop: 12 }}>
                       <span>Cor de Superfície (Cards)</span>
                       <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
                         <input 
-                          type="color" 
-                          name="surfaceEscuro" 
-                          value={surfaceEscuro} 
-                          onChange={(e) => handleChange("surfaceEscuro", e.target.value)}
-                          style={{ width: 42, height: 38, padding: 0, border: "1px solid #343a40", borderRadius: 8, cursor: "pointer", background: "none" }}
-                        />
+                           type="color" 
+                           name="surfaceEscuro" 
+                           value={surfaceEscuro} 
+                           onChange={(e) => handleChange("surfaceEscuro", e.target.value)}
+                           style={{ width: 42, height: 38, padding: 0, border: "1px solid var(--line)", borderRadius: 8, cursor: "pointer", background: "none" }}
+                         />
                         <input 
-                          type="text" 
-                          value={surfaceEscuro} 
-                          onChange={(e) => handleChange("surfaceEscuro", e.target.value)}
-                          style={{ height: 38, borderRadius: 8, border: "1px solid #343a40", background: "#1a1f24", color: "#f4f4f5", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
-                        />
+                           type="text" 
+                           value={surfaceEscuro} 
+                           onChange={(e) => handleChange("surfaceEscuro", e.target.value)}
+                           style={{ height: 38, borderRadius: 8, border: "1px solid var(--line)", background: "var(--surface)", color: "var(--text)", fontSize: 13, fontWeight: 700, padding: "0 10px", width: 90 }}
+                         />
                       </div>
                     </label>
                   </div>

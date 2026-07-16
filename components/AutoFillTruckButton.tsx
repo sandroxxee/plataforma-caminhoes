@@ -1,21 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-export type SugestaoAnuncio = {
-  marca?: string;
-  modelo?: string;
-  ano?: string;
-  preco?: string;
-  cidade?: string;
-  estado?: string;
-  carroceria?: string;
-  tracao?: string;
-  whatsapp?: string;
-  descricao?: string;
-  conservacao?: string;
-  observacoes?: string[];
-};
+import { preencherComIa, SugestaoAnuncio } from "@/services/iaService";
 
 type Props = {
   onFill?: (sugestao: SugestaoAnuncio) => void;
@@ -26,7 +12,7 @@ export function AutoFillTruckButton({ onFill }: Props) {
   const [mensagem, setMensagem] = useState("");
   const [observacoes, setObservacoes] = useState<string[]>([]);
 
-  async function preencherComIa() {
+  async function preencherComIaHandler() {
     setMensagem("");
     setObservacoes([]);
 
@@ -51,20 +37,7 @@ export function AutoFillTruckButton({ onFill }: Props) {
     setCarregando(true);
 
     try {
-      const response = await fetch("/api/anuncios/preencher-ia", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto, tipo_anuncio }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setMensagem(data?.erro || "Não foi possível preencher o anúncio agora.");
-        return;
-      }
-
-      const sugestao = (data?.sugestao || {}) as SugestaoAnuncio;
+      const sugestao = await preencherComIa(texto, tipo_anuncio);
 
       if (onFill) {
         onFill(sugestao);
@@ -72,17 +45,18 @@ export function AutoFillTruckButton({ onFill }: Props) {
 
       setObservacoes(sugestao.observacoes || []);
       setMensagem("IA preencheu o que conseguiu identificar. Revise antes de enviar para aprovação.");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setMensagem("Erro ao consultar a IA. Você ainda pode preencher manualmente.");
+      setMensagem(error.message || "Erro ao consultar a IA. Você ainda pode preencher manualmente.");
     } finally {
       setCarregando(false);
     }
   }
 
+
   return (
     <div className="ai-actions-box">
-      <button type="button" onClick={preencherComIa} disabled={carregando} className="ai-fill-button">
+      <button type="button" onClick={preencherComIaHandler} disabled={carregando} className="ai-fill-button">
         {carregando ? "Analisando anúncio..." : "Preencher campos com IA"}
       </button>
 

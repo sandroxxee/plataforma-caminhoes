@@ -26,7 +26,7 @@ export function HeroBannerSection({ currentUrl }: Props) {
 }
 
 const s: Record<string, CSSProperties> = {
-  section: { padding: 22, borderRadius: 26, background: "#ffffff", border: "1px solid #d8dee9", boxShadow: "0 8px 22px rgba(15,23,42,.05)", marginBottom: 0 },
-  title:   { margin: "0 0 6px", fontSize: 24, letterSpacing: "-.035em", color: "#111827" },
-  desc:    { margin: "0 0 16px", fontSize: 13, color: "#64748b", fontWeight: 700 },
+  section: { padding: 22, borderRadius: 26, background: "var(--surface)", border: "1px solid var(--line)", boxShadow: "var(--shadow)", marginBottom: 0 },
+  title:   { margin: "0 0 6px", fontSize: 24, letterSpacing: "-.035em", color: "var(--text)" },
+  desc:    { margin: "0 0 16px", fontSize: 13, color: "var(--muted)", fontWeight: 700 },
 };

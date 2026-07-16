@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
-import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin, vincularAnunciosParceiroAction } from "../actions";
+import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin, vincularAnunciosParceiroAction, toggleSeloAction } from "../actions";
 import { Loader2, CheckCircle2, AlertTriangle, Landmark, CheckSquare, Square, Search, Handshake } from "lucide-react";
 
 type TruckImage = { image_url: string | null; principal: boolean | null; ordem: number | null };
@@ -19,6 +18,9 @@ type Truck = {
   marca: string | null;
   modelo: string | null;
   whatsapp?: string | null;
+  destaque?: boolean | null;
+  verificado?: boolean | null;
+  abaixo_fipe?: boolean | null;
   truck_images?: TruckImage[];
 };
 
@@ -155,12 +157,39 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
     }
   }
 
+  async function handleToggleSelo(id: string, campo: "destaque" | "verificado" | "abaixo_fipe", valorAtual: boolean) {
+    // Atualização otimista
+    setTrucks((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, [campo]: !valorAtual } : t
+      )
+    );
+
+    try {
+      const res = await toggleSeloAction(id, campo, valorAtual);
+      if (res.error) {
+        throw new Error(res.error);
+      }
+      setSuccessMsg("Selo atualizado com sucesso!");
+      setTimeout(() => setSuccessMsg(""), 2000);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Erro ao atualizar selo.");
+      // Desfaz alteração em caso de falha
+      setTrucks((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, [campo]: valorAtual } : t
+        )
+      );
+    }
+  }
+
+
   return (
-    <div style={c.container}>
+    <div className="admin-grid" style={{ gap: 16 }}>
       
       {/* MODO VINCULAÇÃO ATIVO */}
       {targetWhatsApp && targetNome && (
-        <div style={c.vinculoAlert}>
+        <div className="admin-alert admin-alert-warning">
           <Handshake size={20} />
           <div>
             <strong>Modo Vinculação Ativo:</strong> Vinculando estoque para a loja <strong>{targetNome}</strong>.
@@ -172,40 +201,40 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
       )}
 
       {successMsg && (
-        <div style={c.successAlert}>
+        <div className="admin-alert admin-alert-success">
           <CheckCircle2 size={18} />
           {successMsg}
         </div>
       )}
 
       {errorMsg && (
-        <div style={c.errorAlert}>
+        <div className="admin-alert admin-alert-error">
           <AlertTriangle size={18} />
           {errorMsg}
         </div>
       )}
 
       {/* FERRAMENTAS DE BUSCA E LOTE */}
-      <div style={c.toolbar}>
+      <div className="admin-toolbar">
         
         {/* BUSCA RAPIDA */}
-        <div style={c.searchBox}>
-          <Search size={18} style={{ color: "#94a3b8" }} />
+        <div className="admin-search-box">
+          <Search size={18} style={{ color: "var(--muted)" }} />
           <input 
             type="text" 
             placeholder="Pesquisar por título, marca ou cidade..." 
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
-            style={c.searchInput}
+            className="admin-search-input"
           />
         </div>
 
         {/* CONTROLE EM LOTE */}
-        <div style={c.loteBox}>
+        <div className="admin-lote-box">
           <select 
             value={selectedParceiroWa} 
             onChange={(e) => setSelectedParceiroWa(e.target.value)}
-            style={c.selectParceiro}
+            className="admin-select"
           >
             <option value="">-- Selecione a Loja Parceira --</option>
             {parceiros.map((p) => (
@@ -218,7 +247,8 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
           <button 
             onClick={handleVincularLote}
             disabled={loading || selectedIds.length === 0}
-            style={selectedIds.length === 0 ? { ...c.loteBtn, opacity: 0.5, cursor: "not-allowed" } : c.loteBtn}
+            className="admin-lote-btn"
+            style={selectedIds.length === 0 ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
           >
             {loading ? (
               <><Loader2 size={15} style={{ animation: "spin 1s linear infinite" }} /> Aplicando...</>
@@ -231,19 +261,19 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
       </div>
 
       {/* LISTAGEM */}
-      <div style={c.list}>
+      <div className="admin-grid" style={{ gap: 12 }}>
         
         {/* CABEÇALHO SELECT ALL */}
         {filteredTrucks.length > 0 && (
-          <div style={c.selectAllHeader} onClick={toggleSelectAll}>
-            <button style={c.checkboxBtn}>
+          <div className="admin-select-all-header" onClick={toggleSelectAll}>
+            <button className="admin-checkbox-btn">
               {selectedIds.length === filteredTrucks.length ? (
-                <CheckSquare size={20} style={{ color: "#1877f2" }} />
+                <CheckSquare size={20} style={{ color: "var(--blue)" }} />
               ) : (
-                <Square size={20} style={{ color: "#cbd5e1" }} />
+                <Square size={20} style={{ color: "var(--muted)" }} />
               )}
             </button>
-            <span style={{ fontSize: 13, fontWeight: 800, color: "#64748b" }}>
+            <span style={{ fontSize: 13, fontWeight: 800, color: "var(--muted)" }}>
               {selectedIds.length === filteredTrucks.length ? "Desmarcar todos" : `Marcar todos (${filteredTrucks.length} anúncios)`}
             </span>
           </div>
@@ -255,64 +285,126 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
           const isSelected = selectedIds.includes(truck.id);
 
           return (
-            <article key={truck.id} style={isSelected ? { ...c.row, border: "1.5px solid #1877f2", background: "#f8fafc" } : c.row}>
+            <article key={truck.id} className="admin-list-row" style={isSelected ? { borderColor: "var(--blue)", background: "var(--blueSoft)" } : undefined}>
               
               {/* CHECKBOX SELEÇÃO */}
-              <button onClick={() => toggleSelect(truck.id)} style={c.checkboxBtn}>
+              <button onClick={() => toggleSelect(truck.id)} className="admin-checkbox-btn">
                 {isSelected ? (
-                  <CheckSquare size={22} style={{ color: "#1877f2" }} />
+                  <CheckSquare size={22} style={{ color: "var(--blue)" }} />
                 ) : (
-                  <Square size={22} style={{ color: "#cbd5e1" }} />
+                  <Square size={22} style={{ color: "var(--muted)" }} />
                 )}
               </button>
 
-              <div style={c.thumb}>
-                {image ? <img src={image} alt={truck.titulo || "Caminhão"} style={c.image} /> : <span>Sem foto</span>}
+              <div className="admin-list-thumb">
+                {image ? <img src={image} alt={truck.titulo || "Caminhão"} className="admin-card-image" /> : <span>Sem foto</span>}
               </div>
 
-              <div style={c.info}>
-                <strong style={c.title}>{truck.titulo}</strong>
-                <p style={c.meta}>{truck.marca} {truck.modelo} • {truck.cidade}/{truck.estado} • {money(truck.preco)}</p>
+              <div className="admin-card-body" style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 4, padding: 0 }}>
+                <strong className="admin-card-title" style={{ margin: 0, fontSize: 16 }}>{truck.titulo}</strong>
+                <p className="admin-card-desc" style={{ margin: 0, color: "var(--muted)", fontWeight: 700, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {truck.marca} {truck.modelo} • {truck.cidade}/{truck.estado} • {money(truck.preco)}
+                </p>
                 
-                {/* TAG DA LOJA PARCEIRA */}
-                {lojaVinculada ? (
-                  <span style={c.tagLoja}>
-                    <Landmark size={11} /> Estoque: {lojaVinculada}
-                  </span>
-                ) : (
-                  <span style={c.tagParticular}>Particular / Sem Loja</span>
-                )}
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 6 }}>
+                  {/* TAG DA LOJA PARCEIRA */}
+                  {lojaVinculada ? (
+                    <span className="admin-card-status" style={{ background: "var(--blueSoft)", color: "var(--blue)", border: 0, padding: "3px 8px", width: "fit-content", textTransform: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                      <Landmark size={11} /> Estoque: {lojaVinculada}
+                    </span>
+                  ) : (
+                    <span className="admin-card-status" style={{ background: "var(--soft)", color: "var(--muted)", border: 0, padding: "3px 8px", width: "fit-content", textTransform: "none" }}>
+                      Particular / Sem Loja
+                    </span>
+                  )}
+
+                  {/* CONTROLES DE SELOS */}
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "var(--soft)", padding: "2px 6px", borderRadius: 8, border: "1px solid var(--line)" }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: "var(--muted)", marginRight: 4 }}>Selos:</span>
+                    
+                    <button
+                      onClick={() => handleToggleSelo(truck.id, "destaque", !!truck.destaque)}
+                      style={{
+                        border: 0,
+                        background: truck.destaque ? "rgba(234, 179, 8, 0.15)" : "transparent",
+                        color: truck.destaque ? "#d97706" : "var(--muted)",
+                        fontSize: 11,
+                        fontWeight: 900,
+                        padding: "3px 8px",
+                        borderRadius: 6,
+                        cursor: "pointer"
+                      }}
+                      title="Alternar selo de Destaque"
+                    >
+                      ★ Destaque
+                    </button>
+
+                    <button
+                      onClick={() => handleToggleSelo(truck.id, "verificado", !!truck.verificado)}
+                      style={{
+                        border: 0,
+                        background: truck.verificado ? "rgba(34, 197, 94, 0.15)" : "transparent",
+                        color: truck.verificado ? "#166534" : "var(--muted)",
+                        fontSize: 11,
+                        fontWeight: 900,
+                        padding: "3px 8px",
+                        borderRadius: 6,
+                        cursor: "pointer"
+                      }}
+                      title="Alternar selo de Verificado"
+                    >
+                      ✓ Verificado
+                    </button>
+
+                    <button
+                      onClick={() => handleToggleSelo(truck.id, "abaixo_fipe", !!truck.abaixo_fipe)}
+                      style={{
+                        border: 0,
+                        background: truck.abaixo_fipe ? "rgba(6, 182, 212, 0.15)" : "transparent",
+                        color: truck.abaixo_fipe ? "#0891b2" : "var(--muted)",
+                        fontSize: 11,
+                        fontWeight: 900,
+                        padding: "3px 8px",
+                        borderRadius: 6,
+                        cursor: "pointer"
+                      }}
+                      title="Alternar selo Abaixo da Tabela FIPE"
+                    >
+                      📉 Abaixo Fipe
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <span style={truck.status === "aprovado" ? c.statusApproved : truck.status === "reprovado" ? c.statusRejected : c.statusPending}>
+              <span className={`admin-card-status ${truck.status === "aprovado" ? "admin-btn-approve" : truck.status === "reprovado" ? "admin-btn-reject" : "admin-btn-edit"}`} style={{ display: "inline-flex", padding: "6px 12px", border: 0, width: "fit-content", textTransform: "uppercase", fontSize: 11 }}>
                 {statusLabel(truck.status)}
               </span>
 
-              <div style={c.actions}>
+              <div className="admin-card-actions" style={{ margin: 0, justifyContent: "flex-end", alignItems: "center" }}>
                 {truck.status === "aprovado" && (
-                  <Link href={`/admin/divulgacao/${truck.id}`} style={c.share}>Divulgar</Link>
+                  <Link href={`/admin/divulgacao/${truck.id}`} className="admin-btn" style={{ background: "var(--wa)", color: "#fff" }}>Divulgar</Link>
                 )}
 
-                <a href={`/api/admin/ia-anuncios/${truck.id}`} download style={c.aiPackage}>Central IA</a>
-                <Link href={`/admin/laudo/${truck.id}`} style={c.laudo}>Laudo</Link>
+                <a href={`/api/admin/ia-anuncios/${truck.id}`} download className="admin-btn" style={{ background: "#f59e0b", color: "#ffffff" }}>Central IA</a>
+                <Link href={`/admin/laudo/${truck.id}`} className="admin-btn" style={{ background: "#7c3aed", color: "#ffffff" }}>Laudo</Link>
 
                 {truck.status !== "aprovado" && (
-                  <form action={aprovarAnuncio} style={c.formButton}>
+                  <form action={aprovarAnuncio} style={{ margin: 0 }}>
                     <input type="hidden" name="id" value={truck.id} />
-                    <button style={c.approve}>Aprovar</button>
+                    <button className="admin-btn admin-btn-approve">Aprovar</button>
                   </form>
                 )}
 
                 {truck.status !== "reprovado" && (
-                  <form action={reprovarAnuncio} style={c.formButton}>
+                  <form action={reprovarAnuncio} style={{ margin: 0 }}>
                     <input type="hidden" name="id" value={truck.id} />
-                    <button style={c.reject}>Reprovar</button>
+                    <button className="admin-btn admin-btn-reject">Reprovar</button>
                   </form>
                 )}
 
-                <Link href={`/painel/anuncios/${truck.id}/editar`} style={c.edit}>Editar</Link>
+                <Link href={`/painel/anuncios/${truck.id}/editar`} className="admin-btn admin-btn-edit">Editar</Link>
 
-                <form action={excluirAnuncioAdmin} style={c.formButton}>
+                <form action={excluirAnuncioAdmin} style={{ margin: 0 }}>
                   <input type="hidden" name="id" value={truck.id} />
                   <ConfirmDeleteButton message={`Confirma remover o anúncio ${truck.titulo || "selecionado"}?`} />
                 </form>
@@ -321,69 +413,9 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
           );
         })}
 
-        {filteredTrucks.length === 0 && <div style={c.empty}>Nenhum anúncio correspondente encontrado.</div>}
+        {filteredTrucks.length === 0 && <div className="admin-empty">Nenhum anúncio correspondente encontrado.</div>}
       </div>
 
     </div>
   );
 }
-
-const buttonBase: CSSProperties = {
-  border: 0,
-  padding: "10px 16px",
-  borderRadius: 12,
-  fontWeight: 800,
-  fontFamily: "inherit",
-  cursor: "pointer",
-  textDecoration: "none",
-  lineHeight: 1,
-  fontSize: 13,
-  transition: "all 0.2s",
-};
-
-const statusBase: CSSProperties = {
-  padding: "6px 12px",
-  borderRadius: 999,
-  textAlign: "center",
-  fontWeight: 800,
-  fontSize: 11,
-  whiteSpace: "nowrap",
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-};
-
-const c: Record<string, CSSProperties> = {
-  container: { display: "flex", flexDirection: "column", gap: 16 },
-  vinculoAlert: { display: "flex", alignItems: "flex-start", gap: 12, padding: "16px 20px", borderRadius: 16, background: "rgba(245,158,11,0.08)", border: "1.5px solid #f59e0b", color: "#d97706", fontWeight: 800, fontSize: 14 },
-  successAlert: { display: "flex", alignItems: "center", gap: 8, padding: "14px 18px", borderRadius: 14, background: "#dcfce7", border: "1px solid #22c55e", color: "#15803d", fontWeight: 800, fontSize: 14 },
-  errorAlert: { display: "flex", alignItems: "center", gap: 8, padding: "14px 18px", borderRadius: 14, background: "#fee2e2", border: "1px solid #ef4444", color: "#b91c1c", fontWeight: 800, fontSize: 14 },
-  toolbar: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap", background: "#f8fafc", padding: 16, borderRadius: 20, border: "1px solid rgba(148,163,184,0.12)" },
-  searchBox: { display: "flex", alignItems: "center", gap: 10, background: "#fff", border: "1px solid #cbd5e1", borderRadius: 14, height: 46, padding: "0 16px", flex: "1 1 300px" },
-  searchInput: { border: 0, outline: "none", fontSize: 14, fontWeight: 700, color: "#1e293b", width: "100%" },
-  loteBox: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" },
-  selectParceiro: { height: 46, padding: "0 14px", borderRadius: 14, border: "1px solid #cbd5e1", background: "#fff", color: "#1e293b", fontSize: 14, fontWeight: 700, outline: "none" },
-  loteBtn: { height: 46, padding: "0 20px", borderRadius: 14, border: 0, background: "#1877f2", color: "#fff", fontWeight: 900, fontSize: 14, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 },
-  list: { display: "grid", gap: 12 },
-  selectAllHeader: { display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", cursor: "pointer", userSelect: "none" },
-  checkboxBtn: { background: "none", border: 0, cursor: "pointer", padding: 0, display: "flex", alignItems: "center", justifyContent: "center" },
-  row: { display: "grid", gridTemplateColumns: "36px 104px minmax(220px, 1fr) 112px auto", gap: 16, alignItems: "center", padding: 16, borderRadius: 20, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", boxShadow: "0 4px 12px rgba(15,23,42,0.03)", transition: "all 0.2s" },
-  thumb: { width: 104, height: 78, borderRadius: 12, overflow: "hidden", background: "#f8fafc", display: "grid", placeItems: "center", color: "#94a3b8", fontSize: 11, fontWeight: 800 },
-  image: { width: "100%", height: "100%", objectFit: "contain", display: "block" },
-  info: { minWidth: 0, display: "flex", flexDirection: "column" as const, gap: 4 },
-  title: { display: "block", fontSize: 16, fontWeight: 800, color: "#0f172a", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-  meta: { margin: 0, color: "#64748b", fontWeight: 700, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-  tagLoja: { display: "inline-flex", alignItems: "center", gap: 4, width: "fit-content", padding: "3px 8px", borderRadius: 6, background: "rgba(24,119,242,0.08)", color: "#1877f2", fontSize: 11, fontWeight: 900 },
-  tagParticular: { display: "inline-flex", width: "fit-content", padding: "3px 8px", borderRadius: 6, background: "#f1f5f9", color: "#64748b", fontSize: 11, fontWeight: 800 },
-  statusApproved: { ...statusBase, background: "#dcfce7", color: "#166534" },
-  statusRejected: { ...statusBase, background: "#fee2e2", color: "#991b1b" },
-  statusPending: { ...statusBase, background: "#fef3c7", color: "#92400e" },
-  actions: { display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end", alignItems: "center" },
-  formButton: { margin: 0 },
-  approve: { ...buttonBase, background: "#1877f2", color: "#ffffff" },
-  reject: { ...buttonBase, background: "#fee2e2", color: "#ef4444" },
-  edit: { ...buttonBase, background: "#f1f5f9", color: "#475569", border: "1px solid rgba(148,163,184,0.1)" },
-  share: { ...buttonBase, background: "#22c55e", color: "#ffffff" },
-  aiPackage: { ...buttonBase, background: "#f59e0b", color: "#ffffff" },
-  laudo: { ...buttonBase, background: "#7c3aed", color: "#ffffff" },
-  empty: { padding: 32, borderRadius: 20, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", color: "#64748b", fontWeight: 700, textAlign: "center" },
-};

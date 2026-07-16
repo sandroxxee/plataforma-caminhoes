@@ -18,6 +18,9 @@ type Truck = {
   marca: string | null;
   modelo: string | null;
   whatsapp?: string | null;
+  destaque?: boolean | null;
+  verificado?: boolean | null;
+  abaixo_fipe?: boolean | null;
   truck_images?: TruckImage[];
 };
 
@@ -40,7 +43,7 @@ export default async function AdminAnunciosPage() {
   const { data: trucksData } = await supabase
     .from("trucks")
     .select(`
-      id, titulo, status, preco, cidade, estado, marca, modelo, whatsapp,
+      id, titulo, status, preco, cidade, estado, marca, modelo, whatsapp, destaque, verificado, abaixo_fipe,
       truck_images ( image_url, principal, ordem )
     `)
     .order("created_at", { ascending: false });

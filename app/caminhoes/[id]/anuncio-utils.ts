@@ -165,6 +165,27 @@ export function getStructuredData(truck: Truck, title: string, location: string,
     `${title}${location ? ` em ${location}` : ""}. Anúncio revisado com contato direto pelo WhatsApp.`;
   const imageAbsolute = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
+  const defaultShippingDetails = {
+    "@type": "OfferShippingDetails",
+    shippingRate: {
+      "@type": "MonetaryAmount",
+      value: 0,
+      currency: "BRL"
+    },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "BR"
+    }
+  };
+
+  const defaultReturnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "BR",
+    returnPolicyCategory: "https://schema.org/MerchantReturnPolicyUnspecified"
+  };
+
+  const priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
   const vehicle = {
     "@context": "https://schema.org",
     "@type": "Vehicle",
@@ -172,6 +193,7 @@ export function getStructuredData(truck: Truck, title: string, location: string,
     image: imageAbsolute,
     brand: truck.marca ? { "@type": "Brand", name: truck.marca } : undefined,
     model: truck.modelo || undefined,
+    mpn: truck.id,
     vehicleModelDate: truck.ano_modelo ? String(truck.ano_modelo) : undefined,
     modelDate: truck.ano_fabricacao ? String(truck.ano_fabricacao) : undefined,
     vehicleConfiguration: truck.carroceria || undefined,
@@ -189,6 +211,9 @@ export function getStructuredData(truck: Truck, title: string, location: string,
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
       seller: { "@type": "Organization", name: "Caminhões à Venda", url: siteUrl },
+      priceValidUntil,
+      shippingDetails: defaultShippingDetails,
+      hasMerchantReturnPolicy: defaultReturnPolicy
     },
     areaServed: location || undefined,
     potentialAction: whatsappLink
@@ -202,6 +227,7 @@ export function getStructuredData(truck: Truck, title: string, location: string,
     name: title, description, url,
     image: imageAbsolute,
     sku: truck.id,
+    mpn: truck.id,
     brand: truck.marca ? { "@type": "Brand", name: truck.marca } : undefined,
     category: "Veículos > Caminhões",
     offers: {
@@ -209,7 +235,9 @@ export function getStructuredData(truck: Truck, title: string, location: string,
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
       seller: { "@type": "Organization", name: "Caminhões à Venda", url: siteUrl },
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+      priceValidUntil,
+      shippingDetails: defaultShippingDetails,
+      hasMerchantReturnPolicy: defaultReturnPolicy
     },
   };
 

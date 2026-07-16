@@ -1,9 +1,7 @@
-/* ============================================================
-   globals.css — ponto de entrada
-   ============================================================ */
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
 @import "./styles/tokens.css";
 @import "./styles/base.css";
+@import "./styles/utilities.css";
 @import "./styles/header.css";
 @import "./styles/layout.css";
 @import "./styles/cards.css";
@@ -12,3 +10,25 @@
 @import "./styles/category-pages.css";
 @import "./styles/seo.css";
 @import "./styles/responsive.css";
+@import "./styles/form-anuncio.css";
+
+:root {
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Fundo da página inteira (cinza gelo) */
+  --bg-body: #f1f5f9;
+  
+  /* Fundo dos cards (branco puro) */
+  --bg-card: #ffffff;
+
+  /* Sombra suave e moderna (ao invés de sombra pesada) */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+
+  /* Arredondamento padrão (mais moderno) */
+  --radius: 16px;
+  --radius-sm: 8px;
+
+  /* Transições suaves */
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -37,9 +37,10 @@ export default async function AdminLaudoPage({ params }: { params: Promise<{ id:
       actions={
         <Link
           href="/admin/anuncios"
-          style={{ padding: "10px 18px", borderRadius: 12, background: "#1e293b", color: "#94a3b8", textDecoration: "none", fontWeight: 800, fontSize: 13 }}
+          className="admin-btn admin-btn-edit"
+          style={{ padding: "10px 18px", borderRadius: 12, fontSize: 13 }}
         >
-          \u2190 Voltar
+          ← Voltar
         </Link>
       }
     >

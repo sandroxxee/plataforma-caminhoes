@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import { AdminLayout } from '@/components/AdminLayout'
+import { Download, RefreshCw, Copy, Send, CheckSquare, Square, FolderArchive } from 'lucide-react'
 
 type Anuncio = {
   id: string
@@ -15,14 +17,14 @@ type Anuncio = {
 }
 
 const FRASES_PREMIUM = [
-  '\uD83D\uDE9B Oportunidade premium! Caminh\u00E3o ideal para voc\u00EA. Chame agora!',
-  '\uD83D\uDD25 Raridade no mercado! Este caminh\u00E3o n\u00E3o vai durar. Fale j\u00E1!',
-  '\u2B50 Sele\u00E7\u00E3o premium de caminh\u00F5es para o seu neg\u00F3cio. Entre em contato!',
-  '\uD83D\uDCBC Oportunidade \u00FAnica! Caminh\u00E3o revisado e pronto pra rodar. Chame agora!',
-  '\uD83C\uDFC6 Os melhores caminh\u00F5es est\u00E3o aqui. N\u00E3o perca essa chance!',
-  '\uD83D\uDE80 Caminh\u00E3o de alta performance esperando por voc\u00EA. Consulte agora!',
-  '\uD83D\uDC8E Premium e na sua m\u00E3o. Caminh\u00E3o top de linha dispon\u00EDvel. Chame j\u00E1!',
-  '\u2705 Estoque selecionado! Caminh\u00F5es premium para o seu gosto. Fale conosco!',
+  '🚛 Oportunidade premium! Caminhão ideal para você. Chame agora!',
+  '🔥 Raridade no mercado! Este caminhão não vai durar. Fale já!',
+  '⭐ Seleção premium de caminhões para o seu negócio. Entre em contato!',
+  '💼 Oportunidade única! Caminhão revisado e pronto pra rodar. Chame agora!',
+  '🏆 Os melhores caminhões estão aqui. Não perca essa chance!',
+  '🚀 Caminhão de alta performance esperando por você. Consulte agora!',
+  '💎 Premium e na sua mão. Caminhão top de linha disponível. Chame já!',
+  '✅ Estoque selecionado! Caminhões premium para o seu gosto. Fale conosco!',
 ]
 
 export default function FerramentasFotosPage() {
@@ -136,144 +138,183 @@ export default function FerramentasFotosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-6xl mx-auto">
+    <AdminLayout
+      title="Ferramentas de Fotos"
+      subtitle="Baixe fotos soltas ou em ZIP e compartilhe com frases premium."
+      badge="Admin"
+    >
+      <div className="admin-grid" style={{ gridTemplateColumns: "1fr 2fr", gap: 20, alignItems: "start" }}>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-orange-400 mb-1">\uD83D\uDCF8 Ferramentas de Fotos</h1>
-          <p className="text-gray-400 text-sm">Baixe fotos soltas ou em ZIP e compartilhe com frases premium</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Lista de An\u00FAncios */}
-          <div className="lg:col-span-1">
-            <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-              <h2 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">An\u00FAncios</h2>
-              <input
-                type="text"
-                placeholder="Buscar por marca, modelo..."
-                value={busca}
-                onChange={e => setBusca(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 mb-3 focus:outline-none focus:border-orange-500"
-              />
-              <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-                {anunciosFiltrados.map(a => (
-                  <button
-                    key={a.id}
-                    onClick={() => { setSelecionado(a); setFotosSelecionadas(new Set()) }}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                      selecionado?.id === a.id
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
-                    }`}
-                  >
-                    <div className="font-medium truncate">{a.titulo || `${a.marca} ${a.modelo}`}</div>
-                    <div className="text-xs opacity-70">{a.marca} \u2022 {a.ano} \u2022 {a.fotos?.length ?? 0} fotos</div>
-                  </button>
-                ))}
-                {anunciosFiltrados.length === 0 && (
-                  <p className="text-gray-600 text-sm text-center py-4">Nenhum an\u00FAncio encontrado</p>
-                )}
-              </div>
-            </div>
+        {/* Lista de Anúncios */}
+        <section className="admin-card" style={{ display: "block", padding: 18 }}>
+          <h2 className="admin-card-title" style={{ margin: "0 0 12px", fontSize: 16 }}>Anúncios</h2>
+          <div className="admin-input-group" style={{ marginBottom: 12 }}>
+            <input
+              type="text"
+              placeholder="Buscar por marca, modelo..."
+              value={busca}
+              onChange={e => setBusca(e.target.value)}
+            />
           </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: "60vh", overflowY: "auto", paddingRight: 4 }}>
+            {anunciosFiltrados.map(a => {
+              const active = selecionado?.id === a.id;
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => { setSelecionado(a); setFotosSelecionadas(new Set()) }}
+                  className="admin-btn"
+                  style={{
+                    width: "100%",
+                    display: "block",
+                    textAlign: "left",
+                    background: active ? "var(--blue)" : "var(--soft)",
+                    color: active ? "#ffffff" : "var(--text)",
+                    border: "1px solid var(--line)",
+                    padding: "10px 14px",
+                    borderRadius: 12
+                  }}
+                >
+                  <strong style={{ display: "block", fontSize: 13.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {a.titulo || `${a.marca} ${a.modelo}`}
+                  </strong>
+                  <span style={{ fontSize: 11, opacity: 0.8, fontWeight: 700 }}>
+                    {a.marca} • {a.ano} • {a.fotos?.length ?? 0} fotos
+                  </span>
+                </button>
+              );
+            })}
+            {anunciosFiltrados.length === 0 && (
+              <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", padding: 12 }}>Nenhum anúncio encontrado</p>
+            )}
+          </div>
+        </section>
 
-          {/* Grade de Fotos + A\u00E7\u00F5es */}
-          <div className="lg:col-span-2 space-y-4">
+        {/* Grade de Fotos + Ações */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-            {selecionado ? (
-              <>
-                <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                  <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                      <h2 className="font-bold text-white">{selecionado.titulo || `${selecionado.marca} ${selecionado.modelo}`}</h2>
-                      <p className="text-xs text-gray-400">{fotosSelecionadas.size} de {selecionado.fotos?.length ?? 0} fotos selecionadas</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={selecionarTodas} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-white transition">Todas</button>
-                      <button onClick={limparSelecao} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-white transition">Limpar</button>
-                    </div>
+          {selecionado ? (
+            <>
+              <section className="admin-card" style={{ display: "block", padding: 18 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+                  <div>
+                    <h2 className="admin-card-title" style={{ margin: 0, fontSize: 16 }}>{selecionado.titulo || `${selecionado.marca} ${selecionado.modelo}`}</h2>
+                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "var(--muted)", fontWeight: 700 }}>
+                      {fotosSelecionadas.size} de {selecionado.fotos?.length ?? 0} fotos selecionadas
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={selecionarTodas} className="admin-btn admin-btn-edit" style={{ padding: "8px 14px", borderRadius: 10 }}>Todas</button>
+                    <button onClick={limparSelecao} className="admin-btn admin-btn-edit" style={{ padding: "8px 14px", borderRadius: 10 }}>Limpar</button>
                   </div>
                 </div>
+              </section>
 
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {(selecionado.fotos || []).map((url, i) => (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 10 }}>
+                {(selecionado.fotos || []).map((url, i) => {
+                  const isSelected = fotosSelecionadas.has(url);
+                  return (
                     <button
                       key={i}
                       onClick={() => toggleFoto(url)}
-                      className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
-                        fotosSelecionadas.has(url)
-                          ? 'border-orange-500 scale-95'
-                          : 'border-transparent hover:border-gray-500'
-                      }`}
+                      style={{
+                        position: "relative",
+                        aspectRatio: "1",
+                        borderRadius: 14,
+                        overflow: "hidden",
+                        border: isSelected ? "3px solid var(--blue)" : "1.5px solid var(--line)",
+                        background: "var(--soft)",
+                        cursor: "pointer",
+                        padding: 0,
+                        transform: isSelected ? "scale(0.96)" : "none",
+                        transition: "all 0.15s"
+                      }}
                     >
-                      <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
-                      {fotosSelecionadas.has(url) && (
-                        <div className="absolute inset-0 bg-orange-500/30 flex items-center justify-center">
-                          <span className="text-2xl">\u2713</span>
+                      <img src={url} alt={`Foto ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      {isSelected && (
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(24,119,242,0.22)", display: "grid", placeItems: "center", color: "#ffffff", fontWeight: 900, fontSize: 18 }}>
+                          ✓
                         </div>
                       )}
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
+              </div>
 
-                {fotosSelecionadas.size > 0 && (
-                  <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-                    <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">\u2B07\uFE0F Download ({fotosSelecionadas.size} fotos)</h3>
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <button
-                        onClick={baixarFotosSoltas}
-                        disabled={loading}
-                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl font-semibold text-sm transition"
-                      >
-                        {loading ? '\u23F3 Baixando...' : '\uD83D\uDCE5 Baixar Fotos Soltas'}
-                      </button>
-                      <button
-                        onClick={baixarZip}
-                        disabled={loading}
-                        className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl font-semibold text-sm transition"
-                      >
-                        {loading ? '\u23F3 Gerando ZIP...' : '\uD83D\uDDDC\uFE0F Baixar como ZIP'}
-                      </button>
-                    </div>
+              {fotosSelecionadas.size > 0 && (
+                <section className="admin-card" style={{ display: "block", padding: 18 }}>
+                  <h3 className="admin-card-title" style={{ margin: "0 0 12px", fontSize: 14, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)" }}>
+                    ⬇️ Download ({fotosSelecionadas.size} fotos)
+                  </h3>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <button
+                      onClick={baixarFotosSoltas}
+                      disabled={loading}
+                      className="admin-btn admin-btn-approve"
+                      style={{ flex: 1, height: 44, gap: 8 }}
+                    >
+                      <Download size={16} />
+                      {loading ? 'Baixando...' : 'Baixar Fotos Soltas'}
+                    </button>
+                    <button
+                      onClick={baixarZip}
+                      disabled={loading}
+                      className="admin-btn"
+                      style={{ flex: 1, height: 44, background: "#7c3aed", color: "#ffffff", gap: 8 }}
+                    >
+                      <FolderArchive size={16} />
+                      {loading ? 'Gerando ZIP...' : 'Baixar como ZIP'}
+                    </button>
                   </div>
-                )}
-              </>
-            ) : (
-              <div className="bg-gray-900 rounded-2xl p-12 border border-gray-800 text-center">
-                <p className="text-4xl mb-3">\uD83D\uDE9B</p>
-                <p className="text-gray-400">Selecione um an\u00FAncio para ver as fotos</p>
-              </div>
-            )}
+                </section>
+              )}
+            </>
+          ) : (
+            <section className="admin-card" style={{ display: "grid", placeItems: "center", padding: 48, textAlign: "center" }}>
+              <p style={{ fontSize: 36, margin: "0 0 10px" }}>🚛</p>
+              <p style={{ color: "var(--muted)", fontWeight: 700, fontSize: 14 }}>Selecione um anúncio para ver as fotos</p>
+            </section>
+          )}
 
-            {/* Frases Premium */}
-            <div className="bg-gray-900 rounded-2xl p-4 border border-gray-800">
-              <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">\uD83D\uDCAC Frase Premium</h3>
-              <div className="bg-gray-800 rounded-xl p-4 mb-3 border border-orange-500/30">
-                <p className="text-white font-medium text-sm leading-relaxed">{FRASES_PREMIUM[fraseIndex]}</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button onClick={proximaFrase} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-white transition">
-                  \uD83D\uDD04 Pr\u00F3xima
-                </button>
-                <button
-                  onClick={copiarFrase}
-                  className={`px-4 py-2 rounded-lg text-sm text-white transition ${
-                    copiado ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'
-                  }`}
-                >
-                  {copiado ? '\u2705 Copiado!' : '\uD83D\uDCCB Copiar'}
-                </button>
-                <button onClick={compartilharWhatsApp} className="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg text-sm text-white transition">
-                  \uD83D\uDCF2 WhatsApp
-                </button>
-              </div>
+          {/* Frases Premium */}
+          <section className="admin-card" style={{ display: "block", padding: 18 }}>
+            <h3 className="admin-card-title" style={{ margin: "0 0 12px", fontSize: 14, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)" }}>
+              💬 Frase Premium
+            </h3>
+            <div style={{ background: "var(--soft)", border: "1.5px dashed var(--line)", padding: 16, borderRadius: 14, marginBottom: 12 }}>
+              <p style={{ color: "var(--text)", fontWeight: 700, margin: 0, fontSize: 14, lineHeight: 1.5 }}>
+                {FRASES_PREMIUM[fraseIndex]}
+              </p>
             </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button onClick={proximaFrase} className="admin-btn admin-btn-edit" style={{ padding: "8px 16px", borderRadius: 10, gap: 6 }}>
+                <RefreshCw size={13} />
+                Próxima
+              </button>
+              <button
+                onClick={copiarFrase}
+                className="admin-btn"
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 10,
+                  background: copiado ? "#22c55e" : "var(--soft)",
+                  color: copiado ? "#ffffff" : "var(--text)",
+                  border: "1px solid var(--line)",
+                  gap: 6
+                }}
+              >
+                <Copy size={13} />
+                {copiado ? 'Copiado!' : 'Copiar'}
+              </button>
+              <button onClick={compartilharWhatsApp} className="admin-btn" style={{ padding: "8px 16px", borderRadius: 10, background: "#25d366", color: "#ffffff", gap: 6 }}>
+                <Send size={13} />
+                WhatsApp
+              </button>
+            </div>
+          </section>
 
-          </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }

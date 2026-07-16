@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/AdminLayout";
 import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin } from "../actions";
@@ -77,43 +76,43 @@ export default async function AdminPendentesPage() {
       title="Anúncios pendentes"
       subtitle="Revise foto, dados e descrição antes de liberar o anúncio no site público."
       badge="Administração"
-      actions={<Link href="/admin/anuncios" style={styles.topButton}>Ver todos</Link>}
+      actions={<Link href="/admin/anuncios" className="admin-top-btn">Ver todos</Link>}
     >
       {trucks.length === 0 && (
-        <div style={styles.empty}>Nenhum anúncio pendente agora.</div>
+        <div className="admin-empty">Nenhum anúncio pendente agora.</div>
       )}
 
-      <div style={styles.grid}>
+      <div className="admin-grid">
         {trucks.map((truck) => {
           const image = getMainImage(truck);
           const perfilInfo = truck.perfil ? PERFIL_LABEL[truck.perfil] : null;
 
           return (
-            <article key={truck.id} style={styles.card}>
-              <div style={styles.imageWrap}>
+            <article key={truck.id} className="admin-card">
+              <div className="admin-card-image-wrap">
                 {image ? (
-                  <img src={image} alt={truck.titulo || "Caminhão"} style={styles.image} />
+                  <img src={image} alt={truck.titulo || "Caminhão"} className="admin-card-image" />
                 ) : (
-                  <div style={styles.noImage}>Sem foto</div>
+                  <div className="admin-card-no-image">Sem foto</div>
                 )}
               </div>
 
-              <div style={styles.body}>
-                <div style={styles.rowTop}>
+              <div className="admin-card-body">
+                <div className="admin-card-row-top">
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <span style={styles.status}>Pendente</span>
+                    <span className="admin-card-status">Pendente</span>
                     {perfilInfo && (
                       <span style={{ padding: "7px 12px", borderRadius: 999, background: perfilInfo.bg, color: perfilInfo.color, fontWeight: 900, fontSize: 12 }}>
                         {perfilInfo.label}
                       </span>
                     )}
                   </div>
-                  <strong style={styles.price}>{money(truck.preco)}</strong>
+                  <strong className="admin-card-price">{money(truck.preco)}</strong>
                 </div>
 
-                <h2 style={styles.cardTitle}>{truck.titulo}</h2>
+                <h2 className="admin-card-title">{truck.titulo}</h2>
 
-                <div style={styles.meta}>
+                <div className="admin-card-meta">
                   {truck.marca && <span>{truck.marca}</span>}
                   {truck.modelo && <span>{truck.modelo}</span>}
                   {truck.ano_modelo && <span>{truck.ano_modelo}</span>}
@@ -122,21 +121,21 @@ export default async function AdminPendentesPage() {
                   {truck.tracao && <span>{truck.tracao}</span>}
                 </div>
 
-                <p style={styles.desc}>{truck.descricao || "Sem descrição."}</p>
+                <p className="admin-card-desc">{truck.descricao || "Sem descrição."}</p>
 
-                <div style={styles.actions}>
+                <div className="admin-card-actions">
                   <form action={aprovarAnuncio}>
                     <input type="hidden" name="id" value={truck.id} />
-                    <button style={styles.approve}>Aprovar</button>
+                    <button className="admin-btn admin-btn-approve">Aprovar</button>
                   </form>
                   <form action={reprovarAnuncio}>
                     <input type="hidden" name="id" value={truck.id} />
-                    <button style={styles.reject}>Reprovar</button>
+                    <button className="admin-btn admin-btn-reject">Reprovar</button>
                   </form>
-                  <Link href={`/painel/anuncios/${truck.id}/editar`} style={styles.edit}>Editar</Link>
+                  <Link href={`/painel/anuncios/${truck.id}/editar`} className="admin-btn admin-btn-edit">Editar</Link>
                   <form action={excluirAnuncioAdmin}>
                     <input type="hidden" name="id" value={truck.id} />
-                    <button style={styles.delete}>Excluir</button>
+                    <button className="admin-btn admin-btn-delete">Excluir</button>
                   </form>
                 </div>
               </div>
@@ -147,25 +146,3 @@ export default async function AdminPendentesPage() {
     </AdminLayout>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  topButton: { padding: "12px 20px", borderRadius: 14, background: "#1877f2", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: 14, boxShadow: "0 4px 12px rgba(24,119,242,0.2)" },
-  empty: { padding: 32, borderRadius: 24, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", color: "#64748b", fontWeight: 700, textAlign: "center" },
-  grid: { display: "grid", gap: 20 },
-  card: { display: "grid", gridTemplateColumns: "280px 1fr", overflow: "hidden", borderRadius: 24, background: "#ffffff", border: "1px solid rgba(148,163,184,0.12)", boxShadow: "0 4px 20px rgba(15,23,42,0.04)" },
-  imageWrap: { minHeight: 240, background: "#f8fafc", borderRight: "1px solid rgba(148,163,184,0.08)" },
-  image: { width: "100%", height: "100%", objectFit: "contain", display: "block" },
-  noImage: { height: "100%", minHeight: 240, display: "grid", placeItems: "center", color: "#94a3b8", fontWeight: 800 },
-  body: { padding: 24 },
-  rowTop: { display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" },
-  status: { padding: "7px 14px", borderRadius: 999, background: "#fef3c7", color: "#92400e", fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' },
-  price: { color: "#1877f2", fontSize: 26, fontWeight: 900, letterSpacing: '-0.03em' },
-  cardTitle: { margin: "14px 0 10px", fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: '-0.02em' },
-  meta: { display: "flex", flexWrap: "wrap", gap: 8, color: "#64748b", fontWeight: 700, fontSize: 14 },
-  desc: { color: "#475569", lineHeight: 1.6, fontSize: 14, marginTop: 12 },
-  actions: { display: "flex", flexWrap: "wrap", gap: 10, marginTop: 20 },
-  approve: { border: 0, padding: "12px 20px", borderRadius: 14, background: "#1877f2", color: "#ffffff", fontWeight: 800, cursor: "pointer" },
-  reject: { border: 0, padding: "12px 20px", borderRadius: 14, background: "#fee2e2", color: "#ef4444", fontWeight: 800, cursor: "pointer" },
-  edit: { padding: "12px 20px", borderRadius: 14, background: "#f1f5f9", border: "1px solid rgba(148,163,184,0.1)", color: "#475569", textDecoration: "none", fontWeight: 800 },
-  delete: { border: 0, padding: "12px 20px", borderRadius: 14, background: "#fef2f2", color: "#b91c1c", fontWeight: 800, cursor: "pointer" },
-};

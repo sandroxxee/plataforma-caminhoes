@@ -2,19 +2,10 @@
 
 import { useState } from "react";
 import { Link2, Loader2, X, CheckCircle, AlertCircle } from "lucide-react";
-
-type DadosImportados = {
-  titulo: string;
-  preco: number | null;
-  descricao: string;
-  cidade: string;
-  estado: string;
-  imagens: string[];
-  fonte: string;
-};
+import { importarDaOlx, DadosImportadosOLX } from "@/services/olxService";
 
 type Props = {
-  onImportar: (dados: DadosImportados) => void;
+  onImportar: (dados: DadosImportadosOLX) => void;
 };
 
 export function ImportarOLX({ onImportar }: Props) {
@@ -22,7 +13,7 @@ export function ImportarOLX({ onImportar }: Props) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
-  const [preview, setPreview] = useState<DadosImportados | null>(null);
+  const [preview, setPreview] = useState<DadosImportadosOLX | null>(null);
 
   async function handleImportar() {
     if (!url.trim()) {
@@ -35,26 +26,15 @@ export function ImportarOLX({ onImportar }: Props) {
     setPreview(null);
 
     try {
-      const res = await fetch("/api/importar-olx", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setErro(data.error || "Erro ao importar.");
-        return;
-      }
-
+      const data = await importarDaOlx(url);
       setPreview(data);
-    } catch {
-      setErro("Erro de conexão. Tente novamente.");
+    } catch (err: any) {
+      setErro(err.message || "Erro de conexão. Tente novamente.");
     } finally {
       setLoading(false);
     }
   }
+
 
   function handleConfirmar() {
     if (preview) {

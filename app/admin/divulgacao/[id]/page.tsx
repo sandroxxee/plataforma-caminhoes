@@ -157,7 +157,7 @@ export default async function AdminDivulgacaoPage({ params }: PageProps) {
       title="Divulgação do Anúncio"
       subtitle="Prepare artes premium e envie legendas estruturadas para acelerar as vendas."
       badge="Admin"
-      actions={<Link href="/admin/anuncios" style={styles.topButton}>Voltar aos anúncios</Link>}
+      actions={<Link href="/admin/anuncios" className="admin-btn admin-btn-edit" style={{ padding: "10px 18px", borderRadius: 12 }}>Voltar aos anúncios</Link>}
     >
       <AdminDivulgacaoBox
         titulo={title}
@@ -175,6 +175,3 @@ export default async function AdminDivulgacaoPage({ params }: PageProps) {
   );
 }
 
-const styles: Record<string, CSSProperties> = {
-  topButton: { padding: "12px 16px", borderRadius: 14, background: "#2a2f34", border: "1px solid #343a40", color: "#e8eaed", textDecoration: "none", fontWeight: 900 },
-};

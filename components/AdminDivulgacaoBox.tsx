@@ -123,7 +123,7 @@ export function AdminDivulgacaoBox({
         </div>
       )}
 
-      {/* CARD DE IDENTIFICAÇÃO DO VEÍCULO (Tema Glassmorphism) */}
+      {/* CARD DE IDENTIFICAÇÃO DO VEÍCULO */}
       <section style={styles.adCard}>
         <div style={styles.adThumb}>
           {mainImage ? (
@@ -147,7 +147,7 @@ export function AdminDivulgacaoBox({
         </div>
       </section>
 
-      {/* PAINEL DE DISTRIBUIÇÃO RÁPIDA (Estilo Glassmorphism translúcido) */}
+      {/* PAINEL DE DISTRIBUIÇÃO RÁPIDA */}
       <section style={styles.sharePanel}>
         <h3 style={styles.sectionTitle}>Divulgar anúncio</h3>
         <p style={styles.sectionDesc}>Selecione o canal para divulgar o veículo de forma rápida e profissional.</p>
@@ -268,19 +268,19 @@ export function AdminDivulgacaoBox({
         </div>
       </section>
 
-      {/* GERADOR AUTOMÁTICO DE ARTES (IMAGENS RENDERIZADAS NO SERVIDOR COM DOWNLOAD) */}
+      {/* GERADOR AUTOMÁTICO DE ARTES */}
       <section style={styles.artsCard}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, flexWrap: "wrap", gap: 10 }}>
           <h3 style={styles.sectionTitle}>Prévia e Download de Artes para Redes Sociais</h3>
           
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.03)", padding: "4px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
-            <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 800 }}>Modelo:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--soft)", padding: "4px 12px", borderRadius: 8, border: "1px solid var(--line)" }}>
+            <span style={{ fontSize: 13, color: "var(--muted)", fontWeight: 800 }}>Modelo:</span>
             <select
               value={tema}
               onChange={(e) => setTema(e.target.value)}
               style={{
                 background: "transparent",
-                color: "#fff",
+                color: "var(--text)",
                 border: 0,
                 fontSize: 13,
                 fontWeight: 700,
@@ -289,10 +289,10 @@ export function AdminDivulgacaoBox({
                 paddingRight: 6
               }}
             >
-              <option value="neon" style={{ background: "#1f2937" }}>🔵 Neon</option>
-              <option value="gold" style={{ background: "#1f2937" }}>🟡 Ouro</option>
-              <option value="glass" style={{ background: "#1f2937" }}>🌸 Glass</option>
-              <option value="light" style={{ background: "#1f2937" }}>⚪ Light</option>
+              <option value="neon" style={{ background: "var(--surface)", color: "var(--text)" }}>🔵 Neon</option>
+              <option value="gold" style={{ background: "var(--surface)", color: "var(--text)" }}>🟡 Ouro</option>
+              <option value="glass" style={{ background: "var(--surface)", color: "var(--text)" }}>🌸 Glass</option>
+              <option value="light" style={{ background: "var(--surface)", color: "var(--text)" }}>⚪ Light</option>
             </select>
           </div>
         </div>
@@ -344,32 +344,30 @@ const styles: Record<string, CSSProperties> = {
     gap: 20,
     padding: 24,
     borderRadius: 24,
-    background: "rgba(30, 41, 59, 0.4)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
+    background: "var(--surface)",
+    border: "1px solid var(--line)",
+    boxShadow: "var(--shadow)",
   },
-  adThumb: { width: 140, height: 95, borderRadius: 16, overflow: "hidden", background: "#334155", flexShrink: 0 },
+  adThumb: { width: 140, height: 95, borderRadius: 16, overflow: "hidden", background: "var(--soft)", flexShrink: 0 },
   adImg: { width: "100%", height: "100%", objectFit: "cover" },
-  noImg: { display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#64748b", fontSize: 12 },
+  noImg: { display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--muted)", fontSize: 12 },
   adInfo: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" },
   badgeAprovado: { padding: "4px 10px", borderRadius: 999, background: "rgba(16,185,129,0.15)", color: "#10b981", fontSize: 12, fontWeight: 900, alignSelf: "flex-start" },
-  badgeMeta: { padding: "4px 10px", borderRadius: 999, background: "rgba(255,255,255,0.05)", color: "#94a3b8", fontSize: 12, fontWeight: 700 },
-  adTitle: { margin: "6px 0 10px", color: "#ffffff", fontSize: 24, fontWeight: 900, letterSpacing: "-0.02em" },
+  badgeMeta: { padding: "4px 10px", borderRadius: 999, background: "var(--soft)", color: "var(--muted)", fontSize: 12, fontWeight: 700 },
+  adTitle: { margin: "6px 0 10px", color: "var(--text)", fontSize: 24, fontWeight: 900, letterSpacing: "-0.02em" },
   adPriceRow: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 },
-  price: { fontSize: 22, fontWeight: 950, color: "#10b981" },
-  adLinkBtn: { display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 800, color: "#3b82f6", textDecoration: "none" },
+  price: { fontSize: 22, fontWeight: 950, color: "var(--blue)" },
+  adLinkBtn: { display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 800, color: "var(--blue)", textDecoration: "none" },
 
   sharePanel: {
     padding: 24,
     borderRadius: 24,
-    background: "rgba(17, 24, 39, 0.45)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+    background: "var(--surface)",
+    border: "1px solid var(--line)",
+    boxShadow: "var(--shadow)",
   },
-  sectionTitle: { fontSize: 18, color: "#ffffff", fontWeight: 850, marginBottom: 4, letterSpacing: "-0.01em" },
-  sectionDesc: { fontSize: 13, color: "#64748b", margin: "0 0 16px" },
+  sectionTitle: { fontSize: 18, color: "var(--text)", fontWeight: 850, marginBottom: 4, letterSpacing: "-0.01em" },
+  sectionDesc: { fontSize: 13, color: "var(--muted)", margin: "0 0 16px" },
   shareGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 12 },
   btnWhatsapp: {
     minHeight: 52,
@@ -389,10 +387,10 @@ const styles: Record<string, CSSProperties> = {
   },
   btnNativo: {
     minHeight: 52,
-    border: "1px solid rgba(255,255,255,0.08)",
+    border: "1px solid var(--line)",
     borderRadius: 14,
-    background: "rgba(255,255,255,0.05)",
-    color: "#fff",
+    background: "var(--soft)",
+    color: "var(--text)",
     fontWeight: 900,
     fontSize: 14,
     cursor: "pointer",
@@ -474,9 +472,9 @@ const styles: Record<string, CSSProperties> = {
     height: 34,
     padding: "0 12px",
     borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.06)",
-    background: "rgba(255,255,255,0.02)",
-    color: "#94a3b8",
+    border: "1px solid var(--line)",
+    background: "var(--soft)",
+    color: "var(--muted)",
     fontSize: 12,
     fontWeight: 800,
     cursor: "pointer",
@@ -486,22 +484,21 @@ const styles: Record<string, CSSProperties> = {
   editorCard: {
     padding: 24,
     borderRadius: 24,
-    background: "rgba(17, 24, 39, 0.45)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
+    background: "var(--surface)",
+    border: "1px solid var(--line)",
   },
   editorHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 14 },
-  tabList: { display: "flex", gap: 4, background: "#1f2937", padding: 4, borderRadius: 10 },
-  tabActive: { border: 0, background: "#374151", color: "#fff", padding: "6px 14px", borderRadius: 7, fontWeight: 900, fontSize: 13, cursor: "pointer" },
-  tabInactive: { border: 0, background: "transparent", color: "#94a3b8", padding: "6px 14px", borderRadius: 7, fontWeight: 800, fontSize: 13, cursor: "pointer" },
+  tabList: { display: "flex", gap: 4, background: "var(--soft)", padding: 4, borderRadius: 10 },
+  tabActive: { border: 0, background: "var(--surface)", color: "var(--text)", padding: "6px 14px", borderRadius: 7, fontWeight: 900, fontSize: 13, cursor: "pointer" },
+  tabInactive: { border: 0, background: "transparent", color: "var(--muted)", padding: "6px 14px", borderRadius: 7, fontWeight: 800, fontSize: 13, cursor: "pointer" },
   textarea: {
     width: "100%",
     minHeight: 180,
     resize: "vertical",
     borderRadius: 14,
-    border: "1px solid #374151",
-    background: "#1f2937",
-    color: "#e5e7eb",
+    border: "1px solid var(--line)",
+    background: "var(--soft)",
+    color: "var(--text)",
     padding: 16,
     fontFamily: "inherit",
     fontSize: 14,
@@ -511,7 +508,7 @@ const styles: Record<string, CSSProperties> = {
   resetBtn: {
     border: 0,
     background: "transparent",
-    color: "#64748b",
+    color: "var(--muted)",
     fontSize: 12,
     fontWeight: 800,
     cursor: "pointer",
@@ -523,9 +520,8 @@ const styles: Record<string, CSSProperties> = {
   artsCard: {
     padding: 24,
     borderRadius: 24,
-    background: "rgba(17, 24, 39, 0.45)",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
+    background: "var(--surface)",
+    border: "1px solid var(--line)",
   },
   previewGrid: {
     display: "grid",
@@ -537,18 +533,18 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: 12,
-    background: "#1f2937",
+    background: "var(--soft)",
     padding: 16,
     borderRadius: 18,
-    border: "1px solid #374151",
+    border: "1px solid var(--line)",
   },
-  previewLabel: { fontSize: 14, color: "#94a3b8", fontWeight: 800 },
+  previewLabel: { fontSize: 14, color: "var(--muted)", fontWeight: 800 },
   previewWrapper: {
     width: "100%",
     aspectRatio: "1",
     overflow: "hidden",
     borderRadius: 12,
-    background: "#080c16",
+    background: "var(--bg)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -558,7 +554,7 @@ const styles: Record<string, CSSProperties> = {
     aspectRatio: "9/16",
     overflow: "hidden",
     borderRadius: 12,
-    background: "#080c16",
+    background: "var(--bg)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -568,7 +564,7 @@ const styles: Record<string, CSSProperties> = {
     aspectRatio: "1200/630",
     overflow: "hidden",
     borderRadius: 12,
-    background: "#080c16",
+    background: "var(--bg)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -577,8 +573,8 @@ const styles: Record<string, CSSProperties> = {
   downloadBtn: {
     height: 44,
     borderRadius: 12,
-    background: "#1e293b",
-    color: "#f8fafc",
+    background: "var(--surface)",
+    color: "var(--text)",
     fontWeight: 800,
     fontSize: 13,
     textDecoration: "none",
@@ -586,7 +582,7 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    border: "1px solid rgba(255,255,255,0.08)",
+    border: "1px solid var(--line)",
     transition: "all 0.2s ease-in-out",
   },
 
@@ -600,10 +596,10 @@ const styles: Record<string, CSSProperties> = {
     gap: 10,
     padding: "14px 20px",
     borderRadius: 16,
-    background: "#1e293b",
-    color: "#f8fafc",
-    border: "1px solid rgba(255,255,255,0.1)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+    background: "var(--surface)",
+    color: "var(--text)",
+    border: "1px solid var(--line)",
+    boxShadow: "var(--shadow)",
     fontWeight: 800,
     fontSize: 13,
     animation: "slideDown 0.3s ease-out",

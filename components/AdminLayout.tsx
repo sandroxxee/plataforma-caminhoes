@@ -4,6 +4,8 @@ import { sair } from "@/app/logout/actions";
 import { AdminMenu } from "@/components/AdminMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+import { ExternalLink, LogOut } from "lucide-react";
+
 type Props = {
   title: string;
   subtitle?: string;
@@ -39,9 +41,15 @@ export function AdminLayout({ title, subtitle, badge, actions, children }: Props
 
         <div className="admin-bottom">
           <ThemeToggle />
-          <a href="/anuncios" className="admin-public">Ver site público</a>
+          <a href="/anuncios" className="admin-public">
+            <ExternalLink size={16} style={{ marginRight: 8, flexShrink: 0 }} />
+            Ver site público
+          </a>
           <form action={sair}>
-            <button type="submit" className="admin-logout">Sair</button>
+            <button type="submit" className="admin-logout">
+              <LogOut size={16} style={{ marginRight: 8, flexShrink: 0 }} />
+              Sair
+            </button>
           </form>
         </div>
       </aside>

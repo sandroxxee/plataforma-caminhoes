@@ -2,6 +2,7 @@
    TOKENS BASE — TEMA CLARO
    ============================================================ */
 :root {
+  /* --- Cores Base --- */
   --bg:        #eef0f4;
   --surface:   #ffffff;
   --soft:      #f4f6f8;
@@ -31,6 +32,88 @@
   --font-display: var(--font-manrope), Arial, sans-serif;
   --font-title:   var(--font-manrope), Arial, sans-serif;
   --font-body:    var(--font-manrope), Arial, sans-serif;
+
+  /* --- Cores Neutras (Escala de Cinza) --- */
+  --gray-50:  #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+
+  /* --- Cores Primárias --- */
+  --primary:       #1877f2;
+  --primary-dark:  #0f5fc8;
+  --primary-light: #eff6ff;
+  --primary-hover: #0f5fc8;
+
+  /* --- Cores Semânticas --- */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger:  #ef4444;
+  --info:    #3b82f6;
+
+  /* --- Cores de Texto --- */
+  --text-primary:   #0d1117;
+  --text-secondary: #64748b;
+  --text-muted:     #94a3b8;
+  --text-inverse:   #ffffff;
+
+  /* --- Cores de Fundo Funcionais --- */
+  --bg-body:   #eef0f4;
+  --bg-card:   #ffffff;
+  --bg-input:  #f4f6f8;
+  --bg-hover:  #f4f6f8;
+
+  /* --- Escala de Espaçamento --- */
+  --space-1:  0.25rem;   /* 4px  */
+  --space-2:  0.5rem;    /* 8px  */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* --- Escala Tipográfica --- */
+  --font-size-xs:   0.75rem;   /* 12px */
+  --font-size-sm:   0.875rem;  /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg:   1.125rem;  /* 18px */
+  --font-size-xl:   1.25rem;   /* 20px */
+  --font-size-2xl:  1.5rem;    /* 24px */
+  --font-size-3xl:  1.875rem;  /* 30px */
+  --font-size-4xl:  2.25rem;   /* 36px */
+
+  --line-height-tight:   1.25;
+  --line-height-normal:  1.5;
+  --line-height-relaxed: 1.75;
+
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* --- Controle de Camadas (Z-Index) --- */
+  --z-dropdown:  1000;
+  --z-sticky:    1020;
+  --z-header:    1030;
+  --z-modal:     1040;
+  --z-toast:     1050;
+  --z-tooltip:   1060;
+
+  /* --- Breakpoints Responsivos --- */
+  --breakpoint-sm:  640px;
+  --breakpoint-md:  768px;
+  --breakpoint-lg:  1024px;
+  --breakpoint-xl:  1280px;
+  --breakpoint-2xl: 1536px;
 }
 
 /* ============================================================
@@ -56,6 +139,20 @@ body.public-theme-dark {
 
   --header-bg: #111827;
   color-scheme: dark;
+
+  /* --- Overrides de Cores do Tema Escuro --- */
+  --primary:       #4d9fff;
+  --primary-dark:  #3b82f6;
+  --primary-light: rgba(77,159,255,.12);
+  --primary-hover: #3b82f6;
+
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+
+  --bg-body:   #080d18;
+  --bg-card:   #111827;
+  --bg-input:  #1a2236;
+  --bg-hover:  #1a2236;
 }
 
 body.public-theme-light { color-scheme: light; }
