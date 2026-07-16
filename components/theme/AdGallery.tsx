@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { TruckImage } from "./TruckCard";
 import { formatImageUrl } from "@/lib/truck-utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const AUTOPLAY_INTERVAL = 3500;
 
@@ -57,13 +58,45 @@ export function AdGallery({ title, images }: Props) {
     >
       <div className="ad-gallery-main">
         {selected ? (
-          <img
-            src={selected}
-            alt={`${title} - foto ${selectedIdx + 1}`}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
+          <>
+            <img
+              src={selected}
+              alt={`${title} - foto ${selectedIdx + 1}`}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
+            {hasMultiple && (
+              <>
+                <button
+                  type="button"
+                  className="ad-gallery-nav nav-prev"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const prev = (selectedIdx - 1 + validImages.length) % validImages.length;
+                    goTo(prev);
+                    pause();
+                  }}
+                  aria-label="Foto anterior"
+                >
+                  <ChevronLeft size={20} strokeWidth={2.5} />
+                </button>
+                <button
+                  type="button"
+                  className="ad-gallery-nav nav-next"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const next = (selectedIdx + 1) % validImages.length;
+                    goTo(next);
+                    pause();
+                  }}
+                  aria-label="Próxima foto"
+                >
+                  <ChevronRight size={20} strokeWidth={2.5} />
+                </button>
+              </>
+            )}
+          </>
         ) : (
           <span className="ad-gallery-empty">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -116,15 +149,50 @@ export function AdGallery({ title, images }: Props) {
 
         .ad-gallery-main {
           border-radius: 16px; overflow: hidden;
-          background: var(--soft);
+          background: #0b0f17;
           aspect-ratio: 16/10;
           position: relative;
         }
         .ad-gallery-main img {
           width: 100%; height: 100%;
-          object-fit: cover; display: block;
+          object-fit: contain; display: block;
           transition: opacity .25s;
         }
+        
+        /* Setas de navegação na galeria principal */
+        .ad-gallery-nav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(15,23,42,0.45);
+          border: none;
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.2s, transform 0.2s;
+          z-index: 10;
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        }
+        .ad-gallery-nav:hover {
+          background: rgba(15,23,42,0.7);
+          transform: translateY(-50%) scale(1.05);
+        }
+        .ad-gallery-nav:active {
+          transform: translateY(-50%) scale(0.95);
+        }
+        .nav-prev {
+          left: 12px;
+        }
+        .nav-next {
+          right: 12px;
+        }
+        
         .ad-gallery-empty {
           width: 100%; height: 100%;
           display: flex; flex-direction: column;
@@ -171,9 +239,9 @@ export function AdGallery({ title, images }: Props) {
           .ad-gallery-main {
             aspect-ratio: 16/12;
           }
-        }
-        @media (max-width: 560px) {
-          .ad-gallery-thumbs button { width: 60px; height: 46px; }
+          .ad-gallery-thumbs {
+            display: none !important;
+          }
         }
       `}</style>
     </div>

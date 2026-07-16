@@ -169,15 +169,7 @@ export default async function RevendaDetalhePage({ params }: PageProps) {
               boxShadow: "var(--shadow)",
             }}
           >
-            <div
-              style={{
-                display: "grid",
-                gap: 22,
-                gridTemplateColumns: "minmax(0, 1.3fr) minmax(260px, .7fr)",
-                alignItems: "end",
-                padding: "clamp(22px, 5vw, 44px)",
-              }}
-            >
+            <div className="dealer-banner-grid">
               <div style={{ display: "grid", gap: 16 }}>
                 <div
                   style={{
@@ -256,17 +248,7 @@ export default async function RevendaDetalhePage({ params }: PageProps) {
                 </p>
               </div>
 
-              <aside
-                style={{
-                  display: "grid",
-                  gap: 12,
-                  padding: 18,
-                  borderRadius: 22,
-                  background: "rgba(255, 255, 255, .1)",
-                  border: "1px solid rgba(255, 255, 255, .18)",
-                  backdropFilter: "blur(10px)",
-                }}
-              >
+              <aside className="dealer-banner-aside">
                 <strong style={{ fontSize: 22, lineHeight: 1.1 }}>{dealer.name}</strong>
                 <span style={{ color: "rgba(226, 232, 240, .9)", fontWeight: 800 }}>
                   {formatLocation(dealer)}
@@ -387,6 +369,35 @@ export default async function RevendaDetalhePage({ params }: PageProps) {
       </div>
 
       <SiteFooter />
+      <style>{`
+        .dealer-banner-grid {
+          display: grid;
+          gap: 22px;
+          grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+          align-items: end;
+          padding: clamp(22px, 5vw, 44px);
+        }
+        .dealer-banner-aside {
+          display: grid;
+          gap: 12px;
+          padding: 18px;
+          border-radius: 22px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          backdrop-filter: blur(10px);
+        }
+        @media (max-width: 768px) {
+          .dealer-banner-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding: 24px 20px;
+          }
+          .dealer-banner-aside {
+            backdrop-filter: none;
+            background: rgba(255, 255, 255, 0.08);
+          }
+        }
+      `}</style>
     </main>
   );
 }

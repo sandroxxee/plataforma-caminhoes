@@ -79,11 +79,11 @@ export default async function NovoAnuncioPage() {
         .nb-back {
           min-height: 40px; display: inline-flex; align-items: center;
           padding: 0 14px; border-radius: 12px;
-          border: 1px solid #343a40; background: #2a2f34;
-          color: #a7afb7; text-decoration: none; font-weight: 800; font-size: 13px;
-          transition: color .15s;
+          border: 1px solid var(--line); background: var(--surface);
+          color: var(--muted); text-decoration: none; font-weight: 800; font-size: 13px;
+          transition: all .15s;
         }
-        .nb-back:hover { color: #e8eaed; }
+        .nb-back:hover { background: var(--soft); color: var(--text); }
 
         .nb-wrap {
           display: grid;
@@ -98,27 +98,28 @@ export default async function NovoAnuncioPage() {
           gap: 10px;
           padding: 28px 24px;
           border-radius: 20px;
-          background: #1f2327;
-          border: 1.5px solid #343a40;
-          color: #f4f4f5;
+          background: var(--surface);
+          border: 1px solid var(--line);
+          color: var(--text);
           text-decoration: none;
           font-size: 22px;
           font-weight: 950;
           letter-spacing: -.035em;
           line-height: 1.1;
           transition: border-color .16s, background .16s, transform .16s;
+          box-shadow: var(--shadow);
         }
         .nb-btn:hover {
-          border-color: #22c55e;
-          background: #1a2420;
+          border-color: var(--blue);
+          background: var(--blueSoft);
           transform: translateY(-2px);
         }
-        .nb-btn svg { color: #22c55e; flex-shrink: 0; }
+        .nb-btn svg { color: var(--blue); flex-shrink: 0; }
         .nb-btn small {
           display: block;
           font-size: 13px;
           font-weight: 750;
-          color: #8f99a3;
+          color: var(--muted);
           letter-spacing: 0;
           line-height: 1.45;
         }

@@ -162,15 +162,7 @@ export default async function ParceiroDetalhePage({ params }: PageProps) {
               boxShadow: "var(--shadow)",
             }}
           >
-            <div
-              style={{
-                display: "grid",
-                gap: 22,
-                gridTemplateColumns: "minmax(0, 1.3fr) minmax(260px, .7fr)",
-                alignItems: "end",
-                padding: "clamp(22px, 5vw, 44px)",
-              }}
-            >
+            <div className="partner-banner-grid">
               <div style={{ display: "grid", gap: 16 }}>
                 <div
                   style={{
@@ -249,17 +241,7 @@ export default async function ParceiroDetalhePage({ params }: PageProps) {
                 </p>
               </div>
 
-              <aside
-                style={{
-                  display: "grid",
-                  gap: 12,
-                  padding: 18,
-                  borderRadius: 22,
-                  background: "rgba(255, 255, 255, .1)",
-                  border: "1px solid rgba(255, 255, 255, .18)",
-                  backdropFilter: "blur(10px)",
-                }}
-              >
+              <aside className="partner-banner-aside">
                 <strong style={{ fontSize: 22, lineHeight: 1.1 }}>{parceiro.nome}</strong>
                 <span style={{ color: "rgba(226, 232, 240, .9)", fontWeight: 800 }}>
                   {formatLocation(parceiro)}
@@ -380,6 +362,35 @@ export default async function ParceiroDetalhePage({ params }: PageProps) {
       </div>
 
       <SiteFooter />
+      <style>{`
+        .partner-banner-grid {
+          display: grid;
+          gap: 22px;
+          grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+          align-items: end;
+          padding: clamp(22px, 5vw, 44px);
+        }
+        .partner-banner-aside {
+          display: grid;
+          gap: 12px;
+          padding: 18px;
+          border-radius: 22px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          backdrop-filter: blur(10px);
+        }
+        @media (max-width: 768px) {
+          .partner-banner-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding: 24px 20px;
+          }
+          .partner-banner-aside {
+            backdrop-filter: none;
+            background: rgba(255, 255, 255, 0.08);
+          }
+        }
+      `}</style>
     </main>
   );
 }

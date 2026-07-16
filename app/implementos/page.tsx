@@ -39,7 +39,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title,
     description,
-    alternates: { canonical: "/comprar/implementos" },
+    alternates: { canonical: "/implementos" },
   };
 }
 
@@ -97,12 +97,12 @@ export default async function ImplementosPage({ searchParams }: PageProps) {
             icon={<Wrench size={48} strokeWidth={1.5} />}
             title="Nenhum implemento encontrado"
             description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhum implemento disponível no momento."}
-            primaryHref="/comprar/implementos" primaryLabel="Ver todos os implementos"
+            primaryHref="/implementos" primaryLabel="Ver todos os implementos"
             suggestions={[
-              { href: "/comprar/carretas",  label: "Carretas",  icon: <Container size={16} /> },
-              { href: "/comprar/caminhoes",  label: "Caminhões", icon: <Truck size={16} /> },
-              { href: "/comprar/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
-              { href: "/comprar/pecas",     label: "Peças",     icon: <Package size={16} /> },
+              { href: "/carretas",  label: "Carretas",  icon: <Container size={16} /> },
+              { href: "/caminhoes",  label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
+              { href: "/pecas",     label: "Peças",     icon: <Package size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/implemento" announceLabel="Anuncie seu implemento"
           />

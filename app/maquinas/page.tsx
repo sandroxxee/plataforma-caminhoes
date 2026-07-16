@@ -40,7 +40,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title,
     description,
-    alternates: { canonical: "/comprar/maquinas" },
+    alternates: { canonical: "/maquinas" },
   };
 }
 
@@ -99,12 +99,12 @@ export default async function MaquinasPage({ searchParams }: PageProps) {
             icon={<Tractor size={48} strokeWidth={1.5} />}
             title="Nenhuma máquina encontrada"
             description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma máquina disponível no momento."}
-            primaryHref="/comprar/maquinas" primaryLabel="Ver todas as máquinas"
+            primaryHref="/maquinas" primaryLabel="Ver todas as máquinas"
             suggestions={[
-              { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
-              { href: "/comprar/carretas",  label: "Carretas",  icon: <Container size={16} /> },
-              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-              { href: "/comprar/pecas",     label: "Peças",     icon: <Package size={16} /> },
+              { href: "/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/carretas",  label: "Carretas",  icon: <Container size={16} /> },
+              { href: "/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/pecas",     label: "Peças",     icon: <Package size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/maquina" announceLabel="Anuncie sua máquina"
           />

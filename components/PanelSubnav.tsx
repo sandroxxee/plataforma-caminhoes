@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, FileText, Plus, ClipboardList, Users, Palette, Megaphone, Bot, Radio, LogOut } from "lucide-react";
+import { FileText, Plus, ClipboardList, Users, Palette, Megaphone, Radio, LogOut, Heart, User } from "lucide-react";
 
 type Props = { role?: "anunciante" | "admin" };
 
@@ -13,13 +13,13 @@ function isActive(pathname: string, href: string) {
 }
 
 const anuncianteLinks = [
-  { href: "/painel",               label: "Painel",       icon: LayoutDashboard },
   { href: "/painel/anuncios",      label: "Meus anúncios", icon: FileText },
-  { href: "/painel/anuncios/novo", label: "Novo",          icon: Plus },
+  { href: "/painel/anuncios/novo", label: "Novo anúncio",   icon: Plus },
+  { href: "/painel/favoritos",     label: "Favoritos",     icon: Heart },
+  { href: "/conta",                label: "Minha conta",   icon: User },
 ];
 
 const adminLinks = [
-  { href: "/admin",                   label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/pendentes",         label: "Pendentes",  icon: ClipboardList },
   { href: "/admin/anuncios",          label: "Anúncios",   icon: FileText },
   { href: "/admin/usuarios",          label: "Usuários",   icon: Users },
@@ -33,9 +33,8 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
   const router   = useRouter();
   const links    = role === "admin" ? adminLinks : anuncianteLinks;
   const isAdmin  = role === "admin";
-  const accent   = isAdmin ? "#818cf8" : "#22c55e";
-  const accentBg = isAdmin ? "rgba(129,140,248,.15)" : "rgba(34,197,94,.15)";
-  const accentTxt= isAdmin ? "#c7d2fe" : "#86efac";
+  const accentBg = "var(--blueSoft)";
+  const accentTxt = "var(--blue)";
 
   async function handleLogout() {
     const supabase = createClient();
@@ -57,7 +56,7 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
                 className={`psnav-link${active ? " active" : ""}`}
                 style={active ? { background: accentBg, color: accentTxt } : undefined}
               >
-                <Icon size={13} strokeWidth={2} aria-hidden="true" />
+                <Icon size={14} strokeWidth={active ? 2.8 : 2} aria-hidden="true" />
                 <span>{link.label}</span>
               </Link>
             );
@@ -72,10 +71,8 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
 
       <style>{`
         .psnav-wrap {
-          background: rgba(10,15,26,.95);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(255,255,255,.07);
+          background: var(--surface);
+          border-bottom: 1px solid var(--line);
           position: sticky; top: 0; z-index: 50;
         }
         .psnav-inner {
@@ -85,29 +82,31 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
           justify-content: space-between; gap: 8px;
         }
         .psnav {
-          display: flex; align-items: center; gap: 2px;
+          display: flex; align-items: center; gap: 4px;
           overflow-x: auto; -webkit-overflow-scrolling: touch;
           scrollbar-width: none; flex: 1; min-width: 0;
+          padding: 6px 0;
         }
         .psnav::-webkit-scrollbar { display: none; }
         .psnav-link {
           display: inline-flex; align-items: center; gap: 6px;
-          min-height: 36px; padding: 0 11px;
-          border-radius: 10px; font-size: 12.5px; font-weight: 800;
-          white-space: nowrap; color: rgba(255,255,255,.45);
+          min-height: 36px; padding: 0 12px;
+          border-radius: 10px; font-size: 13px; font-weight: 800;
+          white-space: nowrap; color: var(--muted);
           text-decoration: none; flex-shrink: 0;
           transition: background .14s, color .14s;
         }
-        .psnav-link:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
+        .psnav-link:hover { background: var(--soft); color: var(--text); }
+        .psnav-link.active { font-weight: 900; }
         .psnav-logout {
           flex-shrink: 0;
           display: inline-flex; align-items: center; gap: 5px;
           min-height: 32px; padding: 0 12px; border-radius: 8px;
           border: 1px solid rgba(239,68,68,.3); background: transparent;
-          color: #f87171; font-size: 12px; font-weight: 800;
+          color: #ef4444; font-size: 12px; font-weight: 800;
           cursor: pointer; transition: background .14s; white-space: nowrap;
         }
-        .psnav-logout:hover { background: rgba(239,68,68,.12); }
+        .psnav-logout:hover { background: rgba(239,68,68,.08); }
         @media (max-width: 560px) {
           .psnav-link span { display: none; }
           .psnav-link { padding: 0 10px; min-height: 40px; }

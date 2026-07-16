@@ -44,7 +44,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title,
     description,
-    alternates: { canonical: "/comprar/pecas" },
+    alternates: { canonical: "/pecas" },
   };
 }
 
@@ -101,12 +101,12 @@ export default async function PecasPage({ searchParams }: PageProps) {
             icon={<Package size={48} strokeWidth={1.5} />}
             title="Nenhuma peça encontrada"
             description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma peça disponível no momento."}
-            primaryHref="/comprar/pecas" primaryLabel="Ver todas as peças"
+            primaryHref="/pecas" primaryLabel="Ver todas as peças"
             suggestions={[
-              { href: "/comprar/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
-              { href: "/comprar/carretas",  label: "Carretas",  icon: <Container size={16} /> },
-              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-              { href: "/comprar/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
+              { href: "/caminhoes", label: "Caminhões", icon: <Truck size={16} /> },
+              { href: "/carretas",  label: "Carretas",  icon: <Container size={16} /> },
+              { href: "/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/maquinas",  label: "Máquinas",  icon: <Tractor size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/peca" announceLabel="Anuncie sua peça"
           />

@@ -63,11 +63,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE,                              lastModified: lastAnuncio, changeFrequency: "daily",   priority: 1.00 },
-    { url: `${BASE}/comprar/caminhoes`,        lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.95 },
-    { url: `${BASE}/comprar/carretas`,         lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
-    { url: `${BASE}/comprar/implementos`,      lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
-    { url: `${BASE}/comprar/maquinas`,         lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.90 },
-    { url: `${BASE}/comprar/pecas`,            lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.88 },
+    { url: `${BASE}/caminhoes`,        lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.95 },
+    { url: `${BASE}/carretas`,         lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
+    { url: `${BASE}/implementos`,      lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.92 },
+    { url: `${BASE}/maquinas`,         lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.90 },
+    { url: `${BASE}/pecas`,            lastModified: lastAnuncio, changeFrequency: "daily",   priority: 0.88 },
     { url: `${BASE}/anunciar`,                 changeFrequency: "weekly",  priority: 0.85 },
     { url: `${BASE}/planos`,                   changeFrequency: "weekly",  priority: 0.80 },
     { url: `${BASE}/parceiros`,                changeFrequency: "weekly",  priority: 0.72 },
@@ -79,14 +79,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const marcaUrls: MetadataRoute.Sitemap = MARCAS.map((m) => ({
-    url: `${BASE}/comprar/caminhoes?marca=${encodeURIComponent(m)}`,
+    url: `${BASE}/caminhoes?marca=${encodeURIComponent(m)}`,
     changeFrequency: "daily" as const,
     priority: 0.88,
   }));
 
   const estadoUrls: MetadataRoute.Sitemap = CATEGORIAS.flatMap(({ path, param }) =>
     ESTADOS.map((uf) => ({
-      url: `${BASE}/comprar/${path}?${param}=${uf}`,
+      url: `${BASE}/${path}?${param}=${uf}`,
       changeFrequency: "daily" as const,
       priority: path === "caminhoes" ? 0.82 : 0.75,
     }))
@@ -94,14 +94,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const marcaEstadoUrls: MetadataRoute.Sitemap = MARCAS.flatMap((m) =>
     ESTADOS.map((uf) => ({
-      url: `${BASE}/comprar/caminhoes?marca=${encodeURIComponent(m)}&estado=${uf}`,
+      url: `${BASE}/caminhoes?marca=${encodeURIComponent(m)}&estado=${uf}`,
       changeFrequency: "weekly" as const,
       priority: 0.72,
     }))
   );
 
   const anuncioUrls: MetadataRoute.Sitemap = trucks.map((t) => ({
-    url: `${BASE}/comprar/caminhoes/${gerarSlugComId(t)}`,
+    url: `${BASE}/caminhoes/${gerarSlugComId(t)}`,
     lastModified: t.updated_at ?? undefined,
     changeFrequency: "weekly" as const,
     priority: 0.80,

@@ -10,11 +10,20 @@ export const contentType = "image/png";
 async function getAnuncio(id: string) {
   const supabase = await createClient();
   const { tipo, valor } = extrairIdDoParametroAnuncio(id);
-  if (tipo !== "uuid") return null;
-  const { data } = await supabase
+  if (tipo !== "uuid" && tipo !== "short_id") return null;
+
+  const query = supabase
     .from("trucks")
     .select("id,titulo,marca,modelo,ano_modelo,preco,cidade,estado,truck_images(image_url,principal,ordem)")
-    .eq("id", valor).eq("status", "aprovado").maybeSingle();
+    .eq("status", "aprovado");
+
+  if (tipo === "uuid") {
+    query.eq("id", valor);
+  } else {
+    query.eq("short_id", valor);
+  }
+
+  const { data } = await query.maybeSingle();
   return data ?? null;
 }
 

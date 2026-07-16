@@ -39,7 +39,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return {
     title,
     description,
-    alternates: { canonical: "/comprar/carretas" },
+    alternates: { canonical: "/carretas" },
   };
 }
 
@@ -117,12 +117,12 @@ export default async function CarretasPage({ searchParams }: PageProps) {
             icon={<Container size={48} strokeWidth={1.5} />}
             title="Nenhuma carreta encontrada"
             description={hasFilters ? "Tente outros filtros ou veja todos os anúncios." : "Nenhuma carreta disponível no momento."}
-            primaryHref="/comprar/carretas" primaryLabel="Ver todas as carretas"
+            primaryHref="/carretas" primaryLabel="Ver todas as carretas"
             suggestions={[
-              { href: "/comprar/caminhoes",   label: "Caminhões",   icon: <Truck size={16} /> },
-              { href: "/comprar/implementos", label: "Implementos", icon: <Wrench size={16} /> },
-              { href: "/comprar/maquinas",    label: "Máquinas",    icon: <Tractor size={16} /> },
-              { href: "/comprar/pecas",       label: "Peças",       icon: <Package size={16} /> },
+              { href: "/caminhoes",   label: "Caminhões",   icon: <Truck size={16} /> },
+              { href: "/implementos", label: "Implementos", icon: <Wrench size={16} /> },
+              { href: "/maquinas",    label: "Máquinas",    icon: <Tractor size={16} /> },
+              { href: "/pecas",       label: "Peças",       icon: <Package size={16} /> },
             ]}
             announceHref="/painel/anuncios/novo/carreta" announceLabel="Anuncie sua carreta"
           />

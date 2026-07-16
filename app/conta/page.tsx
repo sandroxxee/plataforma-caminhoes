@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { PanelSubnav } from "@/components/PanelSubnav";
+import { FormPerfil } from "./FormPerfil";
 import { createClient } from "@/lib/supabase/server";
 import { User, Mail, Shield, LayoutDashboard, Truck, LogOut } from "lucide-react";
 
@@ -37,6 +39,10 @@ export default async function ContaPage() {
   const displayName = getDisplayName(user);
   const initial = displayName.slice(0, 1).toUpperCase();
 
+  const userWhatsapp = String(user.user_metadata?.whatsapp || "");
+  const userCidade   = String(user.user_metadata?.cidade || "");
+  const userEstado   = String(user.user_metadata?.estado || "");
+
   const infos = [
     { icon: User,   label: "Nome",         value: displayName },
     { icon: Mail,   label: "E-mail",        value: user.email || "Não encontrado" },
@@ -46,6 +52,7 @@ export default async function ContaPage() {
   return (
     <main className="market-page">
       <PublicHeader />
+      <PanelSubnav role={role} />
 
       <div className="market-container conta-shell">
         {/* Hero */}
@@ -85,8 +92,16 @@ export default async function ContaPage() {
           <Link href="/logout" className="conta-btn danger"><LogOut size={16}/> Sair</Link>
         </div>
 
+        {/* Formulário de Perfil */}
+        <FormPerfil
+          initialName={displayName}
+          initialWhatsapp={userWhatsapp}
+          initialCidade={userCidade}
+          initialEstado={userEstado}
+        />
+
         {isAdmin && (
-          <div className="conta-admin-note">
+          <div className="conta-admin-note" style={{ marginTop: 14 }}>
             <Shield size={14} />
             <p>O link administrativo não aparece no menu público. Acesse sempre por esta página.</p>
           </div>

@@ -47,20 +47,25 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      { source: "/anuncios", destination: "/comprar/caminhoes", permanent: true },
-      { source: "/anuncios/:path*", destination: "/comprar/caminhoes/:path*", permanent: true },
+      { source: "/anuncios", destination: "/caminhoes", permanent: true },
+      { source: "/anuncios/:path*", destination: "/caminhoes/:path*", permanent: true },
 
-      { source: "/carretas", destination: "/comprar/carretas", permanent: true },
-      { source: "/carretas/:path*", destination: "/comprar/carretas/:path*", permanent: true },
+      { source: "/comprar/caminhoes", destination: "/caminhoes", permanent: true },
+      { source: "/comprar/caminhoes/:path*", destination: "/caminhoes/:path*", permanent: true },
 
-      { source: "/implementos", destination: "/comprar/implementos", permanent: true },
-      { source: "/implementos/:path*", destination: "/comprar/implementos/:path*", permanent: true },
+      { source: "/comprar/carretas", destination: "/carretas", permanent: true },
+      { source: "/comprar/carretas/:path*", destination: "/carretas/:path*", permanent: true },
 
-      { source: "/maquinas", destination: "/comprar/maquinas", permanent: true },
-      { source: "/maquinas/:path*", destination: "/comprar/maquinas/:path*", permanent: true },
+      { source: "/comprar/implementos", destination: "/implementos", permanent: true },
+      { source: "/comprar/implementos/:path*", destination: "/implementos/:path*", permanent: true },
 
-      { source: "/pecas", destination: "/comprar/pecas", permanent: true },
-      { source: "/pecas/:path*", destination: "/comprar/pecas/:path*", permanent: true },
+      { source: "/comprar/maquinas", destination: "/maquinas", permanent: true },
+      { source: "/comprar/maquinas/:path*", destination: "/maquinas/:path*", permanent: true },
+
+      { source: "/comprar/pecas", destination: "/pecas", permanent: true },
+      { source: "/comprar/pecas/:path*", destination: "/pecas/:path*", permanent: true },
+
+      { source: "/comprar", destination: "/caminhoes", permanent: true },
 
       { source: "/revendas", destination: "/parcerias/revendas", permanent: true },
       { source: "/revendas/:path*", destination: "/parcerias/revendas/:path*", permanent: true },

@@ -98,6 +98,35 @@ export function TruckGallery({ title, images }: Props) {
                 style={styles.mainImage}
               />
             )}
+            
+            {/* Setas de Navegação Diretas no Slider Principal */}
+            {validImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="main-gallery-nav nav-prev"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevImage();
+                  }}
+                  aria-label="Foto anterior"
+                >
+                  <ChevronLeft size={20} strokeWidth={2.5} />
+                </button>
+                <button
+                  type="button"
+                  className="main-gallery-nav nav-next"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextImage();
+                  }}
+                  aria-label="Próxima foto"
+                >
+                  <ChevronRight size={20} strokeWidth={2.5} />
+                </button>
+              </>
+            )}
+
             <div className="gallery-expand-hint">
               <Maximize2 size={20} />
               Clique para ampliar
@@ -195,6 +224,38 @@ export function TruckGallery({ title, images }: Props) {
           height: 520px;
           cursor: zoom-in;
           position: relative;
+        }
+        .main-gallery-nav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(15,23,42,0.45);
+          border: none;
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background 0.2s, transform 0.2s;
+          z-index: 12;
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        }
+        .main-gallery-nav:hover {
+          background: rgba(15,23,42,0.7);
+          transform: translateY(-50%) scale(1.05);
+        }
+        .main-gallery-nav:active {
+          transform: translateY(-50%) scale(0.95);
+        }
+        .nav-prev {
+          left: 12px;
+        }
+        .nav-next {
+          right: 12px;
         }
         .gallery-expand-hint {
           position: absolute;

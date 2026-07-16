@@ -100,7 +100,7 @@ export default function AdminParceirosPage() {
     setLoading(true);
     setLoadingMsg("Preparando dados e enviando imagens...");
     try {
-      const slug = `${slugify(nome)}-${Date.now()}`;
+      const slug = slugify(nome);
       
       const formData = new FormData();
       formData.set("nome", nome.trim());

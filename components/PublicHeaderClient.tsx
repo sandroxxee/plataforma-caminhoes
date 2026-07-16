@@ -6,7 +6,7 @@ import { useState } from "react";
 import {
   Truck, Wrench, Handshake, LayoutDashboard, LogIn,
   Search, X, Menu, Settings, Package, ChevronDown, Store,
-  Info, HelpCircle, ShieldCheck, Mail
+  Info, HelpCircle, ShieldCheck, Mail, Container, Tractor
 } from "lucide-react";
 import { ThemeTogglePublic } from "./ThemeTogglePublic";
 
@@ -24,11 +24,11 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const buyingItems = [
-    { href: "/comprar/caminhoes",  label: "Caminhões",  icon: Truck, desc: "Cavalos mecânicos e caminhões" },
-    { href: "/comprar/carretas",   label: "Carretas",   icon: Truck, desc: "Semirreboques e tanques" },
-    { href: "/comprar/implementos", label: "Implementos", icon: Wrench, desc: "Caçambas, munks e baús" },
-    { href: "/comprar/maquinas",    label: "Máquinas",   icon: Settings, desc: "Pesadas e construção" },
-    { href: "/comprar/pecas",       label: "Peças",      icon: Package, desc: "Motores e componentes" },
+    { href: "/caminhoes",  label: "Caminhões",  icon: Truck, desc: "Cavalos mecânicos e caminhões" },
+    { href: "/carretas",   label: "Carretas",   icon: Container, desc: "Semirreboques e tanques" },
+    { href: "/implementos", label: "Implementos", icon: Wrench, desc: "Caçambas, munks e baús" },
+    { href: "/maquinas",    label: "Máquinas",   icon: Tractor, desc: "Pesadas e construção" },
+    { href: "/pecas",       label: "Peças",      icon: Package, desc: "Motores e componentes" },
   ];
 
   const partnershipItems = [
@@ -212,6 +212,77 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           .ph-cta { display: none; }
           .ph-container { padding: 0 16px; }
         }
+
+        /* ── Barra de categorias mobile horizontal ── */
+        .mobile-cat-bar {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .mobile-cat-bar {
+            display: block;
+            background: var(--surface, #fff);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            position: sticky;
+            top: 64px;
+            z-index: 99;
+          }
+          body.public-theme-dark .mobile-cat-bar {
+            background: #0f172a;
+            border-bottom-color: rgba(255,255,255,0.08);
+          }
+          .mobile-cat-scroll {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 0;
+            padding: 0 4px;
+          }
+          .mobile-cat-scroll::-webkit-scrollbar { display: none; }
+          .mobile-cat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            min-width: 68px;
+            flex-shrink: 0;
+            text-decoration: none;
+            color: var(--muted, #64748b);
+            font-size: 10.5px;
+            font-weight: 800;
+            scroll-snap-align: start;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+            white-space: nowrap;
+          }
+          .mobile-cat-item.active {
+            color: var(--blue, #2563eb);
+            border-bottom-color: var(--blue, #2563eb);
+          }
+          .mobile-cat-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: var(--soft, #f1f5f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            color: var(--muted, #64748b);
+          }
+          body.public-theme-dark .mobile-cat-icon {
+            background: rgba(255,255,255,0.06);
+          }
+          .mobile-cat-item.active .mobile-cat-icon {
+            background: var(--blueSoft, #eff6ff);
+            color: var(--blue, #2563eb);
+          }
+          body.public-theme-dark .mobile-cat-item.active .mobile-cat-icon {
+            background: rgba(37,99,235,0.15);
+          }
+        }
       `}</style>
 
       <header className="ph-root">
@@ -229,7 +300,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   const val = (e.currentTarget as HTMLInputElement).value.trim();
-                  if (val) window.location.href = `/comprar/caminhoes?q=${encodeURIComponent(val)}`;
+                  if (val) window.location.href = `/caminhoes?q=${encodeURIComponent(val)}`;
                 }
               }}
             />
@@ -238,7 +309,7 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
           <nav className="ph-nav">
             {/* COMPRAR */}
             <div className="ph-nav-item">
-              <button className={`ph-nav-trigger ${pathname.startsWith("/comprar") ? "active" : ""}`}>
+              <button className={`ph-nav-trigger ${["/caminhoes", "/carretas", "/implementos", "/maquinas", "/pecas"].some(p => pathname.startsWith(p)) ? "active" : ""}`}>
                 O que você procura? <ChevronDown size={14} strokeWidth={3} />
               </button>
               <div className="ph-dropdown">
@@ -302,13 +373,36 @@ export function PublicHeaderClient({ isLoggedIn }: Props) {
 
           <div className="ph-actions">
             <ThemeTogglePublic />
-            <Link href="/anunciar" className="ph-cta">Anunciar</Link>
             <button className="ph-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </header>
+
+      {!(pathname.startsWith("/painel") || pathname.startsWith("/admin") || pathname === "/login" || pathname === "/cadastro" || pathname === "/conta") && (
+        <nav className="mobile-cat-bar" aria-label="Categorias">
+          <div className="mobile-cat-scroll">
+            {buyingItems.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link key={item.href} href={item.href} className={`mobile-cat-item${active ? " active" : ""}`}>
+                  <span className="mobile-cat-icon">
+                    <item.icon size={16} strokeWidth={2.2} />
+                  </span>
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+            <Link href="/parcerias/parceiros" className={`mobile-cat-item${pathname.startsWith("/parcerias/parceiros") ? " active" : ""}`}>
+              <span className="mobile-cat-icon">
+                <Handshake size={16} strokeWidth={2.2} />
+              </span>
+              <span>Parceiros</span>
+            </Link>
+          </div>
+        </nav>
+      )}
 
       <div className={`ph-mobile-menu ${menuOpen ? "open" : ""}`}>
         <div className="ph-mobile-section">

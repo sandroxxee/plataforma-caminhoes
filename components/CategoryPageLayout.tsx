@@ -1,6 +1,7 @@
 import React from "react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { MobileFilterDrawer } from "./MobileFilterDrawer";
 
 type CategoryPageLayoutProps = {
   title: string;
@@ -41,6 +42,9 @@ export function CategoryPageLayout({
 
         </div>
       </div>
+
+      {/* Filtros para Mobile (FAB + Drawer) */}
+      {sidebar && <MobileFilterDrawer sidebar={sidebar} />}
 
       <SiteFooter />
     </main>

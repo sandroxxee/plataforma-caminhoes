@@ -83,7 +83,7 @@ export function getWhatsappLink(truck: Truck, title: string) {
 }
 
 export function getCanonicalPath(truck: Truck) {
-  return `/comprar/caminhoes/${gerarSlugComId({
+  return `/caminhoes/${gerarSlugComId({
     id: truck.id,
     marca: truck.marca,
     modelo: truck.modelo,
@@ -218,8 +218,8 @@ export function getStructuredData(truck: Truck, title: string, location: string,
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
-      { "@type": "ListItem", position: 2, name: "Caminhões", item: `${siteUrl}/comprar/caminhoes` },
-      { "@type": "ListItem", position: 3, name: truck.marca || "Anúncio", item: `${siteUrl}/comprar/caminhoes?marca=${encodeURIComponent(truck.marca || "")}` },
+      { "@type": "ListItem", position: 2, name: "Caminhões", item: `${siteUrl}/caminhoes` },
+      { "@type": "ListItem", position: 3, name: truck.marca || "Anúncio", item: `${siteUrl}/caminhoes?marca=${encodeURIComponent(truck.marca || "")}` },
       { "@type": "ListItem", position: 4, name: title, item: url },
     ],
   };

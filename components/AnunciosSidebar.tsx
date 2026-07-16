@@ -49,7 +49,7 @@ export function AnunciosSidebar({
   const router = useRouter();
   const [sliderMin, setSliderMin] = useState(precoMin);
   const [sliderMax, setSliderMax] = useState(precoMax);
-  const base = `/comprar/${contexto}`;
+  const base = `/${contexto}`;
 
   const getUrl = (params: Record<string, string | number | undefined>) => {
     const sp = new URLSearchParams();

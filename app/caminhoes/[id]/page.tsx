@@ -33,15 +33,21 @@ type PageProps = { params: Promise<{ id: string }> };
 async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
   const { tipo, valor } = extrairIdDoParametroAnuncio(parametro);
-  if (tipo !== "uuid") return null;
+  if (tipo !== "uuid" && tipo !== "short_id") return null;
 
-  const { data, error } = await supabase
+  const query = supabase
     .from("trucks")
     .select(truckSelect)
-    .eq("id", valor)
     .eq("status", "aprovado")
-    .eq("vendido", false)
-    .maybeSingle();
+    .eq("vendido", false);
+
+  if (tipo === "uuid") {
+    query.eq("id", valor);
+  } else {
+    query.eq("short_id", valor);
+  }
+
+  const { data, error } = await query.maybeSingle();
 
   if (error || !data) return null;
   return data as Truck;
@@ -185,14 +191,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function AnuncioDetalhePage({ params }: PageProps) {
   const { id } = await params;
 
-  const { tipo, valor: uuid } = extrairIdDoParametroAnuncio(id);
-  if (tipo !== "uuid") notFound();
+  const { tipo } = extrairIdDoParametroAnuncio(id);
+  if (tipo !== "uuid" && tipo !== "short_id") notFound();
 
   const truck = await getApprovedTruck(id);
   if (!truck) notFound();
 
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let initialFavorito = false;
+  if (user) {
+    const { data } = await supabase
+      .from("favoritos")
+      .select("id")
+      .eq("truck_id", truck.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    initialFavorito = !!data;
+  }
+
   const canonicalPath = getCanonicalPath(truck);
-  const currentPath   = `/comprar/caminhoes/${id}`;
+  const currentPath   = `/caminhoes/${id}`;
   if (currentPath !== canonicalPath && !canonicalPath.includes(id)) {
     redirect(canonicalPath);
   }
@@ -217,22 +237,10 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
       <div className="market-container detail-layout">
         <div>
-          <nav className="detail-breadcrumb" aria-label="Navegação">
-            <Link href="/">Ínicio</Link>
-            <span aria-hidden="true">›</span>
-            <Link href="/comprar/caminhoes">Caminhões</Link>
-            <span aria-hidden="true">›</span>
-            <span>{truck.marca || truck.perfil || "Anúncio"}</span>
-          </nav>
 
-          <AnuncioGaleria
-            truckId={truck.id}
-            title={title}
-            images={truck.truck_images || []}
-            initialViews={initialViews}
-          />
 
-          <div className="detail-card detail-mobile-header">
+          {/* Título Mobile acima das Fotos */}
+          <div className="mobile-title-container" style={{ padding: "10px 16px 14px", display: "none" }}>
             <h1 className="detail-h1">{title}</h1>
             {location && (
               <p className="detail-location">
@@ -240,9 +248,14 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
                 {location}
               </p>
             )}
-            <strong className="detail-price-mobile">{formatMoney(truck.preco)}</strong>
-            <FipeBadge abaixoFipe={abaixoFipe} />
           </div>
+
+          <AnuncioGaleria
+            truckId={truck.id}
+            title={title}
+            images={truck.truck_images || []}
+            initialViews={initialViews}
+          />
 
           <div className="detail-content-blocks" style={{ display: "grid", gap: 14, marginTop: 14 }}>
             <div className="detail-card detail-desc-card">
@@ -255,36 +268,38 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
                   price={truck.preco}
                   whatsapp={truck.whatsapp}
                 />
-              </div>
-            </div>
 
-            <div className="detail-card detail-location-card">
-              <h2 className="detail-section-title">Localização</h2>
-              <div className="detail-location-info">
-                <MapPin size={24} className="text-blue-500" />
-                <div>
-                  <p className="text-lg font-bold">{location || "Localização não informada"}</p>
-                  <p className="text-muted-foreground text-sm">Entre em contato com o vendedor para agendar uma visita e ver o veículo pessoalmente.</p>
+                {/* Preço e Status na última linha da descrição (Mobile) */}
+                <div className="mobile-only-price-block" style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--line)", display: "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "var(--muted)" }}>Preço do veículo</span>
+                    <FipeBadge abaixoFipe={abaixoFipe} />
+                  </div>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+                    <strong style={{ fontSize: 26, fontWeight: 950, color: "var(--blue)" }}>{formatMoney(truck.preco)}</strong>
+                    <span className="detail-status-badge" style={{ background: "rgba(37, 99, 235, 0.08)", color: "#2563eb", border: "1px solid rgba(37, 99, 235, 0.15)" }}>
+                      <ShieldCheck size={12} strokeWidth={2.5} aria-hidden="true" style={{ marginRight: 4 }} />
+                      Anúncio revisado
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="detail-card detail-safety">
-            <ShieldCheck size={18} strokeWidth={1.8} className="detail-safety-icon" aria-hidden="true" />
-            <div>
-              <strong>Anúncio revisado</strong>
-              <p>Todos os anúncios passam por aprovação antes de aparecer no site. Sempre confira documentos e estado {textos.veiculo === "peça" ? "da peça" : `do ${textos.veiculo}`} antes de fechar negócio.</p>
             </div>
           </div>
         </div>
 
         <aside className="detail-aside">
           <div className="detail-card detail-aside-header">
-            <span className="detail-status-badge">
-              <CheckCircle size={12} strokeWidth={2.5} aria-hidden="true" />
-              Disponível
-            </span>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+              <span className="detail-status-badge">
+                <CheckCircle size={12} strokeWidth={2.5} aria-hidden="true" />
+                Disponível
+              </span>
+              <span className="detail-status-badge" style={{ background: "rgba(37, 99, 235, 0.08)", color: "#2563eb", border: "1px solid rgba(37, 99, 235, 0.15)" }}>
+                <ShieldCheck size={12} strokeWidth={2.5} aria-hidden="true" style={{ marginRight: 4 }} />
+                Anúncio revisado
+              </span>
+            </div>
             <h1 className="detail-h1 detail-h1-aside">{title}</h1>
             {location && (
               <p className="detail-location">
@@ -302,6 +317,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               whatsappLink={whatsappLink}
               shareText={shareText}
               whatsappLabel={textos.whatsapp}
+              initialFavorito={initialFavorito}
             />
           </div>
 
@@ -390,12 +406,35 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         @media(max-width:900px){
           .detail-aside{position:static}
           .detail-aside-header .detail-h1,.detail-aside-header .detail-location,.detail-aside-header .detail-status-badge,.detail-aside-header .detail-price,.detail-aside-header .fipe-badge{display:none}
-          .detail-mobile-header{display:block}
+          .mobile-title-container {
+            display: block !important;
+            text-align: center;
+          }
+          .mobile-title-container .detail-h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+            text-align: center;
+          }
+          .mobile-title-container .detail-location {
+            justify-content: center;
+            margin-bottom: 0;
+          }
+          .mobile-only-price-block {
+            display: block !important;
+          }
+          .detail-breadcrumb {
+            justify-content: center;
+            font-size: 11px;
+            padding: 10px 0;
+          }
           .detail-specs-card-desktop { display: none; }
         }
         @media(max-width:560px){
           .detail-gallery-card,.detail-desc-card,.detail-aside-header,.detail-specs-card,.detail-safety{padding:16px}
           .detail-tab-trigger { font-size: 12px; gap: 4px; }
+          .mobile-title-container .detail-h1 {
+            font-size: 19px;
+          }
         }
       `}</style>
     </main>

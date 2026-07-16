@@ -14,25 +14,38 @@ function money(value: number | null) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 }
 
-// Função para buscar os dados completos do caminhão
 async function getAnuncio(id: string) {
   const supabase = await createClient();
-  let uuid = id;
-  if (id.includes("-") && id.length > 36) {
-    const { tipo, valor } = extrairIdDoParametroAnuncio(id);
-    if (tipo === "uuid") uuid = valor;
+  const { tipo, valor } = extrairIdDoParametroAnuncio(id);
+
+  if (tipo !== "uuid" && tipo !== "short_id") {
+    const { data } = await supabase
+      .from("trucks")
+      .select(`
+        id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao,
+        quilometragem, motor, cambio, combustivel, cor, descricao,
+        truck_images ( image_url, principal, ordem )
+      `)
+      .eq("id", id)
+      .maybeSingle();
+    return data ?? null;
   }
 
-  const { data } = await supabase
+  const query = supabase
     .from("trucks")
     .select(`
       id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao,
       quilometragem, motor, cambio, combustivel, cor, descricao,
       truck_images ( image_url, principal, ordem )
-    `)
-    .eq("id", uuid)
-    .single();
+    `);
 
+  if (tipo === "uuid") {
+    query.eq("id", valor);
+  } else {
+    query.eq("short_id", valor);
+  }
+
+  const { data } = await query.maybeSingle();
   return data ?? null;
 }
 

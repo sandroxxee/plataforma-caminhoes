@@ -11,27 +11,33 @@ export default async function PainelPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const userId = user.id;
+  const userEmail = user.email || "";
+  const userMetadata = user.user_metadata || {};
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
-    .eq("id", user.id)
+    .eq("id", userId)
     .maybeSingle();
 
   if (profile?.role === "admin") {
     redirect("/admin/anuncios");
   }
 
+  redirect("/painel/anuncios");
+
   const { data: trucks } = await supabase
     .from("trucks")
     .select("status,views")
-    .eq("user_id", user.id);
+    .eq("user_id", userId);
 
   const total      = trucks?.length ?? 0;
   const ativos     = trucks?.filter((a) => a.status === "aprovado").length ?? 0;
   const pendentes  = trucks?.filter((a) => a.status === "pendente").length ?? 0;
   const rejeitados = trucks?.filter((a) => a.status === "rejeitado").length ?? 0;
   const totalViews = trucks?.reduce((acc, a) => acc + (a.views ?? 0), 0) ?? 0;
-  const nomeUsuario = user.user_metadata?.name || user.email?.split("@")[0] || "Anunciante";
+  const nomeUsuario = userMetadata.name || userEmail.split("@")[0] || "Anunciante";
 
   return (
     <PanelLayout role="anunciante">

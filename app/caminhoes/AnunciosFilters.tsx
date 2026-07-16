@@ -11,13 +11,13 @@ import { MARCAS_VALIDAS } from "@/lib/constants";
 type Categoria = { label: string; href: string; iconName: string };
 
 const CATEGORIAS: Categoria[] = [
-  { label: "Todos",       href: "/comprar/caminhoes",    iconName: "truck" },
-  { label: "Caminhões",   href: "/comprar/caminhoes",    iconName: "truck" },
-  { label: "Carretas",    href: "/comprar/carretas",     iconName: "container" },
-  { label: "Implementos", href: "/comprar/implementos",  iconName: "wrench" },
+  { label: "Todos",       href: "/caminhoes",    iconName: "truck" },
+  { label: "Caminhões",   href: "/caminhoes",    iconName: "truck" },
+  { label: "Carretas",    href: "/carretas",     iconName: "container" },
+  { label: "Implementos", href: "/implementos",  iconName: "wrench" },
   { label: "Ônibus",      href: "/onibus",               iconName: "bus" },
-  { label: "Máquinas",    href: "/comprar/maquinas",     iconName: "tractor" },
-  { label: "Peças",       href: "/comprar/pecas",        iconName: "package" },
+  { label: "Máquinas",    href: "/maquinas",     iconName: "tractor" },
+  { label: "Peças",       href: "/pecas",        iconName: "package" },
 ];
 
 function CatIcon({ name }: { name: string }) {
@@ -74,7 +74,7 @@ function buildHref(q: string, faixaIdx: number, marcaFiltro: string, estadoFiltr
     else params[k] = String(v);
   });
   const qs = new URLSearchParams(params).toString();
-  return qs ? `/comprar/caminhoes?${qs}` : "/comprar/caminhoes";
+  return qs ? `/caminhoes?${qs}` : "/caminhoes";
 }
 
 type Props = {
@@ -180,10 +180,6 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
           <input type="search" className="af-search" placeholder="Buscar..." value={search} onChange={(e) => handleSearch(e.target.value)} />
           {search && <button className="af-search-clear" onClick={() => handleSearch("")}><X size={13} /></button>}
         </div>
-        <button className="af-drawer-btn" onClick={() => setDrawerOpen(true)}>
-          <SlidersHorizontal size={15} />Filtros
-          {activeCount > 0 && <span className="af-badge">{activeCount}</span>}
-        </button>
       </div>
 
       {/* DESKTOP BAR */}
@@ -195,90 +191,9 @@ export function AnunciosFilters({ q, faixaIdx, marcaFiltro, estadoFiltro, hasFil
         </div>
         {hasFilters && (
           <p className="af-count">
-            <Link href="/comprar/caminhoes" className="af-clear-inline" style={{ marginLeft: 0 }}><X size={11} />Limpar filtros</Link>
+            <Link href="/caminhoes" className="af-clear-inline" style={{ marginLeft: 0 }}><X size={11} />Limpar filtros</Link>
           </p>
         )}
-      </div>
-
-      {/* DRAWER OVERLAY */}
-      {drawerOpen && <div className="af-overlay" onClick={() => setDrawerOpen(false)} />}
-
-      {/* DRAWER */}
-      <div className={`af-drawer${drawerOpen ? " open" : ""}`}>
-        <div className="af-drawer-head">
-          <span className="af-drawer-title">Filtros</span>
-          <button className="af-drawer-close" onClick={() => setDrawerOpen(false)}><X size={18} /></button>
-        </div>
-        <div className="af-drawer-body">
-
-          <div className="af-dsection">
-            <p className="af-dlabel">Categorias</p>
-            <nav className="af-dlist">
-              {CATEGORIAS.map((c) => {
-                const slug   = c.href.replace("/", "");
-                const active = slug === categoriaAtiva;
-                return (
-                  <Link key={c.href} href={c.href} className={`af-ditem${active ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
-                    <span className="af-dico"><CatIcon name={c.iconName} /></span>{c.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <div className="af-ddiv" />
-
-          <div className="af-dsection">
-            <p className="af-dlabel">Marcas</p>
-            <nav className="af-dlist">
-              <Link href={buildHref(q, faixaIdx, "", estadoFiltro, { marca: undefined })} className={`af-ditem${!marcaFiltro ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
-                <span className="af-dico"><Star size={14} /></span>Todas
-              </Link>
-              {MARCAS_VALIDAS.map((m) => (
-                <Link key={m} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { marca: m })} className={`af-ditem${marcaFiltro === m ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
-                  {MARCAS_LOGOS[m]
-                    ? <Image src={MARCAS_LOGOS[m]} alt={m} width={28} height={28} className="af-logo" unoptimized />
-                    : <span className="af-dico">{m[0]}</span>
-                  }
-                  {m}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          <div className="af-ddiv" />
-
-          <div className="af-dsection">
-            <p className="af-dlabel">Estado</p>
-            <div className="af-chips">
-              {ESTADOS.map((e) => (
-                <Link key={e.value || "t"} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { estado: e.value || undefined })} className={`af-chip${estadoFiltro === e.value ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
-                  {e.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="af-ddiv" />
-
-          <div className="af-dsection">
-            <p className="af-dlabel">Faixa de preço</p>
-            <nav className="af-dlist">
-              {FAIXAS.map((f, idx) => (
-                <Link key={idx} href={buildHref(q, faixaIdx, marcaFiltro, estadoFiltro, { faixa: idx === 0 ? undefined : idx })} className={`af-ditem af-dprice${faixaIdx === idx ? " active" : ""}`} onClick={() => setDrawerOpen(false)}>
-                  {f.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {hasFilters && (
-            <div className="af-dsection">
-              <SalvarBusca marca={marcaFiltro || undefined} estado={estadoFiltro || undefined} precoMax={precoMaxAtivo} />
-              <Link href="/comprar/caminhoes" className="af-dclear" onClick={() => setDrawerOpen(false)}><X size={12} />Limpar filtros</Link>
-            </div>
-          )}
-        </div>
       </div>
     </>
   );

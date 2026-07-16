@@ -49,6 +49,8 @@ export default async function HomePage() {
     <main className="premium-page">
       <PublicHeader />
 
+
+
       <div className="premium-main">
 
         {/* ── HERO BANNER (quando definido no admin) ───────────────────── */}
@@ -93,7 +95,7 @@ export default async function HomePage() {
         <section className="section-wrap">
           <div className="premium-section" style={{ paddingTop: "8px" }}>
             <div className="section-header" style={{ justifyContent: "flex-end", marginBottom: "16px" }}>
-              <Link href="/comprar/caminhoes" className="view-all">Ver todos anúncios →</Link>
+              <Link href="/caminhoes" className="view-all">Ver todos anúncios →</Link>
             </div>
             {trucks.length === 0 ? (
               <div className="empty-state">
@@ -123,6 +125,68 @@ export default async function HomePage() {
         .premium-page { min-height: 100vh; background: #f8fafc; color: #0f172a; }
         .premium-main { display: flex; flex-direction: column; gap: 40px; padding: 40px 0 80px; }
         .section-wrap  { width: 100%; max-width: 1600px; margin: 0 auto; padding: 0 20px; }
+
+        /* ── Barra de categorias mobile ────────────────────────── */
+        .mobile-cat-bar {
+          display: none;
+        }
+        @media (max-width: 640px) {
+          .mobile-cat-bar {
+            display: block;
+            background: var(--surface, #fff);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            position: sticky;
+            top: 58px;
+            z-index: 40;
+          }
+          .mobile-cat-scroll {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 0;
+            padding: 0 4px;
+          }
+          .mobile-cat-scroll::-webkit-scrollbar { display: none; }
+          .mobile-cat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 14px;
+            min-width: 70px;
+            flex-shrink: 0;
+            text-decoration: none;
+            color: var(--muted, #64748b);
+            font-size: 11px;
+            font-weight: 800;
+            scroll-snap-align: start;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+            white-space: nowrap;
+          }
+          .mobile-cat-item:hover, .mobile-cat-item:active {
+            color: var(--blue, #2563eb);
+            border-bottom-color: var(--blue, #2563eb);
+          }
+          .mobile-cat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: var(--soft, #f1f5f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+          }
+          .mobile-cat-item:hover .mobile-cat-icon,
+          .mobile-cat-item:active .mobile-cat-icon {
+            background: var(--blueSoft, #eff6ff);
+            color: var(--blue, #2563eb);
+          }
+          .premium-main { padding-top: 16px !important; }
+        }
 
         /* ── eyebrow ─────────────────────────────────────────────── */
         .eyebrow { font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; color:#64748b; margin-bottom:4px; display:block; }

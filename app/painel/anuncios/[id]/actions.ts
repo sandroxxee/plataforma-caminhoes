@@ -117,8 +117,8 @@ export async function editarAnuncioAction(formData: FormData) {
   revalidatePath("/painel/anuncios");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
-  revalidatePath("/comprar/caminhoes");
-  revalidatePath(`/comprar/caminhoes/${id}`);
+  revalidatePath("/caminhoes");
+  revalidatePath(`/caminhoes/${id}`);
 
   return { success: true };
 }

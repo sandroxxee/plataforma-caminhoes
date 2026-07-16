@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Truck, Wrench, LayoutDashboard, LogIn } from "lucide-react";
+import { Home, Search, Heart, User, Plus } from "lucide-react";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -14,65 +14,69 @@ type Props = { isLoggedIn?: boolean };
 export function MobileBottomNav({ isLoggedIn = false }: Props) {
   const pathname = usePathname();
 
+  // Verifica se alguma das rotas de categoria/busca está ativa para pintar o botão de Buscar de azul
+  const isSearchActive =
+    isActive(pathname, "/caminhoes") ||
+    isActive(pathname, "/carretas") ||
+    isActive(pathname, "/implementos") ||
+    isActive(pathname, "/maquinas") ||
+    isActive(pathname, "/pecas");
+
   return (
     <>
       <nav className="mbn" aria-label="Navegação rápida">
 
-        {/* Caminhões */}
+        {/* Início */}
         <Link
-          href="/anuncios"
-          className={`mbn-item${isActive(pathname, "/anuncios") && !isActive(pathname, "/implementos") ? " active" : ""}`}
-          aria-label="Caminhões"
+          href="/"
+          className={`mbn-item${isActive(pathname, "/") && pathname === "/" ? " active" : ""}`}
+          aria-label="Início"
         >
-          <Truck size={20} strokeWidth={1.8} aria-hidden="true" />
-          <span>Caminhões</span>
+          <Home size={20} strokeWidth={1.8} aria-hidden="true" />
+          <span>Início</span>
         </Link>
 
-        {/* Implementos */}
+        {/* Buscar */}
         <Link
-          href="/implementos"
-          className={`mbn-item${isActive(pathname, "/implementos") ? " active" : ""}`}
-          aria-label="Implementos"
+          href="/caminhoes"
+          className={`mbn-item${isSearchActive ? " active" : ""}`}
+          aria-label="Buscar"
         >
-          <Wrench size={20} strokeWidth={1.8} aria-hidden="true" />
-          <span>Implementos</span>
+          <Search size={20} strokeWidth={1.8} aria-hidden="true" />
+          <span>Buscar</span>
         </Link>
 
         {/* Anunciar — destaque central */}
         <Link
-          href="/anunciar"
-          className={`mbn-item mbn-cta${isActive(pathname, "/anunciar") ? " active" : ""}`}
+          href={isLoggedIn ? "/painel/anuncios/novo" : "/login?next=/painel/anuncios/novo"}
+          className={`mbn-item mbn-cta${isActive(pathname, "/painel/anuncios/novo") || isActive(pathname, "/anunciar") ? " active" : ""}`}
           aria-label="Anunciar"
         >
           <span className="mbn-cta-inner">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Anunciar
+            <Plus size={16} strokeWidth={2.8} aria-hidden="true" style={{ marginRight: 2 }} />
+            <span>Anunciar</span>
           </span>
         </Link>
 
-        {/* Entrar / Painel */}
-        {isLoggedIn ? (
-          <Link
-            href="/painel"
-            className={`mbn-item${isActive(pathname, "/painel") ? " active" : ""}`}
-            aria-label="Painel"
-          >
-            <LayoutDashboard size={20} strokeWidth={1.8} aria-hidden="true" />
-            <span>Painel</span>
-          </Link>
-        ) : (
-          <Link
-            href="/login"
-            className={`mbn-item${isActive(pathname, "/login") ? " active" : ""}`}
-            aria-label="Entrar"
-          >
-            <LogIn size={20} strokeWidth={1.8} aria-hidden="true" />
-            <span>Entrar</span>
-          </Link>
-        )}
+        {/* Favoritos */}
+        <Link
+          href="/painel/favoritos"
+          className={`mbn-item${isActive(pathname, "/painel/favoritos") ? " active" : ""}`}
+          aria-label="Favoritos"
+        >
+          <Heart size={20} strokeWidth={1.8} aria-hidden="true" />
+          <span>Favoritos</span>
+        </Link>
+
+        {/* Minha Conta / Entrar */}
+        <Link
+          href={isLoggedIn ? "/painel" : "/login"}
+          className={`mbn-item${(isActive(pathname, "/painel") && !isActive(pathname, "/painel/favoritos")) || isActive(pathname, "/login") ? " active" : ""}`}
+          aria-label={isLoggedIn ? "Painel" : "Entrar"}
+        >
+          <User size={20} strokeWidth={1.8} aria-hidden="true" />
+          <span>{isLoggedIn ? "Painel" : "Entrar"}</span>
+        </Link>
 
       </nav>
 
@@ -82,7 +86,7 @@ export function MobileBottomNav({ isLoggedIn = false }: Props) {
         @media (max-width: 768px) {
           .mbn {
             display: grid;
-            grid-template-columns: 1fr 1fr auto 1fr;
+            grid-template-columns: 1fr 1fr auto 1fr 1fr;
             position: fixed;
             bottom: 0; left: 0; right: 0;
             z-index: 200;
@@ -121,17 +125,18 @@ export function MobileBottomNav({ isLoggedIn = false }: Props) {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 6px;
+            padding: 0 4px;
           }
           .mbn-cta-inner {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            gap: 3px;
             background: #22c55e;
             color: #052e16;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 900;
-            padding: 0 14px;
+            padding: 0 10px;
             height: 38px;
             border-radius: 999px;
             white-space: nowrap;

@@ -206,6 +206,7 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           align-items: center;
           justify-content: center;
           transition: all 0.2s;
+          white-space: nowrap;
         }
         .tcp-btn-main:hover { background: #1e293b; }
         .tcp-btn-wa {
@@ -232,6 +233,38 @@ export function TruckCard({ truck }: { truck: TruckCardData }) {
           background: #f8fafc;
           padding: 4px 8px;
           border-radius: 8px;
+        }
+
+        /* ── Mobile compacto ≤ 640px ── */
+        @media (max-width: 640px) {
+          .tcp-card { border-radius: 14px; }
+          .tcp-photo { aspect-ratio: 4/3; }
+          .tcp-body { padding: 10px; gap: 7px; }
+          .tcp-title {
+            font-size: 13px;
+            -webkit-line-clamp: 2;
+            min-height: 0;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+          }
+          .tcp-meta { font-size: 11px; gap: 4px; }
+          .tcp-price { font-size: 15px; }
+          .tcp-location { font-size: 10px; }
+          .tcp-price-row { padding-top: 8px; }
+          .tcp-actions { gap: 6px; margin-top: 2px; }
+          .tcp-btn-main { height: 36px; font-size: 11.5px; border-radius: 10px; padding: 0 4px; }
+          .tcp-btn-wa { width: 36px; height: 36px; border-radius: 10px; }
+          .tcp-badge { height: 20px; font-size: 9px; padding: 0 7px; }
+          .tcp-views { display: none; }
+        }
+
+        /* ── Telas muito pequenas ≤ 390px ── */
+        @media (max-width: 390px) {
+          .tcp-body { padding: 8px; gap: 6px; }
+          .tcp-title { font-size: 12px; }
+          .tcp-price { font-size: 14px; }
+          .tcp-btn-main { height: 34px; font-size: 10.5px; padding: 0 2px; }
+          .tcp-btn-wa { width: 34px; height: 34px; }
         }
       `}</style>
 

@@ -41,6 +41,7 @@ export function CopyProtection() {
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!event.key) return;
       const key = event.key.toLowerCase();
       const ctrlOrMeta = event.ctrlKey || event.metaKey;
       const blockedDevToolsShortcut =
