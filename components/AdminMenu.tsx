@@ -10,7 +10,8 @@ import {
   Send, 
   Palette, 
   PlusCircle, 
-  LayoutDashboard 
+  LayoutDashboard,
+  Terminal
 } from "lucide-react";
 
 const menuItems = [
@@ -23,6 +24,7 @@ const menuItems = [
   { href: "/admin/aparencia", label: "Aparência do site", icon: Palette },
   { href: "/painel/anuncios/novo", label: "Criar anúncio", icon: PlusCircle },
   { href: "/painel/anuncios", label: "Painel anunciante", icon: LayoutDashboard },
+  { href: "/admin/desenvolvedor", label: "Painel Dev", icon: Terminal },
 ];
 
 function isActive(pathname: string, href: string) {

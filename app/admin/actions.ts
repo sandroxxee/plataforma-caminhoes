@@ -143,4 +143,69 @@ export async function toggleSeloAction(id: string, campo: "destaque" | "verifica
   }
 }
 
+export async function getEnvStatusAction() {
+  await requireAdmin();
+  return {
+    NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    GEMINI_API_KEY: !!process.env.GEMINI_API_KEY,
+    NODE_ENV: process.env.NODE_ENV || "development",
+    NODE_VERSION: process.version
+  };
+}
+
+export async function testDatabaseAction() {
+  try {
+    const start = Date.now();
+    const supabase = await requireAdmin();
+    
+    // Executa uma query simples de contagem ou leitura para verificar conectividade
+    const { data: rawData, error: rawError } = await supabase.from("trucks").select("id").limit(1);
+    if (rawError) throw rawError;
+
+    const latency = Date.now() - start;
+    return { success: true, latency, dbVersion: "PostgreSQL (Supabase Cloud)" };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "Falha na conexão com o banco de dados." };
+  }
+}
+
+export async function testGeminiAction() {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY não está configurada.");
+    }
+    const start = Date.now();
+    
+    const { GoogleGenAI } = await import("@google/genai");
+    const ai = new GoogleGenAI({ apiKey });
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: "Olá! Teste rápido. Responda apenas com a palavra 'OK'.",
+    });
+    
+    const latency = Date.now() - start;
+    const answer = response.text?.trim() || "Sem resposta";
+    return { success: true, latency, answer };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "Falha na API do Gemini." };
+  }
+}
+
+export async function revalidateAllAction() {
+  try {
+    await requireAdmin();
+    revalidatePath("/");
+    revalidatePath("/caminhoes");
+    revalidatePath("/admin/anuncios");
+    revalidatePath("/admin/pendentes");
+    return { success: true };
+  } catch (err: any) {
+    return { error: err?.message || "Erro ao revalidar." };
+  }
+}
+
+
 
