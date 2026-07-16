@@ -157,6 +157,7 @@ export async function criarAnuncio(formData: FormData) {
   const ano = Number(formData.get("ano") || 0);
   const carroceria = String(formData.get("carroceria") || "").trim();
   const tracao = String(formData.get("tracao") || "").trim();
+  const video_url = String(formData.get("video_url") || "").trim();
   if (!marca || !modelo || !ano || !carroceria || !tracao) redirect("/painel/anuncios/novo?erro=campos");
   const titulo = tituloAutomatico(marca, modelo, tracao, ano);
   const { data: truck, error } = await supabase
@@ -167,6 +168,7 @@ export async function criarAnuncio(formData: FormData) {
       carroceria, tracao, quilometragem: "", motor: "", cambio: "",
       combustivel: "Diesel", cor: "", descricao, whatsapp,
       status: "pendente", destaque: false, vendido: false,
+      video_url: video_url || null,
     })
     .select("id").single();
   if (error || !truck) redirect("/painel/anuncios/novo?erro=banco");
@@ -190,6 +192,7 @@ export async function editarAnuncio(formData: FormData) {
   const whatsapp = String(formData.get("whatsapp") || "").trim();
   const descricao = String(formData.get("descricao") || "").trim();
   const abaixo_fipe = formData.get("abaixo_fipe") === "true";
+  const video_url = String(formData.get("video_url") || "").trim();
   if (!id || !marca || !modelo || !ano || !preco || !cidade || !estado || !carroceria || !tracao || !whatsapp) redirect("/painel/anuncios");
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   const isAdmin = profile?.role === "admin";
@@ -198,6 +201,7 @@ export async function editarAnuncio(formData: FormData) {
     marca, modelo, ano_fabricacao: ano, ano_modelo: ano,
     preco, cidade, estado, carroceria, tracao, descricao, whatsapp,
     abaixo_fipe,
+    video_url: video_url || null,
     status: isAdmin ? String(formData.get("status") || "pendente") : "pendente",
   }).eq("id", id);
   if (!isAdmin) query.eq("user_id", user.id);

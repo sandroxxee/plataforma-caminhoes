@@ -28,7 +28,7 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
   // Busca o anúncio
   let query = supabase
     .from("trucks")
-    .select("id, user_id, marca, modelo, ano_modelo, preco, quilometragem, cidade, estado, carroceria, tracao, whatsapp, descricao, status, abaixo_fipe")
+    .select("id, user_id, marca, modelo, ano_modelo, preco, quilometragem, cidade, estado, carroceria, tracao, whatsapp, descricao, status, abaixo_fipe, video_url")
     .eq("id", id);
 
   // Se não for admin, só pode editar o próprio anúncio

@@ -188,6 +188,72 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+function VideoDemonstrativo({ videoUrl }: { videoUrl: string | null | undefined }) {
+  if (!videoUrl) return null;
+
+  let embedUrl = "";
+  let isYoutube = false;
+  const urlLower = videoUrl.toLowerCase();
+  let isMp4 = urlLower.endsWith(".mp4") || urlLower.includes(".mp4?");
+
+  // YouTube Detector
+  if (urlLower.includes("youtube.com") || urlLower.includes("youtu.be")) {
+    isYoutube = true;
+    let videoId = "";
+    if (urlLower.includes("youtu.be/")) {
+      videoId = videoUrl.split("youtu.be/")[1]?.split(/[?#]/)[0];
+    } else if (urlLower.includes("youtube.com/embed/")) {
+      videoId = videoUrl.split("youtube.com/embed/")[1]?.split(/[?#]/)[0];
+    } else if (urlLower.includes("youtube.com/shorts/")) {
+      videoId = videoUrl.split("youtube.com/shorts/")[1]?.split(/[?#]/)[0];
+    } else if (urlLower.includes("v=")) {
+      videoId = videoUrl.split("v=")[1]?.split(/[&?#]/)[0];
+    }
+    if (videoId) {
+      embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    }
+  }
+
+  return (
+    <div className="detail-card detail-desc-card" style={{ marginTop: 14 }}>
+      <h2 className="detail-section-title" style={{ display: "flex", alignItems: "center", gap: 8, margin: 0, paddingBottom: 12 }}>
+        🎥 Vídeo de Funcionamento
+      </h2>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#000", borderRadius: 12, overflow: "hidden", border: "1px solid var(--line)" }}>
+        {isYoutube && embedUrl ? (
+          <iframe
+            src={embedUrl}
+            title="Vídeo demonstrativo do veículo"
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: 0 }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        ) : isMp4 ? (
+          <video
+            src={videoUrl}
+            controls
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+            preload="metadata"
+          />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", padding: 24, textAlign: "center", color: "#fff", background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)" }}>
+            <p style={{ margin: "0 0 16px 0", fontSize: 15, fontWeight: 700 }}>O anunciante anexou um link de vídeo externo:</p>
+            <a
+              href={videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="detail-status-badge"
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#22c55e", color: "#fff", padding: "12px 24px", borderRadius: 12, fontSize: 14, fontWeight: 900, textDecoration: "none", height: "auto" }}
+            >
+              ▶ Assistir Vídeo do Veículo
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default async function AnuncioDetalhePage({ params }: PageProps) {
   const { id } = await params;
 
@@ -303,6 +369,8 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
                 </div>
               </div>
             </div>
+            
+            <VideoDemonstrativo videoUrl={truck.video_url} />
           </div>
         </div>
 

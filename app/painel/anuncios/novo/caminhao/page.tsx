@@ -38,6 +38,7 @@ type Campos = {
   carroceria: string;
   whatsapp: string;
   descricao: string;
+  video_url: string;
 };
 
 export default function NovoCaminhaoPage() {
@@ -53,6 +54,7 @@ export default function NovoCaminhaoPage() {
     carroceria: "",
     whatsapp: "",
     descricao: "",
+    video_url: "",
   });
 
   function handleImportar(dados: {
@@ -64,7 +66,7 @@ export default function NovoCaminhaoPage() {
     imagens: string[];
   }) {
     const modeloExtraido = dados.titulo
-      .replace(/mercedes[-\s]?benz|scania|volvo|volkswagen|ford|iveco|daf/gi, "")
+      .replace(/mercedes[-]?benz|scania|volvo|volkswagen|ford|iveco|daf/gi, "")
       .replace(/\d{4}/, "")
       .trim();
 
@@ -88,6 +90,7 @@ export default function NovoCaminhaoPage() {
       carroceria: sugestao.carroceria && carrocerias.includes(sugestao.carroceria) ? sugestao.carroceria : campos.carroceria,
       whatsapp: sugestao.whatsapp || campos.whatsapp,
       descricao: sugestao.descricao || campos.descricao,
+      video_url: sugestao.video_url || campos.video_url,
     });
   }
 
@@ -243,6 +246,17 @@ export default function NovoCaminhaoPage() {
                 onChange={(e) => setCampo("whatsapp", e.target.value)}
                 helper="Use DDI + DDD + número (ex: 5549999362681)."
                 required
+              />
+
+              <Input
+                id="video-url-input"
+                name="video_url"
+                label="Vídeo de Funcionamento (Link do YouTube, TikTok ou Instagram)"
+                optional
+                placeholder="Ex: https://www.youtube.com/watch?v=..."
+                value={campos.video_url}
+                onChange={(e) => setCampo("video_url", e.target.value)}
+                helper="Vídeo do motor ligado, cabine em movimento ou operação."
               />
 
               <div style={{ gridColumn: "span 3" }}>

@@ -21,6 +21,7 @@ type TruckData = {
   descricao: string | null;
   status: string | null;
   abaixo_fipe: boolean | null;
+  video_url: string | null;
 };
 
 type Props = {
@@ -282,6 +283,13 @@ export function EditAnuncioForm({ truck, isAdmin }: Props) {
           <div className="form-field">
             <label className="form-label">WhatsApp de Contato *</label>
             <input className="form-input" name="whatsapp" defaultValue={truck.whatsapp || ""} placeholder="Ex: 41999999999" required />
+          </div>
+
+          {/* VÍDEO DE FUNCIONAMENTO */}
+          <div className="form-field" style={{ gridColumn: 'span 2' }}>
+            <label className="form-label">Vídeo de Funcionamento (Link YouTube, TikTok ou Instagram)</label>
+            <input className="form-input" name="video_url" defaultValue={truck.video_url || ""} placeholder="Ex: https://www.youtube.com/watch?v=..." />
+            <span style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '4px', display: 'block', fontWeight: 700 }}>Cole o link do vídeo demonstrando o funcionamento do motor, cabine ou operação.</span>
           </div>
 
           {/* STATUS (ADMIN ONLY) */}

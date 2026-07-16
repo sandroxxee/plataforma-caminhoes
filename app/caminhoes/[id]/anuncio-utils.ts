@@ -4,7 +4,7 @@ import { gerarSlugComId } from "@/lib/slug";
 
 export const siteUrl = "https://www.caminhoesavenda.com";
 export const defaultOgImage = "/og-caminhoes-a-venda.png";
-export const truckSelect = `id,user_id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,quilometragem,motor,cambio,combustivel,cor,perfil,descricao,whatsapp,views,truck_images(image_url,principal,ordem)`;
+export const truckSelect = `id,user_id,titulo,marca,modelo,ano_modelo,ano_fabricacao,preco,cidade,estado,carroceria,tracao,quilometragem,motor,cambio,combustivel,cor,perfil,descricao,whatsapp,views,video_url,truck_images(image_url,principal,ordem)`;
 
 export const UUID_REGEX = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export const SHORT_ID_REGEX = /-([a-f0-9]{8})$/;
@@ -20,6 +20,7 @@ export type Truck = TruckCardData & {
   cor?: string | null;
   perfil?: string | null;
   views?: number | null;
+  video_url?: string | null;
   truck_images?: TruckImage[];
 };
 

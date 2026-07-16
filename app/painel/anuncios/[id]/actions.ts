@@ -72,6 +72,7 @@ export async function editarAnuncioAction(formData: FormData) {
   const descricao = String(formData.get("descricao") || "").trim();
   const abaixo_fipe = formData.get("abaixo_fipe") === "true";
   const quilometragem = String(formData.get("quilometragem") || "").trim();
+  const video_url = String(formData.get("video_url") || "").trim();
 
   if (!id || !marca || !modelo || !ano || !preco || !whatsapp) {
     throw new Error("Campos obrigatórios faltando");
@@ -95,6 +96,7 @@ export async function editarAnuncioAction(formData: FormData) {
     whatsapp,
     abaixo_fipe,
     quilometragem,
+    video_url: video_url || null,
   };
 
   if (isAdmin) {
