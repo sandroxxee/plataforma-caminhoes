@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { preencherComIa, SugestaoAnuncio } from "@/services/iaService";
+export type { SugestaoAnuncio };
 
 type Props = {
   onFill?: (sugestao: SugestaoAnuncio) => void;

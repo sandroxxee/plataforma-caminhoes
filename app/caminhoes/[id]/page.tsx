@@ -237,6 +237,24 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
 
       <div className="market-container detail-layout">
         <div>
+          {/* Breadcrumb Visual */}
+          <nav className="detail-breadcrumb" aria-label="Breadcrumb">
+            <Link href="/">Início</Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/caminhoes">Caminhões</Link>
+            {truck.marca && (
+              <>
+                <span aria-hidden="true">/</span>
+                <Link href={`/caminhoes?marca=${encodeURIComponent(truck.marca)}`}>{truck.marca}</Link>
+              </>
+            )}
+            {truck.modelo && (
+              <>
+                <span aria-hidden="true">/</span>
+                <span>{truck.modelo}</span>
+              </>
+            )}
+          </nav>
 
 
           {/* Título Mobile acima das Fotos */}
