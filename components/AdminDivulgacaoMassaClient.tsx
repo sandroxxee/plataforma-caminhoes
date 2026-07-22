@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type CSSProperties } from "react";
 import { Eye, Copy, Share2, Smartphone, Landmark, RotateCcw, Download, Search, CheckSquare, Square, ExternalLink, Sparkles, Filter, ListFilter, Trash2 } from "lucide-react";
-import { gerarSlugComId } from "@/lib/slug";
+import { gerarSlugComId, gerarSlugCurtoLimpo, gerarSlugUltraLimpo } from "@/lib/slug";
 import { formatImageUrl } from "@/lib/truck-utils";
 
 type TruckImage = { image_url: string | null; principal: boolean | null; ordem: number | null };
@@ -94,14 +94,10 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
   });
 
   const getAdUrl = (truck: Truck) => {
-    const slug = gerarSlugComId({
+    const slug = gerarSlugUltraLimpo({
       id: truck.id,
       marca: truck.marca,
       modelo: truck.modelo,
-      ano_modelo: truck.ano_modelo,
-      ano_fabricacao: truck.ano_fabricacao,
-      cidade: truck.cidade,
-      estado: truck.estado,
     });
     return `https://caminhoesavenda.com/anuncios/${slug}`;
   };
@@ -145,14 +141,13 @@ export function AdminDivulgacaoMassaClient({ anuncios }: Props) {
       const precoStr = money(a.preco);
       const local = [a.cidade, a.estado].filter(Boolean).join("/");
       
-      // Gerando link encurtado fake com parâmetros de rastreamento UTM
-      const linkBase = getAdUrl(a);
-      const linkComUtm = `${linkBase}?utm_source=whatsapp&utm_medium=lote-divulgacao&utm_campaign=admin-dashboard`;
+      // Link limpo e curto sem números de ano/cidade ou UTMs gigantes
+      const linkCurto = getAdUrl(a);
 
       let itemTxt = `${idx + 1}️⃣ *${title}*\n`;
       itemTxt += `💰 Valor: ${precoStr}\n`;
       if (local) itemTxt += `📍 Local: ${local}\n`;
-      itemTxt += `🔗 Fotos e detalhes: ${linkComUtm}`;
+      itemTxt += `🔗 Fotos e detalhes: ${linkCurto}`;
       return itemTxt;
     });
 

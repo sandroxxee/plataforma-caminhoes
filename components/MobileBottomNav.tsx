@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, Heart, User, Plus } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -13,6 +15,64 @@ type Props = { isLoggedIn?: boolean };
 
 export function MobileBottomNav({ isLoggedIn = false }: Props) {
   const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const supabase = createClient();
+    
+    async function fetchUnreadCount() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: convs } = await supabase
+        .from("conversations")
+        .select("id")
+        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`);
+
+      if (!convs || convs.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const convIds = convs.map(c => c.id);
+
+      const { count, error } = await supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .in("conversation_id", convIds)
+        .eq("is_read", false)
+        .neq("sender_id", user.id);
+
+      if (!error && count !== null) {
+        setUnreadCount(count);
+      }
+    }
+
+    fetchUnreadCount();
+
+    const channel = supabase
+      .channel("unread-messages-mobile-bottom-nav")
+      .on(
+        "postgres_changes",
+        { event: "insert", schema: "public", table: "messages" },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "update", schema: "public", table: "messages" },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isLoggedIn]);
 
   // Verifica se alguma das rotas de categoria/busca está ativa para pintar o botão de Buscar de azul
   const isSearchActive =
@@ -73,9 +133,13 @@ export function MobileBottomNav({ isLoggedIn = false }: Props) {
           href={isLoggedIn ? "/painel" : "/login"}
           className={`mbn-item${(isActive(pathname, "/painel") && !isActive(pathname, "/painel/favoritos")) || isActive(pathname, "/login") ? " active" : ""}`}
           aria-label={isLoggedIn ? "Painel" : "Entrar"}
+          style={{ position: "relative" }}
         >
           <User size={20} strokeWidth={1.8} aria-hidden="true" />
           <span>{isLoggedIn ? "Painel" : "Entrar"}</span>
+          {unreadCount > 0 && (
+            <span className="mbn-badge">{unreadCount}</span>
+          )}
         </Link>
 
       </nav>
@@ -116,6 +180,24 @@ export function MobileBottomNav({ isLoggedIn = false }: Props) {
             transition: color .15s;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            position: relative;
+          }
+          .mbn-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 8.5px;
+            font-weight: 900;
+            min-width: 14px;
+            height: 14px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            position: absolute;
+            top: 4px;
+            right: 14px;
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.45);
           }
           .mbn-item.active { color: var(--blue); }
           .mbn-item svg { flex-shrink: 0; }

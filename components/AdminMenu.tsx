@@ -7,23 +7,27 @@ import {
   Megaphone, 
   Handshake, 
   Users, 
-  Send, 
   Palette, 
-  PlusCircle, 
-  LayoutDashboard,
-  Terminal
+  Terminal,
+  Award,
+  CreditCard,
+  BarChart3,
+  Bell,
+  Bot
 } from "lucide-react";
 
 const menuItems = [
   { href: "/admin/pendentes", label: "Pendentes", icon: Clock },
   { href: "/admin/anuncios", label: "Todos anúncios", icon: FileText },
+  { href: "/admin/revendas", label: "Revendas & Lojas", icon: Handshake },
+  { href: "/admin/planos", label: "Planos", icon: Award },
+  { href: "/admin/assinaturas", label: "Assinaturas", icon: CreditCard },
+  { href: "/admin/metricas", label: "Métricas & Relatórios", icon: BarChart3 },
+  { href: "/admin/notificacoes", label: "Notificações Push", icon: Bell },
+  { href: "/admin/assistente", label: "Assistente IA (Gemini)", icon: Bot },
   { href: "/admin/divulgacao-massa", label: "Divulgação em Massa", icon: Megaphone },
-  { href: "/admin/parceiros", label: "Parceiros / Revendas", icon: Handshake },
   { href: "/admin/usuarios", label: "Usuários", icon: Users },
-  { href: "/admin/lista-transmissao", label: "Lista de transmissão", icon: Send },
   { href: "/admin/aparencia", label: "Aparência do site", icon: Palette },
-  { href: "/painel/anuncios/novo", label: "Criar anúncio", icon: PlusCircle },
-  { href: "/painel/anuncios", label: "Painel anunciante", icon: LayoutDashboard },
   { href: "/admin/desenvolvedor", label: "Painel Dev", icon: Terminal },
 ];
 

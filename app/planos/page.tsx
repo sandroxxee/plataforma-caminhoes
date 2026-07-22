@@ -80,7 +80,40 @@ const planos = [
   },
 ];
 
-export default function PlanosPage() {
+import { createClient } from "@/lib/supabase/server";
+import { iniciarAssinaturaAction } from "./actions";
+
+export default async function PlanosPage() {
+  const supabase = await createClient();
+  let dbPlans: any[] = [];
+  try {
+    const { data } = await supabase
+      .from("plans")
+      .select("*")
+      .eq("is_active", true)
+      .order("price", { ascending: true });
+    dbPlans = data || [];
+  } catch (e) {
+    // Tabela pode não estar criada ou sem registros
+  }
+
+  const planosParaExibir = dbPlans.length > 0 ? dbPlans.map((plan) => ({
+    id: plan.id,
+    nome: plan.name,
+    destaque: plan.max_ads ? `Até ${plan.max_ads} anúncios` : "Anúncios ilimitados",
+    preco: `R$ ${Number(plan.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`,
+    descricao: `Plano comercial com suporte a chat realtime e suporte dedicado.`,
+    isStripe: true,
+    recomendado: plan.badge === "popular" || plan.badge === "best-value",
+    itens: [
+      `${plan.max_ads || "Ilimitados"} anúncio(s) ativo(s)`,
+      `${plan.featured_ads || 0} destaque(s) incluso(s)`,
+      plan.chat_enabled ? "Chat em Tempo Real" : "Sem chat incluso",
+      "Revisão antes de publicar",
+      "Gerenciamento pelo painel do anunciante"
+    ]
+  })) : planos;
+
   return (
     <main className="market-page planos-page">
       <PublicHeader />
@@ -90,7 +123,7 @@ export default function PlanosPage() {
           <span className="planos-kicker">Vantagens para anunciar</span>
           <h1>Anuncie com mais organização, confiança e contato direto.</h1>
           <p>
-            O Caminhões à Venda ajuda seu caminhão ou implemento a aparecer de forma mais clara para quem está procurando. Você escolhe a forma de anúncio, paga online pelo Mercado Pago e envia as informações para aprovação.
+            O Caminhões à Venda ajuda seu caminhão ou implemento a aparecer de forma mais clara para quem está procurando. Você escolhe a forma de anúncio, paga online e envia as informações para aprovação.
           </p>
           <div className="planos-hero-tags" aria-label="Vantagens principais">
             <span>Anúncio revisado</span>
@@ -129,7 +162,7 @@ export default function PlanosPage() {
       </section>
 
       <section className="market-container planos-grid" aria-label="Opções para anunciar">
-        {planos.map((plano) => (
+        {planosParaExibir.map((plano: any) => (
           <article key={plano.nome} className={plano.recomendado ? "plano-card plano-card-featured" : "plano-card"}>
             {plano.recomendado && <div className="plano-recommended">Mais escolhido</div>}
             <div className="plano-head">
@@ -141,19 +174,31 @@ export default function PlanosPage() {
             <p>{plano.descricao}</p>
 
             <ul>
-              {plano.itens.map((item) => (
+              {plano.itens.map((item: string) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
 
-            <a
-              className="plano-pay-button"
-              href={plano.linkPagamento}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Anunciar com {plano.nome}
-            </a>
+            {plano.isStripe ? (
+              <form action={iniciarAssinaturaAction.bind(null, plano.id)} style={{ width: "100%", display: "flex", flexDirection: "column" }}>
+                <button
+                  type="submit"
+                  className="plano-pay-button"
+                  style={{ border: 0, width: "100%", cursor: "pointer", display: "inline-flex", minHeight: "52px" }}
+                >
+                  Assinar {plano.nome}
+                </button>
+              </form>
+            ) : (
+              <a
+                className="plano-pay-button"
+                href={plano.linkPagamento}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Anunciar com {plano.nome}
+              </a>
+            )}
           </article>
         ))}
       </section>

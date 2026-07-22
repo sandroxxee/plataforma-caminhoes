@@ -1,9 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { FileText, Plus, ClipboardList, Users, Palette, Megaphone, Radio, LogOut, Heart, User } from "lucide-react";
+import { FileText, Plus, ClipboardList, Users, Palette, Megaphone, Radio, LogOut, Heart, User, MessageSquare } from "lucide-react";
 
 type Props = { role?: "anunciante" | "admin" };
 
@@ -15,6 +16,7 @@ function isActive(pathname: string, href: string) {
 const anuncianteLinks = [
   { href: "/painel/anuncios",      label: "Meus anúncios", icon: FileText },
   { href: "/painel/anuncios/novo", label: "Novo anúncio",   icon: Plus },
+  { href: "/painel/mensagens",     label: "Mensagens",     icon: MessageSquare },
   { href: "/painel/favoritos",     label: "Favoritos",     icon: Heart },
   { href: "/conta",                label: "Minha conta",   icon: User },
 ];
@@ -35,6 +37,63 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
   const isAdmin  = role === "admin";
   const accentBg = "var(--blueSoft)";
   const accentTxt = "var(--blue)";
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    async function fetchUnreadCount() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: convs } = await supabase
+        .from("conversations")
+        .select("id")
+        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`);
+
+      if (!convs || convs.length === 0) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const convIds = convs.map(c => c.id);
+
+      const { count, error } = await supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .in("conversation_id", convIds)
+        .eq("is_read", false)
+        .neq("sender_id", user.id);
+
+      if (!error && count !== null) {
+        setUnreadCount(count);
+      }
+    }
+
+    fetchUnreadCount();
+
+    const channel = supabase
+      .channel("unread-messages-subnav")
+      .on(
+        "postgres_changes",
+        { event: "insert", schema: "public", table: "messages" },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "update", schema: "public", table: "messages" },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -49,6 +108,8 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
           {links.map((link) => {
             const Icon = link.icon;
             const active = isActive(pathname, link.href);
+            const isMensagens = link.href === "/painel/mensagens";
+
             return (
               <Link
                 key={link.href}
@@ -58,6 +119,9 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
               >
                 <Icon size={14} strokeWidth={active ? 2.8 : 2} aria-hidden="true" />
                 <span>{link.label}</span>
+                {isMensagens && unreadCount > 0 && (
+                  <span className="psnav-badge">{unreadCount}</span>
+                )}
               </Link>
             );
           })}
@@ -102,6 +166,23 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
           color: var(--blue);
           border-bottom-color: var(--blue);
           font-weight: 900;
+        }
+        .psnav-badge {
+          background: #ef4444;
+          color: white;
+          font-size: 10px;
+          font-weight: 900;
+          min-width: 16px;
+          height: 16px;
+          border-radius: 99px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 4px;
+          position: absolute;
+          top: 6px;
+          right: 2px;
+          box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
         }
         .psnav-logout {
           flex-shrink: 0; align-self: center;

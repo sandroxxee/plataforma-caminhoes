@@ -6,7 +6,7 @@ import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { excluirMeuAnuncio, marcarComoVendido, reanunciarAnuncio } from "./actions";
 import { gerarSlugComId } from "@/lib/slug";
 import { TruckCard, type TruckCardData } from "@/components/theme/TruckCard";
-import { Truck, CheckCircle, Clock, XCircle, Handshake, RotateCw, Plus } from "lucide-react";
+import { Truck, CheckCircle, Clock, XCircle, Handshake, RotateCw, Plus, AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,8 @@ function normalizeStatus(status: string | null, vendido: boolean | null) {
   return { label: "Aguardando", cls: "pending", icon: <Clock size={12} /> };
 }
 
-export default async function MeusAnunciosPage() {
+export default async function MeusAnunciosPage({ searchParams }: { searchParams: Promise<{ erro?: string; mensagem?: string }> }) {
+  const { erro, mensagem } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -43,6 +44,25 @@ export default async function MeusAnunciosPage() {
   return (
     <PanelLayout role="anunciante">
       <div className="painel-wrap">
+
+        {erro === "limite" && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            background: "rgba(239, 68, 68, 0.08)",
+            border: "1px solid rgba(239, 68, 68, 0.2)",
+            color: "#ef4444",
+            padding: "16px 20px",
+            borderRadius: 14,
+            marginBottom: 20,
+            fontSize: 14,
+            fontWeight: 800
+          }}>
+            <AlertCircle size={20} style={{ flexShrink: 0 }} />
+            <span>{mensagem || "Seu limite de anúncios ativos foi atingido."}</span>
+          </div>
+        )}
 
         {/* Header */}
         <div className="meus-anuncios-header">

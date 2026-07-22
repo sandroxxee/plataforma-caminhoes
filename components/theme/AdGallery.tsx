@@ -5,6 +5,8 @@ import type { TruckImage } from "./TruckCard";
 import { formatImageUrl } from "@/lib/truck-utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import Image from "next/image";
+
 const AUTOPLAY_INTERVAL = 3500;
 
 type Props = {
@@ -59,12 +61,13 @@ export function AdGallery({ title, images }: Props) {
       <div className="ad-gallery-main">
         {selected ? (
           <>
-            <img
+            <Image
               src={selected}
               alt={`${title} - foto ${selectedIdx + 1}`}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
+              fill
+              priority
+              style={{ objectFit: "contain" }}
+              sizes="(max-width: 1200px) 100vw, 800px"
             />
             {hasMultiple && (
               <>

@@ -33,24 +33,36 @@ type PageProps = { params: Promise<{ id: string }> };
 async function getApprovedTruck(parametro: string): Promise<Truck | null> {
   const supabase = await createClient();
   const { tipo, valor } = extrairIdDoParametroAnuncio(parametro);
-  if (tipo !== "uuid" && tipo !== "short_id") return null;
+  
+  if (tipo === "uuid") {
+    const { data } = await supabase.from("trucks").select(truckSelect).eq("status", "aprovado").eq("vendido", false).eq("id", valor).maybeSingle();
+    if (data) return data as Truck;
+  }
+  
+  if (tipo === "short_id") {
+    const { data } = await supabase.from("trucks").select(truckSelect).eq("status", "aprovado").eq("vendido", false).eq("short_id", valor).maybeSingle();
+    if (data) return data as Truck;
+  }
 
-  const query = supabase
+  // Fallback para slugs ultra limpos (ex: "volvofh540" sem ID no final)
+  const { data: list } = await supabase
     .from("trucks")
     .select(truckSelect)
     .eq("status", "aprovado")
-    .eq("vendido", false);
+    .eq("vendido", false)
+    .order("created_at", { ascending: false });
 
-  if (tipo === "uuid") {
-    query.eq("id", valor);
-  } else {
-    query.eq("short_id", valor);
-  }
+  if (!list || list.length === 0) return null;
 
-  const { data, error } = await query.maybeSingle();
+  const cleanParam = parametro.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const found = list.find((t: any) => {
+    const cleanMarca = (t.marca || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+    const cleanModelo = (t.modelo || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+    const combo = cleanMarca + cleanModelo;
+    return combo === cleanParam || (cleanMarca && cleanParam.startsWith(cleanMarca));
+  });
 
-  if (error || !data) return null;
-  return data as Truck;
+  return (found as Truck) || (list[0] as Truck);
 }
 
 function FipeBadge({ abaixoFipe }: { abaixoFipe: boolean }) {
@@ -257,9 +269,6 @@ function VideoDemonstrativo({ videoUrl }: { videoUrl: string | null | undefined 
 export default async function AnuncioDetalhePage({ params }: PageProps) {
   const { id } = await params;
 
-  const { tipo } = extrairIdDoParametroAnuncio(id);
-  if (tipo !== "uuid" && tipo !== "short_id") notFound();
-
   const truck = await getApprovedTruck(id);
   if (!truck) notFound();
 
@@ -404,6 +413,7 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               shareText={shareText}
               whatsappLabel={textos.whatsapp}
               initialFavorito={initialFavorito}
+              isOwner={user?.id === truck.user_id}
             />
           </div>
 

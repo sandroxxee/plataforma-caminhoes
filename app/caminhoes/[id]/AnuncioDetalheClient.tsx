@@ -3,9 +3,10 @@
 import { AdGallery } from "@/components/theme/AdGallery";
 import { ViewCounter } from "@/components/ViewCounter";
 import { ShareAdButton } from "@/components/ShareAdButton";
-import { Camera, Heart, Check, X } from "lucide-react";
+import { Camera, Heart, Check, X, MessageSquare } from "lucide-react";
 import { useState, useEffect, useTransition } from "react";
 import type { TruckImage } from "@/lib/truck-utils";
+import { iniciarConversaAction } from "./actions";
 
 interface GaleriaProps {
   truckId: string;
@@ -29,6 +30,7 @@ interface AsideActionsProps {
   shareText: string;
   whatsappLabel?: string;
   initialFavorito?: boolean;
+  isOwner?: boolean;
 }
 
 const WaIcon = () => (
@@ -44,6 +46,7 @@ export function AnuncioAsideActions({
   shareText,
   whatsappLabel,
   initialFavorito = false,
+  isOwner = false,
 }: AsideActionsProps) {
   const label = whatsappLabel || "Tenho interesse neste caminhão";
   const [favoritado, setFavoritado] = useState(initialFavorito);
@@ -84,6 +87,16 @@ export function AnuncioAsideActions({
         </a>
       )}
 
+      {/* Botão de Chat Desktop */}
+      {!isOwner && (
+        <form action={iniciarConversaAction.bind(null, truckId)} className="detail-chat-desktop-form">
+          <button type="submit" className="detail-chat-btn-desktop">
+            <MessageSquare size={16} />
+            Conversar pelo Chat
+          </button>
+        </form>
+      )}
+
       {/* Grid de Ações Secundárias (Compartilhar + Favoritar) */}
       <div className="action-buttons-grid">
         <ShareAdButton title={title} text={shareText} className="action-btn share-btn" />
@@ -99,21 +112,32 @@ export function AnuncioAsideActions({
         </button>
       </div>
 
-      {/* Sticky bar mobile */}
-      {whatsappLink && (
-        <a
-          href={whatsappLink}
-          target="_blank"
-          rel="noreferrer"
-          className="detail-wa-sticky"
-          aria-label={`WhatsApp: ${title}`}
-          data-whatsapp-click
-          data-truck-id={truckId}
-        >
-          <WaIcon />
-          Falar pelo WhatsApp
-        </a>
-      )}
+      {/* Barra sticky dupla no mobile */}
+      <div className="detail-mobile-sticky-bar" style={isOwner ? { gridTemplateColumns: "1fr" } : undefined}>
+        {!isOwner && (
+          <form action={iniciarConversaAction.bind(null, truckId)} style={{ width: "100%" }}>
+            <button type="submit" className="detail-chat-sticky">
+              <MessageSquare size={16} />
+              Chat
+            </button>
+          </form>
+        )}
+
+        {whatsappLink && (
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noreferrer"
+            className="detail-wa-sticky"
+            aria-label={`WhatsApp: ${title}`}
+            data-whatsapp-click
+            data-truck-id={truckId}
+          >
+            <WaIcon />
+            WhatsApp
+          </a>
+        )}
+      </div>
 
       <style>{`
         .detail-whatsapp {
@@ -215,34 +239,87 @@ export function AnuncioAsideActions({
           border-color: rgba(239, 68, 68, 0.3) !important;
         }
 
+        .detail-chat-desktop-form {
+          width: 100%;
+          margin-bottom: 12px;
+        }
+        .detail-chat-btn-desktop {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          min-height: 52px;
+          border-radius: 14px !important;
+          background: var(--blue) !important;
+          color: #fff !important;
+          font-weight: 900;
+          font-size: 15px;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          border: 0;
+          width: 100%;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+        }
+        .detail-chat-btn-desktop:hover {
+          filter: brightness(1.05);
+          transform: translateY(-1px);
+        }
+        .detail-chat-btn-desktop:active {
+          transform: scale(0.98);
+        }
+        .detail-mobile-sticky-bar {
+          display: none;
+        }
+
         .detail-wa-sticky {
           display: none;
         }
 
         @media (max-width: 900px) {
-          .detail-whatsapp {
+          .detail-whatsapp,
+          .detail-chat-desktop-form {
             display: none !important;
           }
-          .detail-wa-sticky {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
+          .detail-mobile-sticky-bar {
+            display: grid !important;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 10px;
             position: fixed;
             left: 12px; right: 12px;
             bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+            z-index: 199;
+          }
+          .detail-wa-sticky {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             height: 52px;
             border-radius: 16px;
             background: #25d366;
             color: #073b1d;
             font-weight: 950;
-            font-size: 15px;
+            font-size: 13.5px;
             text-decoration: none;
             box-shadow: 0 8px 24px rgba(37,211,102,.4);
-            z-index: 199;
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-            pointer-events: auto !important;
+            width: 100%;
+          }
+          .detail-chat-sticky {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 52px;
+            border-radius: 16px;
+            background: var(--blue);
+            color: #ffffff;
+            font-weight: 950;
+            font-size: 13.5px;
+            border: 0;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+            width: 100%;
           }
         }
       `}</style>

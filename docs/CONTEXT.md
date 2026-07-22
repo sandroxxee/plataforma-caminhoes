@@ -17,9 +17,12 @@ Marketplace de caminhões, carretas, implementos e máquinas. Foco em venda dire
 ## 📁 Estrutura
 ```
 app/              → páginas (App Router)
+app/loja/[slug]   → vitrine pública exclusiva da revenda/loja parceira
+app/admin/        → painel administrativo (revendas, planos, assinaturas, métricas, push, IA Gemini, dev tools, divulgação em massa)
+app/api/          → rotas de API (loja, gemini/preco, avaliacoes, revendas, planos, assinaturas, metricas, notificacoes)
 components/       → componentes reutilizáveis
-components/theme/ → componentes visuais do marketplace público
-lib/              → utils, Supabase, helpers
+components/theme/ → componentes visuais do marketplace público (StorefrontHeader, IaPriceAdvisor, TruckCard)
+lib/              → utils, Supabase, helpers (gerarSlugUltraLimpo em slug.ts)
 public/           → assets estáticos
 scripts/          → scripts de manutenção
 supabase/         → migrations SQL
@@ -29,7 +32,7 @@ supabase/         → migrations SQL
 
 ## ⚙️ Regras obrigatórias
 - `"use client"` em todo componente com hooks/estado
-- CSS via `<style>` inline (padrão do projeto, não usar Tailwind)
+- CSS via variáveis globais em `globals.css` e CSS modules/estilo unificado
 - Não mexer em auth/Supabase sem avisar
 - Não quebrar rotas existentes
 - Push no `main` = deploy automático no Vercel
@@ -66,38 +69,23 @@ supabase/         → migrations SQL
 | `components/SiteFooter.tsx` | Footer com links e redes sociais |
 | `@vercel/analytics` + `@vercel/speed-insights` | Integrados no layout.tsx |
 
-### FASE 2 — Funcionalidades (em progresso)
-| Componente | Descrição |
+### FASE 2 & 3 — Módulos & Otimizações ✅ CONCLUÍDAS
+| Componente / Rota | Descrição |
 |---|---|
+| `lib/slug.ts` (`gerarSlugUltraLimpo`) | Gerador de link ultra limpo contendo **apenas marca + modelo** (ex: `caminhoesavenda.com/anuncios/volvofh540`), sem números de ano/cidade, sem hífens internos desnecessários e sem ID no final |
+| `AdminDivulgacaoMassaClient.tsx` | Divulgação em massa com links ultra-curtos apenas com marca e modelo para máxima clareza no WhatsApp |
+| `app/loja/[slug]` & `StorefrontHeader.tsx` | Vitrine pública exclusiva da loja parceira com banner, logo, dados e estoque próprio |
+| `app/api/gemini/preco` & `IaPriceAdvisor.tsx` | Avaliação de preços de mercado com IA Gemini (mínimo, média e máximo) |
+| `app/api/avaliacoes` & `avaliacoes_lojas.sql` | Sistema de avaliações de revenda com nota 1 a 5 estrelas e depoimentos |
 | `components/FavoritoButton.tsx` | Botão ❤️ toggle favorito com auth redirect |
-| `app/api/favoritos/route.ts` | API GET (lista) + POST (toggle) com RLS |
-| `app/painel/favoritos/page.tsx` | Página de favoritos no painel do usuário |
-| `supabase/migrations/20260616_favoritos.sql` | Migration SQL com tabela + RLS + índices |
-
----
-
-## 🚀 ROADMAP
-
-### 🔴 FASE 1 — Visual moderno ✅ COMPLETA
-
-### 🟡 FASE 2 — Funcionalidades (EM PROGRESSO)
-| # | Feature | Status |
-|---|---|---|
-| 1 | Sistema de favoritos (salvar no Supabase) | ✅ Feito |
-| 2 | Alerta de preço (notificação por e-mail) | ❌ Fazer |
-| 3 | Comparador de caminhões (2-3 lado a lado) | ❌ Fazer |
-| 4 | Simulador de financiamento (12x/24x/36x) | ❌ Fazer |
-| 5 | Sistema de avaliações (stars + comentários) | ❌ Fazer |
-| 6 | Busca com autocomplete (marcas/modelos) | ❌ Fazer |
-
-### 🟢 FASE 3 — Crescimento (FUTURO)
-| # | Feature | Status |
-|---|---|---|
-| 1 | SEO avançado (sitemap, schema.org, meta dinâmico) | ❌ Fazer |
-| 2 | PWA (instalar no celular) | ❌ Fazer |
-| 3 | Painel de analytics (visualizações, cliques WhatsApp) | ❌ Fazer |
-| 4 | Plano de destaque pago (integração pagamento) | ❌ Fazer |
-| 5 | App mobile (React Native ou PWA avançado) | ❌ Fazer |
+| `supabase/migrations/20260722_expansao_plataforma.sql` | Schema SQL completo do banco de dados |
+| `app/api/revendas` & `app/admin/revendas` | Módulo de gestão de revendas e selo de verificação |
+| `app/api/planos` & `app/admin/planos` | Módulo de gestão de planos de assinatura e limites |
+| `app/api/assinaturas` & `app/admin/assinaturas` | Controle de assinaturas e comprovante PIX |
+| `app/api/metricas` & `app/admin/metricas` | Relatórios de conversão, visualizações e cliques WhatsApp |
+| `app/api/notificacoes` & `app/admin/notificacoes` | Disparo de Push Notifications via Expo Mobile |
+| `app/api/gemini` & `app/admin/assistente` | Chat com Assistente IA Gemini no admin |
+| `app/api/feature-flags` & `app/admin/desenvolvedor` | Painel Dev com Feature Flags e logs de auditoria |
 
 ---
 

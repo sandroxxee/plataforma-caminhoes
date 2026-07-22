@@ -61,8 +61,73 @@ async function enviarFotos(supabase: Awaited<ReturnType<typeof createClient>>, u
   }
 }
 
+async function verificarLimiteAnuncios(supabase: any, userId: string) {
+  const { count: countTrucks } = await supabase
+    .from("trucks")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .neq("status", "reprovado")
+    .eq("vendido", false);
+
+  // Implementos podem ou não usar a tabela implements. Tratando com try/catch caso não exista
+  let countImplements = 0;
+  try {
+    const { count } = await supabase
+      .from("implements")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .neq("status", "reprovado")
+      .eq("vendido", false);
+    countImplements = count ?? 0;
+  } catch {}
+
+  const totalAnuncios = (countTrucks ?? 0) + countImplements;
+
+  let maxAds = 3;
+  let unlimited = false;
+
+  try {
+    const { data: activeSub } = await supabase
+      .from("subscriptions")
+      .select("plan_id")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (activeSub) {
+      const { data: plan } = await supabase
+        .from("plans")
+        .select("max_ads, unlimited_ads")
+        .eq("id", activeSub.plan_id)
+        .maybeSingle();
+
+      if (plan) {
+        maxAds = plan.max_ads ?? 0;
+        unlimited = !!plan.unlimited_ads;
+      }
+    }
+  } catch (e) {
+    // Se as tabelas de assinaturas ainda não existem, desativa o limite para não quebrar a criação
+    return;
+  }
+
+  if (!unlimited && totalAnuncios >= maxAds) {
+    throw new Error(`Limite de anúncios excedido. Seu plano atual permite no máximo ${maxAds} anúncio(s) ativo(s). Faça um upgrade!`);
+  }
+}
+
 export async function criarAnuncio(formData: FormData) {
   const { supabase, user } = await getLoggedUser();
+
+  try {
+    await verificarLimiteAnuncios(supabase, user.id);
+  } catch (err: any) {
+    redirect(`/painel/anuncios?erro=limite&mensagem=${encodeURIComponent(err.message)}`);
+  }
+
   const tipoAnuncio = String(formData.get("tipo_anuncio") || "Caminhão").trim();
   const preco = Number(formData.get("preco") || 0);
   const cidade = String(formData.get("cidade") || "").trim();

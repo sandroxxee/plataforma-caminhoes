@@ -26,6 +26,14 @@ function limparTextoParaSlug(valor: string) {
     .replace(/-{2,}/g, "-");
 }
 
+export function limparTextoCurtoSemTracos(valor: string) {
+  return valor
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+}
+
 export function gerarSlug(truck: TruckSlugData) {
   const uf  = truck.uf || truck.estado;
   const ano = truck.ano || truck.ano_modelo || truck.ano_fabricacao;
@@ -46,6 +54,29 @@ export function gerarSlugComId(truck: TruckSlugData) {
     id = String(truck.id).trim().toLowerCase().split("-")[0];
   }
   return id ? `${slug}-${id}` : slug;
+}
+
+export function gerarSlugCurtoLimpo(truck: TruckSlugData) {
+  const marcaLimpa = limparTextoCurtoSemTracos(truck.marca || "");
+  const modeloLimpo = limparTextoCurtoSemTracos(truck.modelo || "");
+
+  const textoMarcaModelo = (marcaLimpa + modeloLimpo) || "caminhao";
+
+  let id = "";
+  if (truck.short_id) {
+    id = String(truck.short_id).trim().toLowerCase();
+  } else if (truck.id) {
+    id = String(truck.id).trim().toLowerCase().split("-")[0];
+  }
+
+  return id ? `${textoMarcaModelo}-${id}` : textoMarcaModelo;
+}
+
+export function gerarSlugUltraLimpo(truck: TruckSlugData) {
+  const marcaLimpa = limparTextoCurtoSemTracos(truck.marca || "");
+  const modeloLimpo = limparTextoCurtoSemTracos(truck.modelo || "");
+
+  return (marcaLimpa + modeloLimpo) || "caminhao";
 }
 
 /** Extrai o UUID ou short_id do parâmetro de rota. Aceita UUID puro, UUID no final, short_id puro ou short_id no final. */
