@@ -1,8 +1,24 @@
 @echo off
-echo Adicionando arquivos ao Git...
+echo ====================================
+echo 1. Adicionando arquivos alterados...
+echo ====================================
 git add .
-echo Criando o commit...
-git commit -m "fix(mensagens): formatar tipo trucks na pagina de mensagens para compatibilidade TypeScript"
-echo Enviando para o GitHub...
+
+echo.
+echo ====================================
+echo 2. Criando o commit de atualizacoes...
+echo ====================================
+git commit -m "fix(header): usar PublicHeader em vez de PublicHeaderClient para resolver build no Vercel"
+
+echo.
+echo ====================================
+echo 3. Enviando para o GitHub...
+echo ====================================
 git push
-echo Concluido!
+
+echo.
+echo ====================================
+echo PUSH CONCLUIDO COM SUCESSO!
+echo Pressione qualquer tecla para fechar esta janela.
+echo ====================================
+pause
