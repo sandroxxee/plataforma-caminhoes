@@ -88,7 +88,7 @@ export function MensagensClient({ userId, initialConversations, activeChatId }: 
     const channel = supabase
       .channel(`chat:${selectedId}`)
       .on(
-        "postgres_changes",
+        "postgres_changes" as any,
         {
           event: "INSERT",
           schema: "public",

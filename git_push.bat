@@ -8,7 +8,7 @@ echo.
 echo ====================================
 echo 2. Criando o commit de atualizacoes...
 echo ====================================
-git commit -m "fix(header): usar PublicHeader em vez de PublicHeaderClient para resolver build no Vercel"
+git commit -m "fix: cast postgres_changes no Realtime e tipagem de mensagens em componentes"
 
 echo.
 echo ====================================

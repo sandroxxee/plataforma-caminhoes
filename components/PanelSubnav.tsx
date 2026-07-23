@@ -75,14 +75,14 @@ export function PanelSubnav({ role = "anunciante" }: Props) {
     const channel = supabase
       .channel("unread-messages-subnav")
       .on(
-        "postgres_changes",
+        "postgres_changes" as any,
         { event: "insert", schema: "public", table: "messages" },
         () => {
           fetchUnreadCount();
         }
       )
       .on(
-        "postgres_changes",
+        "postgres_changes" as any,
         { event: "update", schema: "public", table: "messages" },
         () => {
           fetchUnreadCount();
