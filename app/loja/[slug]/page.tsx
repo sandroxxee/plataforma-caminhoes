@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { PublicHeaderClient } from "@/components/PublicHeaderClient";
+import { PublicHeader } from "@/components/PublicHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StorefrontHeader } from "@/components/theme/StorefrontHeader";
 import { TruckCard } from "@/components/theme/TruckCard";
@@ -68,7 +68,7 @@ export default async function LojaPage({ params }: PageProps) {
 
   return (
     <div className="market-page">
-      <PublicHeaderClient />
+      <PublicHeader />
 
       <main className="market-container" style={{ paddingTop: 24, paddingBottom: 48 }}>
         <StorefrontHeader
