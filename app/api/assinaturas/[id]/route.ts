@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const supabase = createServiceClient();
 
     const { data, error } = await supabase
       .from("assinaturas")
       .update(body)
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .single();
 

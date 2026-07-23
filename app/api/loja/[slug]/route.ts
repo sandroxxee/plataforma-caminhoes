@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const slug = params.slug.toLowerCase();
+    const { slug: rawSlug } = await params;
+    const slug = rawSlug.toLowerCase();
     const supabase = createServiceClient();
 
     // 1. Buscar revenda pelo nome fantasia ou ID aproximado
@@ -19,7 +20,7 @@ export async function GET(request: Request, { params }: { params: { slug: string
     const revenda = revendas[0];
 
     // 2. Buscar anúncios ativos da revenda
-    const { data: anuncios, error: anunciosErr } = await supabase
+    const { data: anuncios } = await supabase
       .from("trucks")
       .select("*")
       .eq("revenda_id", revenda.id)

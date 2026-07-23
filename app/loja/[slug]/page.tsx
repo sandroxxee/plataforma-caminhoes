@@ -7,9 +7,12 @@ import { TruckCard } from "@/components/theme/TruckCard";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps) {
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug.toLowerCase();
   const supabase = await createClient();
-  const slug = params.slug.toLowerCase();
 
   const { data: revendas } = await supabase
     .from("revendas")
@@ -27,9 +30,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function LojaPage({ params }: { params: { slug: string } }) {
+export default async function LojaPage({ params }: PageProps) {
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug.toLowerCase();
   const supabase = await createClient();
-  const slug = params.slug.toLowerCase();
 
   // 1. Buscar dados da revenda
   const { data: revendas } = await supabase

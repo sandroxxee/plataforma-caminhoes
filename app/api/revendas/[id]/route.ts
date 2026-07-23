@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = createServiceClient();
     const { data, error } = await supabase
       .from("revendas")
       .select("*, perfis(email, nome)")
-      .eq("id", params.id)
+      .eq("id", id)
       .single();
 
     if (error || !data) {
@@ -20,15 +21,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const supabase = createServiceClient();
 
     const { data, error } = await supabase
       .from("revendas")
       .update({ ...body, updated_at: new Date().toISOString() })
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .single();
 
@@ -40,10 +42,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = createServiceClient();
-    const { error } = await supabase.from("revendas").delete().eq("id", params.id);
+    const { error } = await supabase.from("revendas").delete().eq("id", id);
     if (error) throw error;
 
     return NextResponse.json({ success: true, message: "Revenda removida com sucesso." });
