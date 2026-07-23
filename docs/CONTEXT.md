@@ -76,9 +76,9 @@ supabase/         → migrations SQL
 | `AdminDivulgacaoMassaClient.tsx` | Divulgação em massa com links ultra-curtos apenas com marca e modelo para máxima clareza no WhatsApp |
 | `app/loja/[slug]` & `StorefrontHeader.tsx` | Vitrine pública exclusiva da loja parceira com banner, logo, dados e estoque próprio |
 | `app/api/gemini/preco` & `IaPriceAdvisor.tsx` | Avaliação de preços de mercado com IA Gemini (mínimo, média e máximo) |
-| `app/api/avaliacoes` & `avaliacoes_lojas.sql` | Sistema de avaliações de revenda com nota 1 a 5 estrelas e depoimentos |
+| `app/api/avaliacoes` & `20260722000002_avaliacoes_lojas.sql` | Sistema de avaliações de revenda com nota 1 a 5 estrelas e depoimentos |
 | `components/FavoritoButton.tsx` | Botão ❤️ toggle favorito com auth redirect |
-| `supabase/migrations/20260722_expansao_plataforma.sql` | Schema SQL completo do banco de dados |
+| `supabase/migrations/20260722000001_expansao_plataforma.sql` | Schema SQL completo do banco de dados |
 | `app/api/revendas` & `app/admin/revendas` | Módulo de gestão de revendas e selo de verificação |
 | `app/api/planos` & `app/admin/planos` | Módulo de gestão de planos de assinatura e limites |
 | `app/api/assinaturas` & `app/admin/assinaturas` | Controle de assinaturas e comprovante PIX |

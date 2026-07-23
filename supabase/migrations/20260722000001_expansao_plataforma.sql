@@ -1,5 +1,5 @@
 -- ============================================================
--- MIGRATION: 20260722_expansao_plataforma.sql
+-- MIGRATION: 20260722000001_expansao_plataforma.sql
 -- Expansão do Banco de Dados para Caminhões à Venda
 -- ============================================================
 
@@ -176,4 +176,3 @@ CREATE POLICY "Leitura publica de feature flags" ON public.feature_flags FOR SEL
 -- Revendas públicas ativas
 DROP POLICY IF EXISTS "Revendas ativas visiveis a todos" ON public.revendas;
 CREATE POLICY "Revendas ativas visiveis a todos" ON public.revendas FOR SELECT USING (status = 'ativo' OR auth.role() = 'authenticated');
-

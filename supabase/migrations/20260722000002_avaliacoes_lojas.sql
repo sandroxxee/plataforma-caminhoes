@@ -1,5 +1,5 @@
 -- ============================================================
--- MIGRATION: 20260722_avaliacoes_lojas.sql
+-- MIGRATION: 20260722000002_avaliacoes_lojas.sql
 -- Sistema de Avaliações e Reputação de Revendas
 -- ============================================================
 
