@@ -265,7 +265,7 @@ export default function SegurancaClient({ initialSessions, initialAuditLogs, ini
       <div
         style={{
           display: "flex",
-          justify: "space-between",
+          justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
           gap: 16,
@@ -561,7 +561,7 @@ export default function SegurancaClient({ initialSessions, initialAuditLogs, ini
                 style={{
                   padding: 16,
                   display: "flex",
-                  justify: "space-between",
+                  justifyContent: "space-between",
                   alignItems: "center",
                   borderLeft: "4px solid #ef4444"
                 }}
