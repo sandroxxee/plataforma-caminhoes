@@ -19,5 +19,8 @@ CREATE INDEX IF NOT EXISTS idx_avaliacoes_revenda_id ON public.avaliacoes_revend
 -- RLS Policies
 ALTER TABLE public.avaliacoes_revendas ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Avaliacoes sao visiveis publicamente" ON public.avaliacoes_revendas;
 CREATE POLICY "Avaliacoes sao visiveis publicamente" ON public.avaliacoes_revendas FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Qualquer pessoa pode enviar avaliacao" ON public.avaliacoes_revendas;
 CREATE POLICY "Qualquer pessoa pode enviar avaliacao" ON public.avaliacoes_revendas FOR INSERT WITH CHECK (true);

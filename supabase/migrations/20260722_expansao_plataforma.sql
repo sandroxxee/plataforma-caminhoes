@@ -167,9 +167,13 @@ ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.feature_flags ENABLE ROW LEVEL SECURITY;
 
 -- Leitura pública para planos e feature flags
+DROP POLICY IF EXISTS "Leitura publica de planos" ON public.planos;
 CREATE POLICY "Leitura publica de planos" ON public.planos FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Leitura publica de feature flags" ON public.feature_flags;
 CREATE POLICY "Leitura publica de feature flags" ON public.feature_flags FOR SELECT USING (true);
 
 -- Revendas públicas ativas
+DROP POLICY IF EXISTS "Revendas ativas visiveis a todos" ON public.revendas;
 CREATE POLICY "Revendas ativas visiveis a todos" ON public.revendas FOR SELECT USING (status = 'ativo' OR auth.role() = 'authenticated');
 

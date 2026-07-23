@@ -13,7 +13,7 @@ export default async function MensagensPage({ searchParams }: { searchParams: Pr
   if (!user) redirect("/login");
 
   // Busca conversas onde o usuário é comprador ou vendedor
-  const { data: conversations, error } = await supabase
+  const { data: rawConversations } = await supabase
     .from("conversations")
     .select(`
       id,
@@ -31,6 +31,23 @@ export default async function MensagensPage({ searchParams }: { searchParams: Pr
     .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
     .order("last_message_at", { ascending: false });
 
+  const conversations = (rawConversations || []).map((c: any) => {
+    const truckObj = Array.isArray(c.trucks) ? c.trucks[0] : c.trucks;
+    return {
+      id: String(c.id),
+      created_at: String(c.created_at),
+      last_message_at: String(c.last_message_at),
+      ad_id: String(c.ad_id),
+      buyer_id: String(c.buyer_id),
+      seller_id: String(c.seller_id),
+      trucks: truckObj ? {
+        titulo: String(truckObj.titulo || "Veículo"),
+        preco: Number(truckObj.preco || 0),
+        perfil: String(truckObj.perfil || ""),
+      } : null,
+    };
+  });
+
   return (
     <PanelLayout
       title="Mensagens"
@@ -39,7 +56,7 @@ export default async function MensagensPage({ searchParams }: { searchParams: Pr
     >
       <MensagensClient 
         userId={user.id} 
-        initialConversations={conversations || []} 
+        initialConversations={conversations} 
         activeChatId={chat || null}
       />
     </PanelLayout>
