@@ -10,14 +10,17 @@ create table if not exists public.favoritos (
 -- RLS
 alter table public.favoritos enable row level security;
 
+drop policy if exists "usuario ve seus favoritos" on public.favoritos;
 create policy "usuario ve seus favoritos"
   on public.favoritos for select
   using (auth.uid() = user_id);
 
+drop policy if exists "usuario insere favorito" on public.favoritos;
 create policy "usuario insere favorito"
   on public.favoritos for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "usuario remove favorito" on public.favoritos;
 create policy "usuario remove favorito"
   on public.favoritos for delete
   using (auth.uid() = user_id);

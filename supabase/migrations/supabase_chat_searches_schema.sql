@@ -18,12 +18,15 @@ CREATE INDEX IF NOT EXISTS idx_chat_receiver ON chat_messages(receiver_id);
 -- RLS: usuário vê apenas suas mensagens
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "chat_select" ON chat_messages;
 CREATE POLICY "chat_select" ON chat_messages
   FOR SELECT USING (sender_id = auth.uid() OR receiver_id = auth.uid());
 
+DROP POLICY IF EXISTS "chat_insert" ON chat_messages;
 CREATE POLICY "chat_insert" ON chat_messages
   FOR INSERT WITH CHECK (sender_id = auth.uid());
 
+DROP POLICY IF EXISTS "chat_delete" ON chat_messages;
 CREATE POLICY "chat_delete" ON chat_messages
   FOR DELETE USING (sender_id = auth.uid());
 
@@ -52,12 +55,15 @@ CREATE INDEX IF NOT EXISTS idx_saved_searches_user ON saved_searches(user_id);
 -- RLS: usuário gerencia apenas suas buscas
 ALTER TABLE saved_searches ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "searches_select" ON saved_searches;
 CREATE POLICY "searches_select" ON saved_searches
   FOR SELECT USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "searches_insert" ON saved_searches;
 CREATE POLICY "searches_insert" ON saved_searches
   FOR INSERT WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "searches_delete" ON saved_searches;
 CREATE POLICY "searches_delete" ON saved_searches
   FOR DELETE USING (user_id = auth.uid());
 
