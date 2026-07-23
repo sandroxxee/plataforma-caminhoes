@@ -13,12 +13,14 @@ import {
   CreditCard,
   BarChart3,
   Bell,
-  Bot
+  Bot,
+  ShieldCheck
 } from "lucide-react";
 
 const menuItems = [
   { href: "/admin/pendentes", label: "Pendentes", icon: Clock },
   { href: "/admin/anuncios", label: "Todos anúncios", icon: FileText },
+  { href: "/admin/seguranca", label: "Segurança & Auditoria", icon: ShieldCheck },
   { href: "/admin/revendas", label: "Revendas & Lojas", icon: Handshake },
   { href: "/admin/planos", label: "Planos", icon: Award },
   { href: "/admin/assinaturas", label: "Assinaturas", icon: CreditCard },

@@ -223,27 +223,35 @@ export function AdGallery({ title, images }: Props) {
 
         /* Thumbs */
         .ad-gallery-thumbs {
-          display: flex; gap: 8px; flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-top: 4px;
         }
         .ad-gallery-thumbs button {
-          width: 72px; height: 54px;
+          width: 100%;
+          height: 70px;
           border-radius: 10px; overflow: hidden;
           border: 2px solid transparent; padding: 0;
           background: var(--soft); cursor: pointer;
-          transition: border-color .14s, opacity .14s;
-          flex-shrink: 0;
+          transition: border-color .18s, opacity .18s, transform .18s;
         }
-        .ad-gallery-thumbs button:not(.active) { opacity: .6; }
+        .ad-gallery-thumbs button:not(.active) { opacity: .65; }
         .ad-gallery-thumbs button.active,
-        .ad-gallery-thumbs button:hover { border-color: var(--blue); opacity: 1; }
+        .ad-gallery-thumbs button:hover {
+          border-color: var(--blue);
+          opacity: 1;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
         .ad-gallery-thumbs button img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         @media (max-width: 768px) {
           .ad-gallery-main {
-            aspect-ratio: 16/12;
+            aspect-ratio: 16/11;
           }
-          .ad-gallery-thumbs {
-            display: none !important;
+          .ad-gallery-thumbs button {
+            height: 56px;
           }
         }
       `}</style>

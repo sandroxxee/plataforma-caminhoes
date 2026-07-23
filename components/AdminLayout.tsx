@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { sair } from "@/app/logout/actions";
 import { AdminMenu } from "@/components/AdminMenu";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AdminSecurityTracker } from "@/components/AdminSecurityTracker";
 
 import { ExternalLink, LogOut } from "lucide-react";
 
@@ -28,6 +29,8 @@ function AdminBrandIcon() {
 export function AdminLayout({ title, subtitle, badge, actions, children }: Props) {
   return (
     <main className="admin-page">
+      <AdminSecurityTracker />
+
       <aside className="admin-sidebar">
         <Link href="/admin/pendentes" className="admin-brand" prefetch={false}>
           <AdminBrandIcon />

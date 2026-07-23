@@ -396,15 +396,39 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               </span>
             </div>
             <h1 className="detail-h1 detail-h1-aside">{title}</h1>
+
+            <strong className="detail-price">{formatMoney(truck.preco)}</strong>
+
             {location && (
               <p className="detail-location">
                 <MapPin size={13} strokeWidth={2} aria-hidden="true" />
-                {location}
+                {location} <span style={{ opacity: 0.6, margin: "0 4px" }}>|</span> Anúncio #{(truck as any).short_id || truck.id.slice(0, 6)}
               </p>
             )}
-            <strong className="detail-price">{formatMoney(truck.preco)}</strong>
+
             <FipeBadge abaixoFipe={abaixoFipe} />
-            <p className="detail-aside-hint">Fale direto pelo WhatsApp para confirmar disponibilidade e condições de negociação.</p>
+
+            {/* Grid de Especificações Rápidas em 2 Colunas */}
+            <div className="specs-grid-box">
+              <div className="spec-box-item">
+                <span>Ano:</span> <strong>{truck.ano_modelo || truck.ano_fabricacao || "N/I"}</strong>
+              </div>
+              <div className="spec-box-item">
+                <span>Quilometragem:</span> <strong>{formatKm(truck.quilometragem || truck.km) || "N/I"}</strong>
+              </div>
+              <div className="spec-box-item">
+                <span>Potência:</span> <strong>{truck.motor || "N/I"}</strong>
+              </div>
+              <div className="spec-box-item">
+                <span>Combustível:</span> <strong>{truck.combustivel || "Diesel"}</strong>
+              </div>
+              <div className="spec-box-item">
+                <span>Transmissão:</span> <strong>{truck.cambio || "Manual"}</strong>
+              </div>
+              <div className="spec-box-item">
+                <span>Eixos:</span> <strong>{truck.tracao || "N/I"}</strong>
+              </div>
+            </div>
 
             <AnuncioAsideActions
               truckId={truck.id}
@@ -416,8 +440,6 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
               isOwner={user?.id === truck.user_id}
             />
           </div>
-
-
         </aside>
       </div>
 
@@ -467,8 +489,35 @@ export default async function AnuncioDetalhePage({ params }: PageProps) {
         }
         .detail-status-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:950;letter-spacing:.03em}
         body.public-theme-dark .detail-status-badge{background:#14532d;color:#86efac}
-        .detail-price{display:block;color:var(--blue);font-size:clamp(28px,3.5vw,40px);line-height:1;letter-spacing:-.05em;margin:4px 0 6px}
+        .detail-price{display:block;color:var(--blue);font-size:clamp(28px,3.5vw,40px);font-weight:900;line-height:1;letter-spacing:-.05em;margin:8px 0 10px}
         .detail-price-mobile{display:block;color:var(--blue);font-size:28px;letter-spacing:-.04em;line-height:1;margin-top:8px}
+
+        .specs-grid-box {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px 14px;
+          background: var(--soft);
+          padding: 16px 18px;
+          border-radius: 12px;
+          margin: 16px 0 20px;
+          border: 1px solid var(--line);
+        }
+        .spec-box-item {
+          font-size: 13.5px;
+          line-height: 1.5;
+          color: var(--muted);
+          word-break: break-word;
+        }
+        .spec-box-item span {
+          font-weight: 700;
+          color: var(--muted);
+          margin-right: 4px;
+        }
+        .spec-box-item strong {
+          font-weight: 900;
+          color: var(--text);
+        }
+
         .fipe-badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:950;letter-spacing:.01em;margin-bottom:10px;background:#dcfce7;color:#15803d}
         body.public-theme-dark .fipe-badge{background:#14532d;color:#86efac}
         .detail-aside-hint{margin:0 0 16px;color:var(--muted);font-size:13px;font-weight:750;line-height:1.5}

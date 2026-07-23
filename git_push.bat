@@ -8,7 +8,7 @@ echo.
 echo ====================================
 echo 2. Criando o commit de atualizacoes...
 echo ====================================
-git commit -m "fix: cast postgres_changes no Realtime e tipagem de mensagens em componentes"
+git commit -m "feat: modulo de seguranca, auditoria, rastreamento de sessoes e alertas no painel admin"
 
 echo.
 echo ====================================

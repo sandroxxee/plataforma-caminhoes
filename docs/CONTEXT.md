@@ -86,6 +86,8 @@ supabase/         → migrations SQL
 | `app/api/notificacoes` & `app/admin/notificacoes` | Disparo de Push Notifications via Expo Mobile |
 | `app/api/gemini` & `app/admin/assistente` | Chat com Assistente IA Gemini no admin |
 | `app/api/feature-flags` & `app/admin/desenvolvedor` | Painel Dev com Feature Flags e logs de auditoria |
+| `app/caminhoes/[id]` & `AdGallery.tsx` | Novo layout moderno para detalhes do anúncio baseado no mockup com especificações em 2 colunas, botões pill arredondados e galeria otimizada |
+
 
 ---
 

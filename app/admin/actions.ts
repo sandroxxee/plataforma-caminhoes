@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { registrarAuditoria, parseUserAgent, getClientIP, getClientLocation } from "@/lib/security-tracking";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -21,11 +23,27 @@ async function requireAdmin() {
 
   if (profile?.role !== "admin") redirect("/painel");
 
-  return supabase;
+  return { supabase, user };
+}
+
+async function getRequestMetadata() {
+  try {
+    const reqHeaders = await headers();
+    const rawUa = reqHeaders.get("user-agent");
+    const ip = getClientIP(reqHeaders);
+    const location = await getClientLocation(reqHeaders, ip);
+    return {
+      ip,
+      navegador: parseUserAgent(rawUa),
+      cidade: location.cidade
+    };
+  } catch {
+    return { ip: null, navegador: null, cidade: null };
+  }
 }
 
 export async function aprovarAnuncio(formData: FormData) {
-  const supabase = await requireAdmin();
+  const { supabase, user } = await requireAdmin();
   const id = String(formData.get("id") || "");
 
   if (!id) return;
@@ -35,6 +53,16 @@ export async function aprovarAnuncio(formData: FormData) {
     .update({ status: "aprovado", vendido: false })
     .eq("id", id);
 
+  const meta = await getRequestMetadata();
+  await registrarAuditoria({
+    usuario_id: user.id,
+    acao: "aprovou_anuncio",
+    detalhes: { anuncio_id: id },
+    entidade: "trucks",
+    path: "/admin/pendentes",
+    ...meta
+  });
+
   revalidatePath("/");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
@@ -43,7 +71,7 @@ export async function aprovarAnuncio(formData: FormData) {
 }
 
 export async function reprovarAnuncio(formData: FormData) {
-  const supabase = await requireAdmin();
+  const { supabase, user } = await requireAdmin();
   const id = String(formData.get("id") || "");
 
   if (!id) return;
@@ -53,6 +81,16 @@ export async function reprovarAnuncio(formData: FormData) {
     .update({ status: "reprovado" })
     .eq("id", id);
 
+  const meta = await getRequestMetadata();
+  await registrarAuditoria({
+    usuario_id: user.id,
+    acao: "reprovou_anuncio",
+    detalhes: { anuncio_id: id },
+    entidade: "trucks",
+    path: "/admin/pendentes",
+    ...meta
+  });
+
   revalidatePath("/");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
@@ -61,7 +99,7 @@ export async function reprovarAnuncio(formData: FormData) {
 }
 
 export async function excluirAnuncioAdmin(formData: FormData) {
-  const supabase = await requireAdmin();
+  const { supabase, user } = await requireAdmin();
   const id = String(formData.get("id") || "");
 
   if (!id) return;
@@ -82,6 +120,16 @@ export async function excluirAnuncioAdmin(formData: FormData) {
   await supabase.from("truck_images").delete().eq("truck_id", id);
   await supabase.from("trucks").delete().eq("id", id);
 
+  const meta = await getRequestMetadata();
+  await registrarAuditoria({
+    usuario_id: user.id,
+    acao: "excluiu_anuncio",
+    detalhes: { anuncio_id: id, imagens_removidas: paths.length },
+    entidade: "trucks",
+    path: "/admin/anuncios",
+    ...meta
+  });
+
   revalidatePath("/");
   revalidatePath("/admin/pendentes");
   revalidatePath("/admin/anuncios");
@@ -90,7 +138,7 @@ export async function excluirAnuncioAdmin(formData: FormData) {
 
 export async function vincularAnunciosParceiroAction(truckIds: string[], whatsapp: string) {
   try {
-    const supabase = await requireAdmin();
+    const { supabase, user } = await requireAdmin();
 
     if (!truckIds || truckIds.length === 0 || !whatsapp) {
       throw new Error("Parâmetros inválidos.");
@@ -105,6 +153,16 @@ export async function vincularAnunciosParceiroAction(truckIds: string[], whatsap
       throw new Error(error.message);
     }
 
+    const meta = await getRequestMetadata();
+    await registrarAuditoria({
+      usuario_id: user.id,
+      acao: "vinculou_parceiro",
+      detalhes: { truck_ids: truckIds, whatsapp },
+      entidade: "parceiros",
+      path: "/admin/anuncios",
+      ...meta
+    });
+
     revalidatePath("/");
     revalidatePath("/admin/anuncios");
     revalidatePath("/parcerias/parceiros");
@@ -117,7 +175,7 @@ export async function vincularAnunciosParceiroAction(truckIds: string[], whatsap
 
 export async function toggleSeloAction(id: string, campo: "destaque" | "verificado" | "abaixo_fipe", valorAtual: boolean) {
   try {
-    const supabase = await requireAdmin();
+    const { supabase, user } = await requireAdmin();
 
     if (!id || !campo) {
       throw new Error("Parâmetros inválidos.");
@@ -131,6 +189,16 @@ export async function toggleSeloAction(id: string, campo: "destaque" | "verifica
     if (error) {
       throw new Error(error.message);
     }
+
+    const meta = await getRequestMetadata();
+    await registrarAuditoria({
+      usuario_id: user.id,
+      acao: "alterou_selo",
+      detalhes: { anuncio_id: id, campo, novo_valor: !valorAtual },
+      entidade: "trucks",
+      path: "/admin/anuncios",
+      ...meta
+    });
 
     revalidatePath("/");
     revalidatePath("/admin/anuncios");
@@ -158,10 +226,9 @@ export async function getEnvStatusAction() {
 export async function testDatabaseAction() {
   try {
     const start = Date.now();
-    const supabase = await requireAdmin();
+    await requireAdmin();
     
-    // Executa uma query simples de contagem ou leitura para verificar conectividade
-    const { data: rawData, error: rawError } = await supabase.from("trucks").select("id").limit(1);
+    const { data: rawData, error: rawError } = await (await createClient()).from("trucks").select("id").limit(1);
     if (rawError) throw rawError;
 
     const latency = Date.now() - start;
@@ -206,6 +273,3 @@ export async function revalidateAllAction() {
     return { error: err?.message || "Erro ao revalidar." };
   }
 }
-
-
-

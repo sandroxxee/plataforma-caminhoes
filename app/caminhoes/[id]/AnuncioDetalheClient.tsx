@@ -145,20 +145,21 @@ export function AnuncioAsideActions({
           align-items: center;
           justify-content: center;
           gap: 10px;
-          min-height: 52px;
-          border-radius: 14px !important;
+          min-height: 56px;
+          border-radius: 30px !important;
           background: #25d366 !important;
           color: #fff !important;
           font-weight: 900;
-          font-size: 15px;
+          font-size: 16px;
           text-decoration: none;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+          box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
           margin-bottom: 12px;
         }
         .detail-whatsapp:hover {
-          filter: brightness(1.05);
-          transform: translateY(-1px);
+          background: #1da851 !important;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
         }
         .detail-whatsapp:active {
           transform: scale(0.98);
@@ -178,10 +179,10 @@ export function AnuncioAsideActions({
           justify-content: center;
           gap: 8px;
           height: 48px;
-          border-radius: 14px;
+          border-radius: 30px;
           cursor: pointer;
           font-weight: 800;
-          font-size: 13.5px;
+          font-size: 14px;
           transition: all 0.2s ease;
           border: 1px solid transparent;
           outline: none;
@@ -196,6 +197,7 @@ export function AnuncioAsideActions({
         }
         .share-btn:hover {
           background: #e2e8f0;
+          transform: translateY(-1px);
         }
         .share-btn:active {
           transform: scale(0.97);
@@ -209,6 +211,7 @@ export function AnuncioAsideActions({
         }
         .fav-btn:hover {
           background: #e2e8f0;
+          transform: translateY(-1px);
         }
         .fav-btn--active {
           background: #fef2f2 !important;
@@ -249,7 +252,7 @@ export function AnuncioAsideActions({
           justify-content: center;
           gap: 10px;
           min-height: 52px;
-          border-radius: 14px !important;
+          border-radius: 30px !important;
           background: var(--blue) !important;
           color: #fff !important;
           font-weight: 900;
@@ -262,8 +265,9 @@ export function AnuncioAsideActions({
           box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
         }
         .detail-chat-btn-desktop:hover {
-          filter: brightness(1.05);
-          transform: translateY(-1px);
+          filter: brightness(1.08);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
         }
         .detail-chat-btn-desktop:active {
           transform: scale(0.98);
