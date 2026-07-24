@@ -7,6 +7,7 @@ import { AutoFillTruckButton } from "@/components/AutoFillTruckButton";
 import { TruckConfigurationFields } from "@/components/TruckConfigurationFields";
 import { WatermarkPhotoUploader } from "@/components/WatermarkPhotoUploader";
 import { ImportarOLX } from "@/components/ImportarOLX";
+import { BuscaPlacaInput } from "@/components/BuscaPlacaInput";
 import { Input, Select, Textarea, Card, StepIndicator } from "@/components/ui";
 import { useFormState } from "@/hooks/useFormState";
 import { criarAnuncio } from "../../actions";
@@ -113,7 +114,20 @@ export default function NovoCaminhaoPage() {
         {/* 2. STEP INDICATOR */}
         <StepIndicator activeIndex={0} />
 
-        {/* 3. FORMULÁRIO PRINCIPAL */}
+        {/* 3. BUSCA POR PLACA — acima do formulário principal */}
+        <BuscaPlacaInput
+          onPreenchido={(dados) =>
+            setCamposMassa({
+              marca: dados.marca ?? campos.marca,
+              modelo: dados.modelo ?? campos.modelo,
+              ano: dados.ano ?? campos.ano,
+              cidade: dados.cidade ?? campos.cidade,
+              estado: dados.estado ?? campos.estado,
+            })
+          }
+        />
+
+        {/* 4. FORMULÁRIO PRINCIPAL */}
         <form ref={formRef} action={criarAnuncio} className="truck-form" encType="multipart/form-data">
           <input type="hidden" name="tipo_anuncio" value="Caminhão" />
 
