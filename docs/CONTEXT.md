@@ -57,6 +57,12 @@ supabase/         → migrations SQL
 
 ## ✅ Já feito
 
+### Central de Atendimento no admin ✅
+| Componente / Rota | Descrição |
+|---|---|
+| `app/admin/atendimento` | Área protegida para visualizar contatos reais, abrir conversas individuais no WhatsApp e acessar a Central LeadflowAI complementar. Não há disparos automáticos e a API oficial da Meta não é necessária para este uso manual. |
+| `components/AdminMenu.tsx` e `app/admin/page.tsx` | Novo item de menu e atalho no dashboard administrativo. |
+
 ### FASE 1 — Visual moderno ✅ COMPLETA
 | Componente | Descrição |
 |---|---|

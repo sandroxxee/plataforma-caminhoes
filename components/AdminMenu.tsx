@@ -14,7 +14,8 @@ import {
   BarChart3,
   Bell,
   Bot,
-  ShieldCheck
+  ShieldCheck,
+  MessageCircle
 } from "lucide-react";
 
 const menuItems = [
@@ -26,6 +27,7 @@ const menuItems = [
   { href: "/admin/assinaturas", label: "Assinaturas", icon: CreditCard },
   { href: "/admin/metricas", label: "Métricas & Relatórios", icon: BarChart3 },
   { href: "/admin/notificacoes", label: "Notificações Push", icon: Bell },
+  { href: "/admin/atendimento", label: "Central de Atendimento", icon: MessageCircle },
   { href: "/admin/assistente", label: "Assistente IA (Gemini)", icon: Bot },
   { href: "/admin/divulgacao-massa", label: "Divulgação em Massa", icon: Megaphone },
   { href: "/admin/usuarios", label: "Usuários", icon: Users },

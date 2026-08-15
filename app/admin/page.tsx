@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Clock, CheckCircle, Building2, Users, ArrowUpRight, Sparkles, Plus, Image, Palette, Send, FileText } from "lucide-react";
+import { Clock, CheckCircle, Building2, Users, ArrowUpRight, Sparkles, Plus, Image, Palette, Send, FileText, MessageCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -231,6 +231,18 @@ export default async function AdminPage() {
                   <div>
                     <strong style={{ display: "block", color: "var(--text)", fontSize: 14 }}>Lista de Transmissão</strong>
                     <span style={{ fontSize: 11, color: "var(--muted)", fontWeight: 700 }}>Ver contatos de novos cadastros</span>
+                  </div>
+                </div>
+              </Link>
+
+              <Link href="/admin/atendimento" style={{ textDecoration: "none" }}>
+                <div className="admin-card" style={{ display: "flex", padding: 16, cursor: "pointer", alignItems: "center", justifyItems: "center", gridTemplateColumns: "auto 1fr" }}>
+                  <div style={{ display: "flex", width: 40, height: 40, borderRadius: 10, background: "var(--blueSoft)", color: "var(--blue)", alignItems: "center", justifyContent: "center", marginRight: 12 }}>
+                    <MessageCircle size={18} />
+                  </div>
+                  <div>
+                    <strong style={{ display: "block", color: "var(--text)", fontSize: 14 }}>Central de Atendimento</strong>
+                    <span style={{ fontSize: 11, color: "var(--muted)", fontWeight: 700 }}>Organizar contatos e abrir WhatsApp manualmente</span>
                   </div>
                 </div>
               </Link>
