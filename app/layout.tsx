@@ -42,7 +42,7 @@ const roboto = Roboto({
 });
 
 const siteUrl = "https://www.caminhoesavenda.com";
-const ogImage = "/og-caminhoes-a-venda.png";
+const ogImage = "https://www.caminhoesavenda.com/compartilhamento-caminhoes-v2.jpg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
