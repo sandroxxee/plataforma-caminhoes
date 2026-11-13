@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { AdminLayout } from "@/components/AdminLayout";
 import { AdminDivulgacaoMassaClient } from "@/components/AdminDivulgacaoMassaClient";
 
@@ -32,8 +33,10 @@ export default async function AdminDivulgacaoMassaPage() {
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
 
+  const adminSupabase = createServiceClient();
+
   // Buscar todos os veículos aprovados
-  const { data: trucks } = await supabase
+  const { data: trucks } = await adminSupabase
     .from("trucks")
     .select(`
       id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, cidade, estado, carroceria, tracao, status, created_at,

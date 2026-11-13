@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Clock, CheckCircle, Building2, Users, ArrowUpRight, Sparkles, Plus, Image, Palette, Send, FileText, MessageCircle } from "lucide-react";
 
@@ -15,15 +16,17 @@ export default async function AdminPage() {
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
 
+  const adminSupabase = createServiceClient();
+
   // Buscar contagens reativas
-  const { count: totalTrucks } = await supabase.from("trucks").select("*", { count: "exact", head: true });
-  const { count: pendentesCount } = await supabase.from("trucks").select("*", { count: "exact", head: true }).eq("status", "pendente");
-  const { count: aprovadosCount } = await supabase.from("trucks").select("*", { count: "exact", head: true }).eq("status", "aprovado");
-  const { count: parceirosCount } = await supabase.from("parceiros").select("*", { count: "exact", head: true });
-  const { count: usuariosCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
+  const { count: totalTrucks } = await adminSupabase.from("trucks").select("*", { count: "exact", head: true });
+  const { count: pendentesCount } = await adminSupabase.from("trucks").select("*", { count: "exact", head: true }).eq("status", "pendente");
+  const { count: aprovadosCount } = await adminSupabase.from("trucks").select("*", { count: "exact", head: true }).eq("status", "aprovado");
+  const { count: parceirosCount } = await adminSupabase.from("parceiros").select("*", { count: "exact", head: true });
+  const { count: usuariosCount } = await adminSupabase.from("profiles").select("*", { count: "exact", head: true });
 
   // Buscar últimos 5 caminhões cadastrados
-  const { data: ultimosCaminhoes } = await supabase
+  const { data: ultimosCaminhoes } = await adminSupabase
     .from("trucks")
     .select("id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, status, created_at")
     .order("created_at", { ascending: false })

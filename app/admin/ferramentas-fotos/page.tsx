@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import { AdminLayout } from '@/components/AdminLayout'
@@ -28,11 +27,6 @@ const FRASES_PREMIUM = [
 ]
 
 export default function FerramentasFotosPage() {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-
   const [anuncios, setAnuncios] = useState<Anuncio[]>([])
   const [selecionado, setSelecionado] = useState<Anuncio | null>(null)
   const [fotosSelecionadas, setFotosSelecionadas] = useState<Set<string>>(new Set())
@@ -46,12 +40,13 @@ export default function FerramentasFotosPage() {
   }, [])
 
   async function carregarAnuncios() {
-    const { data } = await supabase
-      .from('anuncios')
-      .select('id, titulo, marca, modelo, ano, fotos')
-      .order('created_at', { ascending: false })
-      .limit(100)
-    if (data) setAnuncios(data)
+    try {
+      const response = await fetch('/api/admin/ferramentas-fotos/anuncios', { cache: 'no-store' })
+      const result = await response.json()
+      if (response.ok && Array.isArray(result.anuncios)) setAnuncios(result.anuncios)
+    } catch (error) {
+      console.error('Erro ao carregar anúncios:', error)
+    }
   }
 
   const anunciosFiltrados = anuncios.filter(a =>

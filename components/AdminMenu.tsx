@@ -15,7 +15,9 @@ import {
   Bell,
   Bot,
   ShieldCheck,
-  MessageCircle
+  MessageCircle,
+  Image,
+  Radio
 } from "lucide-react";
 
 const menuItems = [
@@ -30,6 +32,9 @@ const menuItems = [
   { href: "/admin/atendimento", label: "Central de Atendimento", icon: MessageCircle },
   { href: "/admin/assistente", label: "Assistente IA (Gemini)", icon: Bot },
   { href: "/admin/divulgacao-massa", label: "Divulgação em Massa", icon: Megaphone },
+  { href: "/admin/ferramentas-fotos", label: "Ferramentas de Fotos", icon: Image },
+  { href: "/admin/parceiros", label: "Parceiros & Lojas", icon: Handshake },
+  { href: "/admin/lista-transmissao", label: "Lista de Transmissão", icon: Radio },
   { href: "/admin/usuarios", label: "Usuários", icon: Users },
   { href: "/admin/aparencia", label: "Aparência do site", icon: Palette },
   { href: "/admin/desenvolvedor", label: "Painel Dev", icon: Terminal },

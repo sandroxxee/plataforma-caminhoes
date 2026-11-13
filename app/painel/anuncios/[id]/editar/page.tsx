@@ -1,5 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { PanelLayout } from "@/components/PanelLayout";
 import { EditAnuncioForm } from "@/components/forms/EditAnuncioForm";
 
@@ -25,8 +26,12 @@ export default async function EditarAnuncioPage({ params }: PageProps) {
 
   const isAdmin = profile?.role === "admin";
 
+  // Admin pode abrir qualquer anúncio; usuários comuns continuam limitados ao
+  // próprio registro pela condição abaixo.
+  const dataClient = isAdmin ? createServiceClient() : supabase;
+
   // Busca o anúncio
-  let query = supabase
+  let query = dataClient
     .from("trucks")
     .select("id, user_id, marca, modelo, ano_modelo, preco, quilometragem, cidade, estado, carroceria, tracao, whatsapp, descricao, status, abaixo_fipe, video_url")
     .eq("id", id);

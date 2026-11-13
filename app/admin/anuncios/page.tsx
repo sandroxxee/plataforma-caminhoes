@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { AdminLayout } from "@/components/AdminLayout";
 import AdminAnunciosClient from "./AdminAnunciosClient";
 
@@ -39,8 +40,12 @@ export default async function AdminAnunciosPage() {
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
 
+  // A autorização é feita pela sessão acima; o cliente de serviço impede que
+  // o RLS esconda anúncios de outros usuários ou de status não publicados.
+  const adminSupabase = createServiceClient();
+
   // Busca os caminhões contendo o whatsapp do anúncio
-  const { data: trucksData } = await supabase
+  const { data: trucksData } = await adminSupabase
     .from("trucks")
     .select(`
       id, titulo, status, preco, cidade, estado, marca, modelo, whatsapp, destaque, verificado, abaixo_fipe,
@@ -49,7 +54,7 @@ export default async function AdminAnunciosPage() {
     .order("created_at", { ascending: false });
 
   // Busca todos os parceiros cadastrados ativos
-  const { data: parceirosData } = await supabase
+  const { data: parceirosData } = await adminSupabase
     .from("parceiros")
     .select("id, nome, celular")
     .eq("ativo", true);

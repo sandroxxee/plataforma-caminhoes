@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { AdminLayout } from "@/components/AdminLayout";
 import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin } from "../actions";
 
@@ -59,7 +60,9 @@ export default async function AdminPendentesPage() {
     .from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
 
-  const { data } = await supabase
+  const adminSupabase = createServiceClient();
+
+  const { data } = await adminSupabase
     .from("trucks")
     .select(`
       id, titulo, marca, modelo, ano_modelo, preco,

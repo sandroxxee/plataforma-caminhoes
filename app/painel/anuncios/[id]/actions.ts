@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 async function getLoggedUser() {
   const supabase = await createClient();
@@ -80,6 +81,7 @@ export async function editarAnuncioAction(formData: FormData) {
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   const isAdmin = profile?.role === "admin";
+  const dataClient = isAdmin ? createServiceClient() : supabase;
 
   const updateData: any = {
     titulo: tituloAutomatico(marca, modelo, tracao, ano),
@@ -105,7 +107,7 @@ export async function editarAnuncioAction(formData: FormData) {
     updateData.status = "pendente"; // Volta para revisão se editado por user comum
   }
 
-  const query = supabase.from("trucks").update(updateData).eq("id", id);
+  const query = dataClient.from("trucks").update(updateData).eq("id", id);
 
   if (!isAdmin) {
     query.eq("user_id", user.id);
@@ -114,7 +116,7 @@ export async function editarAnuncioAction(formData: FormData) {
   const { error } = await query;
   if (error) throw error;
 
-  await enviarFotos(supabase, user.id, id, formData);
+  await enviarFotos(dataClient, user.id, id, formData);
 
   revalidatePath("/painel/anuncios");
   revalidatePath("/admin/pendentes");

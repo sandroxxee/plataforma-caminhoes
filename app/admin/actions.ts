@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { registrarAuditoria, parseUserAgent, getClientIP, getClientLocation } from "@/lib/security-tracking";
 
 async function requireAdmin() {
@@ -23,7 +24,9 @@ async function requireAdmin() {
 
   if (profile?.role !== "admin") redirect("/painel");
 
-  return { supabase, user };
+  // A sessão é validada com o cliente normal; as operações administrativas
+  // usam service_role para não serem bloqueadas pelas políticas RLS do usuário.
+  return { supabase, adminSupabase: createServiceClient(), user };
 }
 
 async function getRequestMetadata() {
@@ -43,12 +46,12 @@ async function getRequestMetadata() {
 }
 
 export async function aprovarAnuncio(formData: FormData) {
-  const { supabase, user } = await requireAdmin();
+  const { adminSupabase, user } = await requireAdmin();
   const id = String(formData.get("id") || "");
 
   if (!id) return;
 
-  await supabase
+  await adminSupabase
     .from("trucks")
     .update({ status: "aprovado", vendido: false })
     .eq("id", id);
@@ -71,12 +74,12 @@ export async function aprovarAnuncio(formData: FormData) {
 }
 
 export async function reprovarAnuncio(formData: FormData) {
-  const { supabase, user } = await requireAdmin();
+  const { adminSupabase, user } = await requireAdmin();
   const id = String(formData.get("id") || "");
 
   if (!id) return;
 
-  await supabase
+  await adminSupabase
     .from("trucks")
     .update({ status: "reprovado" })
     .eq("id", id);
@@ -99,12 +102,12 @@ export async function reprovarAnuncio(formData: FormData) {
 }
 
 export async function excluirAnuncioAdmin(formData: FormData) {
-  const { supabase, user } = await requireAdmin();
+  const { adminSupabase, user } = await requireAdmin();
   const id = String(formData.get("id") || "");
 
   if (!id) return;
 
-  const { data: images } = await supabase
+  const { data: images } = await adminSupabase
     .from("truck_images")
     .select("storage_path")
     .eq("truck_id", id);
@@ -114,11 +117,11 @@ export async function excluirAnuncioAdmin(formData: FormData) {
     .filter(Boolean);
 
   if (paths.length > 0) {
-    await supabase.storage.from("truck-images").remove(paths);
+    await adminSupabase.storage.from("truck-images").remove(paths);
   }
 
-  await supabase.from("truck_images").delete().eq("truck_id", id);
-  await supabase.from("trucks").delete().eq("id", id);
+  await adminSupabase.from("truck_images").delete().eq("truck_id", id);
+  await adminSupabase.from("trucks").delete().eq("id", id);
 
   const meta = await getRequestMetadata();
   await registrarAuditoria({
@@ -138,13 +141,13 @@ export async function excluirAnuncioAdmin(formData: FormData) {
 
 export async function vincularAnunciosParceiroAction(truckIds: string[], whatsapp: string) {
   try {
-    const { supabase, user } = await requireAdmin();
+    const { adminSupabase, user } = await requireAdmin();
 
     if (!truckIds || truckIds.length === 0 || !whatsapp) {
       throw new Error("Parâmetros inválidos.");
     }
 
-    const { error } = await supabase
+    const { error } = await adminSupabase
       .from("trucks")
       .update({ whatsapp })
       .in("id", truckIds);
@@ -175,13 +178,13 @@ export async function vincularAnunciosParceiroAction(truckIds: string[], whatsap
 
 export async function toggleSeloAction(id: string, campo: "destaque" | "verificado" | "abaixo_fipe", valorAtual: boolean) {
   try {
-    const { supabase, user } = await requireAdmin();
+    const { adminSupabase, user } = await requireAdmin();
 
     if (!id || !campo) {
       throw new Error("Parâmetros inválidos.");
     }
 
-    const { error } = await supabase
+    const { error } = await adminSupabase
       .from("trucks")
       .update({ [campo]: !valorAtual })
       .eq("id", id);
