@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Manrope, Inter, Montserrat, Outfit, Roboto } from "next/font/google";
 import { ClientShell } from "@/components/ClientShell";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
@@ -9,37 +8,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { createClient } from "@/lib/supabase/server";
 import { getHomeContent } from "@/lib/site-content";
 import "./globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-montserrat",
-  display: "swap",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-  display: "swap",
-});
-
-const roboto = Roboto({
-  weight: ["400", "700", "900"],
-  subsets: ["latin"],
-  variable: "--font-roboto",
-  display: "swap",
-});
 
 const siteUrl = "https://www.caminhoesavenda.com";
 const ogImage = "https://www.caminhoesavenda.com/compartilhamento-caminhoes-v2.jpg";
@@ -187,10 +155,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const efeitoHover = content.efeitoHover || "flutuar";
 
   return (
-    <html lang="pt-BR" className={`${manrope.variable} ${inter.variable} ${montserrat.variable} ${outfit.variable} ${roboto.variable}`}>
+    <html lang="pt-BR">
       <head>
         <style dangerouslySetInnerHTML={{ __html: `
           :root {
+            --font-manrope: "Manrope", "Segoe UI", Arial, sans-serif;
+            --font-inter: Inter, "Segoe UI", Arial, sans-serif;
+            --font-montserrat: Montserrat, "Segoe UI", Arial, sans-serif;
+            --font-outfit: Outfit, "Segoe UI", Arial, sans-serif;
+            --font-roboto: Roboto, "Segoe UI", Arial, sans-serif;
             --blue: ${corPrimaria} !important;
             --blue2: ${corPrimariaHover} !important;
             --blueSoft: ${corPrimariaSoft} !important;

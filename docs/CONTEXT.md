@@ -69,6 +69,9 @@ supabase/         → migrations SQL
 | `lib/supabase/service.ts` | O cliente administrativo exige `SUPABASE_SERVICE_ROLE_KEY` e não faz mais fallback para a chave pública, evitando que o RLS esconda anúncios de outras contas. |
 | `app/admin/anuncios` e `app/admin/pendentes` | Consultas administrativas verificam erros explicitamente e exibem todos os anúncios/pendentes para o admin. |
 
+### Build estável na CI ✅
+| `app/layout.tsx` | Removido o carregamento de `next/font/google`, que falhava no Turbopack da CI; as cinco opções de fonte continuam disponíveis por pilhas locais do sistema. |
+
 ### FASE 1 — Visual moderno ✅ COMPLETA
 | Componente | Descrição |
 |---|---|
