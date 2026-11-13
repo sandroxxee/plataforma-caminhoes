@@ -20,7 +20,6 @@ type Truck = {
   modelo: string | null;
   whatsapp?: string | null;
   destaque?: boolean | null;
-  verificado?: boolean | null;
   abaixo_fipe?: boolean | null;
   truck_images?: TruckImage[];
 };
@@ -40,27 +39,27 @@ export default async function AdminAnunciosPage() {
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (profile?.role !== "admin") redirect("/painel");
 
-  // A autorização é feita pela sessão acima; o cliente de serviço impede que
-  // o RLS esconda anúncios de outros usuários ou de status não publicados.
+  // A autorização é feita pela sessão acima; o cliente de serviço consulta
+  // anúncios de todas as contas e de todos os status, sem depender do RLS.
   const adminSupabase = createServiceClient();
 
-  // Busca os caminhões contendo o whatsapp do anúncio
   const { data: trucksData, error: trucksError } = await adminSupabase
     .from("trucks")
     .select(`
-      id, titulo, status, preco, cidade, estado, marca, modelo, whatsapp, destaque, verificado, abaixo_fipe,
+      id, titulo, status, preco, cidade, estado, marca, modelo, whatsapp, destaque, abaixo_fipe,
       truck_images ( image_url, principal, ordem )
     `)
     .order("created_at", { ascending: false });
+
   if (trucksError) {
     throw new Error(`Não foi possível carregar todos os anúncios: ${trucksError.message}`);
   }
 
-  // Busca todos os parceiros cadastrados ativos
   const { data: parceirosData, error: parceirosError } = await adminSupabase
     .from("parceiros")
     .select("id, nome, celular")
     .eq("ativo", true);
+
   if (parceirosError) {
     throw new Error(`Não foi possível carregar os parceiros: ${parceirosError.message}`);
   }

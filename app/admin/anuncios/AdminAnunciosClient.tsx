@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
 import { aprovarAnuncio, reprovarAnuncio, excluirAnuncioAdmin, vincularAnunciosParceiroAction, toggleSeloAction } from "../actions";
 import { Loader2, CheckCircle2, AlertTriangle, Landmark, CheckSquare, Square, Search, Handshake } from "lucide-react";
+import { formatImageUrl } from "@/lib/truck-utils";
 
 type TruckImage = { image_url: string | null; principal: boolean | null; ordem: number | null };
 type Truck = {
@@ -19,7 +20,6 @@ type Truck = {
   modelo: string | null;
   whatsapp?: string | null;
   destaque?: boolean | null;
-  verificado?: boolean | null;
   abaixo_fipe?: boolean | null;
   truck_images?: TruckImage[];
 };
@@ -29,8 +29,6 @@ type Parceiro = {
   nome: string;
   celular: string;
 };
-
-import { formatImageUrl } from "@/lib/truck-utils";
 
 function getMainImage(truck: Truck) {
   const images = truck.truck_images || [];
@@ -70,14 +68,12 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Pré-selecionar o parceiro na URL se houver
   useEffect(() => {
     if (targetWhatsApp) {
       setSelectedParceiroWa(targetWhatsApp);
     }
   }, [targetWhatsApp]);
 
-  // Filtra anúncios por termo de busca
   const filteredTrucks = trucks.filter((t) => {
     const s = searchTerm.toLowerCase();
     return (
@@ -88,7 +84,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
     );
   });
 
-  // Mapeia o WhatsApp do anúncio ao nome do parceiro correspondente
   function obterParceiroDoAnuncio(truckWa: string | null) {
     if (!truckWa) return null;
     const cleanWa = truckWa.replace(/\D/g, "");
@@ -96,14 +91,12 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
     return match ? match.nome : null;
   }
 
-  // Alterna a seleção de um anúncio individual
   function toggleSelect(id: string) {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   }
 
-  // Alterna a seleção de todos os anúncios filtrados
   function toggleSelectAll() {
     if (selectedIds.length === filteredTrucks.length) {
       setSelectedIds([]);
@@ -112,7 +105,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
     }
   }
 
-  // Envia a vinculação em lote
   async function handleVincularLote() {
     setErrorMsg("");
     setSuccessMsg("");
@@ -142,8 +134,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
       }
 
       setSuccessMsg(`Sucesso! Os anúncios foram vinculados à loja "${parceiroNome}".`);
-      
-      // Atualiza o estado local do WhatsApp dos caminhões vinculados
       setTrucks((prev) =>
         prev.map((t) =>
           selectedIds.includes(t.id) ? { ...t, whatsapp: selectedParceiroWa } : t
@@ -157,8 +147,7 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
     }
   }
 
-  async function handleToggleSelo(id: string, campo: "destaque" | "verificado" | "abaixo_fipe", valorAtual: boolean) {
-    // Atualização otimista
+  async function handleToggleSelo(id: string, campo: "destaque" | "abaixo_fipe", valorAtual: boolean) {
     setTrucks((prev) =>
       prev.map((t) =>
         t.id === id ? { ...t, [campo]: !valorAtual } : t
@@ -174,7 +163,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
       setTimeout(() => setSuccessMsg(""), 2000);
     } catch (err: any) {
       setErrorMsg(err.message || "Erro ao atualizar selo.");
-      // Desfaz alteração em caso de falha
       setTrucks((prev) =>
         prev.map((t) =>
           t.id === id ? { ...t, [campo]: valorAtual } : t
@@ -183,11 +171,8 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
     }
   }
 
-
   return (
     <div className="admin-grid" style={{ gap: 16 }}>
-      
-      {/* MODO VINCULAÇÃO ATIVO */}
       {targetWhatsApp && targetNome && (
         <div className="admin-alert admin-alert-warning">
           <Handshake size={20} />
@@ -214,10 +199,7 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
         </div>
       )}
 
-      {/* FERRAMENTAS DE BUSCA E LOTE */}
       <div className="admin-toolbar">
-        
-        {/* BUSCA RAPIDA */}
         <div className="admin-search-box">
           <Search size={18} style={{ color: "var(--muted)" }} />
           <input 
@@ -229,7 +211,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
           />
         </div>
 
-        {/* CONTROLE EM LOTE */}
         <div className="admin-lote-box">
           <select 
             value={selectedParceiroWa} 
@@ -257,13 +238,9 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
             )}
           </button>
         </div>
-
       </div>
 
-      {/* LISTAGEM */}
       <div className="admin-grid" style={{ gap: 12 }}>
-        
-        {/* CABEÇALHO SELECT ALL */}
         {filteredTrucks.length > 0 && (
           <div className="admin-select-all-header" onClick={toggleSelectAll}>
             <button className="admin-checkbox-btn">
@@ -286,8 +263,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
 
           return (
             <article key={truck.id} className="admin-list-row" style={isSelected ? { borderColor: "var(--blue)", background: "var(--blueSoft)" } : undefined}>
-              
-              {/* CHECKBOX SELEÇÃO */}
               <button onClick={() => toggleSelect(truck.id)} className="admin-checkbox-btn">
                 {isSelected ? (
                   <CheckSquare size={22} style={{ color: "var(--blue)" }} />
@@ -307,7 +282,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
                 </p>
                 
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 6 }}>
-                  {/* TAG DA LOJA PARCEIRA */}
                   {lojaVinculada ? (
                     <span className="admin-card-status" style={{ background: "var(--blueSoft)", color: "var(--blue)", border: 0, padding: "3px 8px", width: "fit-content", textTransform: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
                       <Landmark size={11} /> Estoque: {lojaVinculada}
@@ -318,7 +292,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
                     </span>
                   )}
 
-                  {/* CONTROLES DE SELOS */}
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "var(--soft)", padding: "2px 6px", borderRadius: 8, border: "1px solid var(--line)" }}>
                     <span style={{ fontSize: 11, fontWeight: 800, color: "var(--muted)", marginRight: 4 }}>Selos:</span>
                     
@@ -337,23 +310,6 @@ export default function AdminAnunciosClient({ initialTrucks, parceiros }: Props)
                       title="Alternar selo de Destaque"
                     >
                       ★ Destaque
-                    </button>
-
-                    <button
-                      onClick={() => handleToggleSelo(truck.id, "verificado", !!truck.verificado)}
-                      style={{
-                        border: 0,
-                        background: truck.verificado ? "rgba(34, 197, 94, 0.15)" : "transparent",
-                        color: truck.verificado ? "#166534" : "var(--muted)",
-                        fontSize: 11,
-                        fontWeight: 900,
-                        padding: "3px 8px",
-                        borderRadius: 6,
-                        cursor: "pointer"
-                      }}
-                      title="Alternar selo de Verificado"
-                    >
-                      ✓ Verificado
                     </button>
 
                     <button
