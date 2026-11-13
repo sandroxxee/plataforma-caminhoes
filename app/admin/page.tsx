@@ -26,11 +26,14 @@ export default async function AdminPage() {
   const { count: usuariosCount } = await adminSupabase.from("profiles").select("*", { count: "exact", head: true });
 
   // Buscar últimos 5 caminhões cadastrados
-  const { data: ultimosCaminhoes } = await adminSupabase
+  const { data: ultimosCaminhoes, error: ultimosCaminhoesError } = await adminSupabase
     .from("trucks")
     .select("id, titulo, marca, modelo, ano_modelo, ano_fabricacao, preco, status, created_at")
     .order("created_at", { ascending: false })
     .limit(5);
+  if (ultimosCaminhoesError) {
+    throw new Error(`Não foi possível carregar os anúncios recentes: ${ultimosCaminhoesError.message}`);
+  }
 
   const money = (value: number | null) => {
     if (!value) return "Sob consulta";

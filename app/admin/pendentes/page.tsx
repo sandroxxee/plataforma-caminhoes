@@ -62,7 +62,7 @@ export default async function AdminPendentesPage() {
 
   const adminSupabase = createServiceClient();
 
-  const { data } = await adminSupabase
+  const { data, error } = await adminSupabase
     .from("trucks")
     .select(`
       id, titulo, marca, modelo, ano_modelo, preco,
@@ -71,6 +71,9 @@ export default async function AdminPendentesPage() {
     `)
     .eq("status", "pendente")
     .order("created_at", { ascending: false });
+  if (error) {
+    throw new Error(`Não foi possível carregar os anúncios pendentes: ${error.message}`);
+  }
 
   const trucks = (data || []) as Truck[];
 

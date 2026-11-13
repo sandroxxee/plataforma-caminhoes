@@ -2,9 +2,9 @@ import { createClient } from "@supabase/supabase-js";
 import { getSupabaseUrl } from "./config";
 
 export function createServiceClient() {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) {
-    throw new Error("Nenhuma chave Supabase (SUPABASE_SERVICE_ROLE_KEY ou NEXT_PUBLIC_SUPABASE_ANON_KEY) configurada no ambiente.");
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY não está configurada. O painel administrativo precisa da chave service_role para consultar anúncios de todas as contas.");
   }
   return createClient(getSupabaseUrl(), serviceKey, {
     auth: {

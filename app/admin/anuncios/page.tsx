@@ -45,19 +45,25 @@ export default async function AdminAnunciosPage() {
   const adminSupabase = createServiceClient();
 
   // Busca os caminhões contendo o whatsapp do anúncio
-  const { data: trucksData } = await adminSupabase
+  const { data: trucksData, error: trucksError } = await adminSupabase
     .from("trucks")
     .select(`
       id, titulo, status, preco, cidade, estado, marca, modelo, whatsapp, destaque, verificado, abaixo_fipe,
       truck_images ( image_url, principal, ordem )
     `)
     .order("created_at", { ascending: false });
+  if (trucksError) {
+    throw new Error(`Não foi possível carregar todos os anúncios: ${trucksError.message}`);
+  }
 
   // Busca todos os parceiros cadastrados ativos
-  const { data: parceirosData } = await adminSupabase
+  const { data: parceirosData, error: parceirosError } = await adminSupabase
     .from("parceiros")
     .select("id, nome, celular")
     .eq("ativo", true);
+  if (parceirosError) {
+    throw new Error(`Não foi possível carregar os parceiros: ${parceirosError.message}`);
+  }
 
   const trucks = (trucksData || []) as Truck[];
   const parceiros = (parceirosData || []) as Parceiro[];
